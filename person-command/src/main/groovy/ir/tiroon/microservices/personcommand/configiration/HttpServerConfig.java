@@ -25,9 +25,12 @@ public class HttpServerConfig {
 
     @Bean
     RouterFunction<ServerResponse> monoRouterFunction(CustomerHandler customerHandler) {
-        return route(GET("/register/person/{phn}/{name}"),
-                request ->  customerHandler.registerPerson(request))
-                .andRoute(GET("/add/interest/{phn}/{interest}"),
-                        request -> customerHandler.addInterest(request));
+        return
+                route(GET("/register/person/{phn}/{name}"), customerHandler::registerPerson)
+                .andRoute(GET("/add/interest/{phn}/{interest}"), customerHandler::addInterest)
+                .andRoute(GET("/show/person"),customerHandler::showAll)
+
+                ;
+
     }
 }

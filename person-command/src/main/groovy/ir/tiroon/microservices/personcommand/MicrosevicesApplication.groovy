@@ -16,4 +16,5 @@ class MicrosevicesApplication {
     static void main(String[] args) {
         SpringApplication.run MicrosevicesApplication, args
     }
+
 }
