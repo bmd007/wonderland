@@ -1,5 +1,9 @@
 package ir.tiroon.microservices.configuration
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import ir.tiroon.microservices.model.PersonRegisteredEvent
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -24,14 +28,15 @@ class kafkaConfig {
     String groupId
 
     @Bean
-    ConsumerFactory<String, PersonRegisteredEvent> consumerFactory() {
+    ConsumerFactory<String, PersonRegisteredEvent> consumerFactory(ObjectMapper om) {
         Map<String, Object> props = new HashMap<>()
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,bootstrapServers)
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId)
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class)
 
-        def jsonDeserializer = new JsonDeserializer(PersonRegisteredEvent.class)
+
+        JsonDeserializer jsonDeserializer = new JsonDeserializer(PersonRegisteredEvent.class, om)
         jsonDeserializer.addTrustedPackages("ir.tiroon.microservices.model")
 
         new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(),jsonDeserializer)
@@ -45,9 +50,9 @@ class kafkaConfig {
         factory
     }
 
-    @KafkaListener(topics = "mytesttopic3")
+    @KafkaListener(topics = "mytesttopic6")
     void listen(PersonRegisteredEvent pre) {
-        System.out.println("BMD::Received Message : " + pre)
+        System.out.println("BMD::Received Message : " + pre.relatedPersonName+';;;'+pre.key.localDateTime)
     }
 
 }

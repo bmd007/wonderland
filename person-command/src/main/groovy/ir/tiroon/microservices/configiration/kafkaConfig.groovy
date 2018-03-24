@@ -1,7 +1,13 @@
 package ir.tiroon.microservices.configiration
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
+import ir.tiroon.microservices.model.PersonRegisteredEvent
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringSerializer
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -19,14 +25,15 @@ class kafkaConfig {
 
 
     @Bean
-    KafkaTemplate kafkaTemplate() {
+    KafkaTemplate kafkaTemplate(ObjectMapper om) {
         Map<String, Object> configProps = new HashMap<>()
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class)
 
         new KafkaTemplate(
-                new DefaultKafkaProducerFactory<>(configProps)
+                new DefaultKafkaProducerFactory<>(configProps,
+                new StringSerializer(), new JsonSerializer(om))
         )
     }
 

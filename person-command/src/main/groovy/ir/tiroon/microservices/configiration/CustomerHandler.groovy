@@ -44,7 +44,7 @@ class CustomerHandler {
 
         Message<PersonRegisteredEvent> message = MessageBuilder
                 .withPayload(event)
-                .setHeader(KafkaHeaders.TOPIC, 'mytesttopic3')
+                .setHeader(KafkaHeaders.TOPIC, 'mytesttopic6')
                 .build();
 
         kafkaTemplate.send(message)
