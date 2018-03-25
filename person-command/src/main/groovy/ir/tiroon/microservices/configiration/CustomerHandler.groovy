@@ -53,6 +53,8 @@ class CustomerHandler {
                 body(Mono.just(savedEvent), PersonRegisteredEvent.class)
     }
 
+
+
     //need edit in send section-- should be like above method
     Mono<ServerResponse> addInterest(ServerRequest request) {
         def phn = String.valueOf(request.pathVariable("phn"))
@@ -60,11 +62,17 @@ class CustomerHandler {
 
         def event = new PersonInterestAddedEvent(phn, interest)
 
-        iaer.save(event).block()
+        def savedEvent = iaer.save(event).block()
 
-        kafkaTemplate.send 'mytesttopic', event
+        Message<PersonInterestAddedEvent> message = MessageBuilder
+                .withPayload(event)
+                .setHeader(KafkaHeaders.TOPIC, 'mytesttopic7')
+                .build();
 
-        ServerResponse.ok().contentType(MediaType.APPLICATION_JSON_UTF8).build()
+        kafkaTemplate.send(message)
+
+        ServerResponse.ok().contentType(MediaType.APPLICATION_JSON_UTF8).
+                body(Mono.just(savedEvent), PersonInterestAddedEvent.class)
     }
 
 }

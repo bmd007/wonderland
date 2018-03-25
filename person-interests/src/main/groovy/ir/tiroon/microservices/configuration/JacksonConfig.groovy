@@ -1,4 +1,4 @@
-package ir.tiroon.microservices.configiration
+package ir.tiroon.microservices.configuration
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
@@ -19,5 +19,6 @@ class JacksonConfig {
                 .registerModule(new Jdk8Module())
                 .registerModule(new JavaTimeModule())
     }
+
 
 }

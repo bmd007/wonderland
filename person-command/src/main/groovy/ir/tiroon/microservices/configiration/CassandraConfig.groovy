@@ -1,16 +1,9 @@
 package ir.tiroon.microservices.configiration
 
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.cassandra.config.AbstractReactiveCassandraConfiguration
-import org.springframework.data.cassandra.config.CassandraClusterFactoryBean
-import org.springframework.data.cassandra.config.CassandraEntityClassScanner
 import org.springframework.data.cassandra.config.SchemaAction
-import org.springframework.data.cassandra.core.convert.CassandraConverter
-import org.springframework.data.cassandra.core.convert.MappingCassandraConverter
-import org.springframework.data.cassandra.core.mapping.BasicCassandraMappingContext
-import org.springframework.data.cassandra.core.mapping.CassandraMappingContext
 import org.springframework.data.cassandra.repository.config.EnableReactiveCassandraRepositories
 
 @Configuration
