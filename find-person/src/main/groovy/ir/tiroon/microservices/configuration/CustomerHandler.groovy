@@ -1,6 +1,9 @@
 package ir.tiroon.microservices.configuration
 
+import ir.tiroon.microservices.model.Person
 import ir.tiroon.microservices.model.PersonRegisteredEvent
+import ir.tiroon.microservices.repository.PersonRepository
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest
@@ -11,20 +14,16 @@ import reactor.core.publisher.Mono
 @Component
 class CustomerHandler {
 
-//    @Autowired
-//    PersonRegisteredEventRepository prer
+    @Autowired
+    PersonRepository personRepo;
 
 
     Mono<ServerResponse> showAll(ServerRequest request) {
         ServerResponse
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(findAll(), PersonRegisteredEvent.class)
+                .body(Flux.fromStream(personRepo.findAll().stream()),Person.class)
     }
 
-    Flux<PersonRegisteredEvent> findAll(){
-        def pre = new PersonRegisteredEvent("phone","123123")
-        Flux.fromArray([pre,pre])
-    }
 
 }

@@ -1,0 +1,7 @@
+**/target/**
+**/out/**
+**/.idea/**
+*.war
+*.apk
+*.jar
+**/ms22 - Copy/**

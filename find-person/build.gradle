@@ -33,6 +33,10 @@ dependencies {
     compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.9.4'
 
 
+    compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    compile 'mysql:mysql-connector-java'
+
     compile('org.codehaus.groovy:groovy')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('io.projectreactor:reactor-test')

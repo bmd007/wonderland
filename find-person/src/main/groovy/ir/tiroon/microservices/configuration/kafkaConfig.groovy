@@ -1,12 +1,12 @@
 package ir.tiroon.microservices.configuration
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
+import ir.tiroon.microservices.model.Person
 import ir.tiroon.microservices.model.PersonRegisteredEvent
+import ir.tiroon.microservices.repository.PersonRepository
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -50,9 +50,18 @@ class kafkaConfig {
         factory
     }
 
+    @Autowired
+    PersonRepository personRepo
+
     @KafkaListener(topics = "mytesttopic6")
     void listen(PersonRegisteredEvent pre) {
+
         System.out.println("BMD::Received Message : " + pre.relatedPersonName+';;;'+pre.key.localDateTime)
+
+        def person = new Person(pre.key.phoneNumber, pre.relatedPersonName)
+
+        personRepo.save(person)
+
     }
 
 }
