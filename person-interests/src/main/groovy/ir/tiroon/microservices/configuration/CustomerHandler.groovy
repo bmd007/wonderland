@@ -17,9 +17,8 @@ class CustomerHandler {
 
     Mono<ServerResponse> showInterests(ServerRequest request) {
 
-        Mono<PersonInterest> personInterest = personInterestRepo.findByPhoneNumber(String.valueOf(request.pathVariable("phn")))
+        def personInterest = personInterestRepo.findByPhoneNumber(String.valueOf(request.pathVariable("phn")))
 
-        System.out.println("bmd:::"+personInterest.block().phoneNumber)
         ServerResponse
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)

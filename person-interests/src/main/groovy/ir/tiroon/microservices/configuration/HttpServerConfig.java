@@ -16,14 +16,6 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class HttpServerConfig {
 
     @Bean
-    HttpServer server(RouterFunction<?> router){
-        HttpHandler httpHandler = RouterFunctions.toHttpHandler(router);
-        HttpServer httpServer = HttpServer.create(8083);
-        httpServer.start(new ReactorHttpHandlerAdapter(httpHandler));
-        return httpServer;
-    }
-
-    @Bean
     RouterFunction<ServerResponse> monoRouterFunction(CustomerHandler customerHandler) {
         return
                 route(GET("/show/interests/{phn}"),customerHandler::showInterests)

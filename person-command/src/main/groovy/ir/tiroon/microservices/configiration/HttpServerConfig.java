@@ -16,19 +16,10 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class HttpServerConfig {
 
     @Bean
-    HttpServer server(RouterFunction<?> router){
-        HttpHandler httpHandler = RouterFunctions.toHttpHandler(router);
-        reactor.ipc.netty.http.server.HttpServer httpServer = reactor.ipc.netty.http.server.HttpServer.create(8081);
-        httpServer.start(new ReactorHttpHandlerAdapter(httpHandler));
-        return httpServer;
-    }
-
-    @Bean
     RouterFunction<ServerResponse> monoRouterFunction(CustomerHandler customerHandler) {
         return
                 route(GET("/register/person/{phn}/{name}"), customerHandler::registerPerson)
                 .andRoute(GET("/add/interest/{phn}/{interest}"), customerHandler::addInterest)
                 ;
-
     }
 }

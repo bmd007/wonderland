@@ -1,9 +1,9 @@
 package ir.tiroon.microservices.configuration
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import ir.tiroon.microservices.model.PersonInterest
-import ir.tiroon.microservices.model.PersonInterestAddedEvent
-import ir.tiroon.microservices.repository.PersonInterestRepository
+import ir.tiroon.microservices.service.UserServices
+import ir.tiroon.microservices.model.PersonRegisteredEvent
+import ir.tiroon.microservices.model.userManagement.User
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,7 +16,10 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
 import org.springframework.kafka.core.ConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
 import org.springframework.kafka.support.serializer.JsonDeserializer
+import org.springframework.security.crypto.password.PasswordEncoder
 import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
+
 
 @EnableKafka
 @Configuration
@@ -29,41 +32,46 @@ class kafkaConfig {
     String groupId
 
     @Bean
-    ConsumerFactory<String, PersonInterestAddedEvent> consumerFactory(ObjectMapper om) {
+    ConsumerFactory<String, PersonRegisteredEvent> consumerFactory(ObjectMapper om) {
         Map<String, Object> props = new HashMap<>()
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,bootstrapServers)
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId)
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class)
 
 
-        JsonDeserializer jsonDeserializer = new JsonDeserializer(PersonInterestAddedEvent.class, om)
+        JsonDeserializer jsonDeserializer = new JsonDeserializer(PersonRegisteredEvent.class, om)
         jsonDeserializer.addTrustedPackages("ir.tiroon.microservices.model")
 
-        new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), jsonDeserializer)
+        new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(),jsonDeserializer)
     }
 
     @Bean
-    ConcurrentKafkaListenerContainerFactory<String, PersonInterestAddedEvent> kafkaListenerContainerFactory() {
-        def factory = new ConcurrentKafkaListenerContainerFactory<String, PersonInterestAddedEvent>()
+    ConcurrentKafkaListenerContainerFactory<String, PersonRegisteredEvent> kafkaListenerContainerFactory() {
+        def factory = new ConcurrentKafkaListenerContainerFactory<String, PersonRegisteredEvent>()
         factory.setConsumerFactory(consumerFactory())
 
         factory
     }
 
+
     @Autowired
-    PersonInterestRepository personInterestRepo
+    UserServices userServices
 
-    @KafkaListener(topics = "mytesttopic7")
-    void listen(PersonInterestAddedEvent piae) {
+    @Autowired
+    PasswordEncoder passwordEncoder
 
+    @KafkaListener(topics = "mytesttopic6")
+    void listen(PersonRegisteredEvent pre) {
 
-        PersonInterest interest = personInterestRepo.findByPhoneNumber(piae.key.phoneNumber)
-                .blockOptional().orElse(new PersonInterest(piae.key.phoneNumber))
+        User user = new User()
 
-        interest.addInterest(piae.interestName)
-
-        personInterestRepo.save(interest).subscribe()
+        user.setEmail(UUID.randomUUID().toString())
+        user.setName(pre.relatedPersonName)
+        user.setPhoneNumber(pre.key.phoneNumber)
+        user.setPassword(passwordEncoder.encode("pass"))
+        userServices.persist(user)
 
     }
+
 }

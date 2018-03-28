@@ -40,8 +40,6 @@ class CustomerHandler {
         //we should use block()
         def savedEvent = prer.save(event).block()
 
-
-
         Message<PersonRegisteredEvent> message = MessageBuilder
                 .withPayload(event)
                 .setHeader(KafkaHeaders.TOPIC, 'mytesttopic6')
@@ -54,8 +52,6 @@ class CustomerHandler {
     }
 
 
-
-    //need edit in send section-- should be like above method
     Mono<ServerResponse> addInterest(ServerRequest request) {
         def phn = String.valueOf(request.pathVariable("phn"))
         def interest = String.valueOf(request.pathVariable("interest"))
@@ -75,4 +71,6 @@ class CustomerHandler {
                 body(Mono.just(savedEvent), PersonInterestAddedEvent.class)
     }
 
+
+    //two more delete related webservices needed here
 }
