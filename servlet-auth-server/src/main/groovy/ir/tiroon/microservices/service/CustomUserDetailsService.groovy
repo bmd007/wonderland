@@ -53,8 +53,5 @@ class CustomUserDetailsService implements UserDetailsService {
     }
 
 
-    @Override
-    UserDetails findByUsername(String username) {
-        loadUserByUsername(username)
-    }
+
 }

@@ -33,7 +33,6 @@ dependencies {
 	compile group: 'org.hibernate', name: 'hibernate-c3p0', version: '5.2.15.Final'
 	compile group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.2.0'
 	compile 'mysql:mysql-connector-java'
-	compile 'org.springframework.boot:spring-boot-starter-data-jpa'
 
 	compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version: '2.9.4'
 	compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.9.4'
@@ -46,9 +45,9 @@ dependencies {
     compile('org.springframework.kafka:spring-kafka')
     compile('org.codehaus.groovy:groovy')
 
-//	compile('org.springframework.boot:spring-boot-starter-thymeleaf')
-//	compile('org.springframework.cloud:spring-cloud-starter-security')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
+
+
+    testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('org.springframework.security:spring-security-test')
 }
 

@@ -67,6 +67,7 @@ class kafkaConfig {
         user.setName(pre.relatedPersonName)
         user.setPhoneNumber(pre.key.phoneNumber)
         user.setPassword(passwordEncoder.encode("pass"))
+//        user.setPassword("pass")
         userServices.persist(user)
 
     }
