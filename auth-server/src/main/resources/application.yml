@@ -1,0 +1,10 @@
+security:
+  oauth2:
+    client:
+      client-id: person-commmand
+      client-secret: person-command-secret
+      scope: read, write, openid
+      auto-approve-scopes: '.*'
+      authorizedGrantTypes: refresh_token, password
+
+#       	We have set the auto-approve-scopes to a regex matching all scopes. This is not necessarily where we would leave this app in a real system, but it gets us something working quickly without having toreplace the whitelabel approval page that Spring OAuth2 would otherwise pop up for our users when they wanted an access token. To add an explicit approval step to the token grant we would need to provide a UI replacing the whitelabel version (at /oauth/confirm_access).

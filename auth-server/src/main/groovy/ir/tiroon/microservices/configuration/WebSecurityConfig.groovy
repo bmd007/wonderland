@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
-import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @EnableReactiveMethodSecurity
@@ -29,6 +31,11 @@ class WebSecurityConfig {
     }
 
     @Bean
+    UserDetailsRepositoryReactiveAuthenticationManager authenticationManager(){
+        new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService)
+    }
+
+    @Bean
     SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         http
                 .authorizeExchange()
@@ -38,7 +45,7 @@ class WebSecurityConfig {
                 .anyExchange().authenticated().and()
                 .formLogin().and()
                 .httpBasic().and()
-                .authenticationManager(new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService))
+                .authenticationManager(authenticationManager())
                 .build()
 //                .csrf().requireCsrfProtectionMatcher(new PathPatternParserServerWebExchangeMatcher("/login")).disable()
         //loginPage("/login")..failureUrl("/login?error=1").permitAll()
