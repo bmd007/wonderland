@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 @SpringBootApplication
 class ServletAuthServerApplication {
 
-	static void main(String[] args) {
-		SpringApplication.run ServletAuthServerApplication, args
-	}
+    static void main(String[] args) {
+        SpringApplication.run ServletAuthServerApplication, args
+    }
 }

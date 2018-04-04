@@ -37,16 +37,16 @@ public class User implements Serializable {
             inverseJoinColumns = {@JoinColumn(name = "roleId")})
     Set<Role> roles = new HashSet<>();
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    State state=State.Active;
+    State state = State.Active;
 
     public User() {
     }
 
     @JsonCreator
-    public User(@JsonProperty("name") String name,@JsonProperty("password") String password,
-                @JsonProperty("email") String email,@JsonProperty("phoneNumber") String phone) {
+    public User(@JsonProperty("name") String name, @JsonProperty("password") String password,
+                @JsonProperty("email") String email, @JsonProperty("phoneNumber") String phone) {
         this.name = name;
         this.password = password;
         this.email = email;

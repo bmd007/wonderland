@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-class EventKey implements Serializable{
+class EventKey implements Serializable {
 
     UUID eventID
 

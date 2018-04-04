@@ -8,13 +8,12 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * This class provides a custom AuthenticationDetail which stores the connection
  * type method (Oracle/Ldap)
- *
  */
 public class MyAuthenticationDetailsSource implements AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> {
 
     /**
      * returns the {@link WebAuthenticationDetails} according to LuxFact rule
-     * 
+     *
      * @param context
      */
     public WebAuthenticationDetails buildDetails(HttpServletRequest context) {

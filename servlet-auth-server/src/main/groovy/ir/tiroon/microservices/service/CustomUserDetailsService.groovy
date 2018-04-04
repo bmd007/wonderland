@@ -1,19 +1,16 @@
 package ir.tiroon.microservices.service
 
-
 import ir.tiroon.microservices.model.userManagement.Role
 import ir.tiroon.microservices.model.userManagement.State
 import ir.tiroon.microservices.model.userManagement.User
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.userdetails.ReactiveUserDetailsService
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-
 
 @Service("customUserDetailsService")
 class CustomUserDetailsService implements UserDetailsService {
@@ -36,7 +33,7 @@ class CustomUserDetailsService implements UserDetailsService {
                 true,
                 true,
                 getGrantedAuthorities(user)
-            )
+        )
 
         userDetails
 
@@ -51,7 +48,6 @@ class CustomUserDetailsService implements UserDetailsService {
         }
         authorities
     }
-
 
 
 }

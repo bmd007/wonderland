@@ -1,6 +1,5 @@
 package ir.tiroon.microservices.configuration
 
-
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
@@ -14,12 +13,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.core.userdetails.UserDetailsService
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer
-import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices
-import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 
 @Configuration
@@ -64,21 +59,21 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         //--> NEVER EVER Implement a servlet(POST) , rest(POST) on Address *'/login'*
         http
                 .authorizeRequests()
-                .antMatchers("/login", "/resources/**","/logout","/accessDenied",
-                        "/oauth/**","/new/**","/oauth/check_token", "/oauth/token").permitAll()
+                .antMatchers("/login", "/resources/**", "/logout", "/accessDenied",
+                "/oauth/**", "/new/**", "/oauth/check_token", "/oauth/token").permitAll()
                 .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
                 .antMatchers("/user/**").access("hasRole('ROLE_USER')")
                 .anyRequest().authenticated()
-                    .and()
+                .and()
                 .httpBasic().authenticationDetailsSource(new MyAuthenticationDetailsSource())
-                    .and()
+                .and()
                 .formLogin().failureUrl("/login?error").permitAll()
-                    .and()
+                .and()
                 .exceptionHandling().accessDeniedPage("/accessDenied")
-                    .and()
+                .and()
                 .logout().clearAuthentication(true)
-                        .invalidateHttpSession(true)
-                        .logoutUrl("/logout")
+                .invalidateHttpSession(true)
+                .logoutUrl("/logout")
                 .and()
                 .csrf().requireCsrfProtectionMatcher(new AntPathRequestMatcher("/login")).disable()
     }

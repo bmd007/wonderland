@@ -31,7 +31,7 @@ class kafkaConfig {
     @Bean
     ConsumerFactory<String, PersonRegisteredEvent> consumerFactory(ObjectMapper om) {
         Map<String, Object> props = new HashMap<>()
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,bootstrapServers)
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId)
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class)
@@ -40,7 +40,7 @@ class kafkaConfig {
         JsonDeserializer jsonDeserializer = new JsonDeserializer(PersonRegisteredEvent.class, om)
         jsonDeserializer.addTrustedPackages("ir.tiroon.microservices.model")
 
-        new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(),jsonDeserializer)
+        new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), jsonDeserializer)
     }
 
     @Bean

@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service("oauthClientService")
 @Transactional
-class OauthClientDetailServices implements ClientDetailsService{
+class OauthClientDetailServices implements ClientDetailsService {
 
     @Autowired
     OauthClientRepository oauth2ClientRepository
@@ -22,7 +22,7 @@ class OauthClientDetailServices implements ClientDetailsService{
     PasswordEncoder passwordEncoder
 
     void persist(String id, String secret) {
-        oauth2ClientRepository.save(new Oauth2Client(id,passwordEncoder.encode(secret)))
+        oauth2ClientRepository.save(new Oauth2Client(id, passwordEncoder.encode(secret)))
     }
 
     Oauth2Client get(String id) {
@@ -51,8 +51,8 @@ class OauthClientDetailServices implements ClientDetailsService{
         clientDetails.setAuthorizedGrantTypes(grant_types)
         clientDetails.setScope(scopes)
 
-        System.out.println("BMDD::"+clientDetails.scope.stream().count())
-        System.out.println("BMDD::"+clientDetails.getAuthorizedGrantTypes().stream().count())
+        System.out.println("BMDD::" + clientDetails.scope.stream().count())
+        System.out.println("BMDD::" + clientDetails.getAuthorizedGrantTypes().stream().count())
 
         client
     }

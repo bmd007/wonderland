@@ -13,10 +13,6 @@ public class MyAuthenticationDetails extends WebAuthenticationDetails {
     private static final long serialVersionUID = 1L;
     private String method;
 
-    public void setMethod(String method) {
-        this.method = method;
-    }
-
     public MyAuthenticationDetails(HttpServletRequest request) {
         super(request);
         method = request.getParameter("method");
@@ -24,6 +20,10 @@ public class MyAuthenticationDetails extends WebAuthenticationDetails {
 
     public String getMethod() {
         return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
     }
 
 }

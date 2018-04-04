@@ -14,7 +14,7 @@ import javax.persistence.Table
 @Entity
 @Table(name = "Oauth2Client")
 @Proxy(lazy = false)
-class Oauth2Client implements Serializable{
+class Oauth2Client implements Serializable {
 
     @Id
     @Column(nullable = false, unique = true)
@@ -24,7 +24,7 @@ class Oauth2Client implements Serializable{
     String secret
 
     @JsonCreator
-    Oauth2Client(@JsonProperty("id")String id,@JsonProperty("secret") String secret) {
+    Oauth2Client(@JsonProperty("id") String id, @JsonProperty("secret") String secret) {
         this.id = id
         this.secret = secret
     }
