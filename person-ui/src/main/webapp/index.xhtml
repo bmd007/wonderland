@@ -16,9 +16,9 @@
         <h:form id="form">
         <p:dataList value="#{PersonInterestsBean.theInterests}" var="interest" type="ordered">
             <f:facet name="header">
-                Basic
+                Interests
             </f:facet>
-            #{car.brand}, #{car.year}
+            #{interest}
         </p:dataList>
 
         </h:form>

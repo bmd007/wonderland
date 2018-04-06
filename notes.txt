@@ -1,3 +1,3 @@
-Yet, there is no aupport for oauth2 in reactive web ; so the auth project will remain uncompleted until spring provides support for oauth in web flux
+Yet, there is no aupport for oauth2 in reactive web ; so the auth project will remain uncompleted until spring provides support for oauth in web-flux
 
-then for now we use a servler(webMVC) based security microservices for authorization server
+then for now we use a servlet(webMVC) based security microservices for authorization server
