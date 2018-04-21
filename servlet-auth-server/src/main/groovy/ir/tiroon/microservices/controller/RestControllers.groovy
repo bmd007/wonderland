@@ -35,8 +35,8 @@ class RestControllers {
     }
 
     @GetMapping(path = '/user')
-    ResponseEntity user(Principal principal) {
-        new ResponseEntity("User is " + principal.getName(), HttpStatus.OK)
+    Principal user(Principal principal) {
+        principal
     }
 
     @Autowired
