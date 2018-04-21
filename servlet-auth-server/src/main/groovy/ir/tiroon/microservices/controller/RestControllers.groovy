@@ -1,6 +1,9 @@
-package ir.tiroon.microservices
+package ir.tiroon.microservices.controller
 
+
+import ir.tiroon.microservices.model.userManagement.User
 import ir.tiroon.microservices.service.OauthClientDetailServices
+import ir.tiroon.microservices.service.UserServices
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -14,7 +17,17 @@ import javax.servlet.http.HttpServletResponse
 import java.security.Principal
 
 @RestController
-class HttpController {
+class RestControllers {
+
+    @Autowired
+    UserServices userServices
+
+    @GetMapping("/users")
+    @ResponseBody
+    List<User> users() {
+        userServices.list()
+    }
+
 
     @GetMapping(path = '/admin')
     ResponseEntity admin(Principal principal) {
@@ -24,11 +37,6 @@ class HttpController {
     @GetMapping(path = '/user')
     ResponseEntity user(Principal principal) {
         new ResponseEntity("User is " + principal.getName(), HttpStatus.OK)
-    }
-
-    @GetMapping(path = '/accessDenied')
-    ResponseEntity accessDenied() {
-        new ResponseEntity("Access Denied ", HttpStatus.OK)
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
@@ -49,6 +57,5 @@ class HttpController {
         clientDetailServices.persist(id, secret)
         new ResponseEntity(HttpStatus.OK)
     }
-
-
 }
+

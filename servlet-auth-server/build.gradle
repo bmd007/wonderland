@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		springBootVersion = '2.0.0.RELEASE'
+		springBootVersion = '2.0.1.RELEASE'
 	}
 	repositories {
 		mavenCentral()
@@ -16,22 +16,16 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 group = 'Microsevices'
-version = '0.0.1'
+version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
 
 repositories {
 	mavenCentral()
-	maven { url "https://repo.spring.io/milestone" }
 }
 
-
-ext {
-	springCloudVersion = 'Finchley.M9'
-}
 
 dependencies {
-	compile group: 'org.hibernate', name: 'hibernate-c3p0', version: '5.2.15.Final'
-	compile group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.2.0'
+
 	compile 'mysql:mysql-connector-java'
 
 	compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version: '2.9.4'
@@ -45,14 +39,9 @@ dependencies {
     compile('org.springframework.kafka:spring-kafka')
     compile('org.codehaus.groovy:groovy')
 
+	compile group: 'org.joinfaces', name: 'jsf-spring-boot-starter', version: '3.1.0'
+	compile group: 'org.primefaces', name: 'primefaces', version: '6.2'
 
-
-    testCompile('org.springframework.boot:spring-boot-starter-test')
-	testCompile('org.springframework.security:spring-security-test')
-}
-
-dependencyManagement {
-	imports {
-		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-	}
+	compile('org.codehaus.groovy:groovy')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
 }

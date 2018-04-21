@@ -14,15 +14,12 @@ import javax.persistence.*
 @Table(name = "Role")
 class Role implements Serializable {
 
-    @Id
-    @GeneratedValue
-    @Column()
-    long roleId
 
-    @Column()
+    @Id
+    @Column(unique = true, nullable = false)
     String roleName
 
-    @Column()
+    @Column
     String description
 
     @JsonIgnore
@@ -44,14 +41,6 @@ class Role implements Serializable {
          @JsonProperty("description") String description) {
         this.roleName = roleName
         this.users = new HashSet<>()
-    }
-
-    long getRoleId() {
-        return roleId
-    }
-
-    void setRoleId(long roleId) {
-        this.roleId = roleId
     }
 
     String getRoleName() {

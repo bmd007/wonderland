@@ -15,11 +15,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(
+        prePostEnabled = true,
+        securedEnabled = true,
+        jsr250Enabled = true)
 class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -59,23 +61,27 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         //--> NEVER EVER Implement a servlet(POST) , rest(POST) on Address *'/login'*
         http
                 .authorizeRequests()
-                .antMatchers("/login", "/resources/**", "/logout", "/accessDenied",
-                "/oauth/**", "/new/**", "/oauth/check_token", "/oauth/token").permitAll()
-                .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
-                .antMatchers("/user/**").access("hasRole('ROLE_USER')")
+                .antMatchers("/login", "/resources/**", "/logout", "/accessDenied").permitAll()
+                .antMatchers("/admin/**").access("hasRole('ADMIN')")
+                .antMatchers("/user/**").access("hasRole('USER')")
                 .anyRequest().authenticated()
+
+                .and().httpBasic().and()
+
+
+                .formLogin()
+                .loginPage("/login")
+                .failureUrl("/login?error=1")
+                .defaultSuccessUrl("/view/main.html",false)
+                .permitAll()
+
+                .and().exceptionHandling().accessDeniedPage("/accessDenied")
+
                 .and()
-                .httpBasic().authenticationDetailsSource(new MyAuthenticationDetailsSource())
-                .and()
-                .formLogin().failureUrl("/login?error").permitAll()
-                .and()
-                .exceptionHandling().accessDeniedPage("/accessDenied")
-                .and()
-                .logout().clearAuthentication(true)
+                .logout()
+                .clearAuthentication(true)
                 .invalidateHttpSession(true)
                 .logoutUrl("/logout")
-                .and()
-                .csrf().requireCsrfProtectionMatcher(new AntPathRequestMatcher("/login")).disable()
     }
 
 

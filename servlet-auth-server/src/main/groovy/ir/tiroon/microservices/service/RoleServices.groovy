@@ -1,5 +1,6 @@
 package ir.tiroon.microservices.service
 
+
 import ir.tiroon.microservices.model.userManagement.Role
 import ir.tiroon.microservices.repository.RoleRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,20 +16,14 @@ class RoleServices {
 
     void save(Role role) { roleRepository.save(role) }
 
-    Role get(Long id) {
-        roleRepository.getOne(id)
-    }
+    Role get(String id) { roleRepository.getOne(id)    }
 
-    ArrayList<Role> list() {
-        (ArrayList<Role>) roleRepository.findAll()
-    }
+    Role getByName(String name) { roleRepository.findRoleByRoleName(name)    }
 
-    void deleteById(int id) {
-        roleRepository.delete(get((long) id))
-    }
+    ArrayList<Role> list() { (ArrayList<Role>) roleRepository.findAll()    }
 
-    void delete(Role role) {
-        roleRepository.delete(role)
-    }
+    void deleteById(String id) { roleRepository.delete(get(id))    }
+
+    void delete(Role role) { roleRepository.delete(role)    }
 
 }

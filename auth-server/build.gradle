@@ -25,8 +25,8 @@ repositories {
 
 
 dependencies {
-    compile group: 'org.hibernate', name: 'hibernate-c3p0', version: '5.2.15.Final'
-    compile group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.2.0'
+//    compile group: 'org.hibernate', name: 'hibernate-c3p0', version: //'5.2.15.Final'
+  //  compile group: 'org.apache.commons', name: 'commons-dbcp2', version: //'2.2.0'
     compile 'mysql:mysql-connector-java'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
 

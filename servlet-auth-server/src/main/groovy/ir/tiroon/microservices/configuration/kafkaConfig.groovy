@@ -55,9 +55,6 @@ class kafkaConfig {
     @Autowired
     UserServices userServices
 
-    @Autowired
-    PasswordEncoder passwordEncoder
-
     @KafkaListener(topics = "mytesttopic6")
     void listen(PersonRegisteredEvent pre) {
 
@@ -66,9 +63,8 @@ class kafkaConfig {
         user.setEmail(UUID.randomUUID().toString())
         user.setName(pre.relatedPersonName)
         user.setPhoneNumber(pre.key.phoneNumber)
-        user.setPassword(passwordEncoder.encode("pass"))
-//        user.setPassword("pass")
-        userServices.persist(user)
+        user.setPassword("pass")
+        userServices.saveWithPassEncoding(user)
 
     }
 

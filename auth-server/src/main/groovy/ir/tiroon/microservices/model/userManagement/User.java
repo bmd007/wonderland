@@ -4,8 +4,6 @@ package ir.tiroon.microservices.model.userManagement;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Proxy;
 
 import javax.persistence.*;
@@ -36,19 +34,19 @@ public class User implements Serializable {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "authorities",
             joinColumns = {@JoinColumn(name = "phoneNumber")},
-            inverseJoinColumns = {@JoinColumn(name = "roleId")})
+            inverseJoinColumns = {@JoinColumn(name = "roleName")})
     Set<Role> roles = new HashSet<>();
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    State state=State.Active;
+    State state = State.Active;
 
     public User() {
     }
 
     @JsonCreator
-    public User(@JsonProperty("name") String name,@JsonProperty("password") String password,
-                @JsonProperty("email") String email,@JsonProperty("phoneNumber") String phone) {
+    public User(@JsonProperty("name") String name, @JsonProperty("password") String password,
+                @JsonProperty("email") String email, @JsonProperty("phoneNumber") String phone) {
         this.name = name;
         this.password = password;
         this.email = email;

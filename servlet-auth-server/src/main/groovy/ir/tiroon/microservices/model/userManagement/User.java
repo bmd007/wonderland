@@ -34,7 +34,7 @@ public class User implements Serializable {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "authorities",
             joinColumns = {@JoinColumn(name = "phoneNumber")},
-            inverseJoinColumns = {@JoinColumn(name = "roleId")})
+            inverseJoinColumns = {@JoinColumn(name = "roleName")})
     Set<Role> roles = new HashSet<>();
 
     @Column(nullable = false)

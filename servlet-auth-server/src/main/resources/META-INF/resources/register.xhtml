@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<ui:include src="head.xhtml" style="border: none;"/>
+
+<f:metadata>
+    <f:viewAction action="#{registerBean.init}"/>
+</f:metadata>
+<title>Register New User</title>
+
+
+<h:body>
+
+    <ui:include src="navigation.xhtml" style="border: none;"/>
+
+
+    <div class="container">
+        <div class="row main">
+            <div class="panel-heading">
+                <div class="panel-title text-center">
+                    <h1 class="title">لطفا اطلاعات کاربری خود را وارد کنید</h1>
+                    <hr/>
+                </div>
+            </div>
+            <div class="main-login main-center">
+                <h:form styleClass="form-horizontal" id="myForm">
+
+                    <p:messages id="messages" showDetail="true" closable="true">
+                        <p:autoUpdate/>
+                    </p:messages>
+
+                    <div class="form-group">
+                        <label for="namE" class="cols-sm-2 control-label">Your Name</label>
+                        <div class="cols-sm-10">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
+                                <p:inputText id="namE" value="#{registerBean.name}" required="true" label="Name"
+                                             placeholder="Enter your Name"
+                                             styleClass="form-control" requiredMessage="Please enter your full name.">
+                                    <p:ajax event="keyup" update="messages"/>
+                                </p:inputText>
+                                <p:watermark for="namE" value="Full Name *"/>
+                                <p:message for="namE"/>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="emailll" class="cols-sm-2 control-label">Your Email</label>
+                        <div class="cols-sm-10">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-envelope fa"
+                                                                   aria-hidden="true"></i></span>
+                                <p:inputText id="emailll" value="#{registerBean.email}" required="true" label="Email"
+                                             styleClass="form-control"
+                                             requiredMessage="Please enter your email address."
+                                             placeholder="Enter your Email" validatorMessage="Invalid email format">
+                                    <!--<f:validator validatorId="emailValidator" />-->
+                                    <f:validateRegex
+                                            pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"/>
+                                    <p:ajax event="keyup" update="messages"/>
+                                </p:inputText>
+                                <p:watermark for="emailll" value="Email Address *"/>
+                                <p:message for="emailll"/>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="phoneNumber" class="cols-sm-2 control-label">Phone number</label>
+                        <div class="cols-sm-10">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-users fa" aria-hidden="true"></i></span>
+
+                                <p:inputText id="phoneNumber" value="#{registerBean.phoneNumber}" required="true"
+                                             label="Phone Number"
+                                             styleClass="form-control"
+                                             requiredMessage="Please enter your Mobile Phone Number."
+                                             validatorMessage="Invalid number format">
+                                    <f:validateRegex pattern="^(\d{9}|\d{11})$"/>
+                                    <p:ajax event="keyup" update="messages"/>
+                                </p:inputText>
+                                <p:watermark for="phoneNumber" value="Phone number *"/>
+                                <p:message for="phoneNumber"/>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="pass" class="cols-sm-2 control-label">Password</label>
+                        <div class="cols-sm-10">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-lock fa-lg"
+                                                                   aria-hidden="true"></i></span>
+
+                                <p:inputText id="pass" value="#{registerBean.password}" required="true" label="Password"
+                                             styleClass="form-control" requiredMessage="Please enter your Password"
+                                             placeholder="Enter your Password" validatorMessage="Invalid password">
+                                    <f:validateLength minimum="8"/>
+                                    <p:ajax update="messages" event="keyup"/>
+                                </p:inputText>
+                                <p:message for="pass"/>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--<div class="form-group">-->
+                    <!--<label for="confirm" class="cols-sm-2 control-label">Confirm Password</label>-->
+                    <!--<div class="cols-sm-10">-->
+                    <!--<div class="input-group">-->
+                    <!--<span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>-->
+                    <!--<input type="password" class="form-control" name="confirm" id="confirm"  placeholder="Confirm your Password"/>-->
+                    <!--</div>-->
+                    <!--</div>-->
+                    <!--</div>-->
+
+
+                    <div class="form-group">
+                        <div class="g-recaptcha" data-sitekey="6LdpK1MUAAAAAKTRMvbZ0BpAv7WMRDO7tlH2vgnE"></div>
+                    </div>
+
+                    <input type="hidden"
+                           name="${_csrf.parameterName}"
+                           value="${_csrf.token}"/>
+
+
+                    <div class="form-group">
+                        <p:commandButton value="ثبت نام" actionListener="#{registerBean.RegisterNewUser}"
+                                         update="messages"
+                                         styleClass="btn btn-primary btn-lg btn-block login-button" ajax="true"/>
+                    </div>
+
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+
+    <h:outputScript name="resources/js/jquery.js"/>
+
+    <!--<h:outputScript target="head">-->
+    <!--$ = jQuery;-->
+    <!--// Then you can use it-->
+    <!--$(document).ready(function() {        alert(    ${index.name} );        });-->
+    <!--</h:outputScript>-->
+
+    <h:outputScript name="resources/js/bootstrap.min.js"/>
+    <h:outputScript name="resources/js/jquery.easing.min.js"/>
+    <h:outputScript name="resources/js/jquery.fittext.js"/>
+    <h:outputScript name="resources/js/wow.min.js"/>
+    <h:outputScript name="resources/js/creative.js"/>
+
+</h:body>
+
+</html>
