@@ -39,16 +39,6 @@ class RestControllers {
         new ResponseEntity("User is " + principal.getName(), HttpStatus.OK)
     }
 
-    @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    void logout(HttpServletRequest request, HttpServletResponse response) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication()
-        if (auth != null) {
-            new SecurityContextLogoutHandler().logout(request, response, auth)
-            SecurityContextHolder.getContext().setAuthentication(null)
-        }
-    }
-
-
     @Autowired
     OauthClientDetailServices clientDetailServices
 

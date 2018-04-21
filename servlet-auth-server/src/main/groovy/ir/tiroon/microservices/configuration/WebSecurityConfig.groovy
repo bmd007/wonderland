@@ -61,7 +61,8 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         //--> NEVER EVER Implement a servlet(POST) , rest(POST) on Address *'/login'*
         http
                 .authorizeRequests()
-                .antMatchers("/login", "/resources/**", "/logout", "/accessDenied").permitAll()
+                .antMatchers("/login","oauth/token", "/javax.faces.resource/**", "/logout",
+                "/accessDenied", "/register.xhtml/**","/register.jsf/**","/resources/**").permitAll()
                 .antMatchers("/admin/**").access("hasRole('ADMIN')")
                 .antMatchers("/user/**").access("hasRole('USER')")
                 .anyRequest().authenticated()

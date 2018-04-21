@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface OauthClientRepository extends JpaRepository<Oauth2Client, String> {
+    Oauth2Client findOauth2ClientById(String id)
+
 }

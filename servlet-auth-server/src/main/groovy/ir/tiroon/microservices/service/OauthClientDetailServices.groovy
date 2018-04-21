@@ -11,7 +11,7 @@ import org.springframework.security.oauth2.provider.client.BaseClientDetails
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-@Service("oauthClientService")
+@Service('oauthClientService')
 @Transactional
 class OauthClientDetailServices implements ClientDetailsService {
 
@@ -22,11 +22,15 @@ class OauthClientDetailServices implements ClientDetailsService {
     PasswordEncoder passwordEncoder
 
     void persist(String id, String secret) {
-        oauth2ClientRepository.save(new Oauth2Client(id, passwordEncoder.encode(secret)))
+        oauth2ClientRepository.save(new Oauth2Client(id,passwordEncoder.encode(secret)))
     }
 
     Oauth2Client get(String id) {
         oauth2ClientRepository.getOne(id)
+    }
+
+    Oauth2Client getAndNullIfNotFound(String id) {
+        oauth2ClientRepository.findOauth2ClientById(id)
     }
 
     ArrayList<Oauth2Client> getList() {
@@ -37,8 +41,8 @@ class OauthClientDetailServices implements ClientDetailsService {
         oauth2ClientRepository.delete(get(id))
     }
 
-    Collection<String> grant_types = ["refresh_token", "password"]
-    Collection<String> scopes = ["openid"]
+    Collection<String> grant_types = ['refresh_token', 'password'].toSet()
+    Collection<String> scopes = ['openid'].toSet()
 
 
     @Transactional(readOnly = true)
@@ -51,10 +55,8 @@ class OauthClientDetailServices implements ClientDetailsService {
         clientDetails.setAuthorizedGrantTypes(grant_types)
         clientDetails.setScope(scopes)
 
-        System.out.println("BMDD::" + clientDetails.scope.stream().count())
-        System.out.println("BMDD::" + clientDetails.getAuthorizedGrantTypes().stream().count())
 
-        client
+        clientDetails
     }
 
 
