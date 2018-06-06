@@ -34,6 +34,7 @@ class RestControllers {
         new ResponseEntity("Admin is " + principal.getName(), HttpStatus.OK)
     }
 
+    //this is not so secure
     @GetMapping(path = '/user')
     Principal user(Principal principal) {
         principal

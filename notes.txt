@@ -1,7 +1,6 @@
-Yet, there is no aupport for oauth2 in reactive web ; so the auth project will remain uncompleted until spring provides support for oauth in web-flux
+Yet, there is no support for oauth2 in reactive web ; so the auth project will remain uncompleted until spring provides support for oauth in web-flux
 
-then for now we use a servlet(webMVC) based security microservices for authorization server
+then for now we use a servlet(webMVC) based security microservices as authorization server
 
 --------------
-use : server.address: 127.0.0.1 
-for making microservices only accessible for gateWay
+use : server.address: 127.0.0.1 for making microservices only accessible for gateWay???
