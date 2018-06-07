@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.1.0.BUILD-SNAPSHOT'
+        springBootVersion = '2.0.2.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -33,8 +33,6 @@ ext {
 
 
 dependencies {
-    compile('org.springframework.boot:spring-boot-starter')
-
     compile('org.springframework.boot:spring-boot-starter-webflux')
     compile('org.springframework.kafka:spring-kafka')
 
@@ -45,9 +43,8 @@ dependencies {
     compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.9.4'
     compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.9.4'
 
-    compile('org.springframework.cloud:spring-cloud-starter-oauth2')
-
     compile('org.springframework.boot:spring-boot-starter-actuator')
+    
     compile('org.springframework.cloud:spring-cloud-starter-config')
 
     compile('org.codehaus.groovy:groovy')
