@@ -1,6 +1,8 @@
 Yet, there is no support for oauth2 in reactive web ; so the auth project will remain uncompleted until spring provides support for oauth in web-flux
 
-then for now we use a servlet(webMVC) based security microservices as authorization server
+then for now we use a servlet(webMVC) based security microservice as authorization server
 
 --------------
 use : server.address: 127.0.0.1 for making microservices only accessible for gateWay???
+--------------
+Because the webflux based web socket stack, does not support brokers, a new websocket backend(+ client) microservice is needed and it should be based on servlet stack.
