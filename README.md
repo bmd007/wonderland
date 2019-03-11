@@ -7,6 +7,7 @@ This project composed of Events, messages, webflux based rest webservices, webso
 
 
 #ToDo:
+    - update gradle wrappers and use gradle wrapper all around the projects
     - Add a servlet based web-socket backend as notification manager
     (Web flux web socket does not support broker and user specific messages)
     - Add a coin system
