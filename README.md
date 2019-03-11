@@ -19,3 +19,4 @@ This project composed of Events, messages, webflux based rest webservices, webso
     - Create a register microservice and connect it to google
     - Use By reference JWT (IdTokens not accessTokens) outside the network. Create a JWT translator microservice on the edge of inner network.
     (https://www.youtube.com/watch?v=BdKmZ7mPNns)
+    - craete gateway(s) using spring-gateway-project (something similar to zuul)
