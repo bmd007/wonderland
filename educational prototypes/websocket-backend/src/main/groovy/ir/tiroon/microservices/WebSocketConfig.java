@@ -95,7 +95,7 @@ class ForwardingMessageHandler implements MessageHandler {
 
     @Override
     public void handleMessage(Message<?> message) throws MessagingException {
-        String payload = (String) message.getPayload() + "::" + session.getId();
+        String payload = message.getPayload() + "::" + session.getId();
         WebSocketMessage webSocketMessage = session.textMessage(payload);
         sink.next(webSocketMessage);
     }

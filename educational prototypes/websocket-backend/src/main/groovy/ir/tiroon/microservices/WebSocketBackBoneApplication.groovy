@@ -19,6 +19,8 @@ class WebSocketBackBoneApplication{
 	* In a way that session.getId() for webSocket sessions return the user's username.
 	* It is still low level in comparision to the help that is available from brokers when using servlet based web sockets, but still it
 	* is possible approach to send messages to specific users.
+	*
+	* Also bringing spring cloud stream bindings into action is exciting
 	* */
 
 	@Bean
