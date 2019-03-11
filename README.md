@@ -20,3 +20,5 @@ This project composed of Events, messages, webflux based rest webservices, webso
     - Use By reference JWT (IdTokens not accessTokens) outside the network. Create a JWT translator microservice on the edge of inner network.
     (https://www.youtube.com/watch?v=BdKmZ7mPNns)
     - craete gateway(s) using spring-gateway-project (something similar to zuul)
+    - use spring cloud reactive streams (which is based on spring integration + binders for things like kafka and rabbitmq)
+    - see how to use higher abstractions above spring cloud streams
