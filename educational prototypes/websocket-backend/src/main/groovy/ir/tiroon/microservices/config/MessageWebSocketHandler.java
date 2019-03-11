@@ -12,6 +12,11 @@ import java.time.Duration;
 @Component
 public class MessageWebSocketHandler implements WebSocketHandler {
 
+    /*
+    * ToDo put userId inside sessionId probably using filters
+    * */
+
+
     private Flux<Long> messageFlux;
 
     /**

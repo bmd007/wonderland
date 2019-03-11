@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Primary
 
 @Configuration
 class JacksonConfig {
-
     @Bean
     @Primary
     ObjectMapper objectMapper2() {
@@ -19,5 +18,4 @@ class JacksonConfig {
                 .registerModule(new Jdk8Module())
                 .registerModule(new JavaTimeModule())
     }
-
 }
