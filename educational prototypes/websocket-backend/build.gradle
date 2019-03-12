@@ -32,7 +32,7 @@ dependencies {
 
 	compile('org.codehaus.groovy:groovy')
 
-    implementation 'org.springframework.cloud:spring-cloud-stream-reactive'
+    implementation 'org.springframework.cloud:spring-cloud-stream-reactive'//it is used instead of spring integration which is base of spring cloud streams
 }
 wrapper {
     gradleVersion = '5.2.1'
