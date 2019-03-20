@@ -126,6 +126,7 @@ public class JustKafkaAndKafkaStreams {
                                          @Value("${server.port}") String PORT_NUMBER) {
         Map<String, String> props = new HashMap<>();
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "testStreams");
+        props.put(StreamsConfig.CLIENT_ID_CONFIG, "testStreamsClient");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServers);
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
 //        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, new MySerde().getClass().getName());
@@ -162,7 +163,7 @@ public class JustKafkaAndKafkaStreams {
         return count;
     }
 
-//    @KafkaListener(topics = pageViewEventTopicForSimpleKafkaListener, groupId = "group2")
+//    @KafkaListener(topics = pageViewEventTopicForSimpleKafkaListener, groupId = "group22")
 //    void processMessage(PageViewEvent event) {
 //        System.out.println("Arrived as PageViewEvent " + event.getUserId());
 //    }
@@ -206,7 +207,7 @@ public class JustKafkaAndKafkaStreams {
                     .doOnError(throwable -> throwable.printStackTrace());
         }
     }
-    //second listener on this topic
+        //second listener on this topic
 //        @KafkaListener(topics = pageViewEventTopicForAndKafkaStreamsAlone)
 //        void processMessage(ConsumerRecord<String, PageViewEvent> record) throws IOException {
 //            System.out.println("Arrived as consumer record" + record.value().getPage());
