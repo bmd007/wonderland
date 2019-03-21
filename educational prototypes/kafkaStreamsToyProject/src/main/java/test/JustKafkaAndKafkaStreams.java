@@ -152,9 +152,8 @@ public class JustKafkaAndKafkaStreams {
                                          @Value("${server.port}") String PORT_NUMBER) {
         Map<String, String> props = new HashMap<>();
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "testStreams");
-        props.put(StreamsConfig.CLIENT_ID_CONFIG, "testStreamsClient");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServers);
-        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
+//        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
 //        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, new MySerde().getClass().getName());
 
         //This configuration is for making remote interactive queries possible
