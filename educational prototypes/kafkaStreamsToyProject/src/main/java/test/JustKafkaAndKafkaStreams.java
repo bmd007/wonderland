@@ -2,6 +2,9 @@ package test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.admin.KafkaAdminClient;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.Producer;
@@ -36,6 +39,7 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -80,20 +84,48 @@ public class JustKafkaAndKafkaStreams {
     public static void main(String[] args) {
         SpringApplication.run(JustKafkaAndKafkaStreams.class, args);
     }
+    /////////////////////////////////////////////////////////
+
+    public static final String pageViewEventTopicForSimpleKafkaListener = "simple";
+    public static final String pageViewEventTopicForAndKafkaStreamsAlone = "streams-alone";
+    public static final String pageViewCountTopicWithKafkaStreamsAlone = "count";
+    public static final String pageViewPageAsKeyTopicWithKafkaStreamsAlone = "pageAsKey";
+    public static final String pageViewCountMaterializedViewName = "counterView";
+
+    ////////////////////////////////////////////////////////
+
+    @Bean
+    public KafkaAdmin admin(@Value("${spring.kafka.bootstrap-servers}") String bootStrapServers) {
+        Map<String, Object> configs = new HashMap<>();
+        configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServers);
+        return new KafkaAdmin(configs);
+    }
+
+    @Bean
+    public NewTopic t1() {
+        return new NewTopic(pageViewEventTopicForAndKafkaStreamsAlone, 4, (short) 1);
+    }
+
+    @Bean
+    public NewTopic t2() {
+        return new NewTopic(pageViewPageAsKeyTopicWithKafkaStreamsAlone, 4, (short) 1);
+    }
+
+    @Bean
+    public NewTopic t3() {
+        return new NewTopic(pageViewCountMaterializedViewName, 4, (short) 1);
+    }
+
+    /////////////////////////////////////////////////////////////////////////
 
     @Component
     public static class PageViewEvenSource implements ApplicationRunner {
 
-        private final KafkaTemplate kafkaTemplate;
-
-        public PageViewEvenSource(KafkaTemplate kafkaTemplate) {
-            this.kafkaTemplate = kafkaTemplate;
-        }
+        @Autowired
+        private KafkaTemplate kafkaTemplate;
 
         @Override
         public void run(ApplicationArguments args) {
-
-            assert (args.containsOption("server.port"));
 
             List<String> names = Arrays.asList("bmd", "abodi", "mashto");
             List<String> pages = Arrays.asList("blog", "siteMap", "start");
@@ -112,15 +144,9 @@ public class JustKafkaAndKafkaStreams {
             Executors.newScheduledThreadPool(1).scheduleAtFixedRate(runnable, 1, 1, TimeUnit.SECONDS);
         }
     }
-    /////////////////////////////////////////////////////////
 
-    public static final String pageViewEventTopicForSimpleKafkaListener = "simple";
-    public static final String pageViewEventTopicForAndKafkaStreamsAlone = "streams-alone";
-    public static final String pageViewCountTopicWithKafkaStreamsAlone = "count";
-    public static final String pageViewPageAsKeyTopicWithKafkaStreamsAlone = "pageAsKey";
-    public static final String pageViewCountMaterializedViewName = "counterView";
+    //////////////////////////////////////////////////////
 
-    ////////////////////////////////////////////////////////
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     public StreamsConfig kStreamsConfigs(@Value("${spring.kafka.bootstrap-servers}") String bootStrapServers,
                                          @Value("${server.port}") String PORT_NUMBER) {
@@ -168,6 +194,12 @@ public class JustKafkaAndKafkaStreams {
 //        System.out.println("Arrived as PageViewEvent " + event.getUserId());
 //    }
 
+    //second listener on this topic
+//        @KafkaListener(topics = pageViewEventTopicForAndKafkaStreamsAlone)
+//        void processMessage(ConsumerRecord<String, PageViewEvent> record) throws IOException {
+//            System.out.println("Arrived as consumer record" + record.value().getPage());
+//        }
+    ////////////////////////////////////////////////////////////
     @RestController
     public static class restControllerForPageViewCounter {
 
@@ -207,11 +239,6 @@ public class JustKafkaAndKafkaStreams {
                     .doOnError(throwable -> throwable.printStackTrace());
         }
     }
-        //second listener on this topic
-//        @KafkaListener(topics = pageViewEventTopicForAndKafkaStreamsAlone)
-//        void processMessage(ConsumerRecord<String, PageViewEvent> record) throws IOException {
-//            System.out.println("Arrived as consumer record" + record.value().getPage());
-//        }
 }
 // Simple Kafka producer
 //    @Bean
