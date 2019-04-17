@@ -1,4 +1,4 @@
-package ir.tiroon.microservices.configiration
+package ir.tiroon.microservices.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.kafka.clients.producer.ProducerConfig

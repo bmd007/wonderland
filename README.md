@@ -6,7 +6,7 @@ I tried to use reactive messaging and reactive programming where ever possible i
 This project composed of Events, messages, webflux based rest webservices, websockets, reactive database connections and ...
 
 The architecture is microservices and the applied pattern is CQRS. But no internal event sourcing is applied. 
-I can say the architecture is event driven and everything is an event inside the application. From outside the appliction will recieve httpRequests. And the requests will endUp request*IsValidated
+I can say the architecture is event driven and everything is an event inside the application. From outside the appliction will recieve httpRequests. And requests lead to commands )events with a needed side effect)
 
 ## ToDo:
     * Add a servlet based web-socket backend as notification manager ?? 
@@ -34,3 +34,6 @@ I can say the architecture is event driven and everything is an event inside the
     * Money (noobchain, ?????)
     * R&D (EducationalPrototypes, ?)
     ?
+
+### services and their relation to kafka topics
+#### generally a command listener says to send commands to were and an event producer says that were it will send events. (Events=notification, Commands=requests for something to be done)
