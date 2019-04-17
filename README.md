@@ -24,3 +24,13 @@ I can say the architecture is event driven and everything is an event inside the
     * use spring cloud reactive streams (which is based on spring integration + binders for things like kafka and rabbitmq)
     in some processor services and also use reactiveKafka in close to user services
     * see how to use higher abstractions above spring cloud streams (like stream data flow and function)
+    * consider kafka as eventStore and lean to event sourcing
+    
+    
+## Bounded contexes and Teams > ? <
+    * Person (person-command, user-management, auth-server(authentication), gateway(authorization and load balance? and gateway), person-ui(crud forms) ?) 
+    * Interest (person-interests, 
+    * Video (video-???)
+    * Money (noobchain, ?????)
+    * R&D (EducationalPrototypes, ?)
+    ?

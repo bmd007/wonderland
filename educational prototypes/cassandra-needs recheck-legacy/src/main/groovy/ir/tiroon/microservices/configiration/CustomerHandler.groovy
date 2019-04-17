@@ -1,6 +1,7 @@
 package ir.tiroon.microservices.configiration
 
-
+import ir.tiroon.microservices.model.PersonInterestAddedEvent
+import ir.tiroon.microservices.model.PersonRegisteredEvent
 import ir.tiroon.microservices.repository.InterestAddedEventRepository
 import ir.tiroon.microservices.repository.PersonRegisteredEventRepository
 import org.springframework.beans.factory.annotation.Autowired
