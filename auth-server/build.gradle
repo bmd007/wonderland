@@ -1,33 +1,40 @@
 buildscript {
-	ext {
-		springBootVersion = '2.0.0.RELEASE'
-	}
-	repositories {
-		mavenCentral()
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-	}
+    ext {
+        springBootVersion = '2.1.4.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+        maven {
+          url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+        classpath "org.unbroken-dome.gradle-plugins:gradle-testsets-plugin:2.1.1"
+    }
 }
 
+apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
-group = 'Microservoces'
-version = '0.0.1'
-sourceCompatibility = 1.8
+group = 'Microservices'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 11
 
 repositories {
-	mavenCentral()
+    mavenCentral()
+    maven { url "https://repo.spring.io/milestone" }
 }
 
+ext {
+    set('springCloudVersion', 'Greenwich.RELEASE')
+}
 
 dependencies {
-//    compile group: 'org.hibernate', name: 'hibernate-c3p0', version: //'5.2.15.Final'
-  //  compile group: 'org.apache.commons', name: 'commons-dbcp2', version: //'2.2.0'
-    compile 'mysql:mysql-connector-java'
+	compile 'mysql:mysql-connector-java'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
 
     compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version: '2.9.4'
@@ -41,4 +48,15 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-security')
 
 	compile('org.codehaus.groovy:groovy')
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
+wrapper {
+    gradleVersion = "5.4"
+    distributionType = Wrapper.DistributionType.ALL
 }
