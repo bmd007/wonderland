@@ -18,7 +18,7 @@ class kafkaConfig {
     @Value('${kafka.bootstrap-servers}')
     private String bootstrapServers
 
-
+    //TODO Recheck the kafkaTemplate config
     @Bean
     KafkaTemplate kafkaTemplate(ObjectMapper om) {
         Map<String, Object> configProps = new HashMap<>()

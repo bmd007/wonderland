@@ -13,6 +13,8 @@ import org.springframework.security.web.server.SecurityWebFilterChain
 @SpringBootApplication
 class GatewayApplication {
 
+	//TODO consider using RSocket for video streaming
+
 //	@Bean
 	SecurityWebFilterChain authorization(ServerHttpSecurity security){
 		security

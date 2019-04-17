@@ -37,7 +37,7 @@ class CustomerHandler {
         //prer.save(event).subscribe()
 
         //but beacuse we need to send event only after save completion,
-        //we should use block()
+        //we should use block() ::)))))) thats so wrong.
         def savedEvent = prer.save(event).block()
 
         Message<PersonRegisteredEvent> message = MessageBuilder
@@ -70,7 +70,6 @@ class CustomerHandler {
         ServerResponse.ok().contentType(MediaType.APPLICATION_JSON_UTF8).
                 body(Mono.just(savedEvent), PersonInterestAddedEvent.class)
     }
-
 
     //two more delete related webservices needed here
 }

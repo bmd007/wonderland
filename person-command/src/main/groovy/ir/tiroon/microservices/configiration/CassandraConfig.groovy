@@ -24,7 +24,6 @@ class CassandraConfig extends AbstractReactiveCassandraConfiguration {
 
     @Override
     protected String getKeyspaceName() {
-        System.out.println("BMD::"+keyspace)
         keyspace
     }
 
@@ -40,15 +39,12 @@ class CassandraConfig extends AbstractReactiveCassandraConfiguration {
 
     @Override
     SchemaAction getSchemaAction() {
-        System.out.println("BMD::"+SchemaAction.CREATE.name())
         SchemaAction.CREATE_IF_NOT_EXISTS
     }
 
     @Override
     String[] getEntityBasePackages() {
-        System.out.println("BMD::"+[basePackages])
         [basePackages]
     }
-
 
 }

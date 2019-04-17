@@ -17,6 +17,7 @@ public class HttpServerConfig {
     @Bean
     RouterFunction<ServerResponse> monoRouterFunction(CustomerHandler customerHandler) {
         return
+                //TODO change to post
                 route(GET("/register/person/{phn}/{name}"), customerHandler::registerPerson)
                 .andRoute(GET("/add/interest/{phn}/{interest}"), customerHandler::addInterest)
                 ;
