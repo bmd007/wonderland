@@ -13,7 +13,6 @@ import org.springframework.security.web.server.SecurityWebFilterChain
 @SpringBootApplication
 class GatewayApplication {
 
-
 //	@Bean
 	SecurityWebFilterChain authorization(ServerHttpSecurity security){
 		security
