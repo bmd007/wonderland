@@ -9,6 +9,7 @@ The architecture is microservices and the applied pattern is CQRS. But no intern
 I can say the architecture is event driven and everything is an event inside the application. From outside the appliction will recieve httpRequests. And requests lead to commands )events with a needed side effect)
 
 ## ToDo:
+    * Create perosn and user management services
     * Add a servlet based web-socket backend as notification manager ?? 
     (Web flux web socket does not support broker and user specific messages)
     * Add a coin system
