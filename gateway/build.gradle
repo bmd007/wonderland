@@ -1,0 +1,40 @@
+plugins {
+	id 'org.springframework.boot' version '2.1.4.RELEASE'
+	id 'groovy'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+group = 'it.tiroon.microservices'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+    set('springCloudVersion', 'Greenwich.RELEASE')
+}
+
+dependencies {
+	compile('org.springframework.cloud:spring-cloud-starter-config')
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.codehaus.groovy:groovy'
+	implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-hystrix'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'io.projectreactor:reactor-test'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+wrapper {
+    gradleVersion = "5.4"
+    distributionType = Wrapper.DistributionType.ALL
+}

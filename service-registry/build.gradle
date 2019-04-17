@@ -1,0 +1,35 @@
+plugins {
+	id 'org.springframework.boot' version '2.1.4.RELEASE'
+	id 'groovy'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+group = 'ir.tiroon.microservices'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 11
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+    set('springCloudVersion', 'Greenwich.RELEASE')
+}
+dependencies {
+	implementation 'org.codehaus.groovy:groovy'
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	compile('org.springframework.cloud:spring-cloud-starter-config')
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+wrapper {
+    gradleVersion = "5.4"
+    distributionType = Wrapper.DistributionType.ALL
+}
+

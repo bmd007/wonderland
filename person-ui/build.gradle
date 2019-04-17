@@ -50,8 +50,10 @@ dependencies {
 	compile group: 'org.joinfaces', name: 'jsf-spring-boot-starter', version: '3.1.0'
     compile group: 'org.primefaces', name: 'primefaces', version: '6.2'
 
-	compile('org.springframework.cloud:spring-cloud-starter-config')
-
+    compile('org.springframework.cloud:spring-cloud-starter-config')
+    
+    //Since newer versions of spring cloud the dependency below is enough for client to work (no @EnableDiscoveryClient is needed)
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	compile('org.codehaus.groovy:groovy')
 }
 

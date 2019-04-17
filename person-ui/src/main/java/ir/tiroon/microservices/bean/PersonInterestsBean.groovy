@@ -20,6 +20,7 @@ class PersonInterestsBean {
     ArrayList<String> getTheInterests() {
         ArrayList<String> ints = new ArrayList<>()
 
+        //TODO ask from gateway
         Set<String> interests = restTemplate.getForObject(
                 "http://localhost:8083/show/interests/09398240640", PersonInterest.class).interests
 

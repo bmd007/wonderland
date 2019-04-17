@@ -19,19 +19,4 @@ public class PersonUiApplication {
         return builder.build();
     }
 
-    @Bean
-    public WebClient webClient(){
-        return WebClient.create();
-//        WebClient
-//                .builder()
-//                .baseUrl("http://localhost:8080")
-//                .defaultCookie("cookieKey", "cookieValue")
-//                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-//                .defaultUriVariables(Collections.singletonMap("url", "http://localhost:8080"))
-//                .build();
-    }
-//    @Bean
-//    public CommandLineRunner run(RestTemplate restTemplate) throws Exception {
-//        return args -> { };
-//    }
 }
