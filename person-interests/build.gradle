@@ -44,6 +44,7 @@ dependencies {
 	compile('org.springframework.kafka:spring-kafka')
 
 	compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
 	compile('org.springframework.cloud:spring-cloud-starter-config')
 

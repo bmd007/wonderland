@@ -33,9 +33,7 @@ ext {
     set('springCloudVersion', 'Greenwich.RELEASE')
 }
 
-dependencies {
-	compile 'mysql:mysql-connector-java'
-    
+dependencies {    
     compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version: '2.9.4'
     compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.9.4'
     compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.9.4'
@@ -44,6 +42,7 @@ dependencies {
 	compile('org.springframework.kafka:spring-kafka')
 
     compile('org.springframework.boot:spring-boot-starter-data-cassandra-reactive')
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
 	compile('org.springframework.cloud:spring-cloud-starter-config')
 

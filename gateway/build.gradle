@@ -30,6 +30,10 @@ dependencies {
 	//TODO use new spring circuit breaker abstraction instead
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-hystrix'
 
+	compile('org.springframework.cloud:spring-cloud-starter-config')
+
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'

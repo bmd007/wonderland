@@ -46,6 +46,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-webflux'
 
     compile('org.springframework.boot:spring-boot-starter-security')
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
 	compile('org.codehaus.groovy:groovy')
 }
