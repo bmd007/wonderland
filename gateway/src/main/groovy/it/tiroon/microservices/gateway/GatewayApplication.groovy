@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.security.reactive.PathRequest
 import org.springframework.cloud.client.discovery.DiscoveryClient
+import org.springframework.cloud.client.loadbalancer.LoadBalanced
 import org.springframework.cloud.gateway.discovery.DiscoveryClientRouteDefinitionLocator
 import org.springframework.cloud.gateway.discovery.DiscoveryLocatorProperties
 import org.springframework.context.annotation.Bean
@@ -12,6 +13,7 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer
 import org.springframework.security.web.server.SecurityWebFilterChain
+import org.springframework.web.client.RestTemplate
 
 //@EnableReactiveMethodSecurity
 //@EnableWebFluxSecurity
@@ -19,17 +21,24 @@ import org.springframework.security.web.server.SecurityWebFilterChain
 @SpringBootApplication
 class GatewayApplication {
 
+//	@LoadBalanced
+//	@Bean
+//	RestTemplate restTemplate() {
+//		return new RestTemplate();
+//	}
+
 	//TODO consider using RSocket for video streaming
 //	ReactiveJwtDecoder
 	@Bean
 	SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-		return http
+		http
 				.authorizeExchange()
-				.matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-				.pathMatchers("/foo", "/bar")
-				.authenticated().and()
-				.formLogin().and()
-				.build();
+				.anyExchange().authenticated()
+				.and()
+
+				.httpBasic().disable();
+
+		return http.build();
 	}
 
 	@Bean
