@@ -7,7 +7,6 @@ import ir.tiroon.microservices.event.PersonEvent
 import java.time.LocalDateTime
 
 class AddInterestCommand extends PersonEvent{
-
     String interest
 
     @JsonCreator

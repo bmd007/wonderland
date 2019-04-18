@@ -5,27 +5,25 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
-
-@Document(collection = "PersonInterest")
-class PersonInterest implements Serializable{
+@Document(collection = "PersonInterests")
+class PersonInterests implements Serializable{
 
     @Id
-    String phoneNumber
+    String email
 
     Set<String> interests = new HashSet<>()
 
     @JsonCreator
-    PersonInterest(@JsonProperty("phoneNumber") String phoneNumber,
-           @JsonProperty("interests") Set<String> interests) {
-        this.phoneNumber = phoneNumber
-        this.interests = interests
+    PersonInterests(@JsonProperty("email") String email,
+                    @JsonProperty("interests") Set<String> interests) {
+        this.email = email
     }
 
-    PersonInterest(String phoneNumber) {
-        this.phoneNumber = phoneNumber
+    PersonInterests(String email) {
+        this.email = email
     }
 
-    PersonInterest() {
+    PersonInterests() {
     }
 
     void addInterest(String interest){
@@ -33,11 +31,11 @@ class PersonInterest implements Serializable{
     }
 
     String getPhoneNumber() {
-        return phoneNumber
+        return email
     }
 
     void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber
+        this.email = phoneNumber
     }
 
     Set<String> getInterests() {

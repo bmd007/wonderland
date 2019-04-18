@@ -16,11 +16,6 @@ class PersonEvent extends Event {
         this.email = email
     }
 
-    PersonEvent(String email) {
-        super()
-        this.email = email
-    }
-
     String getEmail() {
         return email
     }

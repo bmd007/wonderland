@@ -20,5 +20,4 @@ class JacksonConfig {
                 .registerModule(new JavaTimeModule())
     }
 
-
 }
