@@ -23,7 +23,13 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+	compile 'org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.0.0.RELEASE'
+	compile group: 'org.springframework.security', name: 'spring-security-jwt', version: '1.0.10.RELEASE'
+	
+	///Check which one is better
 //	implementation 'org.springframework.cloud:spring-cloud-starter-security'
+//	implementation 'org.springframework.cloud:spring-cloud-starter-oauth2'
+	///
 
 	implementation 'org.codehaus.groovy:groovy'
 	implementation 'org.springframework.cloud:spring-cloud-starter-gateway'

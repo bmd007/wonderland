@@ -19,7 +19,13 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableReactiveMethodSecurity
 @EnableWebFluxSecurity
 @Configuration
+@EnableAuthorizationServer
 class WebSecurityConfig {
+
+//    @Bean
+//    AuthorizationServerConfigurer
+//    JwtTokenStore
+//    /oauth/token_key ( "denyAll()". ) -> AuthorizationServerSecurityConfigurer
 
     @Autowired
     @Qualifier("customUserDetailsService")
@@ -40,11 +46,8 @@ class WebSecurityConfig {
         http
                 .authorizeExchange()
                 .pathMatchers("/login").permitAll()
-                .pathMatchers("/show/users").hasRole("ADMIN")
-                .pathMatchers("/hello").hasRole("USER")
-                .anyExchange().authenticated().and()
-                .formLogin().and()
-                .httpBasic().and()
+                .anyExchange().authenticated()
+                .and().httpBasic().disable()
                 .authenticationManager(authenticationManager())
                 .build()
 //                .csrf().requireCsrfProtectionMatcher(new PathPatternParserServerWebExchangeMatcher("/login")).disable()
@@ -52,5 +55,4 @@ class WebSecurityConfig {
         //.logout().clearAuthentication(true).invalidateHttpSession(true).and()
     }
 //    @PreAuthorize("hasRole('ADMIN')")
-
 }

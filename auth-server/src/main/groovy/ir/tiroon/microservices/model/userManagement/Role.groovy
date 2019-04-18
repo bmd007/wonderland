@@ -14,7 +14,6 @@ import javax.persistence.*
 @Table(name = "Role")
 class Role implements Serializable {
 
-
     @Id
     @Column(unique = true, nullable = false)
     String roleName
@@ -28,7 +27,6 @@ class Role implements Serializable {
 
     Role() {
     }
-
 
     Role(String roleName, String description, Set<User> users) {
         this.roleName = roleName

@@ -34,8 +34,10 @@ ext {
 }
 
 dependencies {
-	compile 'mysql:mysql-connector-java'
+//	compile 'mysql:mysql-connector-java'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+    testCompile group: 'ch.vorburger.mariaDB4j', name: 'mariaDB4j', version: '2.4.0'
+    compile group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.4.1'
 
     compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version: '2.9.4'
     compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.9.4'
@@ -44,11 +46,15 @@ dependencies {
     compile 'org.springframework.kafka:spring-kafka'
 
     compile 'org.springframework.boot:spring-boot-starter-webflux'
+    compile('org.springframework.cloud:spring-cloud-starter-config')
 
-    compile('org.springframework.boot:spring-boot-starter-security')
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
-	compile('org.codehaus.groovy:groovy')
+    compile('org.springframework.boot:spring-boot-starter-security')
+    compile 'org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.0.0.RELEASE'
+    compile group: 'org.springframework.security', name: 'spring-security-jwt', version: '1.0.10.RELEASE'
+
+    compile('org.codehaus.groovy:groovy')
 }
 
 dependencyManagement {

@@ -17,7 +17,6 @@ import java.util.Set;
 @Proxy(lazy = false)
 public class User implements Serializable {
 
-    @Id
     @Column(nullable = false, unique = true)
     String phoneNumber;
 
@@ -27,6 +26,7 @@ public class User implements Serializable {
     @Column(nullable = false)
     String password;
 
+    @Id
     @Column(unique = true, nullable = false)
     String email;
 
@@ -52,7 +52,6 @@ public class User implements Serializable {
         this.email = email;
         this.phoneNumber = phone;
     }
-
 
     public String getPhoneNumber() {
         return phoneNumber;

@@ -17,7 +17,6 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 
 import java.security.Principal
 
-//@EnableResourceServer enable it so this auth server can be accessed by its own oauth tokens
 @Configuration
 @EnableAuthorizationServer
 class OAuth2Config extends AuthorizationServerConfigurerAdapter {

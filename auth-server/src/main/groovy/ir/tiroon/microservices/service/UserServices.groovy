@@ -19,7 +19,6 @@ class UserServices {
     @Autowired
     RoleRepository roleRepository
 
-
     @Autowired
     PasswordEncoder passwordEncoder
 
@@ -37,31 +36,15 @@ class UserServices {
         saveWithPassEncoding(new User(name, password, email, phoneNumber))
     }
 
-
-    User get(String phn) {
-            userRepository.getOne(phn)
-    }
-
-    User getAndNullIfNotExists(String phn) {
+    User getByPhoneNumber(String phn) {
             userRepository.findUserByPhoneNumber(phn)
     }
 
-
     User getByEmail(String email) {
-        userRepository.findUserByEmail(email)
+        userRepository.findById(email)
     }
 
     ArrayList<User> list() {
         (ArrayList<User>) userRepository.findAll()
     }
-
-    void delete(String phn) {
-        userRepository.delete(get(phn))
-    }
-
-    void delete(User user) {
-        userRepository.delete(user)
-    }
-
-
 }
