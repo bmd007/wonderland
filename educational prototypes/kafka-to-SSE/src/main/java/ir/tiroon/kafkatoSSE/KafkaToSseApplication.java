@@ -72,7 +72,7 @@ public class KafkaToSseApplication {
 
 	@Bean
 	public Flux<ReceiverRecord<String, String>> fluxReceiver() {
-		String bootstrapServers = "localhost:9092";
+		String bootstrapServers = "localhost:9094";
 		Map<String, Object> props = new HashMap<>();
 		props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
 		props.put(ConsumerConfig.CLIENT_ID_CONFIG, "click-consumer");
@@ -91,6 +91,11 @@ public class KafkaToSseApplication {
 	@Autowired
 	private Flux<ReceiverRecord<String, String>> fluxReceiver;
 
+
+	////SO this approach has a problem. The application works
+	//as far as there is an ongoing flow of data coming from the source
+	//So for example if actual message producer suddenly stop producing messages
+	//for 1 minutes, then the client gets time outed
 	@GetMapping(name = "/clicks", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Flux<Event> getSimpleFlux() {
 		return fluxReceiver.map(KafkaToSseApplication::deserializeFromString)
