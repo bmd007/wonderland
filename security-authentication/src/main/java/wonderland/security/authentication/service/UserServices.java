@@ -1,6 +1,5 @@
 package wonderland.security.authentication.service;
 
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,12 +16,17 @@ import wonderland.security.authentication.mapper.UserMapper;
 import wonderland.security.authentication.repository.RoleRepository;
 import wonderland.security.authentication.repository.UserRepository;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @Service("userService")
 @Transactional
 public class UserServices {
 
+    public static final String USER_ROLE_NAME = "USER";
+    public static final Role USER_ROLE = Role.newBuilder().withRoleName(USER_ROLE_NAME).build();
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
@@ -34,15 +38,14 @@ public class UserServices {
     }
 
     public Mono<UserAccountDto> createNewUserAccount(String email, String phoneNumber, String pass, String name) {
-        return Mono.just(userRepository.findUserByPhoneNumberOrEmail(phoneNumber, email))
-                .filter(Optional::isPresent).map(Optional::get)
-                .switchIfEmpty(Mono.error(new UserAlreadyExistsException(phoneNumber, email)))
-                .map(userAccount -> {
-                    var userRole = roleRepository.findRoleByRoleName("USER").get();
-                    var salt = UUID.randomUUID().toString();
-                    var mixedPasswordAndSalt = pass + "_" + salt;
-                    var encodedPassword = passwordEncoder.encode(mixedPasswordAndSalt);
-                    return UserAccount.newBuilder()
+        if (userRepository.findUserByPhoneNumberOrEmail(phoneNumber, email).isPresent()) {
+            return Mono.error(new UserAlreadyExistsException(phoneNumber, email));
+        }
+        var userRole = roleRepository.findById(USER_ROLE_NAME).orElse(roleRepository.save(USER_ROLE));
+        var salt = UUID.randomUUID().toString();
+        var mixedPasswordAndSalt = pass + "_" + salt;
+        var encodedPassword = passwordEncoder.encode(mixedPasswordAndSalt);
+        var userAccount = UserAccount.newBuilder()
                             .withState(State.Active)
                             .withRoles(Set.of(userRole))
                             .withSalt(salt)
@@ -50,7 +53,7 @@ public class UserServices {
                             .withEmail(email)
                             .withPhoneNumber(phoneNumber)
                             .withName(name).build();
-                })
+        return Mono.just(userAccount)
                 .map(userRepository::save)
                 .map(UserMapper::map);
     }
@@ -80,7 +83,7 @@ public class UserServices {
     }
 
     public Mono<UserAccountDto> addRoleToUser(String phoneNumber, String roleName){
-        var roleMono = Mono.just(roleRepository.findRoleByRoleName(roleName))
+        var roleMono = Mono.just(roleRepository.findById(roleName))
                 .filter(Optional::isPresent).map(Optional::get)
                 .switchIfEmpty(Mono.error(new RoleNotFoundException(roleName)));
 

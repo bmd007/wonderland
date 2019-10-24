@@ -1,6 +1,5 @@
 package wonderland.security.authentication.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.MoreObjects;
@@ -24,11 +23,36 @@ public class Role {
     @Column
     private String description;
 
+    //TODO maybe delete this
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "roles", cascade = CascadeType.DETACH)
     private Set<UserAccount> userAccounts;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
     private Set<Permission> permissions;
+
+    private Role(Builder builder) {
+        roleName = builder.roleName;
+        description = builder.description;
+        userAccounts = builder.userAccounts;
+        permissions = builder.permissions;
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+
+    public static Builder newBuilder(Role copy) {
+        Builder builder = new Builder();
+        builder.roleName = copy.getRoleName();
+        builder.description = copy.getDescription();
+        builder.userAccounts = copy.getUserAccounts();
+        builder.permissions = copy.getPermissions();
+        return builder;
+    }
+
+    public Builder cloneBuilder() {
+        return newBuilder(this);
+    }
 
     public String getRoleName() {
         return roleName;
@@ -72,15 +96,8 @@ public class Role {
         return Objects.hashCode(getRoleName(), getDescription(), getUserAccounts(), getPermissions());
     }
 
-    public Builder cloneBuilder(){
-        return new Builder()
-                .withDescription(description)
-                .withRoleName(roleName)
-                .withPermissions(permissions)
-                .withUserAccounts(userAccounts);
-    }
 
-    public static class Builder {
+    public static final class Builder {
         private String roleName;
         private String description;
         private Set<UserAccount> userAccounts;
@@ -89,32 +106,28 @@ public class Role {
         private Builder() {
         }
 
-        public static Builder role() {
-            return new Builder();
-        }
-
-        public Builder withRoleName(String roleName) {
-            this.roleName = roleName;
+        public Builder withRoleName(String val) {
+            roleName = val;
             return this;
         }
 
-        public Builder withDescription(String description) {
-            this.description = description;
+        public Builder withDescription(String val) {
+            description = val;
             return this;
         }
 
-        public Builder withUserAccounts(Set<UserAccount> userAccounts) {
-            this.userAccounts = userAccounts;
+        public Builder withUserAccounts(Set<UserAccount> val) {
+            userAccounts = val;
             return this;
         }
 
-        public Builder withPermissions(Set<Permission> permissions) {
-            this.permissions = permissions;
+        public Builder withPermissions(Set<Permission> val) {
+            permissions = val;
             return this;
         }
 
         public Role build() {
-            return new Role();
+            return new Role(this);
         }
     }
 }
