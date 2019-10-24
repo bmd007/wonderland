@@ -1,11 +1,13 @@
-package ir.tiroon.microservices
+package tiroon.wonderland.security.authentication
 
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 
 @SpringBootApplication
-class AuthenticationServerApplication {
+class SecurityAuthenticationApplication {
+
 	static void main(String[] args) {
-		SpringApplication.run AuthenticationServerApplication, args
+		SpringApplication.run(SecurityAuthenticationApplication, args)
 	}
+
 }

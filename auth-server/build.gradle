@@ -1,40 +1,43 @@
-buildscript {
-    ext {
-        springBootVersion = '2.1.4.RELEASE'
-    }
-    repositories {
-        mavenCentral()
-        maven {
-          url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-        classpath "org.unbroken-dome.gradle-plugins:gradle-testsets-plugin:2.1.1"
-    }
-}
-
-apply plugin: 'java'
-apply plugin: 'groovy'
-apply plugin: 'eclipse'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
-
-group = 'Microservices'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = 11
-
-repositories {
-    mavenCentral()
-    maven { url "https://repo.spring.io/milestone" }
+plugins {
+    id "org.springframework.boot" version "2.1.9.RELEASE"
+    id "io.spring.dependency-management" version "1.0.8.RELEASE"
+    id "java"
+    id "idea"
 }
 
 ext {
-    set('springCloudVersion', 'Greenwich.RELEASE')
+    snippetsDir = file("build/generated-snippets")
+    springCloudVersion = 'Greenwich.SR2'
+}
+
+ext.buildNumber = {
+    def buildNumber = System.getenv("VERSION")
+    if (buildNumber == null || buildNumber.allWhitespace) {
+        buildNumber = "SNAPSHOT"
+    }
+    return buildNumber
+}
+
+group = 'Microservices'
+project.version = (System.getenv("VERSION") ?: "1.0-SNAPSHOT")
+
+bootJar {
+    archiveFileName = 'fleet-api.jar'
+}
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
 }
 
 dependencies {
-//	compile 'mysql:mysql-connector-java'
+    compile('org.springframework.boot:spring-boot-starter-actuator')
+    //	compile 'mysql:mysql-connector-java'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     testCompile group: 'ch.vorburger.mariaDB4j', name: 'mariaDB4j', version: '2.4.0'
     compile group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.4.1'
@@ -55,15 +58,55 @@ dependencies {
     compile group: 'org.springframework.security', name: 'spring-security-jwt', version: '1.0.10.RELEASE'
 
     compile('org.codehaus.groovy:groovy')
+
+    compile('com.google.guava:guava:28.1-jre')
+
+    //implementation('de.flapdoodle.embed:de.flapdoodle.embed.mongo')
+    testCompile("org.junit.jupiter:junit-jupiter-api")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine")
+    testRuntime("org.junit.vintage:junit-vintage-engine:5.4.2")
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile('org.springframework.security:spring-security-test')
+    testCompile('io.projectreactor:reactor-test')
+    testCompile('com.xebialabs.restito:restito:0.9.3')
+    testCompile('org.hamcrest:hamcrest-all:1.3')
+    testCompile("org.mockito:mockito-junit-jupiter:2.28.2")
+    //testCompile("org.springframework.restdocs:spring-restdocs-webtestclient")
+    testCompile('com.github.npathai:hamcrest-optional:2.0.0')
+    testCompile('info.solidsoft.mockito:mockito-java8:2.5.0')
 }
 
 dependencyManagement {
-	imports {
-		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-	}
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+bootRun {
+    systemProperties = System.properties
+}
+
+task printVersion {
+    doLast {
+        println project.version
+    }
 }
 
 wrapper {
-    gradleVersion = "5.4"
+    gradleVersion = "5.6.2"
     distributionType = Wrapper.DistributionType.ALL
 }
+
+springBoot {
+    buildInfo()
+}
+
+defaultTasks "clean", "build"
+
+test {
+    useJUnitPlatform()
+}
+
+apply from: 'build-docker.gradle'
+
+defaultTasks "clean", "build"

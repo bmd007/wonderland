@@ -9,6 +9,8 @@ The architecture is microservices and the applied pattern is CQRS. But no intern
 I can say the architecture is event driven and everything is an event inside the application. From outside the appliction will recieve httpRequests. And requests lead to commands )events with a needed side effect)
 
 ## ToDo:
+    * Create services one by one again with correct name and using spring starter page 
+    * Update spring service registry stack
     * use spring new load balanced http client
     * add create docker image task for each service
     * use some sort of container orchestration tool and somehow automate the process of deploying in that tool
@@ -43,5 +45,6 @@ I can say the architecture is event driven and everything is an event inside the
 
 
 ###USE 
+ * https://developer.okta.com/blog/2019/03/12/oauth2-spring-security-guide
  * https://docs.spring.io/spring-security-oauth2-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-security-oauth2-authorization-server
  * https://docs.spring.io/spring-security/site/docs/current/reference/html5/#webflux-oauth2
