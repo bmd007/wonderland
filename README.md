@@ -35,8 +35,6 @@ I can say the architecture is event driven and everything is an event inside the
     * Person (person-command, user-management, auth-server(authentication), gateway(authorization and load balance? and gateway), person-ui(crud forms) ?) 
     * Interest (person-interests, 
     * Video (video-???)
-    * Money (noobchain, ?????)
-    * R&D (EducationalPrototypes, ?)
     ?
 
 ### services and their relation to kafka topics
