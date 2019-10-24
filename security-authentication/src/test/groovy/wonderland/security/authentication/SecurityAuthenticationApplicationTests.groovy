@@ -1,4 +1,4 @@
-package tiroon.wonderland.security.authentication
+package wonderland.security.authentication
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest

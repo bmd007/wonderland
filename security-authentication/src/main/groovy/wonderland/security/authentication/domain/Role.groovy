@@ -1,9 +1,11 @@
-package tiroon.wonderland.security.authentication.domain
+package wonderland.security.authentication.domain
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.google.common.base.MoreObjects
 import org.hibernate.annotations.Proxy
 
 import javax.persistence.*
@@ -12,11 +14,12 @@ import javax.persistence.*
 @Entity
 @Proxy(lazy = false)
 @Table(name = "Role")
+@JsonDeserialize(builder = Role.Builder.class)
 class Role implements Serializable {
 
     @Id
     @Column(unique = true, nullable = false)
-    String roleName
+    String name
 
     @Column
     String description
@@ -28,40 +31,16 @@ class Role implements Serializable {
     Role() {
     }
 
-    Role(String roleName, String description, Set<User> users) {
-        this.roleName = roleName
-        this.description = description
-        this.users = users
-    }
-
-    @JsonCreator
-    Role(@JsonProperty("roleName") String roleName,
-         @JsonProperty("description") String description) {
-        this.roleName = roleName
-        this.users = new HashSet<>()
-    }
-
-    String getRoleName() {
-        return roleName
-    }
-
-    void setRoleName(String roleName) {
-        this.roleName = roleName
+    String getName() {
+        return name
     }
 
     String getDescription() {
         return description
     }
 
-    void setDescription(String description) {
-        this.description = description
-    }
-
     Set<User> getUsers() {
         return users
     }
 
-    void setUsers(Set<User> users) {
-        this.users = users
-    }
 }

@@ -11,7 +11,7 @@ task buildDocker(dependsOn: build) {
 
         def buildFile = new File(dockerStageDir, "Dockerfile")
         buildFile.text = """\
-FROM adoptopenjdk/openjdk11
+FROM adoptopenjdk/openjdk12
 ADD ${jarName} ${jarName}
 RUN sh -c 'touch /${jarName}'
 VOLUME ["/tmp"]
