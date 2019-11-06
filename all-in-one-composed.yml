@@ -8,6 +8,7 @@ services:
 
   # PostgreSQL for storage
   postgresql:
+    hostname: postgresql
     image: postgres:9
     ports:
      - '5432:5432'
@@ -105,6 +106,7 @@ services:
       KM_ARGS: -Djava.net.preferIPv4Stack=true
 
   elasticsearch:
+    hostname: elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:6.0.1
     environment:
       - cluster.name=elasticsearch
@@ -126,9 +128,41 @@ services:
 #      - '9200:9200'
 
   mongodb:
+    hostname: mongodb
    image: mongo:3.4
     ports:
       - '27017:27017'
 
+  fleet:
+    image: cabonline/fleet
+    ports:
+      - '8090:8090'
+    depends_on:
+      - consul
+      - kafka
+      - mongodb
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+#      SPRING_PROFILES_ACTIVE: mock, docker-compose-all
+      SPRING_CLOUD_CONSUL_HOST: consul
+      SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED: "false"
+      SPRING_DATA_MONGODB_HOST: mongodb
+      SPRING_DATA_MONGODB_PORT: 27017
+      SPRING_DATA_MONGODB_DATABASE: fleet-service
+      SPRING_DATA_ELASTICSEARCH_CLUSTER-NODES: elasticsearch:9300
+      SPRING_DATA_ELASTICSEARCH_CLUSTER-NAME: elasticsearch
 
-
+  fleet-transporter:
+    image: cabonline/fleet-transporter
+    ports:
+      - '8484:8484'
+    depends_on:
+      - consul
+      - kafka
+      - postgresql
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+#      SPRING_PROFILES_ACTIVE: mock, docker-compose-all
+      SPRING_CLOUD_CONSUL_HOST: consul
+      SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED: "false"
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql/transporterservice
