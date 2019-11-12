@@ -38,9 +38,9 @@ dependencies {
 	runtimeOnly 'com.h2database:h2'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
-//	compile group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.3.7.RELEASE'
 	compile group: 'org.springframework.security.oauth.boot', name: 'spring-security-oauth2-autoconfigure', version: '2.2.0.RELEASE'
-//	compile group: 'org.springframework.security', name: 'spring-security-jwt', version: '1.0.11.RELEASE'
+	compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '8.2.1'
+
 
 	implementation 'com.google.guava:guava:28.1-jre'
 
