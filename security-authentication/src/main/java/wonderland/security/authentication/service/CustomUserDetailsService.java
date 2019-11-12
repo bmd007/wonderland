@@ -1,22 +1,23 @@
 package wonderland.security.authentication.service;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.*;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Mono;
 import wonderland.security.authentication.domain.State;
 import wonderland.security.authentication.domain.UserAccount;
 import wonderland.security.authentication.repository.RoleRepository;
 import wonderland.security.authentication.repository.UserRepository;
 
-import java.util.Optional;
 import java.util.Set;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toSet;
 
-@Service("customUserDetailsService")
-public class CustomUserDetailsService implements ReactiveUserDetailsService {
+//@Service("customUserDetailsService")
+public class CustomUserDetailsService {// implements UserDetailsService {
 
     UserRepository userRepository;
     RoleRepository roleRepository;
@@ -27,12 +28,9 @@ public class CustomUserDetailsService implements ReactiveUserDetailsService {
     }
 
     @Transactional(readOnly = true)
-    @Override
-    public Mono<UserDetails> findByUsername(String phoneNumber) throws UsernameNotFoundException {
-        return Mono.just(userRepository.findUserByPhoneNumber(phoneNumber))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .switchIfEmpty(Mono.error(new UsernameNotFoundException("Username not found")))
+//    @Override
+    public UserDetails loadUserByUsername(String phoneNumber) throws UsernameNotFoundException {
+        return userRepository.findUserByPhoneNumber(phoneNumber)
                 .map(userAccount -> User.builder()
                         .authorities(getGrantedAuthorities(userAccount))
                         .password(userAccount.getPassword())
@@ -41,7 +39,8 @@ public class CustomUserDetailsService implements ReactiveUserDetailsService {
                         .accountLocked(userAccount.getState().equals(State.Locked))
                         .disabled(userAccount.getState().equals(State.Disabled))
                         .credentialsExpired(false)
-                        .build());
+                        .build())
+                .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
     }
 
     //TODO here we didn't add the permissions, but they are needed for jwt. Maybe its fine for here?
@@ -50,4 +49,5 @@ public class CustomUserDetailsService implements ReactiveUserDetailsService {
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRoleName()))
                 .collect(toSet());
     }
+
 }

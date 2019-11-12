@@ -3,10 +3,10 @@ package wonderland.security.authentication.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import org.hibernate.annotations.Proxy;
 
 import javax.persistence.*;
+import java.util.Objects;
 import java.util.Set;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -23,12 +23,24 @@ public class Role {
     @Column
     private String description;
 
-    //TODO maybe delete this
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "roles", cascade = CascadeType.DETACH)
     private Set<UserAccount> userAccounts;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "rolePermissions",
+            joinColumns = @JoinColumn(name = "roleName"),
+            inverseJoinColumns = @JoinColumn(name = "permissionId"))
     private Set<Permission> permissions;
+
+    public Role() {
+    }
+
+    public Role(String roleName, String description, Set<UserAccount> userAccounts, Set<Permission> permissions) {
+        this.roleName = roleName;
+        this.description = description;
+        this.userAccounts = userAccounts;
+        this.permissions = permissions;
+    }
 
     private Role(Builder builder) {
         roleName = builder.roleName;
@@ -80,22 +92,17 @@ public class Role {
                 .toString();
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Role role = (Role) o;
-        return Objects.equal(getRoleName(), role.getRoleName()) &&
-                Objects.equal(getDescription(), role.getDescription()) &&
-                Objects.equal(getUserAccounts(), role.getUserAccounts()) &&
-                Objects.equal(getPermissions(), role.getPermissions());
+        return roleName.equals(role.roleName) &&
+                Objects.equals(description, role.description) &&
+                Objects.equals(userAccounts, role.userAccounts) &&
+                Objects.equals(permissions, role.permissions);
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(getRoleName(), getDescription(), getUserAccounts(), getPermissions());
-    }
-
 
     public static final class Builder {
         private String roleName;

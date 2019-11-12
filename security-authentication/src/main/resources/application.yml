@@ -1,0 +1,12 @@
+#move to config server
+
+security:
+  oauth2:
+    client:
+      client-id: gateway
+      client-secret: 3cret
+      scope: read, write, openid, any
+      auto-approve-scopes: '.*'
+      authorizedGrantTypes: refresh_token, password, client_credentials
+
+
