@@ -3,10 +3,10 @@ package wonderland.security.authentication.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import org.hibernate.annotations.Proxy;
 
 import javax.persistence.*;
+import java.util.Objects;
 import java.util.Set;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -45,6 +45,9 @@ public class UserAccount {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private State state;
+
+    public UserAccount() {
+    }
 
     public UserAccount(String phoneNumber, String email, String name, String password, String salt, Set<Role> roles, State state) {
         this.phoneNumber = phoneNumber;
@@ -107,19 +110,14 @@ public class UserAccount {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserAccount that = (UserAccount) o;
-        return Objects.equal(getId(), that.getId()) &&
-                Objects.equal(getPhoneNumber(), that.getPhoneNumber()) &&
-                Objects.equal(getName(), that.getName()) &&
-                Objects.equal(getPassword(), that.getPassword()) &&
-                Objects.equal(getSalt(), that.getSalt()) &&
-                Objects.equal(getEmail(), that.getEmail()) &&
-                Objects.equal(getRoles(), that.getRoles()) &&
-                getState() == that.getState();
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(getId(), getPhoneNumber(), getName(), getPassword(), getSalt(), getEmail(), getRoles(), getState());
+        return id.equals(that.id) &&
+                phoneNumber.equals(that.phoneNumber) &&
+                email.equals(that.email) &&
+                name.equals(that.name) &&
+                password.equals(that.password) &&
+                Objects.equals(salt, that.salt) &&
+                Objects.equals(roles, that.roles) &&
+                state == that.state;
     }
 
     public Long getId() {

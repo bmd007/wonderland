@@ -43,6 +43,6 @@ I can say the architecture is event driven and everything is an event inside the
 
 
 ###USE 
- * https://developer.okta.com/blog/2019/03/12/oauth2-spring-security-guide
+ * https://www.baeldung.com/spring-security-oauth2-jws-jwk#10-adding-the-kid-value-to-the-jwt-header
  * https://docs.spring.io/spring-security-oauth2-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-security-oauth2-authorization-server
  * https://docs.spring.io/spring-security/site/docs/current/reference/html5/#webflux-oauth2

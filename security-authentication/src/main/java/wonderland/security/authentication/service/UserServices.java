@@ -3,8 +3,6 @@ package wonderland.security.authentication.service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import wonderland.security.authentication.domain.Role;
 import wonderland.security.authentication.domain.State;
 import wonderland.security.authentication.domain.UserAccount;
@@ -17,9 +15,10 @@ import wonderland.security.authentication.repository.RoleRepository;
 import wonderland.security.authentication.repository.UserRepository;
 
 import java.util.HashSet;
-import java.util.Optional;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service("userService")
 @Transactional
@@ -37,9 +36,9 @@ public class UserServices {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Mono<UserAccountDto> createNewUserAccount(String email, String phoneNumber, String pass, String name) {
+    public UserAccountDto createNewUserAccount(String email, String phoneNumber, String pass, String name) {
         if (userRepository.findUserByPhoneNumberOrEmail(phoneNumber, email).isPresent()) {
-            return Mono.error(new UserAlreadyExistsException(phoneNumber, email));
+            throw new UserAlreadyExistsException(phoneNumber, email);
         }
         var userRole = roleRepository.findById(USER_ROLE_NAME).orElse(roleRepository.save(USER_ROLE));
         var salt = UUID.randomUUID().toString();
@@ -53,28 +52,26 @@ public class UserServices {
                             .withEmail(email)
                             .withPhoneNumber(phoneNumber)
                             .withName(name).build();
-        return Mono.just(userAccount)
-                .map(userRepository::save)
-                .map(UserMapper::map);
+        return UserMapper.map(userRepository.save(userAccount));
     }
 
-    public Mono<UserAccountDto> getByEmail(String email) {
-        return Mono.just(userRepository.findUserByEmail(email))
-                .filter(Optional::isPresent).map(Optional::get)
-                .switchIfEmpty(Mono.error(new UserNotFoundException("", email)))
-                .map(UserMapper::map);
+    public UserAccountDto getByEmail(String email) {
+        return userRepository.findUserByEmail(email)
+                .map(UserMapper::map)
+                .orElseThrow(() -> new UserNotFoundException("", email));
     }
 
-    public Mono<UserAccountDto> getByPhoneNumber(String phoneNumber) {
-        return Mono.just(userRepository.findUserByPhoneNumber(phoneNumber))
-                .filter(Optional::isPresent).map(Optional::get)
-                .switchIfEmpty(Mono.error(new UserNotFoundException(phoneNumber, "")))
-                .map(UserMapper::map);
+    public UserAccountDto getByPhoneNumber(String phoneNumber) {
+        return userRepository.findUserByPhoneNumber(phoneNumber)
+                .map(UserMapper::map)
+                .orElseThrow(() -> new UserNotFoundException(phoneNumber, ""));
     }
 
-    public Flux<UserAccountDto> getAllUsers() {
-        return Flux.fromIterable(userRepository.findAll())
-                .map(UserMapper::map);
+    public List<UserAccountDto> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(UserMapper::map)
+                .collect(Collectors.toList());
     }
 
     public void deleteUser(String phn) {
@@ -82,22 +79,18 @@ public class UserServices {
         .orElseThrow(() ->  new UserNotFoundException(phn, "")));
     }
 
-    public Mono<UserAccountDto> addRoleToUser(String phoneNumber, String roleName){
-        var roleMono = Mono.just(roleRepository.findById(roleName))
-                .filter(Optional::isPresent).map(Optional::get)
-                .switchIfEmpty(Mono.error(new RoleNotFoundException(roleName)));
+    public UserAccountDto addRoleToUser(String phoneNumber, String roleName) {
+        var role = roleRepository.findById(roleName)
+                .orElseThrow(() -> new RoleNotFoundException(roleName));
 
-        return Mono.just(userRepository.findUserByPhoneNumber(phoneNumber))
-                .filter(Optional::isPresent).map(Optional::get)
-                .switchIfEmpty(Mono.error(new UserNotFoundException(phoneNumber, "")))
-                .zipWith(roleMono, (userAccount, role) -> {
-                    var currentRoles = userAccount.getRoles();
-                    var newRoles = new HashSet<Role>();
-                    newRoles.addAll(currentRoles);
-                    newRoles.add(role);
-                    return userAccount.cloneBuilder().withRoles(newRoles).build();
-                })
-                .map(userAccount -> userRepository.save(userAccount))
-                .map(UserMapper::map);
+        var userAccount = userRepository.findUserByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new UserNotFoundException(phoneNumber, ""));
+
+        var currentRoles = userAccount.getRoles();
+        var newRoles = new HashSet<Role>();
+        newRoles.addAll(currentRoles);
+        newRoles.add(role);
+        var userAccountWithNewRole = userAccount.cloneBuilder().withRoles(newRoles).build();
+        return UserMapper.map(userRepository.save(userAccountWithNewRole));
     }
 }

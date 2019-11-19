@@ -1,11 +1,12 @@
 package wonderland.security.authentication.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import org.hibernate.annotations.Proxy;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
@@ -16,7 +17,7 @@ public class Permission {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(unique = true, nullable = false)
-    private Long id;
+    private Long permissionId;
 
     @Column
     private String application;
@@ -24,9 +25,21 @@ public class Permission {
     @Column
     private String name;
 
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "permissions", cascade = CascadeType.DETACH)
+    private Set<Role> roles = new HashSet<>();
+
+    public Permission(String application, String name, Set<Role> roles) {
+        this.application = application;
+        this.name = name;
+        this.roles = roles;
+    }
+
+    public Permission() {
+    }
+
     @Override
     public String toString() {
-        return application+":"+name;
+        return application + ":" + name + ":" + roles;
     }
 
     @Override
@@ -34,18 +47,10 @@ public class Permission {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Permission that = (Permission) o;
-        return Objects.equal(getId(), that.getId()) &&
-                Objects.equal(getApplication(), that.getApplication()) &&
-                Objects.equal(getName(), that.getName());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(getId(), getApplication(), getName());
-    }
-
-    public Long getId() {
-        return id;
+        return permissionId.equals(that.permissionId) &&
+                application.equals(that.application) &&
+                name.equals(that.name) &&
+                Objects.equals(roles, that.roles);
     }
 
     public String getApplication() {
@@ -58,6 +63,34 @@ public class Permission {
 
     public Permission(String application, String name) {
         this.application = application;
+        this.name = name;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public Long getPermissionId() {
+        return permissionId;
+    }
+
+    public void setPermissionId(Long permissionId) {
+        this.permissionId = permissionId;
+    }
+
+    public void addRole(Role role) {
+        roles.add(role);
+    }
+
+    public void setApplication(String application) {
+        this.application = application;
+    }
+
+    public void setName(String name) {
         this.name = name;
     }
 }

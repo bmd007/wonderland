@@ -2,7 +2,6 @@ package wonderland.security.authentication.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Mono;
 import wonderland.security.authentication.domain.Permission;
 import wonderland.security.authentication.domain.Role;
 import wonderland.security.authentication.dto.PermissionDto;
@@ -13,12 +12,11 @@ import wonderland.security.authentication.repository.PermissionRepository;
 import wonderland.security.authentication.repository.RoleRepository;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
 
-@Service("userService")
+@Service("roleService")
 @Transactional
 public class RoleServices {
 
@@ -28,20 +26,18 @@ public class RoleServices {
         this.roleRepository = roleRepository;
     }
 
-    public Mono<Role> createARole(String roleName, Set<PermissionDto> permissions) {
+    public Role createARole(String roleName, Set<PermissionDto> permissions) {
         if (roleRepository.findById(roleName).isPresent()) {
-            return Mono.error(new RoleAlreadyExistsException(roleName));
+            throw new RoleAlreadyExistsException(roleName);
         }
         var permissionsSet = permissions.stream().map(PermissionMapper::map).collect(toSet());
-        return Mono.just(Role.newBuilder())
-                .map(builder -> builder.withRoleName(roleName)
-                        .withPermissions(permissionsSet)
-                        .build());
+        return Role.newBuilder().withRoleName(roleName)
+                .withPermissions(permissionsSet)
+                .build();
     }
 
-    public Mono<Role> addAPermissionToRole(String roleName, PermissionDto permission) {
-        return Mono.just(roleRepository.findById(roleName))
-                .filter(Optional::isPresent).map(Optional::get).switchIfEmpty(Mono.error(new RoleNotFoundException(roleName)))
+    public Role addAPermissionToRole(String roleName, PermissionDto permission) {
+        return roleRepository.findById(roleName)
                 .map(role -> {
                     var newPermissions = new HashSet<Permission>();
                     newPermissions.addAll(role.getPermissions());
@@ -51,12 +47,12 @@ public class RoleServices {
                 .map(permissions -> Role.newBuilder()
                         .withRoleName(roleName)
                         .withPermissions(permissions)
-                        .build());
+                        .build())
+                .orElseThrow(() -> new RoleNotFoundException(roleName));
     }
 
-    public Mono<Role> removeAPermissionFromRole(String roleName, PermissionDto permission) {
-        return Mono.just(roleRepository.findById(roleName))
-                .filter(Optional::isPresent).map(Optional::get).switchIfEmpty(Mono.error(new RoleNotFoundException(roleName)))
+    public Role removeAPermissionFromRole(String roleName, PermissionDto permission) {
+        return roleRepository.findById(roleName)
                 .map(role -> {
                     var newPermissions = new HashSet<Permission>();
                     newPermissions.addAll(role.getPermissions());
@@ -66,6 +62,7 @@ public class RoleServices {
                 .map(permissions -> Role.newBuilder()
                         .withRoleName(roleName)
                         .withPermissions(permissions)
-                        .build());
+                        .build())
+                .orElseThrow(() -> new RoleNotFoundException(roleName));
     }
 }
