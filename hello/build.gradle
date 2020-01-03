@@ -6,7 +6,17 @@ plugins {
 }
 
 group = 'wonderland'
-version = '0.0.1-SNAPSHOT'
+
+ext.buildNumber = {
+	def buildNumber = System.getenv("VERSION")
+	if (buildNumber == null || buildNumber.allWhitespace) {
+		buildNumber = "SNAPSHOT"
+	}
+	return buildNumber
+}
+
+group = 'wonderland'
+project.version = (System.getenv("VERSION") ?: "3.0-SNAPSHOT")
 
 sourceCompatibility = 11
 targetCompatibility = 11

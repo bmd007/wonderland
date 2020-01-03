@@ -10,9 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
-@RestController
 @SpringBootApplication
-public class HelloApplication implements CommandLineRunner {
+public class HelloApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(HelloApplication.class, args);
@@ -20,16 +19,4 @@ public class HelloApplication implements CommandLineRunner {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HelloApplication.class);
 
-    @Value("${wonderland.hello.prefix}")
-    String helloPrefix;
-
-    @Override
-    public void run(String... args) throws Exception {
-        LOGGER.info("prefix for greeting is {}", helloPrefix);
-    }
-
-    @GetMapping
-    public Mono<String> hello(){
-        return Mono.just(helloPrefix + " Hello");
-    }
 }
