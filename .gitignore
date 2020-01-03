@@ -5,3 +5,5 @@
 *.apk
 *.jar
 **/someBackUp/**
+/tmp
+/temp
