@@ -40,9 +40,3 @@ I can say the architecture is event driven and everything is an event inside the
 ### services and their relation to kafka topics
 #### generally a command listener says to send commands to were and an event producer says that were it will send events. (Events=notification, Commands=requests for something to be done)
     * person-interest owns this topics: add-interest-command
-
-
-###USE 
- * https://www.baeldung.com/spring-security-oauth2-jws-jwk#10-adding-the-kid-value-to-the-jwt-header
- * https://docs.spring.io/spring-security-oauth2-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-security-oauth2-authorization-server
- * https://docs.spring.io/spring-security/site/docs/current/reference/html5/#webflux-oauth2

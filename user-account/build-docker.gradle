@@ -1,0 +1,33 @@
+task buildDocker(dependsOn: build) {
+    def dockerStageDir = new File(project.buildDir, "docker")
+    def repoName = 'bmd007-wonderland/user-account'
+    def tagName = project.version
+    def jarName = "${project.name}-${version}.jar"
+    doLast {
+        copy {
+            from jar
+            into dockerStageDir
+        }
+
+        def buildFile = new File(dockerStageDir, "Dockerfile")
+        buildFile.text = """\
+FROM adoptopenjdk/openjdk13
+ADD ${jarName} ${jarName}
+RUN sh -c 'touch /${jarName}'
+VOLUME ["/tmp"]
+ENTRYPOINT ["sh", "-c", "exec java -jar \$JAVA_OPTS -Djava.security.egd=file:/dev/./urandom /${jarName}"]
+        
+EXPOSE 8882
+EXPOSE 8883
+"""
+
+        exec {
+            workingDir = dockerStageDir
+            commandLine 'docker', 'build', '--pull', '-t', "${repoName}:${tagName}", '.'
+        }
+        exec {
+            workingDir = dockerStageDir
+            commandLine 'docker', 'push', "${repoName}:${tagName}"
+        }
+    }
+}

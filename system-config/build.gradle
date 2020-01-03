@@ -12,7 +12,6 @@ buildscript {
 
 plugins {
     id "java"
-    id "groovy"
     id "idea"
     id "org.springframework.boot" version "2.2.1.RELEASE"
     id "io.spring.dependency-management" version "1.0.8.RELEASE"
@@ -48,15 +47,9 @@ sourceCompatibility = 11
 targetCompatibility = 11
 
 dependencies {
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    compile('org.springframework.cloud:spring-cloud-config-server')
     implementation('org.springframework.boot:spring-boot-starter-actuator')
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    compile group: 'org.joinfaces', name: 'jsf-spring-boot-starter', version: '3.1.0'
-    compile group: 'org.primefaces', name: 'primefaces', version: '6.2'
-    compile('org.springframework.cloud:spring-cloud-starter-config')
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-    compile('org.codehaus.groovy:groovy')
-    implementation 'org.springframework.boot:spring-boot-starter-web'
 //    implementation('org.springframework.cloud:spring-cloud-starter-sleuth')
 //    implementation('org.springframework.cloud:spring-cloud-starter-zipkin')
 //    implementation "io.micrometer:micrometer-registry-prometheus"

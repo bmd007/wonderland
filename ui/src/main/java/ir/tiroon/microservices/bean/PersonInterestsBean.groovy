@@ -16,7 +16,6 @@ class PersonInterestsBean {
     @Autowired
     RestTemplate restTemplate
 
-
     ArrayList<String> getTheInterests() {
         ArrayList<String> ints = new ArrayList<>()
 
