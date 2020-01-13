@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 @SpringBootApplication
-public class HelloApplication {
+public class HelloApplication implements CommandLineRunner{
 
     public static void main(String[] args) {
         SpringApplication.run(HelloApplication.class, args);
@@ -19,4 +19,11 @@ public class HelloApplication {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HelloApplication.class);
 
+    @Value("${spring.cloud.config.uri}")
+    String configServerRui;
+
+    @Override
+    public void run(String... args) throws Exception {
+        LOGGER.info("config server is at {}", configServerRui);
+    }
 }

@@ -23,7 +23,7 @@ repositories {
 
 ext {
     set('snippetsDir', file("build/generated-snippets"))
-    set('springCloudVersion', "Hoxton.RELEASE")
+    set('springCloudVersion', "Hoxton.SR1")
 }
 
 ext.buildNumber = {
@@ -64,7 +64,6 @@ test {
     outputs.dir snippetsDir
 }
 
-
 task printVersion {
     doLast {
         println project.version
@@ -74,4 +73,8 @@ task printVersion {
 wrapper {
     gradleVersion = "6.0"
     distributionType = Wrapper.DistributionType.ALL
+}
+
+bootJar {
+    archiveFileName = 'system-config.jar'
 }

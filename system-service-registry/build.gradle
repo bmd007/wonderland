@@ -31,7 +31,7 @@ repositories {
 
 ext {
 	set('snippetsDir', file("build/generated-snippets"))
-	set('springCloudVersion', "Hoxton.RELEASE")
+	set('springCloudVersion', "Hoxton.SR1")
 }
 
 ext.buildNumber = {
@@ -87,5 +87,8 @@ wrapper {
 	distributionType = Wrapper.DistributionType.ALL
 }
 
+bootJar {
+	archiveFileName = 'system-service-registry.jar'
+}
 
 

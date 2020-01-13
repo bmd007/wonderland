@@ -1,6 +1,6 @@
 task buildDocker(dependsOn: build) {
     def dockerStageDir = new File(project.buildDir, "docker")
-    def repoName = 'bmd007-wonderland/hello'
+    def repoName = 'bmd007/hello'
     def tagName = project.version
     def jarName = "${project.name}-${version}.jar"
     doLast {
@@ -17,8 +17,8 @@ RUN sh -c 'touch /${jarName}'
 VOLUME ["/tmp"]
 ENTRYPOINT ["sh", "-c", "exec java -jar \$JAVA_OPTS -Djava.security.egd=file:/dev/./urandom /${jarName}"]
         
-EXPOSE 8882
-EXPOSE 8883
+EXPOSE 8081
+EXPOSE 8082
 """
         exec {
             workingDir = dockerStageDir

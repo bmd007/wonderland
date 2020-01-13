@@ -33,7 +33,7 @@ repositories {
 }
 
 ext {
-	set('springCloudVersion', "Hoxton.RELEASE")
+	set('springCloudVersion', "Hoxton.SR1")
 }
 
 dependencies {
@@ -70,3 +70,7 @@ wrapper {
 defaultTasks "clean", "build"
 
 apply from: 'build-docker.gradle'
+
+bootJar {
+	archiveFileName = 'hello.jar'
+}
