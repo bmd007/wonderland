@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.MainFragment">
+
+    <EditText
+        android:id="@+id/serverIdEditText"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:text="10.61.9.101"
+        tools:layout_editor_absoluteX="143dp"
+        tools:layout_editor_absoluteY="87dp" />
+
+    <EditText
+        android:id="@+id/usernameEditText"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="48dp"
+        android:text="09398240640"
+        app:layout_constraintTop_toBottomOf="@+id/serverIdEditText"
+        tools:layout_editor_absoluteX="143dp" />
+
+    <EditText
+        android:id="@+id/passwordEditText"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="52dp"
+        android:text="bombermakhool"
+        app:layout_constraintTop_toBottomOf="@+id/usernameEditText"
+        tools:layout_editor_absoluteX="143dp" />
+
+    <Button
+        android:id="@+id/stompConnectButton"
+        android:layout_width="213dp"
+        android:layout_height="183dp"
+        android:layout_marginTop="32dp"
+        android:text="stomp connect"
+        app:layout_constraintTop_toBottomOf="@+id/passwordEditText"
+        tools:layout_editor_absoluteX="86dp" />
+
+    <Button
+        android:id="@+id/simpleWebSocketConnectButton"
+        android:layout_width="193dp"
+        android:layout_height="81dp"
+        android:layout_marginTop="72dp"
+        android:text="SimpleWebscoket"
+        app:layout_constraintTop_toBottomOf="@+id/stompConnectButton"
+        tools:layout_editor_absoluteX="96dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

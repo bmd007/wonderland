@@ -1,6 +1,6 @@
 spring:
   application:
-    name: system-service-registry
+    name: messenger
   cloud.config.uri: http://localhost:8888
 
 ---

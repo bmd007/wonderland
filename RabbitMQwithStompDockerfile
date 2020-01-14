@@ -1,0 +1,9 @@
+FROM rabbitmq:management
+
+RUN rabbitmq-plugins enable rabbitmq_stomp
+RUN rabbitmq-plugins enable rabbitmq_management
+
+EXPOSE 5672
+EXPOSE 15672
+EXPOSE 4369
+EXPOSE 25672
