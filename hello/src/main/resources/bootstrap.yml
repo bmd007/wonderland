@@ -1,5 +1,9 @@
 spring:
   application:
     name: hello
-#the line below is needed because http://localhost:8888 is the default value
+  cloud.config.uri: http://localhost:8888
+
+---
+spring:
+  profiles: nomad
   cloud.config.uri: ${config-server-ip}:${config-server-port}

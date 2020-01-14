@@ -1,0 +1,11 @@
+server:
+  port: 8081
+
+wonderland.hello.prefix: NotFromConfigServer
+eureka.client.serviceUrl.defaultZone: http://localhost:8761/eureka/
+
+---
+spring:
+  profiles: nomad
+eureka.client.serviceUrl.defaultZone: "http://${service.registry.server.ip}:${service.registry.server.port}/eureka/"
+

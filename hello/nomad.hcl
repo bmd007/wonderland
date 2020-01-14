@@ -32,12 +32,12 @@ job "hello" {
         }
 
         port_map {
-          http =       8081
+          http =  8081
         }
       }
 
       env {
-#        SPRING_PROFILES_ACTIVE =                                 "test"
+        SPRING_PROFILES_ACTIVE =                                  "nomad"
         CONFIG_SERVER_IP =                                        "${NOMAD_IP_http}"
         CONFIG_SERVER_PORT =                                      "21379"
         SERVICE_REGISTRY_SERVER_IP =                              "${NOMAD_IP_http}"
