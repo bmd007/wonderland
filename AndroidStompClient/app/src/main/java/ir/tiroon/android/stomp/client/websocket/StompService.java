@@ -5,6 +5,8 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import java.util.Base64;
+import java.util.Collections;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -26,11 +28,14 @@ public class StompService {
 
         String userPass = Base64.getEncoder().encodeToString(new StringBuilder().append(userName).append(":").append(password).toString().getBytes());
         okClient = new OkHttpClient.Builder().authenticator((route, response) -> response.request().newBuilder()
-                .header("Authorization", "Basic "+ userPass).build()).build();
+                .header("Authorization", "Basic "+ userPass)
+                .header("login", "guest")
+                .header("passcode", "guest")
+                .build()).build();
         this.ip = ip;
-        String url = "ws://" + ip + ":61613";
-//        Map<String, String> headerMap = singletonMap("Authorization", "Basic "+ userPass); this maybe needed when using auth in brokers like activeMQ
-        mStompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, url, null, okClient);
+        String url = "ws://" + ip + ":61613/";
+        Map<String, String> headerMap = Collections.singletonMap("Authorization", "Basic "+ userPass);
+        mStompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, url, headerMap, okClient);
         mStompClient.connect();
 
         mStompClient.lifecycle().subscribe(lifecycleEvent -> {

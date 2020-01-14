@@ -12,26 +12,26 @@ services:
       - "25672:25672"     
       - "61613:61613"     
       
-#  consul:
-#    image: consul
-#    ports:
-#     - '8500:8500'
+  consul:
+    image: consul
+    ports:
+     - '8500:8500'
 
-  # PostgreSQL for storage
-#  postgresql:
-#    hostname: postgresql
-#    image: postgres:9
-#    ports:
-#     - '5432:5432'
-#    environment:
-#      - POSTGRES_PASSWORD=postgres
-#      - POSTGRES_USER=wonderland
+   PostgreSQL for storage
+  postgresql:
+    hostname: postgresql
+    image: postgres:9
+    ports:
+     - '5432:5432'
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=wonderland
 
-  # Postgres web client
-#  pgadmin:
-#    image: thajeztah/pgadmin4
-#    ports:
-#     - '89:5050'
+   Postgres web client
+  pgadmin:
+    image: thajeztah/pgadmin4
+    ports:
+     - '89:5050'
 
   zookeeper:
     image: wurstmeister/zookeeper
@@ -49,7 +49,7 @@ services:
         protocol: tcp
         mode: host
     environment:
-#      HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
+      HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
 #      KAFKA_CREATE_TOPICS: >-
 #        traffic-mission-control.event-log:5:3,
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -59,7 +59,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
       KAFKA_ADVERTISED_PORT: 9092
       JMX_PORT: 9997
-      #     KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+           KAFKA_DEFAULT_REPLICATION_FACTOR: 3
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
@@ -96,13 +96,13 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
-#  registrator:
-#    image: gliderlabs/registrator
-#    volumes:
-#      - /var/run/docker.sock:/tmp/docker.sock
-#    command: "-ip localhost consul://consul:8500"
-#    depends_on:
-#      - consul
+  registrator:
+    image: gliderlabs/registrator
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    command: "-ip localhost consul://consul:8500"
+    depends_on:
+      - consul
 
   kafka-manager:
     image: rafabsb/kafka-manager-docker:2.4
@@ -116,30 +116,30 @@ services:
       APPLICATION_SECRET: letmein
       KM_ARGS: -Djava.net.preferIPv4Stack=true
 
-#  elasticsearch:
-#    hostname: elasticsearch
-#    image: docker.elastic.co/elasticsearch/elasticsearch:6.0.1
-#    environment:
-#      - cluster.name=elasticsearch
-#      - bootstrap.memory_lock=true
-#      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
-#      - discovery.type=single-node
-#      - http.host=0.0.0.0
-#      - transport.tcp.port=9300
-#      - transport.host=0.0.0.0
-#      - transport.publish_port=9300
-#      - SERVICE_9300_NAME=core-elasticsearch
-#      - SERVICE_9200_NAME=core-elasticsearch
-#    ulimits:
-#      memlock:
-#        soft: -1
-#        hard: -1
-#    ports:
-#      - '9300:9300'
-#      - '9200:9200'
+  elasticsearch:
+    hostname: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.0.1
+    environment:
+      - cluster.name=elasticsearch
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - discovery.type=single-node
+      - http.host=0.0.0.0
+      - transport.tcp.port=9300
+      - transport.host=0.0.0.0
+      - transport.publish_port=9300
+      - SERVICE_9300_NAME=core-elasticsearch
+      - SERVICE_9200_NAME=core-elasticsearch
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - '9300:9300'
+      - '9200:9200'
 
-#  mongodb:
-#    hostname: mongodb
-#    image: mongo:3.4
-#    ports:
-#      - '27017:27017'
+  mongodb:
+    hostname: mongodb
+    image: mongo
+    ports:
+      - '27017:27017'

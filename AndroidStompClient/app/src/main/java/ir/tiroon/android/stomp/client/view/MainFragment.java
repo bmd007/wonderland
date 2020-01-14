@@ -67,7 +67,7 @@ public class MainFragment extends Fragment {
             String userName = usernameEditText.getText().toString();
             String password = passwordEditText.getText().toString();
             String ip = serverIdEditText.getText().toString();
-            String queueName = "/queue/"+userName;
+            String queueName = "/queue/bmd579@gmail.com";
             stompService = new StompService(ip, userName, password, queueName, stompConnectButton::setText);
             stompConnectButton.setClickable(false);
         });
