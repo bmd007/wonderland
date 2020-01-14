@@ -13,7 +13,7 @@ import ua.naiksoftware.stomp.Stomp;
 import ua.naiksoftware.stomp.StompClient;
 import ua.naiksoftware.stomp.dto.StompMessage;
 
-public class StompEchoService {
+public class StompService {
 
     private Consumer<String> onMessageListener;
     private StompClient mStompClient;
@@ -21,25 +21,24 @@ public class StompEchoService {
     private String ip;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public StompEchoService(String ip, String userName, String password, String queueName, Consumer<String> onMessageListener) {
+    public StompService(String ip, String userName, String password, String queueName, Consumer<String> onMessageListener) {
         this.onMessageListener = onMessageListener;
 
         String userPass = Base64.getEncoder().encodeToString(new StringBuilder().append(userName).append(":").append(password).toString().getBytes());
         okClient = new OkHttpClient.Builder().authenticator((route, response) -> response.request().newBuilder()
                 .header("Authorization", "Basic "+ userPass).build()).build();
         this.ip = ip;
-        String url = "ws://" + ip + ":8080/echoStopmEndpoint/websocket";
+        String url = "ws://" + ip + ":61613";
 //        Map<String, String> headerMap = singletonMap("Authorization", "Basic "+ userPass); this maybe needed when using auth in brokers like activeMQ
         mStompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, url, null, okClient);
         mStompClient.connect();
-
 
         mStompClient.lifecycle().subscribe(lifecycleEvent -> {
             switch (lifecycleEvent.getType()) {
                 case OPENED: {
                     Logger.getGlobal().info("Stomp connection opened");
                     mStompClient.topic(queueName).map(StompMessage::getPayload).subscribe(onMessageListener::accept);
-                    sendText("Hello", "/app/message");
+//                    sendText("Hello", "/app/message");
                     break;
                 }
                 case ERROR: {

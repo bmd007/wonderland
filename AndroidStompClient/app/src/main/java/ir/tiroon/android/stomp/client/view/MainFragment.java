@@ -20,7 +20,7 @@ import butterknife.ButterKnife;
 import ir.tiroon.android.stomp.client.R;
 import ir.tiroon.android.stomp.client.modelview.MainActivityUserViewModel;
 import ir.tiroon.android.stomp.client.websocket.SimpleWebSocketEchoService;
-import ir.tiroon.android.stomp.client.websocket.StompEchoService;
+import ir.tiroon.android.stomp.client.websocket.StompService;
 
 public class MainFragment extends Fragment {
 
@@ -42,8 +42,7 @@ public class MainFragment extends Fragment {
     Button simpleWebSocketConnectButton;
 
     SimpleWebSocketEchoService simpleWebSocketEchoService;
-    StompEchoService stompEchoService;
-
+    StompService stompService;
 
     public static MainFragment newInstance() {
         return new MainFragment();
@@ -68,8 +67,8 @@ public class MainFragment extends Fragment {
             String userName = usernameEditText.getText().toString();
             String password = passwordEditText.getText().toString();
             String ip = serverIdEditText.getText().toString();
-            String queueName = "/user/queue/reply";
-            stompEchoService = new StompEchoService(ip, userName, password, queueName, stompConnectButton::setText);
+            String queueName = "/queue/"+userName;
+            stompService = new StompService(ip, userName, password, queueName, stompConnectButton::setText);
             stompConnectButton.setClickable(false);
         });
 
