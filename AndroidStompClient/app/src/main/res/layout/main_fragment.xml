@@ -10,9 +10,9 @@
 
     <EditText
         android:id="@+id/serverIdEditText"
-        android:layout_width="100dp"
+        android:layout_width="160dp"
         android:layout_height="50dp"
-        android:text="10.61.9.101"
+        android:text="10.61.9.69"
         tools:layout_editor_absoluteX="143dp"
         tools:layout_editor_absoluteY="87dp" />
 
@@ -21,7 +21,7 @@
         android:layout_width="200dp"
         android:layout_height="50dp"
         android:layout_marginTop="48dp"
-        android:text="09398240640"
+        android:text="guest"
         app:layout_constraintTop_toBottomOf="@+id/serverIdEditText"
         tools:layout_editor_absoluteX="143dp" />
 
@@ -30,7 +30,7 @@
         android:layout_width="200dp"
         android:layout_height="50dp"
         android:layout_marginTop="52dp"
-        android:text="bombermakhool"
+        android:text="guest"
         app:layout_constraintTop_toBottomOf="@+id/usernameEditText"
         tools:layout_editor_absoluteX="143dp" />
 

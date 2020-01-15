@@ -4,8 +4,11 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
@@ -13,6 +16,7 @@ import java.util.logging.Logger;
 import okhttp3.OkHttpClient;
 import ua.naiksoftware.stomp.Stomp;
 import ua.naiksoftware.stomp.StompClient;
+import ua.naiksoftware.stomp.dto.StompHeader;
 import ua.naiksoftware.stomp.dto.StompMessage;
 
 public class StompService {
@@ -29,14 +33,20 @@ public class StompService {
         String userPass = Base64.getEncoder().encodeToString(new StringBuilder().append(userName).append(":").append(password).toString().getBytes());
         okClient = new OkHttpClient.Builder().authenticator((route, response) -> response.request().newBuilder()
                 .header("Authorization", "Basic "+ userPass)
-                .header("login", "guest")
-                .header("passcode", "guest")
-                .build()).build();
+                .build())
+            .build();
         this.ip = ip;
         String url = "ws://" + ip + ":61613/";
-        Map<String, String> headerMap = Collections.singletonMap("Authorization", "Basic "+ userPass);
+        Map<String, String> headerMap = new HashMap<>();
+        headerMap.put("Authorization", "Basic "+ userPass);
         mStompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, url, headerMap, okClient);
-        mStompClient.connect();
+
+        StompHeader header1 = new StompHeader("login", "guest");
+        StompHeader header2 = new StompHeader("passcode", "guest");
+        List<StompHeader> headers = new ArrayList<>();
+        headers.add(header1);
+        headers.add(header2);
+        mStompClient.connect(headers);
 
         mStompClient.lifecycle().subscribe(lifecycleEvent -> {
             switch (lifecycleEvent.getType()) {
@@ -48,6 +58,7 @@ public class StompService {
                 }
                 case ERROR: {
                     Logger.getGlobal().severe(lifecycleEvent.getException().getMessage());
+                    lifecycleEvent.getException().printStackTrace();
                     break;
                 }
                 case CLOSED: {
