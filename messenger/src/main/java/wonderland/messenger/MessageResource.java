@@ -1,8 +1,12 @@
 package wonderland.messenger;
 
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.amqp.core.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.Instant;
 
 @RestController
 public class MessageResource {
@@ -16,10 +20,22 @@ public class MessageResource {
     @Autowired
     private DirectExchange messagesExchange;
 
+    @Autowired
+    private KafkaTemplate<String, MessageSentEvent> kafkaTemplate;
+
     @PostMapping("/send/message/{from}/{to}")
     public String sendMessage(@PathVariable String from, @PathVariable String to, @RequestBody String body){
         rabbitTemplate.convertAndSend(messagesExchange.getName(), to, body);
-        return body+" sent to "+to;
+        var sendTime = Instant.now();
+        var messageSentEvent = MessageSentEvent.builder()
+                .body(body)
+                .from(from)
+                .to(to)
+                .time(sendTime)
+                .build();
+        var producerRecord = new ProducerRecord<String, MessageSentEvent>(TopicCreatorConfig.MESSAGE_EVENT_TOPIC, from, messageSentEvent);
+        kafkaTemplate.send(producerRecord);
+        return body+" sent to "+to+ "at "+sendTime;
     }
 
     @PostMapping("/create/queue/for/{email}")

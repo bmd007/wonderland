@@ -43,9 +43,10 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-	implementation 'io.projectreactor.kafka:reactor-kafka:1.2.1.RELEASE'
+	compileOnly 'org.projectlombok:lombok'
 
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+	implementation 'org.springframework.kafka:spring-kafka'
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

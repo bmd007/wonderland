@@ -1,0 +1,76 @@
+version: '3.7'
+services:
+
+  rabbitmq:
+    build:
+      context: .
+      dockerfile: RabbitMQwithStompDockerfile
+    ports:
+      - "5672:5672"
+      - "15672:15672"      
+      - "4369:4369"            
+      - "25672:25672"     
+      - "61613:61613"     
+      
+  zookeeper:
+    image: wurstmeister/zookeeper
+    hostname: zookeeper
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: wurstmeister/kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - target: 9094
+        published: 9094
+        protocol: tcp
+        mode: host
+    environment:
+      HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
+#      KAFKA_CREATE_TOPICS: >-
+#        traffic-mission-control.event-log:5:3,
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT, OUTSIDE:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://:9092, OUTSIDE://localhost:9094
+      KAFKA_LISTENERS: INSIDE://:9092, OUTSIDE://:9094
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_ADVERTISED_PORT: 9092
+      JMX_PORT: 9997
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+#      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  kafka2:
+    image: wurstmeister/kafka
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://:9092
+      KAFKA_LISTENERS: INSIDE://:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_ADVERTISED_PORT: 9092
+      JMX_PORT: 9997
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  kafka3:
+    image: wurstmeister/kafka
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://:9092
+      KAFKA_LISTENERS: INSIDE://:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_ADVERTISED_PORT: 9092
+      JMX_PORT: 9997
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
