@@ -17,7 +17,6 @@ services:
     ports:
      - '8500:8500'
 
-   PostgreSQL for storage
   postgresql:
     hostname: postgresql
     image: postgres:9
@@ -27,7 +26,6 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=wonderland
 
-   Postgres web client
   pgadmin:
     image: thajeztah/pgadmin4
     ports:
@@ -59,7 +57,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
       KAFKA_ADVERTISED_PORT: 9092
       JMX_PORT: 9997
-           KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      #     KAFKA_DEFAULT_REPLICATION_FACTOR: 3
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
