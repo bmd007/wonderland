@@ -1,0 +1,13 @@
+server:
+  port: 8089
+
+eureka.client.serviceUrl.defaultZone: http://localhost:8761/eureka/
+---
+spring:
+  profiles: nomad
+
+eureka.client.serviceUrl.defaultZone: "http://${service.registry.server.ip}:${service.registry.server.port}/eureka/"
+---
+spring:
+  profiles:
+    - docker-compose

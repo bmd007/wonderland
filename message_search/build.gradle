@@ -1,5 +1,5 @@
 plugins {
-	id 'org.springframework.boot' version '2.2.1.RELEASE'
+	id 'org.springframework.boot' version '2.2.3.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
 	id 'java'
 	id 'idea'
@@ -47,8 +47,13 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok:1.18.10'
 	compileOnly 'org.projectlombok:lombok:1.18.10'
 
-	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 	implementation 'org.springframework.kafka:spring-kafka'
+
+	implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.5.1'
+	implementation 'org.elasticsearch.client:elasticsearch-rest-client:7.5.1'
+	implementation 'org.elasticsearch:elasticsearch:7.5.1'
+//	this will support elastic search 7 with spring boot 2.3.* so we stick to elastic classic clients
+//	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -56,8 +61,10 @@ dependencies {
 	testImplementation 'io.projectreactor:reactor-test'
 	testCompile("org.junit.jupiter:junit-jupiter-api")
 	testRuntime("org.junit.jupiter:junit-jupiter-engine")
-	testImplementation 'org.springframework.amqp:spring-rabbit-test'
 	testImplementation "org.springframework.kafka:spring-kafka-test"
+	testImplementation "org.testcontainers:testcontainers:1.12.4"
+	testImplementation "org.testcontainers:elasticsearch:1.12.4"
+//	testImplementation("org.testcontainers:kafka:1.12.4")
 }
 
 dependencyManagement {
@@ -80,5 +87,6 @@ defaultTasks "clean", "build"
 apply from: 'build-docker.gradle'
 
 bootJar {
-	archiveFileName = 'messenger.jar'
+	archiveFileName = 'meessage_search.jar'
 }
+
