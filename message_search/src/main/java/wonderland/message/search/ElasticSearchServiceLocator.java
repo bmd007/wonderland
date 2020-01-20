@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import static java.util.stream.Collectors.toList;
 
-@Component
+//@Component
 public class ElasticSearchServiceLocator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticSearchServiceLocator.class);

@@ -29,7 +29,6 @@ configurations {
 
 repositories {
 	mavenCentral()
-	maven { url 'https://repo.spring.io/milestone' }
 }
 
 ext {
@@ -43,17 +42,10 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-
-	annotationProcessor 'org.projectlombok:lombok:1.18.10'
-	compileOnly 'org.projectlombok:lombok:1.18.10'
-
+	implementation "com.google.guava:guava:28.1-jre"
 	implementation 'org.springframework.kafka:spring-kafka'
 
-	implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.5.1'
-	implementation 'org.elasticsearch.client:elasticsearch-rest-client:7.5.1'
-	implementation 'org.elasticsearch:elasticsearch:7.5.1'
-//	this will support elastic search 7 with spring boot 2.3.* so we stick to elastic classic clients
-//	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

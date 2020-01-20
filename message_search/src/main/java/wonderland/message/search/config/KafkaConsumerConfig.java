@@ -1,4 +1,4 @@
-package wonderland.message.search;
+package wonderland.message.search.config;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -10,6 +10,7 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
+import wonderland.message.search.event.MessageSentEvent;
 
 import java.util.HashMap;
 import java.util.Map;
