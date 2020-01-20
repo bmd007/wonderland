@@ -11,11 +11,10 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Document(indexName = "message_history", type = "message")
 //@JsonDeserialize(builder = Message.Builder.class)
@@ -28,6 +27,8 @@ public class Message {
 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @Field(type = FieldType.Date, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private LocalDateTime sentTime;
 
     @Override
