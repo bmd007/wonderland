@@ -35,15 +35,9 @@ public class TopicCreatorConfig {
 
     @Bean
     public NewTopic messageEventTopic() {
-        return new NewTopic(MESSAGE_EVENT_TOPIC, messageEventTopicDefinition.numPartitions, messageEventTopicDefinition.replicationFactor);
+        return new NewTopic(MESSAGE_EVENT_TOPIC, messageEventTopicDefinition.numPartitions, messageEventTopicDefinition.replicationFactor)
+                        .configs(Map.of(RETENTION_MS_CONFIG, "-1", RETENTION_BYTES_CONFIG, "-1"));
     }
-
-//    @Bean
-//    public NewTopic atrIdMappingsUpdatesTopic() {
-//        return new NewTopic(AttributeIdMappingService.ATTRIBUTE_ID_MAPPING_EVENTS_TOPIC,
-//                attributeIdMappingTopicDef.numPartitions, attributeIdMappingTopicDef.replicationFactor)
-//                .configs(Map.of(RETENTION_MS_CONFIG, "-1", RETENTION_BYTES_CONFIG, "-1"));
-//    }
 
     private static class PartitionDef {
 
