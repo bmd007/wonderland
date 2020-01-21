@@ -1,4 +1,4 @@
-package wonderland.message.search.Repository;
+package wonderland.message.search.repository;
 
 import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.repository.ReactiveElasticsearchRepository;

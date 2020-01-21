@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
-import wonderland.message.search.Repository.MessageRepository;
+import wonderland.message.search.repository.MessageRepository;
 import wonderland.message.search.domain.Message;
 import wonderland.message.search.event.MessageSentEvent;
 
