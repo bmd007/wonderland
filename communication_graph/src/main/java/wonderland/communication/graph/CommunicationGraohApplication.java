@@ -23,10 +23,11 @@ public class CommunicationGraohApplication {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommunicationGraohApplication.class);
 
+
+
     @KafkaListener(topicPattern = MESSAGE_EVENT_TOPIC)
     public void messageEventsSentSubscription(@Payload MessageSentEvent messageSentEvent, @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key){
     }
-
 
     //todo recommendation: if A talked to B and C talked to B and D talked to B, when E talks to A and C and D, system recommends to E to talk to B
     //todo find a ring of people who talked to each other one by one and suggest them to create a group
