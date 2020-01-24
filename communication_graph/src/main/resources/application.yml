@@ -3,6 +3,11 @@ server:
 
 eureka.client.serviceUrl.defaultZone: http://localhost:8761/eureka/
 
+spring:
+  data:
+    neo4j:
+      username: "neo4j"
+      password: "test"
 ---
 spring:
   profiles: nomad

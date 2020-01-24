@@ -6,18 +6,19 @@ import org.neo4j.ogm.annotation.*;
 import org.neo4j.ogm.annotation.typeconversion.DateString;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
+import java.util.UUID;
 
 //this class represent edges on graph
+@RelationshipEntity(type = "SENT_MESSAGE")
 public class Communication {
 
-    @Id @GeneratedValue String id;
+    @Id String id;
     @StartNode Person from;
     @EndNode Person to;
-
-    @DateString @Property Instant time;
+    @Property Instant time;
 
     public Communication(Person from, Person to, Instant time) {
+        this.id = UUID.randomUUID().toString();
         this.from = from;
         this.to = to;
         this.time = time;
@@ -38,14 +39,15 @@ public class Communication {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Communication that = (Communication) o;
-        return  Objects.equal(from, that.from) &&
+        return Objects.equal(id, that.id) &&
+                Objects.equal(from, that.from) &&
                 Objects.equal(to, that.to) &&
                 Objects.equal(time, that.time);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(from, to, time);
+        return Objects.hashCode(id, from, to, time);
     }
 
     public String getId() {

@@ -6,5 +6,5 @@ import wonderland.communication.graph.domain.Communication;
 import wonderland.communication.graph.domain.Person;
 
 @Repository
-public interface ComminicationRepository extends Neo4jRepository<Communication, String> {
+public interface CommunicationRepository extends Neo4jRepository<Communication, String> {
 }

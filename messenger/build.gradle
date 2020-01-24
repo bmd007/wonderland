@@ -45,7 +45,7 @@ dependencies {
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
 	annotationProcessor 'org.projectlombok:lombok:1.18.10'
-	compileOnly 'org.projectlombok:lombok:1.18.10'
+	implementation 'org.projectlombok:lombok:1.18.10'
 
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 	implementation 'org.springframework.kafka:spring-kafka'

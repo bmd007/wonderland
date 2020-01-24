@@ -8,7 +8,6 @@ import org.neo4j.ogm.annotation.Relationship;
 
 import java.util.List;
 
-import static org.neo4j.ogm.annotation.Relationship.INCOMING;
 import static org.neo4j.ogm.annotation.Relationship.OUTGOING;
 
 //this class represents nodes on graph
@@ -17,11 +16,8 @@ public class Person {
 
     @Id private String email;
 
-    @Relationship(direction = OUTGOING)
+    @Relationship(direction = OUTGOING, type = "SENT_MESSAGE")
     private List<Communication> outwardCommunications;
-
-    @Relationship(direction = INCOMING)
-    private List<Communication> inwardCommunications;
 
     public Person(String email) {
         this.email = email;
@@ -29,6 +25,14 @@ public class Person {
 
     public Person() {
 
+    }
+
+    public List<Communication> getOutwardCommunications() {
+        return outwardCommunications;
+    }
+
+    public void setOutwardCommunications(List<Communication> outwardCommunications) {
+        this.outwardCommunications = outwardCommunications;
     }
 
     public void setEmail(String email) {
