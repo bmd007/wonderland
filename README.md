@@ -7,13 +7,10 @@ There is also amqp based comminucation to outside (an Android app) (with help of
     * add create docker image task for each service
     * use docker compose (all together) as some sort of deployment and orchestration tool
     * use nomad
-    * add API gateway for authorization checks (resource server in OAuath2 world)
-    * complete user-account app (maybe rename to user profile or just user)
-    * add message_history service that is layer on top of elastic search
+    * add API gateway for authorization checks (resource server in OAuath2 world) (and connect it to google)
+    * complete person_profile app 
     * publish logs into elastic search
     * add kibana for reading logs 
-    * add message_network service as a layer on top of graph ql (network of people who have connection)
-    * 
        
 ## Bounded contexes and Teams > ? < 
     
