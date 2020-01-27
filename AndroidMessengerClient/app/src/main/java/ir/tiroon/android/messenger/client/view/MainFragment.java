@@ -62,7 +62,7 @@ public class MainFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mMainActivityViewModel = ViewModelProviders.of(this).get(MainActivityUserViewModel.class);
         mMainActivityViewModel.populateWithData();
-        mMainActivityViewModel.updateEchoMessage("simple websocket");
+        mMainActivityViewModel.updateEchoMessage("rabbit mq amqp messages coming");
         amqpConnectButton.setOnClickListener(v -> {
             String userName = usernameEditText.getText().toString();
             String password = passwordEditText.getText().toString();
