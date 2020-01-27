@@ -19,11 +19,7 @@ import java.util.Map;
 @Configuration
 public class KafkaConsumerConfig {
 
-    @Value("${spring:.kafka.bootstrap-servers}")
-    String kafkaHosts;
-    @Value("${spring:.application.name}")
-    String applicationName;
-
+aa
     @Bean
     public ConsumerFactory<String, MessageSentEvent> consumerFactory() {
         Map<String, Object> props = new HashMap<>();

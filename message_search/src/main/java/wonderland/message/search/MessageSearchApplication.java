@@ -47,7 +47,7 @@ public class MessageSearchApplication {
         return messageRepository.findByTextContaining(text);
     }
 
-    //todo add a profile calle re indexing that reads the messages from topic from beginning and re fill the elastic index
+    //todo add a profile call re indexing that reads the messages from topic from beginning and re fill the elastic index
 }
 
 

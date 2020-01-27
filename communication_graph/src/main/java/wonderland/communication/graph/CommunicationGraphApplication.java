@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
@@ -16,17 +17,19 @@ import wonderland.communication.graph.event.MessageSentEvent;
 import wonderland.communication.graph.repository.CommunicationRepository;
 import wonderland.communication.graph.repository.PersonRepository;
 
+@EnableNeo4jRepositories("wonderland.communication.graph.repository")
+//@EntityScan(basePackages = "wonderland.communication.graph.domain")
 @RestController
 @SpringBootApplication
-public class CommunicationGraohApplication {
+public class CommunicationGraphApplication {
 
     public static final String MESSAGE_EVENT_TOPIC = "message_events";
 
     public static void main(String[] args) {
-        SpringApplication.run(CommunicationGraohApplication.class, args);
+        SpringApplication.run(CommunicationGraphApplication.class, args);
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommunicationGraohApplication.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommunicationGraphApplication.class);
 
     @Autowired
     private PersonRepository personRepository;
