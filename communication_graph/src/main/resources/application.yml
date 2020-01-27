@@ -8,6 +8,10 @@ spring:
     neo4j:
       username: "neo4j"
       password: "test"
+
+  kafka:
+    bootstrap-servers: "localhost:9092"
+
 ---
 spring:
   profiles: nomad
