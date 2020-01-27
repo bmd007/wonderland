@@ -1,0 +1,11 @@
+/neo4j
+/neo4j/**
+**/target/**
+**/out/**
+**/.idea/**
+*.war
+*.apk
+*.jar
+**/someBackUp/**
+/tmp
+/temp

@@ -49,7 +49,7 @@ public class CommunicationGraohApplication {
     //todo recommendation: if A talked to B and C talked to B and D talked to B, when E talks to A and C and D, system recommends to E to talk to B
     //todo find a ring of people who talked to each other one by one and suggest them to create a group
     //todo calculate the most and least popular person
-    //todo calculate leaders (nodes with the most shortest paths to others)
+    //todo calculate leaders (nodes with the most shortest paths to others) =? Most influential person
     //todo calculate group connectors
     //https://neo4j.com/blog/graph-algorithms-neo4j-15-different-graph-algorithms-and-what-they-do/
 
