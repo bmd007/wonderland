@@ -1,4 +1,4 @@
-job "system-config" {
+job "config_center" {
   region =      "global"
   datacenters = ["dc1"]
   type =        "service"
@@ -10,7 +10,7 @@ job "system-config" {
     min_healthy_time = "30s"
   }
 
- group "system-config" {
+ group "config_center" {
     #count = INSTANCE_COUNT
     count = 1
 
@@ -19,12 +19,12 @@ job "system-config" {
       mode =  "delay"
     }
 
-    task "system-config" {
+    task "config_center" {
       driver = "docker"
 
       # Configuration is specific to each driver.
       config {
-        image =      "bmd007/system-config:latest"
+        image =      "bmd007/config_center:latest"
         force_pull = true
         auth {
           username = "bmd007"

@@ -76,5 +76,5 @@ wrapper {
 }
 
 bootJar {
-    archiveFileName = 'system-config.jar'
+    archiveFileName = 'config_center.jar'
 }

@@ -1,6 +1,6 @@
 spring:
   application:
-    name: system-config
+    name: config_center
 
   cloud:
     config:

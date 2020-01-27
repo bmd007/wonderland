@@ -84,7 +84,7 @@ wrapper {
 }
 
 bootJar {
-	archiveFileName = 'system-service-registry.jar'
+	archiveFileName = 'service_registry.jar'
 }
 
 

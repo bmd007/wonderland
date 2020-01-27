@@ -1,4 +1,4 @@
-job "system-service-registry" {
+job "service_registry" {
   region =      "global"
   datacenters = ["dc1"]
   type =        "service"
@@ -10,7 +10,7 @@ job "system-service-registry" {
     min_healthy_time = "30s"
   }
 
- group "system-service-registry" {
+ group "service_registry" {
     #count = INSTANCE_COUNT
     count = 1
 
@@ -19,12 +19,12 @@ job "system-service-registry" {
       mode =  "delay"
     }
 
-    task "system-service-registry" {
+    task "service_registry" {
       driver = "docker"
 
       # Configuration is specific to each driver.
       config {
-        image =      "bmd007/system-service-registry:latest"
+        image =      "bmd007/service_registry:latest"
         force_pull = true
         auth {
           username = "bmd007"
