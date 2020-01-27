@@ -35,8 +35,8 @@ public class MainFragment extends Fragment {
     @BindView(R.id.passwordEditText)
     EditText passwordEditText;
 
-    @BindView(R.id.stompConnectButton)
-    Button stompConnectButton;
+    @BindView(R.id.amqpConnectButton)
+    Button amqpConnectButton;
 
     @BindView(R.id.simpleWebSocketConnectButton)
     Button simpleWebSocketConnectButton;
@@ -63,13 +63,13 @@ public class MainFragment extends Fragment {
         mMainActivityViewModel = ViewModelProviders.of(this).get(MainActivityUserViewModel.class);
         mMainActivityViewModel.populateWithData();
         mMainActivityViewModel.updateEchoMessage("simple websocket");
-        stompConnectButton.setOnClickListener(v -> {
+        amqpConnectButton.setOnClickListener(v -> {
             String userName = usernameEditText.getText().toString();
             String password = passwordEditText.getText().toString();
             String ip = serverIdEditText.getText().toString();
             String queueName = "bmd579@gmail.com";
-            rabbitMQService = new RabbitMQService(ip, userName, password, queueName, stompConnectButton::setText);
-            stompConnectButton.setClickable(false);
+            rabbitMQService = new RabbitMQService(ip, userName, password, queueName, amqpConnectButton::setText);
+            amqpConnectButton.setClickable(false);
         });
 
         /////////////////////

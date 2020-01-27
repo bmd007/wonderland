@@ -35,11 +35,11 @@
         tools:layout_editor_absoluteX="143dp" />
 
     <Button
-        android:id="@+id/stompConnectButton"
+        android:id="@+id/amqpConnectButton"
         android:layout_width="213dp"
         android:layout_height="183dp"
         android:layout_marginTop="32dp"
-        android:text="stomp connect"
+        android:text="AMQP (to RABBIT MQ) connect"
         app:layout_constraintTop_toBottomOf="@+id/passwordEditText"
         tools:layout_editor_absoluteX="86dp" />
 
@@ -49,7 +49,7 @@
         android:layout_height="81dp"
         android:layout_marginTop="72dp"
         android:text="SimpleWebscoket"
-        app:layout_constraintTop_toBottomOf="@+id/stompConnectButton"
+        app:layout_constraintTop_toBottomOf="@+id/amqpConnectButton"
         tools:layout_editor_absoluteX="96dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

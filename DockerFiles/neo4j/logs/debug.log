@@ -2624,3 +2624,30 @@ MATCH ()-[]->() RETURN { name:'relationships', data: count(*)} AS result
 2020-01-27 09:35:05.002+0000 DEBUG [o.n.k.i.p.Procedures] PageRank: nodes=5, concurrency=4, available memory=3465 MiB, estimated memory usage: 376 Bytes
 2020-01-27 09:35:05.003+0000 INFO [o.n.k.i.p.Procedures] [neo4j.BoltWorker-4 [bolt] [/172.29.0.1:34672] ] PageRank 2% Memory usage: 560 KiB
 2020-01-27 09:35:05.012+0000 INFO [o.n.k.i.p.Procedures] PageRank: overall memory usage: 296 KiB
+2020-01-27 09:39:10.069+0000 INFO [o.n.k.i.t.l.c.CheckPointerImpl] Checkpoint triggered by "Scheduled checkpoint for time threshold" @ txId: 45 checkpoint started...
+2020-01-27 09:39:10.078+0000 INFO [o.n.k.i.s.c.CountsTracker] Rotated counts store at transaction 45 to [/data/databases/graph.db/neostore.counts.db.a], from [/data/databases/graph.db/neostore.counts.db.b].
+2020-01-27 09:39:10.096+0000 INFO [o.n.k.i.t.l.c.CheckPointerImpl] Checkpoint triggered by "Scheduled checkpoint for time threshold" @ txId: 45 checkpoint completed in 26ms
+2020-01-27 09:39:10.096+0000 INFO [o.n.k.i.t.l.p.LogPruningImpl] No log version pruned, last checkpoint was made in version 0
+2020-01-27 10:22:30.180+0000 INFO [o.n.k.i.t.l.c.CheckPointerImpl] Checkpoint triggered by "Scheduled checkpoint for time threshold" @ txId: 48 checkpoint started...
+2020-01-27 10:22:30.207+0000 INFO [o.n.k.i.s.c.CountsTracker] Rotated counts store at transaction 48 to [/data/databases/graph.db/neostore.counts.db.b], from [/data/databases/graph.db/neostore.counts.db.a].
+2020-01-27 10:22:30.226+0000 INFO [o.n.k.i.t.l.c.CheckPointerImpl] Checkpoint triggered by "Scheduled checkpoint for time threshold" @ txId: 48 checkpoint completed in 40ms
+2020-01-27 10:22:30.228+0000 INFO [o.n.k.i.t.l.p.LogPruningImpl] No log version pruned, last checkpoint was made in version 0
+2020-01-27 10:22:44.800+0000 INFO [o.n.c.i.ExecutionEngine] Discarded stale query from the query cache after 5260 seconds: 
+CALL dbms.queryJmx("org.neo4j:instance=*,name=Kernel") yield attributes
+RETURN {name: 'Kernel', data: collect(attributes)} as result
+UNION ALL
+CALL dbms.queryJmx("org.neo4j:instance=*,name=Store file sizes") yield attributes
+RETURN {name: 'Store file sizes', data: collect(attributes)} as result
+UNION ALL
+CALL dbms.queryJmx("org.neo4j:instance=*,name=Configuration") yield attributes
+RETURN {name: 'Configuration', data: collect(attributes)} as result
+
+2020-01-27 10:22:44.821+0000 DEBUG [o.n.c.i.CommunityCompilerFactory] Discarded stale plan from the plan cache after 5260 seconds: CALL dbms.queryJmx("org.neo4j:instance=*,name=Kernel") yield attributes
+RETURN {name: 'Kernel', data: collect(attributes)} as result
+UNION ALL
+CALL dbms.queryJmx("org.neo4j:instance=*,name=Store file sizes") yield attributes
+RETURN {name: 'Store file sizes', data: collect(attributes)} as result
+UNION ALL
+CALL dbms.queryJmx("org.neo4j:instance=*,name=Configuration") yield attributes
+RETURN {name: 'Configuration', data: collect(attributes)} as result
+
