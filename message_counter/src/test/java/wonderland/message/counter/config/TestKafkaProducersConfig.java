@@ -15,17 +15,16 @@ import java.util.Properties;
 
 @Profile("test")
 @Configuration
-public class KafkaProducersConfig {
+public class TestKafkaProducersConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
     @Bean
     @Qualifier("messageSentEventKafkaProducer")
-    public KafkaProducer<String, Event> eventProducer() {
+    public KafkaProducer<String, MessageSentEvent> messageSentEventProducer() {
         var producerConfig = new Properties();
         producerConfig.put("bootstrap.servers", bootstrapServers);
-        producerConfig.put("enable.idempotence", "true"); //this provide foundation for transaction in the boundaries of this application through kafka.
         return new KafkaProducer(producerConfig, new StringSerializer(), new JsonSerializer<MessageSentEvent>());
     }
 
