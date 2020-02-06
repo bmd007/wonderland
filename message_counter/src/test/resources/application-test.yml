@@ -1,0 +1,22 @@
+management:
+  server:
+    port: 0
+
+spring:
+  # Kafka enable for tests
+  kafka:
+    enabled: true
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
+
+# This is the mapped ip:port for inter instance communication.
+# This port is never opened during testing.
+kafka:
+  streams:
+    server:
+      config:
+        app-ip: localhost
+        app-port: 9585
+
+  topic-partitions:
+    eventTopic: '1:1'
+    changeLogTopic: '1:1'
