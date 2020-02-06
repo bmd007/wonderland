@@ -6,6 +6,7 @@ import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ public class KStreamAndKTableDefinitions {
 
     private static final Consumed<String, Event> EVENT_CONSUMED = Consumed.with(Serdes.String(), new JsonSerde(Event.class));
     private static final Consumed<String, MessageSentEvent> MESSAGE_SENT_EVENT_CONSUMED = Consumed.with(Serdes.String(), new JsonSerde(MessageSentEvent.class));
+    private static final Produced<String, CounterIncreasedEvent> EVENT_PRODUCED = Produced.with(Serdes.String(), new JsonSerde(CounterIncreasedEvent.class));
 
     private StreamsBuilder builder;
     private EventHandler eventHandler;
@@ -45,9 +47,10 @@ public class KStreamAndKTableDefinitions {
         //another analogy is like this handler is like father culture that brings stability to code
         // against the dynamicity of mother nature which is all the external events and their possible changes
         builder.stream(Topics.MESSAGE_EVENT_TOPIC, MESSAGE_SENT_EVENT_CONSUMED)
-                .peek((k1, v1) -> LOGGER.debug("MessageSentEvent {} arrived", k1, v1))
+                .peek((k1, v1) -> LOGGER.debug("MessageSentEvent {} arrived", v1))
                 .map((key, value) -> KeyValue.pair(key, new CounterIncreasedEvent(key)))
-                .to(Topics.EVENT_LOG);
+                .peek((k1, v1) -> LOGGER.debug("Event {} is about to be logged", v1))
+                .to(Topics.EVENT_LOG, EVENT_PRODUCED);
     }
 
     @PostConstruct

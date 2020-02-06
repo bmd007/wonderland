@@ -8,6 +8,7 @@ spring:
     enabled: true
     bootstrap-servers: ${spring.embedded.kafka.brokers}
 
+
 # This is the mapped ip:port for inter instance communication.
 # This port is never opened during testing.
 kafka:

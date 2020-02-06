@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/api/message/counter")
+@RequestMapping("/api/counter/message")
 public class MessageCounterResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageCounterResource.class);
@@ -33,18 +33,17 @@ public class MessageCounterResource {
     @PostMapping("/{sender}/restart")
     @ResponseStatus(HttpStatus.CREATED)
     public void createACounter(@PathVariable String sender) {
-        LOGGER.info("Creating a counter with name {}", sender);
         var event = new CounterRestartedEvent(sender);
         eventLogger.log(event);
     }
 
     //isHighLevelQuery query param is related to inter instance communication and it should be true in normal operations or not defined
-    @GetMapping("/sent")
+    @GetMapping("/sent/from")
     public Mono<MessageCountersDto> getCounters(@RequestParam(required = false, value = ViewService.HIGH_LEVEL_QUERY_PARAM_NAME, defaultValue = "true") boolean isHighLevelQuery) {
         return messageCounterViewService.getAll(isHighLevelQuery);
     }
 
-    @GetMapping("/from/{sender}")
+    @GetMapping("/sent/from/{sender}")
     public Mono<MessageCounterDto> getCounterByName(@PathVariable("sender") String sender) {
         return messageCounterViewService.getById(sender)
                 .switchIfEmpty(Mono.error(new NotFoundException(String.format("%s not found (%s doesn't exist). Maybe has not sent any messages yet", "Sender", sender))));

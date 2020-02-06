@@ -1,6 +1,7 @@
 package wonderland.message.counter;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +30,7 @@ import wonderland.message.counter.util.KafkaStreamsAwait;
 import wonderland.message.counter.util.TopicPublisher;
 
 import java.time.Instant;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -61,14 +63,11 @@ public class AcceptanceTest {
     @Autowired
     @Qualifier("messageSentEventKafkaProducer")
     KafkaProducer<String, MessageSentEvent> messageSentEventProducer;
-    TopicPublisher<String, MessageSentEvent> kafakPublisher;
 
     @BeforeEach
     void setupKafka() throws Exception {
         await.await();
-        kafkaHelper = new EmbeddedKafkaHelper<String, Event>(embeddedKafka, Topics.EVENT_LOG, StringDeserializer.class, EventDeserializer.class);
-
-        kafakPublisher = new TopicPublisher<>(messageSentEventProducer, Topics.MESSAGE_EVENT_TOPIC);
+        kafkaHelper = new EmbeddedKafkaHelper<>(embeddedKafka, Topics.EVENT_LOG, StringDeserializer.class, EventDeserializer.class);
     }
 
     @AfterEach
@@ -77,10 +76,10 @@ public class AcceptanceTest {
     }
 
     @Test
-    public void sendAMessageAndThenCheckCounterForTheSender() throws InterruptedException {
+    public void sendAMessageAndThenCheckCounterForTheSender() throws InterruptedException, ExecutionException {
         // given
         client.post()
-                .uri("/api/counter/mahdi/restart")
+                .uri("/api/counter/message/mahdi/restart")
                 .exchange()
                 .expectStatus()
                 .isCreated();
@@ -89,23 +88,22 @@ public class AcceptanceTest {
         assertNotNull(record);
         assertTrue(record.value() instanceof CounterRestartedEvent);
 
-        kafakPublisher.publish("mahdi", MessageSentEvent.builder()
+//        //faking a message sent
+        messageSentEventProducer.send(new ProducerRecord<>(Topics.MESSAGE_EVENT_TOPIC, "mahdi", MessageSentEvent.builder()
                 .withBody("hhhhhheeee")
                 .withFrom("mahdi")
                 .withTo("LOVE")
                 .withTime(Instant.now())
-                .build());
-
-        Thread.sleep(1000); // Eventual consistency :))
+                .build())).get();
 
         var record2 = kafkaHelper.getRecords().poll(TIMEOUT, TimeUnit.MILLISECONDS);
         assertNotNull(record2);
         assertTrue(record2.value() instanceof CounterIncreasedEvent);
 
-        Thread.sleep(1000); // Eventual consistency :))
+        Thread.sleep(100); // Eventual consistency :))
         //when
         client.get()
-                .uri("/api/message/counter/mahdi")
+                .uri("/api/counter/message/sent/from/mahdi")
                 .exchange()
                 //then
                 .expectStatus()
@@ -114,16 +112,8 @@ public class AcceptanceTest {
                 .value(counterDto -> assertEquals(1, counterDto.getNumberOfSentMessages()));
     }
 
-    class EventDeserializer extends JsonDeserializer<Event> {
-        public EventDeserializer() {
-            super(Event.class);
-        }
-    }
-
-    class MessageSentEventDeserializer extends JsonDeserializer<MessageSentEvent> {
-        public MessageSentEventDeserializer() {
-            super(MessageSentEvent.class);
-        }
+    public static class EventDeserializer extends JsonDeserializer<Event> {
+        public EventDeserializer() { super(Event.class); }
     }
 
 }

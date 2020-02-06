@@ -2651,3 +2651,162 @@ UNION ALL
 CALL dbms.queryJmx("org.neo4j:instance=*,name=Configuration") yield attributes
 RETURN {name: 'Configuration', data: collect(attributes)} as result
 
+2020-01-27 10:29:29.340+0000 INFO [o.n.c.i.ExecutionEngine] Discarded stale query from the query cache after 5334 seconds: UNWIND $rows as row MERGE (n:`Person`{email: row.props.email}) SET n=row.props RETURN row.nodeRef as ref, ID(n) as id, $type as type
+2020-01-27 10:29:29.345+0000 DEBUG [o.n.c.i.CommunityCompilerFactory] Discarded stale plan from the plan cache after 5334 seconds: UNWIND $rows as row MERGE (n:`Person`{email: row.props.email}) SET n=row.props RETURN row.nodeRef as ref, ID(n) as id, $type as type
+2020-01-27 10:37:30.264+0000 INFO [o.n.k.i.t.l.c.CheckPointerImpl] Checkpoint triggered by "Scheduled checkpoint for time threshold" @ txId: 51 checkpoint started...
+2020-01-27 10:37:30.272+0000 INFO [o.n.k.i.s.c.CountsTracker] Rotated counts store at transaction 51 to [/data/databases/graph.db/neostore.counts.db.a], from [/data/databases/graph.db/neostore.counts.db.b].
+2020-01-27 10:37:30.288+0000 INFO [o.n.k.i.t.l.c.CheckPointerImpl] Checkpoint triggered by "Scheduled checkpoint for time threshold" @ txId: 51 checkpoint completed in 22ms
+2020-01-27 10:37:30.288+0000 INFO [o.n.k.i.t.l.p.LogPruningImpl] No log version pruned, last checkpoint was made in version 0
+2020-01-27 11:34:03.342+0000 INFO [o.n.c.i.ExecutionEngine] Discarded stale query from the query cache after 9422 seconds: CALL algo.pageRank.stream("Person", "SENT_MESSAGE", {iterations:20})    YIELD nodeId, score    MATCH (node) WHERE id(node) = nodeId    RETURN node.email AS email, score    ORDER BY score DESC
+2020-01-27 11:34:03.344+0000 DEBUG [o.n.c.i.CommunityCompilerFactory] Discarded stale plan from the plan cache after 9422 seconds: CALL algo.pageRank.stream("Person", "SENT_MESSAGE", {iterations:20})    YIELD nodeId, score    MATCH (node) WHERE id(node) = nodeId    RETURN node.email AS email, score    ORDER BY score DESC
+2020-01-27 11:34:03.399+0000 INFO [o.n.k.i.p.Procedures] Node Store Scan: Imported 6 records and 0 properties from 8190 Bytes (8,190 bytes); took 0.003 s, 2,022.98 Nodes/s, 2696 KiB/s (2,761,368 bytes/s) (per thread: 505.75 Nodes/s, 674 KiB/s (690,342 bytes/s))
+2020-01-27 11:34:03.410+0000 INFO [o.n.k.i.p.Procedures] Relationship Store Scan: Imported 15 records and 0 properties from 8160 Bytes (8,160 bytes); took 0.001 s, 11,401.99 Relationships/s, 6057 KiB/s (6,202,681 bytes/s) (per thread: 2,850.50 Relationships/s, 1514 KiB/s (1,550,670 bytes/s))
+2020-01-27 11:34:03.412+0000 INFO [o.n.k.i.p.Procedures] [neo4j.BoltWorker-4 [bolt] [/172.29.0.1:37474] ] LOADING 100% Memory usage: 560 KiB
+2020-01-27 11:34:03.415+0000 DEBUG [o.n.k.i.p.Procedures] PageRank: nodes=6, concurrency=4, available memory=3422 MiB, estimated memory usage: 392 Bytes
+2020-01-27 11:34:03.418+0000 INFO [o.n.k.i.p.Procedures] [neo4j.BoltWorker-4 [bolt] [/172.29.0.1:37474] ] PageRank 2% Memory usage: 560 KiB
+2020-01-27 11:34:03.435+0000 INFO [o.n.k.i.p.Procedures] PageRank: overall memory usage: 296 KiB
+2020-01-27 16:04:55.152+0000 DEBUG [io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker] [id: 0xb535ee25, L:/172.29.0.5:7687 - R:/172.29.0.1:40530] WebSocket version V13 server handshake
+2020-01-27 16:04:55.155+0000 DEBUG [io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker] WebSocket version 13 server handshake key: ykJWpa7ll5NnmL9IjZRfew==, response: Ir4IDr0slaq5fTseqvd64Zhs4kk=
+2020-01-27 16:04:55.172+0000 DEBUG [io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder] Decoding WebSocket Frame opCode=2
+2020-01-27 16:04:55.172+0000 DEBUG [io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder] Decoding WebSocket Frame length=20
+2020-01-27 16:04:55.173+0000 DEBUG [io.netty.handler.codec.http.websocketx.WebSocket08FrameEncoder] Encoding WebSocket Frame opCode=2 length=4
+2020-01-27 16:05:09.453+0000 INFO [o.n.c.i.ExecutionEngine] Discarded stale query from the query cache after 25800 seconds: MATCH (n:Person) RETURN n LIMIT 25
+2020-01-27 16:05:09.456+0000 DEBUG [o.n.c.i.CommunityCompilerFactory] Discarded stale plan from the plan cache after 25800 seconds: MATCH (n:Person) RETURN n LIMIT 25
+2020-01-27 16:05:09.807+0000 INFO [o.n.c.i.ExecutionEngine] Discarded stale query from the query cache after 24372 seconds: MATCH (a)-[r]->(b) WHERE id(a) IN $existingNodeIds AND id(b) IN $newNodeIds RETURN r;
+2020-01-27 16:05:09.808+0000 DEBUG [o.n.c.i.CommunityCompilerFactory] Discarded stale plan from the plan cache after 24372 seconds: MATCH (a)-[r]->(b) WHERE id(a) IN $existingNodeIds AND id(b) IN $newNodeIds RETURN r;
+2020-01-27 16:06:43.340+0000 INFO [o.n.k.i.p.Procedures] Node Store Scan: Imported 6 records and 0 properties from 8190 Bytes (8,190 bytes); took 0.001 s, 10,479.86 Nodes/s, 13969 KiB/s (14,305,002 bytes/s) (per thread: 2,619.96 Nodes/s, 3492 KiB/s (3,576,250 bytes/s))
+2020-01-27 16:06:43.342+0000 INFO [o.n.k.i.p.Procedures] Relationship Store Scan: Imported 15 records and 0 properties from 8160 Bytes (8,160 bytes); took 0.001 s, 15,845.38 Relationships/s, 8417 KiB/s (8,619,888 bytes/s) (per thread: 3,961.35 Relationships/s, 2104 KiB/s (2,154,972 bytes/s))
+2020-01-27 16:06:43.342+0000 INFO [o.n.k.i.p.Procedures] [neo4j.BoltWorker-4 [bolt] [/172.29.0.1:40548] ] LOADING 100% Memory usage: 560 KiB
+2020-01-27 16:06:43.342+0000 DEBUG [o.n.k.i.p.Procedures] PageRank: nodes=6, concurrency=4, available memory=3378 MiB, estimated memory usage: 392 Bytes
+2020-01-27 16:06:43.342+0000 INFO [o.n.k.i.p.Procedures] [neo4j.BoltWorker-4 [bolt] [/172.29.0.1:40548] ] PageRank 2% Memory usage: 560 KiB
+2020-01-27 16:06:43.356+0000 INFO [o.n.k.i.p.Procedures] PageRank: overall memory usage: 296 KiB
+2020-01-27 16:07:14.601+0000 INFO [o.n.c.i.ExecutionEngine] Discarded stale query from the query cache after 23550 seconds: MATCH (n:`Person`) WHERE n.`email` = $id WITH n RETURN n,[ [ (n)-[r_s1:`SENT_MESSAGE`]->(p1:`Person`) | [ r_s1, p1 ] ] ]
+2020-01-27 16:07:14.605+0000 DEBUG [o.n.c.i.CommunityCompilerFactory] Discarded stale plan from the plan cache after 23550 seconds: MATCH (n:`Person`) WHERE n.`email` = $id WITH n RETURN n,[ [ (n)-[r_s1:`SENT_MESSAGE`]->(p1:`Person`) | [ r_s1, p1 ] ] ]
+2020-01-27 16:07:14.764+0000 INFO [o.n.c.i.ExecutionEngine] Discarded stale query from the query cache after 23550 seconds: UNWIND $rows as row MATCH (startNode) WHERE ID(startNode) = row.startNodeId WITH row,startNode MATCH (endNode) WHERE ID(endNode) = row.endNodeId MERGE (startNode)-[rel:`SENT_MESSAGE` {`id`: row.props.`id`}]->(endNode) SET rel += row.props RETURN row.relRef as ref, ID(rel) as id, $type as type
+2020-01-27 16:07:14.768+0000 DEBUG [o.n.c.i.CommunityCompilerFactory] Discarded stale plan from the plan cache after 23550 seconds: UNWIND $rows as row MATCH (startNode) WHERE ID(startNode) = row.startNodeId WITH row,startNode MATCH (endNode) WHERE ID(endNode) = row.endNodeId MERGE (startNode)-[rel:`SENT_MESSAGE` {`id`: row.props.`id`}]->(endNode) SET rel += row.props RETURN row.relRef as ref, ID(rel) as id, $type as type
+2020-01-27 16:07:20.988+0000 INFO [o.n.k.i.t.l.c.CheckPointerImpl] Checkpoint triggered by "Scheduled checkpoint for time threshold" @ txId: 54 checkpoint started...
+2020-01-27 16:07:20.993+0000 INFO [o.n.k.i.s.c.CountsTracker] Rotated counts store at transaction 54 to [/data/databases/graph.db/neostore.counts.db.b], from [/data/databases/graph.db/neostore.counts.db.a].
+2020-01-27 16:07:21.003+0000 INFO [o.n.k.i.t.l.c.CheckPointerImpl] Checkpoint triggered by "Scheduled checkpoint for time threshold" @ txId: 54 checkpoint completed in 15ms
+2020-01-27 16:07:21.003+0000 INFO [o.n.k.i.t.l.p.LogPruningImpl] No log version pruned, last checkpoint was made in version 0
+2020-01-27 16:07:25.730+0000 INFO [o.n.c.i.ExecutionEngine] Discarded stale query from the query cache after 20680 seconds: 
+CALL dbms.queryJmx("org.neo4j:instance=*,name=Kernel") yield attributes
+RETURN {name: 'Kernel', data: collect(attributes)} as result
+UNION ALL
+CALL dbms.queryJmx("org.neo4j:instance=*,name=Store file sizes") yield attributes
+RETURN {name: 'Store file sizes', data: collect(attributes)} as result
+UNION ALL
+CALL dbms.queryJmx("org.neo4j:instance=*,name=Configuration") yield attributes
+RETURN {name: 'Configuration', data: collect(attributes)} as result
+
+2020-01-27 16:07:25.733+0000 DEBUG [o.n.c.i.CommunityCompilerFactory] Discarded stale plan from the plan cache after 20680 seconds: CALL dbms.queryJmx("org.neo4j:instance=*,name=Kernel") yield attributes
+RETURN {name: 'Kernel', data: collect(attributes)} as result
+UNION ALL
+CALL dbms.queryJmx("org.neo4j:instance=*,name=Store file sizes") yield attributes
+RETURN {name: 'Store file sizes', data: collect(attributes)} as result
+UNION ALL
+CALL dbms.queryJmx("org.neo4j:instance=*,name=Configuration") yield attributes
+RETURN {name: 'Configuration', data: collect(attributes)} as result
+
+2020-01-27 16:07:25.770+0000 INFO [o.n.c.i.ExecutionEngine] Discarded stale query from the query cache after 24508 seconds: 
+CALL db.labels() YIELD label
+RETURN {name:'labels', data:COLLECT(label)[..1000]} as result
+UNION ALL
+CALL db.relationshipTypes() YIELD relationshipType
+RETURN {name:'relationshipTypes', data:COLLECT(relationshipType)[..1000]} as result
+UNION ALL
+CALL db.propertyKeys() YIELD propertyKey
+RETURN {name:'propertyKeys', data:COLLECT(propertyKey)[..1000]} as result
+UNION ALL
+CALL dbms.functions() YIELD name, signature, description
+RETURN {name:'functions', data: collect({name: name, signature: signature, description: description})} AS result
+UNION ALL
+CALL dbms.procedures() YIELD name, signature, description
+RETURN {name:'procedures', data:collect({name: name, signature: signature, description: description})} as result
+UNION ALL
+MATCH () RETURN { name:'nodes', data:count(*) } AS result
+UNION ALL
+MATCH ()-[]->() RETURN { name:'relationships', data: count(*)} AS result
+
+2020-01-27 16:07:25.773+0000 DEBUG [o.n.c.i.CommunityCompilerFactory] Discarded stale plan from the plan cache after 24508 seconds: CALL db.labels() YIELD label
+RETURN {name:'labels', data:COLLECT(label)[..1000]} as result
+UNION ALL
+CALL db.relationshipTypes() YIELD relationshipType
+RETURN {name:'relationshipTypes', data:COLLECT(relationshipType)[..1000]} as result
+UNION ALL
+CALL db.propertyKeys() YIELD propertyKey
+RETURN {name:'propertyKeys', data:COLLECT(propertyKey)[..1000]} as result
+UNION ALL
+CALL dbms.functions() YIELD name, signature, description
+RETURN {name:'functions', data: collect({name: name, signature: signature, description: description})} AS result
+UNION ALL
+CALL dbms.procedures() YIELD name, signature, description
+RETURN {name:'procedures', data:collect({name: name, signature: signature, description: description})} as result
+UNION ALL
+MATCH () RETURN { name:'nodes', data:count(*) } AS result
+UNION ALL
+MATCH ()-[]->() RETURN { name:'relationships', data: count(*)} AS result
+
+2020-01-27 16:07:37.684+0000 INFO [o.n.c.i.ExecutionEngine] Discarded stale query from the query cache after 20288 seconds: UNWIND $rows as row MERGE (n:`Person`{email: row.props.email}) SET n=row.props RETURN row.nodeRef as ref, ID(n) as id, $type as type
+2020-01-27 16:07:37.685+0000 DEBUG [o.n.c.i.CommunityCompilerFactory] Discarded stale plan from the plan cache after 20288 seconds: UNWIND $rows as row MERGE (n:`Person`{email: row.props.email}) SET n=row.props RETURN row.nodeRef as ref, ID(n) as id, $type as type
+2020-01-27 16:07:42.335+0000 INFO [o.n.c.i.ExecutionEngine] Discarded stale query from the query cache after 16418 seconds: CALL algo.pageRank.stream("Person", "SENT_MESSAGE", {iterations:20})    YIELD nodeId, score    MATCH (node) WHERE id(node) = nodeId    RETURN node.email AS email, score    ORDER BY score DESC
+2020-01-27 16:07:42.336+0000 DEBUG [o.n.c.i.CommunityCompilerFactory] Discarded stale plan from the plan cache after 16418 seconds: CALL algo.pageRank.stream("Person", "SENT_MESSAGE", {iterations:20})    YIELD nodeId, score    MATCH (node) WHERE id(node) = nodeId    RETURN node.email AS email, score    ORDER BY score DESC
+2020-01-27 16:07:42.358+0000 INFO [o.n.k.i.p.Procedures] Node Store Scan: Imported 8 records and 0 properties from 8190 Bytes (8,190 bytes); took 0.002 s, 3,857.37 Nodes/s, 3856 KiB/s (3,948,978 bytes/s) (per thread: 964.34 Nodes/s, 964 KiB/s (987,244 bytes/s))
+2020-01-27 16:07:42.361+0000 INFO [o.n.k.i.p.Procedures] Relationship Store Scan: Imported 17 records and 0 properties from 8160 Bytes (8,160 bytes); took 0.001 s, 12,717.23 Relationships/s, 5961 KiB/s (6,104,270 bytes/s) (per thread: 3,179.31 Relationships/s, 1490 KiB/s (1,526,067 bytes/s))
+2020-01-27 16:07:42.361+0000 INFO [o.n.k.i.p.Procedures] [neo4j.BoltWorker-5 [bolt] [/172.29.0.1:40548] ] LOADING 100% Memory usage: 560 KiB
+2020-01-27 16:07:42.362+0000 DEBUG [o.n.k.i.p.Procedures] PageRank: nodes=8, concurrency=4, available memory=3416 MiB, estimated memory usage: 432 Bytes
+2020-01-27 16:07:42.362+0000 INFO [o.n.k.i.p.Procedures] [neo4j.BoltWorker-5 [bolt] [/172.29.0.1:40548] ] PageRank 2% Memory usage: 560 KiB
+2020-01-27 16:07:42.376+0000 INFO [o.n.k.i.p.Procedures] PageRank: overall memory usage: 296 KiB
+2020-01-27 16:08:03.030+0000 INFO [o.n.k.i.p.Procedures] Node Store Scan: Imported 8 records and 0 properties from 8190 Bytes (8,190 bytes); took 0.005 s, 1,579.86 Nodes/s, 1579 KiB/s (1,617,380 bytes/s) (per thread: 394.96 Nodes/s, 394 KiB/s (404,345 bytes/s))
+2020-01-27 16:08:03.066+0000 INFO [o.n.k.i.p.Procedures] Relationship Store Scan: Imported 26 records and 0 properties from 8160 Bytes (8,160 bytes); took 0.028 s, 934.61 Relationships/s, 286 KiB/s (293,322 bytes/s) (per thread: 233.65 Relationships/s, 71 KiB/s (73,330 bytes/s))
+2020-01-27 16:08:03.067+0000 INFO [o.n.k.i.p.Procedures] [neo4j.BoltWorker-5 [bolt] [/172.29.0.1:40548] ] LOADING 100% Memory usage: 560 KiB
+2020-01-27 16:08:03.069+0000 DEBUG [o.n.k.i.p.Procedures] PageRank: nodes=8, concurrency=4, available memory=3382 MiB, estimated memory usage: 432 Bytes
+2020-01-27 16:08:03.071+0000 INFO [o.n.k.i.p.Procedures] [neo4j.BoltWorker-5 [bolt] [/172.29.0.1:40548] ] PageRank 2% Memory usage: 560 KiB
+2020-01-27 16:08:03.108+0000 INFO [o.n.k.i.p.Procedures] PageRank: overall memory usage: 296 KiB
+2020-01-27 16:08:08.285+0000 INFO [o.n.k.i.p.Procedures] Node Store Scan: Imported 8 records and 0 properties from 8190 Bytes (8,190 bytes); took 0.001 s, 6,155.93 Nodes/s, 6154 KiB/s (6,302,133 bytes/s) (per thread: 1,538.98 Nodes/s, 1538 KiB/s (1,575,533 bytes/s))
+2020-01-27 16:08:08.297+0000 INFO [o.n.k.i.p.Procedures] Relationship Store Scan: Imported 26 records and 0 properties from 8160 Bytes (8,160 bytes); took 0.006 s, 4,597.85 Relationships/s, 1409 KiB/s (1,443,018 bytes/s) (per thread: 1,149.46 Relationships/s, 352 KiB/s (360,754 bytes/s))
+2020-01-27 16:08:08.298+0000 INFO [o.n.k.i.p.Procedures] [neo4j.BoltWorker-5 [bolt] [/172.29.0.1:40548] ] LOADING 100% Memory usage: 560 KiB
+2020-01-27 16:08:08.299+0000 DEBUG [o.n.k.i.p.Procedures] PageRank: nodes=8, concurrency=4, available memory=3352 MiB, estimated memory usage: 432 Bytes
+2020-01-27 16:08:08.300+0000 INFO [o.n.k.i.p.Procedures] [neo4j.BoltWorker-5 [bolt] [/172.29.0.1:40548] ] PageRank 2% Memory usage: 560 KiB
+2020-01-27 16:08:08.319+0000 INFO [o.n.k.i.p.Procedures] PageRank: overall memory usage: 296 KiB
+2020-01-27 16:08:25.852+0000 INFO [o.n.k.i.p.Procedures] Node Store Scan: Imported 8 records and 0 properties from 8190 Bytes (8,190 bytes); took 0.001 s, 14,485.22 Nodes/s, 14481 KiB/s (14,829,246 bytes/s) (per thread: 3,621.31 Nodes/s, 3620 KiB/s (3,707,311 bytes/s))
+2020-01-27 16:08:25.865+0000 INFO [o.n.k.i.p.Procedures] Relationship Store Scan: Imported 29 records and 0 properties from 8160 Bytes (8,160 bytes); took 0.011 s, 2,671.21 Relationships/s, 734 KiB/s (751,624 bytes/s) (per thread: 667.80 Relationships/s, 183 KiB/s (187,906 bytes/s))
+2020-01-27 16:08:25.865+0000 INFO [o.n.k.i.p.Procedures] [neo4j.BoltWorker-4 [bolt] [/172.29.0.1:40548] ] LOADING 100% Memory usage: 560 KiB
+2020-01-27 16:08:25.865+0000 DEBUG [o.n.k.i.p.Procedures] PageRank: nodes=8, concurrency=4, available memory=3472 MiB, estimated memory usage: 432 Bytes
+2020-01-27 16:08:25.867+0000 INFO [o.n.k.i.p.Procedures] [neo4j.BoltWorker-4 [bolt] [/172.29.0.1:40548] ] PageRank 2% Memory usage: 560 KiB
+2020-01-27 16:08:25.885+0000 INFO [o.n.k.i.p.Procedures] PageRank: overall memory usage: 296 KiB
+2020-01-27 16:08:43.509+0000 INFO [o.n.k.i.p.Procedures] Node Store Scan: Imported 8 records and 0 properties from 8190 Bytes (8,190 bytes); took 0.002 s, 4,239.07 Nodes/s, 4238 KiB/s (4,339,748 bytes/s) (per thread: 1,059.77 Nodes/s, 1059 KiB/s (1,084,937 bytes/s))
+2020-01-27 16:08:43.512+0000 INFO [o.n.k.i.p.Procedures] Relationship Store Scan: Imported 33 records and 0 properties from 8160 Bytes (8,160 bytes); took 0.001 s, 24,456.73 Relationships/s, 5905 KiB/s (6,047,481 bytes/s) (per thread: 6,114.18 Relationships/s, 1476 KiB/s (1,511,870 bytes/s))
+2020-01-27 16:08:43.512+0000 INFO [o.n.k.i.p.Procedures] [neo4j.BoltWorker-4 [bolt] [/172.29.0.1:40548] ] LOADING 100% Memory usage: 560 KiB
+2020-01-27 16:08:43.513+0000 DEBUG [o.n.k.i.p.Procedures] PageRank: nodes=8, concurrency=4, available memory=3448 MiB, estimated memory usage: 432 Bytes
+2020-01-27 16:08:43.513+0000 INFO [o.n.k.i.p.Procedures] [neo4j.BoltWorker-4 [bolt] [/172.29.0.1:40548] ] PageRank 2% Memory usage: 560 KiB
+2020-01-27 16:08:43.518+0000 INFO [o.n.k.i.p.Procedures] PageRank: overall memory usage: 296 KiB
+2020-01-27 16:09:05.193+0000 INFO [o.n.k.i.p.Procedures] Node Store Scan: Imported 8 records and 0 properties from 8190 Bytes (8,190 bytes); took 0.000 s, 26,659.82 Nodes/s, 26 MiB/s (27,292,994 bytes/s) (per thread: 6,664.96 Nodes/s, 6663 KiB/s (6,823,248 bytes/s))
+2020-01-27 16:09:05.195+0000 INFO [o.n.k.i.p.Procedures] Relationship Store Scan: Imported 36 records and 0 properties from 8160 Bytes (8,160 bytes); took 0.001 s, 28,914.78 Relationships/s, 6400 KiB/s (6,554,016 bytes/s) (per thread: 7,228.70 Relationships/s, 1600 KiB/s (1,638,504 bytes/s))
+2020-01-27 16:09:05.196+0000 INFO [o.n.k.i.p.Procedures] [neo4j.BoltWorker-4 [bolt] [/172.29.0.1:40548] ] LOADING 100% Memory usage: 560 KiB
+2020-01-27 16:09:05.196+0000 DEBUG [o.n.k.i.p.Procedures] PageRank: nodes=8, concurrency=4, available memory=3417 MiB, estimated memory usage: 432 Bytes
+2020-01-27 16:09:05.196+0000 INFO [o.n.k.i.p.Procedures] [neo4j.BoltWorker-4 [bolt] [/172.29.0.1:40548] ] PageRank 2% Memory usage: 560 KiB
+2020-01-27 16:09:05.221+0000 INFO [o.n.k.i.p.Procedures] PageRank: overall memory usage: 296 KiB
+2020-01-27 16:09:31.736+0000 INFO [o.n.k.i.p.Procedures] Node Store Scan: Imported 8 records and 0 properties from 8190 Bytes (8,190 bytes); took 0.006 s, 1,294.17 Nodes/s, 1293 KiB/s (1,324,910 bytes/s) (per thread: 323.54 Nodes/s, 323 KiB/s (331,227 bytes/s))
+2020-01-27 16:09:31.747+0000 INFO [o.n.k.i.p.Procedures] Relationship Store Scan: Imported 40 records and 0 properties from 8160 Bytes (8,160 bytes); took 0.004 s, 8,940.38 Relationships/s, 1781 KiB/s (1,823,838 bytes/s) (per thread: 2,235.10 Relationships/s, 445 KiB/s (455,959 bytes/s))
+2020-01-27 16:09:31.748+0000 INFO [o.n.k.i.p.Procedures] [neo4j.BoltWorker-4 [bolt] [/172.29.0.1:40548] ] LOADING 100% Memory usage: 560 KiB
+2020-01-27 16:09:31.753+0000 DEBUG [o.n.k.i.p.Procedures] PageRank: nodes=8, concurrency=4, available memory=3364 MiB, estimated memory usage: 432 Bytes
+2020-01-27 16:09:31.758+0000 INFO [o.n.k.i.p.Procedures] [neo4j.BoltWorker-4 [bolt] [/172.29.0.1:40548] ] PageRank 2% Memory usage: 560 KiB
+2020-01-27 16:09:31.774+0000 INFO [o.n.k.i.p.Procedures] PageRank: overall memory usage: 296 KiB
+2020-01-27 16:09:35.777+0000 INFO [o.n.k.i.p.Procedures] Node Store Scan: Imported 8 records and 0 properties from 8190 Bytes (8,190 bytes); took 0.001 s, 9,308.47 Nodes/s, 9306 KiB/s (9,529,549 bytes/s) (per thread: 2,327.12 Nodes/s, 2326 KiB/s (2,382,387 bytes/s))
+2020-01-27 16:09:35.781+0000 INFO [o.n.k.i.p.Procedures] Relationship Store Scan: Imported 40 records and 0 properties from 8160 Bytes (8,160 bytes); took 0.002 s, 19,439.29 Relationships/s, 3872 KiB/s (3,965,615 bytes/s) (per thread: 4,859.82 Relationships/s, 968 KiB/s (991,403 bytes/s))
+2020-01-27 16:09:35.781+0000 INFO [o.n.k.i.p.Procedures] [neo4j.BoltWorker-4 [bolt] [/172.29.0.1:40548] ] LOADING 100% Memory usage: 560 KiB
+2020-01-27 16:09:35.782+0000 DEBUG [o.n.k.i.p.Procedures] PageRank: nodes=8, concurrency=4, available memory=3355 MiB, estimated memory usage: 432 Bytes
+2020-01-27 16:09:35.782+0000 INFO [o.n.k.i.p.Procedures] [neo4j.BoltWorker-4 [bolt] [/172.29.0.1:40548] ] PageRank 2% Memory usage: 560 KiB
+2020-01-27 16:09:35.785+0000 INFO [o.n.k.i.p.Procedures] PageRank: overall memory usage: 296 KiB
+2020-01-27 16:10:34.834+0000 INFO [o.n.k.a.DatabaseAvailabilityGuard] Database graph.db is unavailable.
+2020-01-27 16:10:34.948+0000 INFO [o.n.g.f.GraphDatabaseFacadeFactory] Shutdown started
+2020-01-27 16:10:34.955+0000 INFO [o.n.g.f.GraphDatabaseFacadeFactory] Shutting down 'graph.db' database.
+2020-01-27 16:10:34.955+0000 INFO [o.n.g.f.GraphDatabaseFacadeFactory] Shutdown started
+2020-01-27 16:10:34.955+0000 DEBUG [o.n.k.i.c.VmPauseMonitorComponent] Stopping VM pause monitor
+2020-01-27 16:10:34.957+0000 DEBUG [o.n.k.i.c.VmPauseMonitorComponent] VM pause monitor stopped
+2020-01-27 16:10:34.974+0000 INFO [o.n.k.i.t.l.c.CheckPointerImpl] Checkpoint triggered by "Database shutdown" @ txId: 126 checkpoint started...
+2020-01-27 16:10:34.977+0000 INFO [o.n.k.i.s.c.CountsTracker] Rotated counts store at transaction 126 to [/data/databases/graph.db/neostore.counts.db.a], from [/data/databases/graph.db/neostore.counts.db.b].
+2020-01-27 16:10:34.991+0000 INFO [o.n.k.i.t.l.c.CheckPointerImpl] Checkpoint triggered by "Database shutdown" @ txId: 126 checkpoint completed in 17ms
+2020-01-27 16:10:34.991+0000 INFO [o.n.k.i.t.l.p.LogPruningImpl] No log version pruned, last checkpoint was made in version 0
+2020-01-27 16:10:35.095+0000 INFO [o.n.i.d.DiagnosticsManager] --- STOPPING diagnostics START ---
+2020-01-27 16:10:35.095+0000 INFO [o.n.i.d.DiagnosticsManager] --- STOPPING diagnostics END ---

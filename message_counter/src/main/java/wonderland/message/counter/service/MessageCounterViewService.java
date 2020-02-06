@@ -22,6 +22,7 @@ public class MessageCounterViewService extends ViewService<MessageCountersDto, M
                                      @Value("${kafka.streams.server.config.app-ip}") String ip,
                                      @Value("${kafka.streams.server.config.app-port}") int port,
                                      ViewResourcesClient commonClient) {
-        super(ip, port, streams, Stores.MESSAGE_COUNTER_STATE, MessageCountersDto.class, MessageCounterDto.class, DTO_MAPPER, LIST_EXTRACTOR, LIST_WRAPPER, "counter", commonClient);
+        super(ip, port, streams, Stores.MESSAGE_COUNTER_STATE,
+                MessageCountersDto.class, MessageCounterDto.class, DTO_MAPPER, LIST_EXTRACTOR, LIST_WRAPPER, "sent/from", commonClient);
     }
 }

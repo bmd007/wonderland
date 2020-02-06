@@ -4,12 +4,12 @@ I can say the architecture is event driven and everything is an event inside the
 There is also amqp based comminucation to outside (an Android app) (with help of rabbit mq) as push solution 
 
 ## ToDo:
-    * add create docker image task for each service
+    * when spring boot 2.3 is out, use its dockerImageBuild to create docker images 
     * use docker compose (all together) as some sort of deployment and orchestration tool
     * use nomad
     * add API gateway for authorization checks (resource server in OAuath2 world) (and connect it to google)
     * complete person_profile app 
-    * publish logs into elastic search
+    * publish logs into elastic search as application_log index
     * add kibana for reading logs 
        
 ## Bounded contexes and Teams > ? < 
@@ -18,3 +18,4 @@ There is also amqp based comminucation to outside (an Android app) (with help of
 ### services and their relation to kafka topics
 #### generally, a command listener specifies where to send commands to. And an event producer specifies where it will send events. (Events=notification (something happenede, delta of domain), Commands=requests for something to be done)
     * messenger owns these topics: message_events, 
+    * message_counter owns thses topics: event_log (internally used for event sourcing)

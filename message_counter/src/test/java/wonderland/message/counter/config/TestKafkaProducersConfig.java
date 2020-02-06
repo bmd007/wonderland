@@ -1,4 +1,4 @@
-package wonderland.message.counter.util;
+package wonderland.message.counter.config;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.common.serialization.StringSerializer;

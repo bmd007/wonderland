@@ -92,7 +92,7 @@ public class ViewService<E, M, I> {
     }
 
     private Flux<M> getFromRemoteStorage(StreamsMetadata metadata) {
-        String url = String.format("http://%s:%d/api/message/%s?%s=false", metadata.host(), metadata.port(), pathPart, HIGH_LEVEL_QUERY_PARAM_NAME);
+        String url = String.format("http://%s:%d/api/counter/message/%s?%s=false", metadata.host(), metadata.port(), pathPart, HIGH_LEVEL_QUERY_PARAM_NAME);
         return commonClient.getOne(externalClass, url).flatMapIterable(listOfMfromEextractor);
     }
 
@@ -127,7 +127,7 @@ public class ViewService<E, M, I> {
                     .orElseGet(() -> Mono.empty());//No data for that key locally
         }
 
-        var url = String.format("http://%s:%d/api/message/%s/%s", metadata.host(), metadata.port(), pathPart, id);
+        var url = String.format("http://%s:%d/api/counter/message/%s/%s", metadata.host(), metadata.port(), pathPart, id);
         LOGGER.debug("Querying other instance's {} store for id: {} from {}", storeName, id, url);
         return commonClient.getOne(middleClass, url)
                 .switchIfEmpty(Mono.empty());//No data for that key remotely
