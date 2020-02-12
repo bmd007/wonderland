@@ -1,22 +1,22 @@
-job "config_center" {
+job "hello_world" {
   region =      "global"
   datacenters = ["dc1"]
-#  type =        "service"
+  #  type =        "service"
   type =        "batch"
 
-#  update {
-    # The update stanza specifies the group's update strategy.
-#    max_parallel =     1
-#    health_check =     "checks"
-#    min_healthy_time = "30s"
-#  }
+  #  update {
+  # The update stanza specifies the group's update strategy.
+  #    max_parallel =     1
+  #    health_check =     "checks"
+  #    min_healthy_time = "30s"
+  #  }
 
 
   parameterized {
     meta_required = ["DOCKER_HUB_PASSOWRD"]
   }
 
- group "config_center" {
+ group "hello_world" {
     #count = INSTANCE_COUNT
     count = 1
 
@@ -25,14 +25,14 @@ job "config_center" {
       mode =  "delay"
     }
 
-    task "config_center" {
+    task "hello_world" {
       driver = "docker"
 
       # Configuration is specific to each driver.
       config {
         network_mode = "bridge"
-        hostname = "config_center"
-        image =      "bmd007/config_center:latest"
+        hostname = "hello_world"
+        image =      "bmd007/hello_world:latest"
         force_pull = true
         auth {
           username = "bmd007"
@@ -40,12 +40,16 @@ job "config_center" {
         }
 
         port_map {
-          http =  8888
+          http =  7451
         }
       }
 
       env {
         SPRING_PROFILES_ACTIVE =                                  "nomad"
+        CONFIG_SERVER_IP =                                        "172.17.0.2"
+        CONFIG_SERVER_PORT =                                      "8888"
+        SERVICE_REGISTRY_SERVER_IP =                              "172.17.0.3"
+        SERVICE_REGISTRY_SERVER_PORT =                            "8761"
         SPRING_APPLICATION_INSTANCE_ID =                          "${NOMAD_ALLOC_ID}"
         JAVA_OPTS =                                               "-XshowSettings:vm -XX:+ExitOnOutOfMemoryError -Xmx200m -Xms150m -XX:MaxDirectMemorySize=48m -XX:ReservedCodeCacheSize=64m -XX:MaxMetaspaceSize=128m -Xss256k"
       }
@@ -55,10 +59,7 @@ job "config_center" {
         network {
           mode = "bridge"
           mbits = 1
-          port "http" {
-	        static = 8888
-            to     = 8888
-	      }
+          port "http" {}
         }
       }
     }
