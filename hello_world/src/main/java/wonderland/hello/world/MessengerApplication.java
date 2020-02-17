@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,10 +26,13 @@ public class MessengerApplication implements CommandLineRunner {
         return "HELLO";
     }
 
+    @Value("${service.registry.server.ip}") Object serviceRegistryIp;
+
     @Override
     public void run(String... args) throws Exception {
         InetAddress inetAddress = InetAddress.getLocalHost();
         System.out.println("IP Address:- " + inetAddress.getHostAddress());
         System.out.println("Host Name:- " + inetAddress.getHostName());
+        System.out.println("Eureka Host ip:- " + serviceRegistryIp);
     }
 }

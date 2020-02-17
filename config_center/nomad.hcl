@@ -30,8 +30,8 @@ job "config_center" {
 
       # Configuration is specific to each driver.
       config {
-        network_mode = "bridge"
-        hostname = "config_center"
+        network_mode = "host"
+//        hostname = "config_center"
         image =      "bmd007/config_center:latest"
         force_pull = true
         auth {
@@ -53,7 +53,7 @@ job "config_center" {
         cpu =    256
         memory = 250
         network {
-          mode = "bridge"
+          mode = "host"
           mbits = 1
           port "http" {
 	        static = 8888

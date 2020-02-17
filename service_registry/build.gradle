@@ -49,7 +49,7 @@ sourceCompatibility = 11
 targetCompatibility = 11
 
 dependencies {
-	implementation 'org.codehaus.groovy:groovy'
+	implementation 'org.codehaus.groovy:groovy:3.0.0'
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
 	implementation 'org.springframework.cloud:spring-cloud-starter-config'
 	implementation('org.springframework.boot:spring-boot-starter-actuator')
