@@ -1,4 +1,4 @@
-job "hello_world" {
+job "helloyee" {
   region =      "global"
   datacenters = ["dc1"]
   #  type =        "service"
@@ -16,7 +16,7 @@ job "hello_world" {
     meta_required = ["DOCKER_HUB_PASSOWRD"]
   }
 
- group "hello_world" {
+ group "helloyee" {
     #count = INSTANCE_COUNT
     count = 1
 
@@ -25,14 +25,14 @@ job "hello_world" {
       mode =  "delay"
     }
 
-    task "hello_world" {
+    task "helloyee" {
       driver = "docker"
 
       # Configuration is specific to each driver.
       config {
         network_mode = "host"
-//        hostname = "hello_world"
-        image =      "bmd007/hello_world:latest"
+//        hostname = "helloyee"
+        image =      "bmd007/helloyee:latest"
         force_pull = true
         auth {
           username = "bmd007"
@@ -40,7 +40,7 @@ job "hello_world" {
         }
 
         port_map {
-          http =  7451
+          http =  7461
         }
       }
 

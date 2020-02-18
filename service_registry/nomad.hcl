@@ -46,9 +46,9 @@ job "service_registry" {
 
       env {
         SPRING_PROFILES_ACTIVE =                                  "nomad"
-        EUREKA_INSTANCE_HOSTNAME =                                "${NOMAD_IP_http}"
+        EUREKA_INSTANCE_HOSTNAME =                                "10.71.216.152"
         INSTANCE_NOMAD_PORT =                                     "8761"
-        CONFIG_SERVER_IP =                                        "10.71.216.152"
+        CONFIG_SERVER_IP =                                        "http://10.71.216.152"
         CONFIG_SERVER_PORT =                                      "8888"
         SPRING_APPLICATION_INSTANCE_ID =                          "${NOMAD_ALLOC_ID}"
         JAVA_OPTS =                                               "-XshowSettings:vm -XX:+ExitOnOutOfMemoryError -Xmx200m -Xms150m -XX:MaxDirectMemorySize=48m -XX:ReservedCodeCacheSize=64m -XX:MaxMetaspaceSize=128m -Xss256k"
