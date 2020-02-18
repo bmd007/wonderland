@@ -46,7 +46,7 @@ job "service_registry" {
 
       env {
         SPRING_PROFILES_ACTIVE =                                  "nomad"
-        EUREKA_INSTANCE_HOSTNAME =                                "10.71.216.152"
+        EUREKA_INSTANCE_HOSTNAME =                                "${NOMAD_IP_http}"
         INSTANCE_NOMAD_PORT =                                     "8761"
         CONFIG_SERVER_IP =                                        "10.71.216.152"
         CONFIG_SERVER_PORT =                                      "8888"

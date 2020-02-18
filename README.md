@@ -6,7 +6,7 @@ There is also amqp based comminucation to outside (an Android app) (with help of
 ## ToDo:
     * when spring boot 2.3 is out, use its dockerImageBuild to create docker images 
     * use docker compose (all together) as some sort of deployment and orchestration tool
-    * use nomad
+    * make hcl files useable without need to change them each time
     * add API gateway for authorization checks (resource server in OAuath2 world) (and connect it to google)
     * complete person_profile app 
     * publish logs into elastic search as application_log index
