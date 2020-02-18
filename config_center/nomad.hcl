@@ -1,16 +1,7 @@
 job "config_center" {
   region =      "global"
   datacenters = ["dc1"]
-#  type =        "service"
   type =        "batch"
-
-#  update {
-    # The update stanza specifies the group's update strategy.
-#    max_parallel =     1
-#    health_check =     "checks"
-#    min_healthy_time = "30s"
-#  }
-
 
   parameterized {
     meta_required = ["DOCKER_HUB_PASSOWRD"]
@@ -28,10 +19,9 @@ job "config_center" {
     task "config_center" {
       driver = "docker"
 
-      # Configuration is specific to each driver.
       config {
         network_mode = "host"
-//        hostname = "config_center"
+        #hostname = "config_center"
         image =      "bmd007/config_center:latest"
         force_pull = true
         auth {

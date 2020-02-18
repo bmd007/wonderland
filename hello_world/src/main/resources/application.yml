@@ -3,6 +3,11 @@ server:
 
 eureka.client.serviceUrl.defaultZone: http://localhost:8761/eureka/
 
+spring:
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
 ---
 spring:
   profiles: nomad

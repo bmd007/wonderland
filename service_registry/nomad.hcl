@@ -1,21 +1,11 @@
 job "service_registry" {
   region =      "global"
   datacenters = ["dc1"]
-#  type =        "service"
   type =        "batch"
-
-#  update {
-    # The update stanza specifies the group's update strategy.
-#    max_parallel =     1
-#    health_check =     "checks"
-#    min_healthy_time = "30s"
-#  }
-
 
   parameterized {
     meta_required = ["DOCKER_HUB_PASSOWRD"]
   }
-
 
  group "service_registry" {
     #count = INSTANCE_COUNT
@@ -28,10 +18,9 @@ job "service_registry" {
 
     task "service_registry" {
       driver = "docker"
-      # Configuration is specific to each driver.
       config {
         network_mode = "host"
-//        hostname = "service_registry"
+        #hostname = "service_registry"
         image =      "bmd007/service_registry:latest"
         force_pull = true
         auth {
