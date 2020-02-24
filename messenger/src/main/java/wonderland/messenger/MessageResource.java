@@ -5,10 +5,7 @@ import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 
@@ -59,5 +56,10 @@ public class MessageResource {
     public String prepareThenSendMessage(@PathVariable String from, @PathVariable String to, @RequestBody String body) {
         createQueue(to);
         return sendMessage(from, to, body);
+    }
+
+    @GetMapping
+    public String hello(){
+        return "HELLO";
     }
 }

@@ -1,11 +1,13 @@
 server:
   port: 8089
 
-
 spring:
-  kafka:
-    bootstrap-servers: "localhost:9092"
 
+  cloud:
+    service-registry.auto-registration.enabled: true
+    loadbalancer:
+      ribbon:
+        enabled: false
 ---
 spring:
   profiles: nomad
@@ -13,4 +15,4 @@ spring:
 ---
 spring:
   profiles:
-    - docker-compose
+    - docker_compose

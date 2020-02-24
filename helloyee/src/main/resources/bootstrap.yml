@@ -7,3 +7,8 @@ spring:
 spring:
   profiles: nomad
   cloud.config.uri: ${config-server-ip}:${config-server-port}
+
+---
+spring:
+  profiles: docker_compose
+  cloud.config.uri: ${config-server-ip}:${config-server-port}

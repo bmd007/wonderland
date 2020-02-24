@@ -15,4 +15,4 @@ spring:
 ---
 spring:
   profiles:
-    - docker-compose
+    - docker_compose

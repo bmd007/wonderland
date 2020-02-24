@@ -4,17 +4,16 @@ I can say the architecture is event driven and everything is an event inside the
 There is also amqp based comminucation to outside (an Android app) (with help of rabbit mq) as push solution 
 
 ## ToDo:
-    * get rid of Eureka in sake of consul 
-    * make hello_world asseccible to helloyee by service_discovery (nomad dev mode is not a good option apparently with eureka)
     * when spring boot 2.3 is out, use its dockerImageBuild to create docker images 
     * use docker compose (all together) as some sort of deployment and orchestration tool
     * make hcl files useable without need to change them each time
     * add API gateway for authorization checks (resource server in OAuath2 world) (and connect it to google)
     * complete person_profile app 
     * publish logs into elastic search as application_log index
-    * add kibana for reading logs 
+    * add kibana for reading logs
+    * add an application that is based on micro_profile 
        
-## Bounded contexes and Teams > ? < 
+## Bounded contexts and Teams > ? < 
     
     
 ### services and their relation to kafka topics
