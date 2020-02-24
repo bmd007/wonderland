@@ -2,13 +2,19 @@ server:
   port: 8095
 
 spring:
+  cloud:
+    service-registry.auto-registration.enabled: true
+    loadbalancer:
+      ribbon:
+        enabled: false
+
+  kafka:
+    bootstrap-servers: localhost:9092
   data:
     neo4j:
       username: "neo4j"
       password: "test"
-
-  kafka:
-    bootstrap-servers: "localhost:9092"
+      uri: bolt://localhost:7687
 
 ---
 spring:
@@ -17,4 +23,4 @@ spring:
 ---
 spring:
   profiles:
-    - docker-compose
+    - docker_compose

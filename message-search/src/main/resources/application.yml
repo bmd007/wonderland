@@ -2,7 +2,6 @@ server:
   port: 8089
 
 spring:
-
   cloud:
     service-registry.auto-registration.enabled: true
     loadbalancer:
