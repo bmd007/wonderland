@@ -142,12 +142,12 @@ services:
       - '8500:8500'
 
   config-center:
-    image: bmd007/config-center:latest
+    image: bmd007/config-center
     depends_on:
       - consul
     environment:
       SPRING_CLOUD_CONSUL_HOST: consul
-      SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED: "true"
+      SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED: "false"
     ports:
       - "8888:8888"
 
@@ -158,7 +158,7 @@ services:
       - config-center
       - kafka
     environment:
-      SPRING_PROFILES_ACTIVE: docker-compose
+      SPRING_PROFILES_ACTIVE: docker_compose
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       SPRING_RABBITMQ_HOST: rabbitmq
       SPRING_CLOUD_CONSUL_HOST: consul
@@ -169,35 +169,19 @@ services:
     ports:
       - "7461:7461"
 
-
-
-#  hello-world:
-#    image: bmd007/hello-world
-#    depends_on:
-#      - consul
-#      - config-center
-#    environment:
-#      SPRING_CLOUD_CONSUL_HOST: consul
-#      CONFIG_SERVER_IP: http://config-center
-#      CONFIG_SERVER_PORT: 8888
-#      SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED: "true"
-#    ports:
-#      - "7451:7451"
-#
-#  helloyee:
-#    image: bmd007/helloyee
-#    depends_on:
-#      - consul
-#      - config-center
-#      - hello-world
-#    environment:
-#      SPRING_CLOUD_CONSUL_HOST: consul
-#      CONFIG_SERVER_IP: http://config-center
-#      HELLO_WORLD_IP: http://hello-world
-#      CONFIG_SERVER_PORT: 8888
-#      SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED: "true"
-#    ports:
-#      - "7461:7461"
+  helloyee:
+    image: bmd007/helloyee
+    depends_on:
+      - consul
+      - config-center
+      - messenger
+    environment:
+      SPRING_CLOUD_CONSUL_HOST: consul
+      CONFIG_SERVER_IP: http://config-center
+      CONFIG_SERVER_PORT: 8888
+      SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED: "true"
+    ports:
+      - "7461:7461"
 
 #  message-counter1:
 #    hostname: message-counter1

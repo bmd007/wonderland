@@ -35,7 +35,7 @@ topic-defs:
 ---
 spring:
   profiles:
-    - docker-compose
+    - docker_compose
 
 topic-defs:
   messageEvents: '2:3'

@@ -1,8 +1,6 @@
 server:
   port: 7461
 
-wonderland.hello.prefix: NotFromConfigServer
-
 spring:
   cloud:
     service-registry.auto-registration.enabled: true
@@ -10,9 +8,6 @@ spring:
       ribbon:
         enabled: false
 
-hello:
-  world:
-    ip: http://hello-world
 ---
 spring:
   profiles: nomad
