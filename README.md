@@ -4,7 +4,8 @@ I can say the architecture is event driven and everything is an event inside the
 There is also amqp based comminucation to outside (an Android app) (with help of rabbit mq) as push solution 
 
 ## ToDo:
-    * make hello_world asseccible to helloyee by service_discovery
+    * get rid of Eureka in sake of consul 
+    * make hello_world asseccible to helloyee by service_discovery (nomad dev mode is not a good option apparently with eureka)
     * when spring boot 2.3 is out, use its dockerImageBuild to create docker images 
     * use docker compose (all together) as some sort of deployment and orchestration tool
     * make hcl files useable without need to change them each time

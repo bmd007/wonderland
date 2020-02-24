@@ -1,0 +1,16 @@
+server:
+  port: 8089
+
+
+spring:
+  kafka:
+    bootstrap-servers: "localhost:9092"
+
+---
+spring:
+  profiles: nomad
+
+---
+spring:
+  profiles:
+    - docker-compose

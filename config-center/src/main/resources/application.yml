@@ -1,0 +1,12 @@
+server:
+  port: 8888
+
+spring:
+  cloud:
+    service-registry.auto-registration.enabled: true
+
+
+
+---
+spring:
+  profiles: nomad

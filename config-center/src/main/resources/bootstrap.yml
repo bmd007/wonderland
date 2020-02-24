@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: config-center
+
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/bmd007/MicroservicesPlayGround
+          clone-on-start: true
+          search-paths:
+            - configurations
+          basedir:
+            ../tmp

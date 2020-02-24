@@ -2,7 +2,6 @@ server:
   port: 8081
 
 wonderland.hello.prefix: NotFromConfigServer
-eureka.client.serviceUrl.defaultZone: http://localhost:8761/eureka/
 
 spring:
   kafka:
@@ -16,6 +15,12 @@ spring:
     retries: 3
     acks: all
 
+  rabbitmq:
+    password: guest
+    username: guest
+    host: localhost
+    port: 5672
+
 topic-defs:
   messageEvents: '1:1'
 
@@ -24,10 +29,8 @@ spring:
   profiles: nomad
 
 
-eureka.client.serviceUrl.defaultZone: "http://${service.registry.server.ip}:${service.registry.server.port}/eureka/"
-
 topic-defs:
-  messageEventTopicDefinition: '3:3'
+  messageEvents: '3:3'
 
 ---
 spring:
@@ -35,4 +38,4 @@ spring:
     - docker-compose
 
 topic-defs:
-  messageEventTopicDefinition: '2:3'
+  messageEvents: '2:3'

@@ -6,6 +6,8 @@ plugins {
 }
 
 group = 'wonderland'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
 
 ext.buildNumber = {
 	def buildNumber = System.getenv("VERSION")
@@ -15,11 +17,11 @@ ext.buildNumber = {
 	return buildNumber
 }
 
-group = 'wonderland'
 project.version = (System.getenv("VERSION") ?: "3.0-SNAPSHOT")
 
-sourceCompatibility = 11
-targetCompatibility = 11
+ext {
+	set('springCloudVersion', "Hoxton.SR1")
+}
 
 configurations {
 	compileOnly {
@@ -29,11 +31,6 @@ configurations {
 
 repositories {
 	mavenCentral()
-	maven { url 'https://repo.spring.io/milestone' }
-}
-
-ext {
-	set('springCloudVersion', "Hoxton.SR1")
 }
 
 dependencies {
@@ -42,17 +39,17 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-config'
 	implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
 
+	implementation 'org.apache.kafka:kafka-streams'
+	implementation 'org.springframework.kafka:spring-kafka'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-
-	annotationProcessor 'org.projectlombok:lombok:1.18.10'
-	implementation 'org.projectlombok:lombok:1.18.10'
+	implementation('com.google.guava:guava:28.0-jre')
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
+	testImplementation('org.mockito:mockito-junit-jupiter')
 	testImplementation 'io.projectreactor:reactor-test'
-	testCompile("org.junit.jupiter:junit-jupiter-api")
-	testRuntime("org.junit.jupiter:junit-jupiter-engine")
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
 }
 
 dependencyManagement {
@@ -61,17 +58,13 @@ dependencyManagement {
 	}
 }
 
+defaultTasks "clean", "build"
+
 test {
 	useJUnitPlatform()
 }
 
-wrapper {
-	gradleVersion = "6.0"
-	distributionType = Wrapper.DistributionType.ALL
-}
-
-defaultTasks "clean", "build"
 
 bootJar {
-	archiveFileName = 'helloyee.jar'
+	archiveFileName = 'message-counter.jar'
 }

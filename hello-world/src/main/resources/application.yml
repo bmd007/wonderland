@@ -1,7 +1,5 @@
 server:
-  port: 7461
-
-wonderland.hello.prefix: NotFromConfigServer
+  port: 7451
 
 spring:
   cloud:
@@ -9,10 +7,6 @@ spring:
     loadbalancer:
       ribbon:
         enabled: false
-
-hello:
-  world:
-    ip: http://hello-world
 ---
 spring:
   profiles: nomad

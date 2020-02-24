@@ -1,4 +1,4 @@
-job "messenger" {
+job "communication-graph" {
   region =      "global"
   datacenters = ["dc1"]
   type =        "service"
@@ -10,7 +10,7 @@ job "messenger" {
     min_healthy_time = "30s"
   }
 
- group "messenger" {
+ group "communication-graph" {
     #count = INSTANCE_COUNT
     count = 2
 
@@ -19,12 +19,12 @@ job "messenger" {
       mode =  "delay"
     }
 
-    task "messenger" {
+    task "communication-graph" {
       driver = "docker"
 
       # Configuration is specific to each driver.
       config {
-        image =      "bmd007/messenger:latest"
+        image =      "bmd007/communication-graph:latest"
         force_pull = true
         auth {
           username = "bmd007"
@@ -37,13 +37,12 @@ job "messenger" {
       }
 
       env {
-        #todo add kafka and rabbitMq addresses
         SPRING_PROFILES_ACTIVE =                                  "nomad"
-        CONFIG_SERVER_IP =                                        "http://config-center"
-        CONFIG_SERVER_PORT =                                      "8888"
-        SPRING_CLOUD_CONSUL_HOST =                                "${NOMAD_IP_http}"
-        #        SPRING_APPLICATION_INSTANCE_ID =                           "${NOMAD_ALLOC_ID}"
-        SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED = "false"
+        CONFIG_SERVER_IP =                                        "${NOMAD_IP_http}"
+        CONFIG_SERVER_PORT =                                      "21379"
+        SERVICE_REGISTRY_SERVER_IP =                              "${NOMAD_IP_http}"
+        SERVICE_REGISTRY_SERVER_PORT =                            "24659"
+        SPRING_APPLICATION_INSTANCE_ID =                          "${NOMAD_ALLOC_ID}"
         JAVA_OPTS =                                               "-XshowSettings:vm -XX:+ExitOnOutOfMemoryError -Xmx200m -Xms150m -XX:MaxDirectMemorySize=48m -XX:ReservedCodeCacheSize=64m -XX:MaxMetaspaceSize=128m -Xss256k"
       }
       resources {

@@ -1,22 +1,14 @@
-job "helloyee" {
+job "hello-world" {
   region =      "global"
   datacenters = ["dc1"]
-  #  type =        "service"
   type =        "batch"
-
-  #  update {
-  # The update stanza specifies the group's update strategy.
-  #    max_parallel =     1
-  #    health_check =     "checks"
-  #    min_healthy_time = "30s"
-  #  }
 
 
   parameterized {
     meta_required = ["DOCKER_HUB_PASSOWRD"]
   }
 
- group "helloyee" {
+ group "hello-world" {
     #count = INSTANCE_COUNT
     count = 1
 
@@ -25,14 +17,13 @@ job "helloyee" {
       mode =  "delay"
     }
 
-    task "helloyee" {
+    task "hello-world" {
       driver = "docker"
 
-      # Configuration is specific to each driver.
       config {
         network_mode = "host"
-//        hostname = "helloyee"
-        image =      "bmd007/helloyee:latest"
+//        hostname = "hello-world"
+        image =      "bmd007/hello-world:latest"
         force_pull = true
         auth {
           username = "bmd007"
@@ -40,7 +31,7 @@ job "helloyee" {
         }
 
         port_map {
-          http =  7461
+          http =  7451
         }
       }
 
@@ -50,6 +41,7 @@ job "helloyee" {
         CONFIG_SERVER_PORT =                                      "8888"
         SPRING_CLOUD_CONSUL_HOST =                                "${NOMAD_IP_http}"
         #        SPRING_APPLICATION_INSTANCE_ID =                           "${NOMAD_ALLOC_ID}"
+        SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED = "false"
         JAVA_OPTS =                                               "-XshowSettings:vm -XX:+ExitOnOutOfMemoryError -Xmx200m -Xms150m -XX:MaxDirectMemorySize=48m -XX:ReservedCodeCacheSize=64m -XX:MaxMetaspaceSize=128m -Xss256k"
       }
       resources {
