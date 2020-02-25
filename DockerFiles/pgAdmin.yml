@@ -1,0 +1,8 @@
+version: '3.7'
+services:
+ # Postgres web client
+  pgadmin:
+    network_mode: host
+    image: thajeztah/pgadmin4
+    ports:
+     - '5050:5050'

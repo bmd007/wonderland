@@ -14,12 +14,36 @@ services:
       - "25672:25672"
       - "61613:61613"
       - "61614:61614"
+    environment:
+      SERVICE_IGNORE: any_value
+
+  consul:
+    hostname: consul
+    image: consul
+    ports:
+      - '8500:8500'
+    environment:
+      SERVICE_IGNORE: any_value
+
+  config-center:
+    hostname: config-center
+    image: bmd007/config-center
+    depends_on:
+      - consul
+    environment:
+      SERVICE_8888_NAME: config-center
+      SPRING_CLOUD_CONSUL_HOST: consul
+      SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED: "false"
+    ports:
+      - "8888:8888"
 
   zookeeper:
     hostname: zookeeper
     image: wurstmeister/zookeeper
     ports:
       - "2181:2181"
+    environment:
+      SERVICE_IGNORE: any_value
 
   kafka:
     hostname: kafka
@@ -43,6 +67,7 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      SERVICE_9092_NAME: kafka
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
@@ -104,8 +129,8 @@ services:
       - transport.tcp.port=9300
       - transport.host=0.0.0.0
       - transport.publish_port=9300
-#      - SERVICE_9300_NAME=elasticsearch
-#      - SERVICE_9200_NAME=elasticsearch
+      - SERVICE_9300_NAME=elasticsearch
+      - SERVICE_9200_NAME=elasticsearch
     ulimits:
       memlock:
         soft: -1
@@ -136,6 +161,10 @@ services:
       - ./neo4j/plugins:/plugins
       - ./neo4j/import:/var/lib/neo4j/import
     environment:
+      - SERVICE_7473_NAME=neo4j
+      - SERVICE_7474_NAME=neo4j
+      - SERVICE_7687_NAME=neo4j
+      - SERVICE_6477_NAME=neo4j
       - NEO4J_AUTH=neo4j/test
       - NEO4JLABS_PLUGINS=["apoc", "graph-algorithms"]
       - NEO4J_dbms_connector_http_listen__address= :7474
@@ -149,26 +178,24 @@ services:
       - NEO4J_dbms_security_procedures_unrestricted= apoc.*,algo.*
   #      NEO4J_AUTH: none
 
-  consul:
-    hostname: consul
-    image: consul
-    ports:
-      - '8500:8500'
 
-  config-center:
-    hostname: config-center
-    image: bmd007/config-center
+  # Registrator to register services in consul
+  registrator:
+    image: gliderlabs/registrator
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    command: "-internal consul://consul:8500"
     depends_on:
       - consul
-    environment:
-      SPRING_CLOUD_CONSUL_HOST: consul
-      SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED: "true"
-    ports:
-      - "8888:8888"
 
   messenger:
     hostname: messenger
     image: bmd007/messenger
+#    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://guest:guest@rabbitmq:55672/api/aliveness-test/"]
+#      interval: 6s
+#      timeout: 7s
+#      retries: 6
     depends_on:
       - consul
       - config-center
@@ -176,6 +203,7 @@ services:
       - kafka2
       - kafka3
     environment:
+      SERVICE_8081_NAME: messenger
       SPRING_PROFILES_ACTIVE: docker_compose
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       SPRING_RABBITMQ_HOST: rabbitmq
@@ -183,25 +211,9 @@ services:
       CONFIG_SERVER_IP: http://config-center
       HELLO_WORLD_IP: http://hello-world
       CONFIG_SERVER_PORT: 8888
-      SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED: "true"
+      SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED: "false"
     ports:
       - "8081:8081"
-
-  helloyee:
-    hostname: helloyee
-    image: bmd007/helloyee
-    depends_on:
-      - consul
-      - config-center
-      - messenger
-    environment:
-      SPRING_PROFILES_ACTIVE: docker_compose
-      SPRING_CLOUD_CONSUL_HOST: consul
-      CONFIG_SERVER_IP: http://config-center
-      CONFIG_SERVER_PORT: 8888
-      SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED: "true"
-    ports:
-      - "7461:7461"
 
   message-search:
     hostname: message-search
@@ -216,12 +228,13 @@ services:
       - kafka3
       - elasticsearch
     environment:
+      SERVICE_8089_NAME: message-search
       SPRING_PROFILES_ACTIVE: docker_compose
       SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
       SPRING_CLOUD_CONSUL_HOST: consul
       CONFIG_SERVER_IP: http://config-center
       CONFIG_SERVER_PORT: 8888
-      SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED: "true"
+      SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED: "false"
 #      SPRING_ELASTICSEARCH_REST_URIS: http://elasticsearch:9200
       ELASTICSEARCH_REST_IP: "elasticsearch"
     ports:
@@ -240,57 +253,114 @@ services:
       - kafka3
       - neo4j
     environment:
+      SERVICE_8095_NAME: communication-graph
       SPRING_PROFILES_ACTIVE: docker_compose
       SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
       SPRING_CLOUD_CONSUL_HOST: consul
       CONFIG_SERVER_IP: http://config-center
       CONFIG_SERVER_PORT: 8888
-      SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED: "true"
+      SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED: "false"
       SPRING_DATA_NEO4J_URI: bolt://neo4j:7687
     ports:
       - "8095:8095"
 
-#  message-counter1:
-#    hostname: message-counter1
-#    ports:
-#      - 8222:9585
-#      - 8223:9586
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    depends_on:
-#      - kafka
-#    environment:
-#      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-#      KAFKA_STREAMS_SERVER_CONFIG_APP_IP: message-counter1
-#      KAFKA_STREAMS_SERVER_CONFIG_APP_PORT: 9585
-#
-#  message_counter2:
-#    hostname: message-counter2
-#    ports:
-#      - 8224:9585
-#      - 8225:9586
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    depends_on:
-#      - kafka
-#    environment:
-#      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-#      KAFKA_STREAMS_SERVER_CONFIG_APP_IP: message-counter2
-#      KAFKA_STREAMS_SERVER_CONFIG_APP_PORT: 9585
-#
-#  message_counter3:
-#    hostname: message-counter3
-#    ports:
-#      - 8226:9585
-#      - 8227:9586
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    depends_on:
-#      - kafka
-#    environment:
-#      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-#      KAFKA_STREAMS_SERVER_CONFIG_APP_IP: message-counter3
-#      KAFKA_STREAMS_SERVER_CONFIG_APP_PORT: 9585
+  message-counter1:
+    hostname: message-counter1
+    ports:
+      - "8222:9585"
+      - "8223:9586"
+    image: bmd007/message-counter
+    depends_on:
+      - consul
+      - config-center
+      - messenger
+      - helloyee
+      - kafka
+      - kafka2
+      - kafka3
+    environment:
+      SERVICE_9585_NAME: message-counter1
+      SERVICE_9586_NAME: message-counter1
+      SPRING_PROFILES_ACTIVE: docker_compose
+      SPRING_CLOUD_CONSUL_HOST: consul
+      CONFIG_SERVER_IP: http://config-center
+      CONFIG_SERVER_PORT: 8888
+      SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED: "false"
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_STREAMS_SERVER_CONFIG_APP_IP: message-counter1
+      KAFKA_STREAMS_SERVER_CONFIG_APP_PORT: 9585
+      SPRING_CLOUD_CONSUL_DISCOVERY_HOSTNAME: message-counter1
+
+  message_counter2:
+    hostname: message-counter2
+    ports:
+      - "8224:9585"
+      - "8225:9586"
+    image: bmd007/message-counter
+    depends_on:
+      - consul
+      - config-center
+      - messenger
+      - helloyee
+      - kafka
+      - kafka2
+      - kafka3
+      - message-counter1
+    environment:
+      SERVICE_9585_NAME: message-counter2
+      SERVICE_9586_NAME: message-counter2
+      SPRING_PROFILES_ACTIVE: docker_compose
+      SPRING_CLOUD_CONSUL_HOST: consul
+      CONFIG_SERVER_IP: http://config-center
+      CONFIG_SERVER_PORT: 8888
+      SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED: "false"
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_STREAMS_SERVER_CONFIG_APP_IP: message-counter2
+      KAFKA_STREAMS_SERVER_CONFIG_APP_PORT: 9585
+      SPRING_CLOUD_CONSUL_DISCOVERY_HOSTNAME: message-counter2
+
+  message_counter3:
+    hostname: message-counter3
+    ports:
+      - "8226:9585"
+      - "8227:9586"
+    image: bmd007/message-counter
+    depends_on:
+      - consul
+      - config-center
+      - messenger
+      - helloyee
+      - kafka
+      - kafka2
+      - kafka3
+      - message-counter1
+      - message_counter2
+    environment:
+      SERVICE_9585_NAME: message-counter3
+      SERVICE_9586_NAME: message-counter3
+      SPRING_PROFILES_ACTIVE: docker_compose
+      SPRING_CLOUD_CONSUL_HOST: consul
+      CONFIG_SERVER_IP: http://config-center
+      CONFIG_SERVER_PORT: 8888
+      SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED: "false"
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_STREAMS_SERVER_CONFIG_APP_IP: message-counter3
+      KAFKA_STREAMS_SERVER_CONFIG_APP_PORT: 9585
+      SPRING_CLOUD_CONSUL_DISCOVERY_HOSTNAME: message-counter3
+
+  helloyee:
+    hostname: helloyee
+    image: bmd007/helloyee
+    depends_on:
+      - consul
+      - config-center
+      - messenger
+    environment:
+      SERVICE_7461_NAME: helloyee
+      SPRING_PROFILES_ACTIVE: docker_compose
+      SPRING_CLOUD_CONSUL_HOST: consul
+      CONFIG_SERVER_IP: http://config-center
+      CONFIG_SERVER_PORT: 8888
+      SPRING_CLOUD_SERVICE_REGISTRY_AUTO_REGISTRATION_ENABLED: "false"
+    ports:
+      - "7461:7461"

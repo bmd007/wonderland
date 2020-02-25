@@ -38,15 +38,20 @@ public class CommunicationGraphApplication {
     private CommunicationRepository communicationRepository;
 
     @KafkaListener(topicPattern = MESSAGE_EVENT_TOPIC)
-    public void messageEventsSentSubscription(@Payload MessageSentEvent messageSentEvent, @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key){
-        Person sender = personRepository.findById(messageSentEvent.getFrom())
-                .orElse(personRepository.save(new Person(messageSentEvent.getFrom())));
-        Person receiver = personRepository.findById(messageSentEvent.getTo())
-                .orElse(personRepository.save(new Person(messageSentEvent.getTo())));
+    public void messageEventsSentSubscription(@Payload MessageSentEvent messageSentEvent, @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key) {
+        try {
+            Person sender = personRepository.findById(messageSentEvent.getFrom())
+                    .orElse(personRepository.save(new Person(messageSentEvent.getFrom())));
 
-        var communication = new Communication(sender, receiver, messageSentEvent.getTime());
-        var savedCommunication = communicationRepository.save(communication);
-        LOGGER.info("communication {} saved", savedCommunication);
+            Person receiver = personRepository.findById(messageSentEvent.getTo())
+                    .orElse(personRepository.save(new Person(messageSentEvent.getTo())));
+
+            var communication = new Communication(sender, receiver, messageSentEvent.getTime());
+            var savedCommunication = communicationRepository.save(communication);
+            LOGGER.info("communication {} saved", savedCommunication);
+        } catch (Exception e) {
+            LOGGER.error("Problem {} while processing {}", e.getMessage(), messageSentEvent);
+        }
     }
 
     //todo recommendation: if A talked to B and C talked to B and D talked to B, when E talks to A and C and D, system recommends to E to talk to B

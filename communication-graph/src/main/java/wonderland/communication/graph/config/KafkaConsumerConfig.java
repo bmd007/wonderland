@@ -40,6 +40,7 @@ public class KafkaConsumerConfig {
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, MessageSentEvent> kafkaListenerContainerFactory() {
         var factory = new ConcurrentKafkaListenerContainerFactory<String, MessageSentEvent>();
+        factory.setStatefulRetry(true);
         factory.setConsumerFactory(consumerFactory());
         return factory;
     }

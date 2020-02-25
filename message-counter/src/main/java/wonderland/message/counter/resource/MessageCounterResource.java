@@ -43,6 +43,14 @@ public class MessageCounterResource {
         return messageCounterViewService.getAll(isHighLevelQuery);
     }
 
+    @GetMapping("/sent/all")
+    public Mono<Integer> getCountersSum(@RequestParam(required = false, value = ViewService.HIGH_LEVEL_QUERY_PARAM_NAME, defaultValue = "true") boolean isHighLevelQuery) {
+        return messageCounterViewService.getAll(isHighLevelQuery)
+                .flatMapIterable(messageCountersDto -> messageCountersDto.getMessageCounters())
+                .map(messageCounterDto -> messageCounterDto.getNumberOfSentMessages())
+                .reduce((integer, integer2) -> integer + integer2);
+    }
+
     @GetMapping("/sent/from/{sender}")
     public Mono<MessageCounterDto> getCounterByName(@PathVariable("sender") String sender) {
         return messageCounterViewService.getById(sender)

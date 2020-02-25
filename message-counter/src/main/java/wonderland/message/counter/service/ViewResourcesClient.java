@@ -1,9 +1,14 @@
 package wonderland.message.counter.service;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * This Client calls the resources defined in this package.
@@ -16,6 +21,17 @@ import reactor.core.publisher.Mono;
  */
 @Component
 public class ViewResourcesClient {
+
+    public ViewResourcesClient(@Qualifier("loadBalancedClient") WebClient.Builder loadBalancedWebClientBuilder,
+                               @Qualifier("notLoadBalancedClient") WebClient.Builder notLoadBalancedWebClientBuilder,
+                               Environment environment) {
+        var activeProfiles = Arrays.stream(environment.getActiveProfiles()).collect(Collectors.toSet());
+        if (activeProfiles.contains("docker_compose")){
+            webClientBuilder = loadBalancedWebClientBuilder;
+        }else{
+            webClientBuilder = notLoadBalancedWebClientBuilder;
+        }
+    }
 
     // We are not injecting here because the available web client does load balancing which is not wanted here
     private WebClient.Builder webClientBuilder = WebClient.builder();

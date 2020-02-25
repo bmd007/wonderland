@@ -17,6 +17,18 @@ management:
 
 
 spring:
+  cloud:
+    service-registry.auto-registration.enabled: true
+    loadbalancer:
+      ribbon:
+        enabled: false
+
+    consul:
+      discovery:
+        prefer-ip-address: true
+        health-check-path: /health
+        hostname: ${spring.application.name}
+
   kafka:
     bootstrap-servers: localhost:9092
 
@@ -27,18 +39,10 @@ kafka:
     server.config:
       app-ip: localhost
       app-port: ${server.port}
-  topic-partitions:
-    eventTopic: '8:3'
-    changeLogTopic: '8:3'
 
----
-spring:
-  profiles: local
-
-kafka:
   topic-partitions:
-    eventTopic: '1:1'
-    changeLogTopic: '1:1'
+    eventTopic: '5:3'
+    changeLogTopic: '5:3'
 
 
 ---
@@ -48,4 +52,4 @@ spring:
 ---
 spring:
   profiles:
-    - docker-compose
+    - docker_compose

@@ -1,9 +1,17 @@
 spring:
   application:
     name: message-counter
-  cloud.config.uri: http://localhost:8888
+  cloud:
+    config.uri: http://localhost:8888
+
+    consul:
 
 ---
 spring:
   profiles: nomad
+  cloud.config.uri: ${config-server-ip}:${config-server-port}
+
+---
+spring:
+  profiles: docker_compose
   cloud.config.uri: ${config-server-ip}:${config-server-port}

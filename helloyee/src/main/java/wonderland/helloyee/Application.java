@@ -38,34 +38,22 @@ public class Application implements CommandLineRunner {
         System.out.println("IP Address:- " + inetAddress.getHostAddress());
         System.out.println("Host Name:- " + inetAddress.getHostName());
 
-        advice().retry(10).subscribe(s -> LOGGER.info("ADVICE IS {}", s));
-
-        loadBalancedWebClientBuilder.build()
-                .get()
-                .uri("http://messenger")
-                .retrieve()
-                .bodyToMono(String.class)
-                .retry(Long.MAX_VALUE)
-                .subscribe(s -> {
-                            LOGGER.info("MESSENGER is up and saying {}", s);
-                            people.stream().forEach(this::requestQueueFor);
-                            for (int i =0; i < 1000; i++) {
-                                safeSleep();
-                                var from = aRandomPerson();
-                                var to = aRandomPerson();
-                                advice().subscribe(text -> {
-                                    LOGGER.info("Sending {} from {} to {}", text, from, to);
-                                    sendMessage(from, to, text);
-                                });
-                            }
-                        }
-                );
-
+        safeSleep(80000);
+        people.stream().forEach(this::requestQueueFor);
+        for (int i = 0; i < 3000; i++) {
+            safeSleep(1000);
+            var from = aRandomPerson();
+            var to = aRandomPerson();
+            advice().subscribe(text -> {
+                LOGGER.info("Sending {} from {} to {}", text, from, to);
+                sendMessage(from, to, text);
+            });
+        }
     }
 
-    private void safeSleep() {
+    private void safeSleep(int time) {
         try {
-            Thread.sleep(500);
+            Thread.sleep(time);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -91,11 +79,13 @@ public class Application implements CommandLineRunner {
     }
 
     private void requestQueueFor(String email) {
+        LOGGER.info("requesting creation of queue with name {}", email);
         loadBalancedWebClientBuilder.build()
                 .post()
                 .uri("http://messenger/create/queue/for/" + email)
                 .retrieve()
                 .bodyToMono(String.class)
+                .retry(Long.MAX_VALUE)
                 .doOnError(throwable -> LOGGER.error("error:{} from load balanced client", throwable.getMessage()))
                 .subscribe(s -> System.out.println("Answer got by loadBalancedClient from messenger : " + s));
     }
@@ -107,6 +97,7 @@ public class Application implements CommandLineRunner {
                 .bodyValue(message)
                 .retrieve()
                 .bodyToMono(String.class)
+                .retry(Long.MAX_VALUE)
                 .doOnError(throwable -> LOGGER.error("error:{} from load balanced client", throwable.getMessage()))
                 .subscribe(s -> System.out.println("Answer got by loadBalancedClient from messenger : " + s));
     }
