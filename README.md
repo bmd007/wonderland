@@ -4,18 +4,16 @@ I can say the architecture is event driven and everything is an event inside the
 There is also amqp based comminucation to outside (an Android app) (with help of rabbit mq) as push solution 
 
 ## ToDo:
-    * move message-counter to consul and complete its compose part 
+    * make health check of services coupled to their connection to their dbs
+    * add health checks for each service into their docker-compose (because of previous point, it should be alwalys GET:http://servicesname/actuactor/health)
     * when spring boot 2.3 is out, use its dockerImageBuild to create docker images 
-    * use docker compose (all together) as some sort of deployment and orchestration tool
     * make hcl files useable without need to change them each time
     * add API gateway for authorization checks (resource server in OAuath2 world) (and connect it to google)
     * complete person_profile app 
     * publish logs into elastic search as application_log index
-    * add kibana for reading logs
     * add an application that is based on micro_profile 
        
 ## Bounded contexts and Teams > ? < 
-    
     
 ### services and their relation to kafka topics
 #### generally, a command listener specifies where to send commands to. And an event producer specifies where it will send events. (Events=notification (something happenede, delta of domain), Commands=requests for something to be done)
