@@ -11,7 +11,7 @@ There is also amqp based comminucation to outside (an Android app) (with help of
     * add API gateway for authorization checks (resource server in OAuath2 world) (and connect it to google)
     * complete person_profile app 
     * publish logs into elastic search as application_log index
-    * add an application that is based on micro_profile 
+    * add an application that is based on DDD or try to apply DDDs concepts to the whole system (Its alraedy somehow there but not completely) 
        
 ## Bounded contexts and Teams > ? < 
     
