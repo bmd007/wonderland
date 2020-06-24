@@ -14,22 +14,13 @@ import static org.apache.kafka.common.config.TopicConfig.RETENTION_MS_CONFIG;
 @Configuration
 public class TopicCreatorConfig {
 
-/**application.properties
-    topic-defs:
-        messageEventTopicDefinition: '8:3'
-        attribute-id-mapping-updates: '8:3'
-**/
-
     public static String MESSAGE_EVENT_TOPIC = "message_events";
 
-//    private PartitionDef attributeIdMappingTopicDef;
     private PartitionDef messageEventTopicDefinition;
 
     public TopicCreatorConfig(
             @Value("${topic-defs.messageEvents}") String messageEventTopicDefinition
-//            @Value("${topic-defs.attribute-id-mapping-updates}") String atrIdMappingsUpdatesTopicPartitions
     ) {
-//        this.attributeIdMappingTopicDef = PartitionDef.parse(atrIdMappingsUpdatesTopicPartitions);
         this.messageEventTopicDefinition = PartitionDef.parse(messageEventTopicDefinition);
     }
 

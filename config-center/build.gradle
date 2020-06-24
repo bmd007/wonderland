@@ -22,7 +22,6 @@ repositories {
 }
 
 ext {
-    set('snippetsDir', file("build/generated-snippets"))
     set('springCloudVersion', "Hoxton.SR5")
 }
 
@@ -94,6 +93,7 @@ bootJar {
 }
 
 bootBuildImage {
-    imageName = "wonderland/config-center:${project.version}"
+//	imageName = "bmd007/${project.name}:${project.version}"
+    imageName = "bmd007/${project.name}"
     environment = ["BP_JVM_VERSION" : "14.0.1"]
 }

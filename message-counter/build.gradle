@@ -1,26 +1,14 @@
 plugins {
-	id 'org.springframework.boot' version '2.2.4.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-	id 'java'
-	id 'idea'
+	id "java"
+	id "idea"
+	id "org.springframework.boot" version "2.3.1.RELEASE"
+	id "io.spring.dependency-management" version "1.0.9.RELEASE"
+	id "com.gorylenko.gradle-git-properties" version "2.2.2"
+	id "jacoco" //code coverage
 }
 
-group = 'wonderland'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
-
-ext.buildNumber = {
-	def buildNumber = System.getenv("VERSION")
-	if (buildNumber == null || buildNumber.allWhitespace) {
-		buildNumber = "SNAPSHOT"
-	}
-	return buildNumber
-}
-
-project.version = (System.getenv("VERSION") ?: "3.0-SNAPSHOT")
-
-ext {
-	set('springCloudVersion', "Hoxton.SR1")
+jacoco {
+	toolVersion = "0.8.5"
 }
 
 configurations {
@@ -33,6 +21,25 @@ repositories {
 	mavenCentral()
 }
 
+ext {
+	set('springCloudVersion', "Hoxton.SR5")
+}
+
+ext.buildNumber = {
+	def buildNumber = System.getenv("VERSION")
+	if (buildNumber == null || buildNumber.allWhitespace) {
+		buildNumber = "SNAPSHOT"
+	}
+	return buildNumber
+}
+
+project.version = buildNumber()
+
+sourceCompatibility = 14
+targetCompatibility = 14
+
+group = 'wonderland'
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
@@ -42,11 +49,12 @@ dependencies {
 	implementation 'org.apache.kafka:kafka-streams'
 	implementation 'org.springframework.kafka:spring-kafka'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-	implementation('com.google.guava:guava:28.0-jre')
+	implementation('com.google.guava:guava:29.0-jre')
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
+	testImplementation 'com.xebialabs.restito:restito:0.9.3'
 	testImplementation('org.mockito:mockito-junit-jupiter')
 	testImplementation 'io.projectreactor:reactor-test'
 	testImplementation 'org.springframework.kafka:spring-kafka-test'
@@ -58,13 +66,34 @@ dependencyManagement {
 	}
 }
 
-defaultTasks "clean", "build"
-
 test {
 	useJUnitPlatform()
 }
 
+springBoot {
+	buildInfo()
+}
+
+task printVersion {
+	doLast {
+		println project.version
+	}
+}
+
+wrapper {
+	gradleVersion = "6.5"
+	distributionType = Wrapper.DistributionType.ALL
+}
 
 bootJar {
-	archiveFileName = 'message-counter.jar'
+	layered()
+	layered {
+		includeLayerTools = false
+	}
+}
+
+bootBuildImage {
+//	imageName = "bmd007/${project.name}:${project.version}"
+	imageName = "bmd007/${project.name}"
+	environment = ["BP_JVM_VERSION" : "14.0.1"]
 }

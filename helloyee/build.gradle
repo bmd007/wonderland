@@ -1,8 +1,19 @@
 plugins {
-	id 'org.springframework.boot' version '2.2.4.RELEASE'
+	id 'org.springframework.boot' version '2.3.1.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
 	id 'java'
 	id 'idea'
+	id "jacoco" //code coverage
+}
+
+jacoco {
+	toolVersion = "0.8.5"
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
 }
 
 group = 'wonderland'
@@ -14,26 +25,17 @@ ext.buildNumber = {
 	}
 	return buildNumber
 }
+project.version = buildNumber()
 
-group = 'wonderland'
-project.version = (System.getenv("VERSION") ?: "3.0-SNAPSHOT")
-
-sourceCompatibility = 11
-targetCompatibility = 11
-
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
-}
+sourceCompatibility = 14
+targetCompatibility = 14
 
 repositories {
 	mavenCentral()
-	maven { url 'https://repo.spring.io/milestone' }
 }
 
 ext {
-	set('springCloudVersion', "Hoxton.SR1")
+	set('springCloudVersion', "Hoxton.SR5")
 }
 
 dependencies {
@@ -45,8 +47,8 @@ dependencies {
 
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
-	annotationProcessor 'org.projectlombok:lombok:1.18.10'
-	implementation 'org.projectlombok:lombok:1.18.10'
+	annotationProcessor 'org.projectlombok:lombok:1.18.12'
+	implementation 'org.projectlombok:lombok:1.18.12'
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -67,12 +69,23 @@ test {
 }
 
 wrapper {
-	gradleVersion = "6.0"
+	gradleVersion = "6.5"
 	distributionType = Wrapper.DistributionType.ALL
 }
 
-defaultTasks "clean", "build"
-
 bootJar {
-	archiveFileName = 'helloyee.jar'
+	layered()
+	layered {
+		includeLayerTools = false
+	}
+}
+
+bootBuildImage {
+//	imageName = "bmd007/${project.name}:${project.version}"
+	imageName = "bmd007/${project.name}"
+	environment = ["BP_JVM_VERSION" : "14.0.1"]
+}
+
+springBoot {
+	buildInfo()
 }
