@@ -1,6 +1,6 @@
 plugins {
-	id 'org.springframework.boot' version '2.2.1.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+	id 'org.springframework.boot' version '2.2.6.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
 	id 'java'
 	id 'idea'
 }
@@ -33,7 +33,7 @@ repositories {
 }
 
 ext {
-	set('springCloudVersion', "Hoxton.SR1")
+	set('springCloudVersion', "Hoxton.SR4")
 }
 
 dependencies {
@@ -71,7 +71,7 @@ test {
 }
 
 wrapper {
-	gradleVersion = "6.0"
+	gradleVersion = "6.3"
 	distributionType = Wrapper.DistributionType.ALL
 }
 

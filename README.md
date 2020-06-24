@@ -4,9 +4,9 @@ I can say the architecture is event driven and everything is an event inside the
 There is also amqp based comminucation to outside (an Android app) (with help of rabbit mq) as push solution 
 
 ## ToDo:
+    * when spring boot 2.3 is out, use its dockerImageBuild to create docker images 
     * make health check of services coupled to their connection to their dbs
     * add health checks for each service into their docker-compose (because of previous point, it should be alwalys GET:http://servicesname/actuactor/health)
-    * when spring boot 2.3 is out, use its dockerImageBuild to create docker images 
     * make hcl files useable without need to change them each time
     * add API gateway for authorization checks (resource server in OAuath2 world) (and connect it to google)
     * complete person_profile app 
