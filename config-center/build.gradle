@@ -1,20 +1,20 @@
-buildscript {
-    repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-        mavenCentral()
-    }
-    dependencies {
-        classpath "io.spring.gradle:dependency-management-plugin:1.0.2.RELEASE"
-    }
-}
-
 plugins {
     id "java"
     id "idea"
-    id "org.springframework.boot" version "2.2.1.RELEASE"
-    id "io.spring.dependency-management" version "1.0.8.RELEASE"
+    id "org.springframework.boot" version "2.3.1.RELEASE"
+    id "io.spring.dependency-management" version "1.0.9.RELEASE"
+    id "com.gorylenko.gradle-git-properties" version "2.2.2"
+    id "jacoco" //code coverage
+}
+
+jacoco {
+    toolVersion = "0.8.5"
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
@@ -23,7 +23,7 @@ repositories {
 
 ext {
     set('snippetsDir', file("build/generated-snippets"))
-    set('springCloudVersion', "Hoxton.SR1")
+    set('springCloudVersion', "Hoxton.SR5")
 }
 
 ext.buildNumber = {
@@ -34,17 +34,27 @@ ext.buildNumber = {
     return buildNumber
 }
 
-group = 'wonderland'
-project.version = (System.getenv("VERSION") ?: "3.0-SNAPSHOT")
+project.version = buildNumber()
 
-sourceCompatibility = 11
-targetCompatibility = 11
+sourceCompatibility = 14
+targetCompatibility = 14
+
+group = 'wonderland'
 
 dependencies {
     implementation 'org.springframework.cloud:spring-cloud-config-server'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
+    implementation 'org.springframework.cloud:spring-cloud-loadbalancer'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation 'com.xebialabs.restito:restito:0.9.3'
+    testImplementation "org.junit.jupiter:junit-jupiter-api"
+    testImplementation "org.mockito:mockito-junit-jupiter"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
 
 //    implementation('org.springframework.cloud:spring-cloud-starter-sleuth')
 //    implementation('org.springframework.cloud:spring-cloud-starter-zipkin')
@@ -57,13 +67,12 @@ dependencyManagement {
     }
 }
 
-springBoot {
-    buildInfo()
-}
-
 test {
     useJUnitPlatform()
-    outputs.dir snippetsDir
+}
+
+springBoot {
+    buildInfo()
 }
 
 task printVersion {
@@ -73,10 +82,18 @@ task printVersion {
 }
 
 wrapper {
-    gradleVersion = "6.0"
+    gradleVersion = "6.5"
     distributionType = Wrapper.DistributionType.ALL
 }
 
 bootJar {
-    archiveFileName = 'config-center.jar'
+    layered()
+    layered {
+        includeLayerTools = false
+    }
+}
+
+bootBuildImage {
+    imageName = "wonderland/config-center:${project.version}"
+    environment = ["BP_JVM_VERSION" : "14.0.1"]
 }
