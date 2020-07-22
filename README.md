@@ -6,12 +6,15 @@ There is also amqp based comminucation to outside (an Android app) (with help of
 ## ToDo:
     * make health check of services coupled to their connection to their dbs
     * add health checks for each service into their docker-compose (because of previous point, it should be alwalys GET:http://servicesname/actuactor/health)
-    * when spring boot 2.3 is out, use its dockerImageBuild to create docker images 
-    * make hcl files useable without need to change them each time
-    * add API gateway for authorization checks (resource server in OAuath2 world) (and connect it to google)
     * complete person_profile app 
+    * add API gateway for authorization checks (resource server in OAuath2 world) (and connect it to google)
+    * make hcl files useable without need to change them each time
+    * add an application that is based on SCALA and PLAY
+    * write a mobile applicaiton with fluter and test it on IOS as well 
+    * add an application that is based on GROOVY GRAILS
+    * add an application that is based on flink
     * publish logs into elastic search as application_log index
-    * add an application that is based on micro_profile 
+    * when spring boot 2.3 is out, use its dockerImageBuild to create docker images
        
 ## Bounded contexts and Teams > ? < 
     
