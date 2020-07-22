@@ -1,24 +1,15 @@
 plugins {
-	id 'org.springframework.boot' version '2.2.4.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-	id 'java'
-	id 'idea'
+	id "java"
+	id "idea"
+	id "org.springframework.boot" version "2.3.1.RELEASE"
+	id "io.spring.dependency-management" version "1.0.9.RELEASE"
+	id "com.gorylenko.gradle-git-properties" version "2.2.2"
+	id "jacoco" //code coverage
 }
 
-group = 'wonderland'
-
-ext.buildNumber = {
-	def buildNumber = System.getenv("VERSION")
-	if (buildNumber == null || buildNumber.allWhitespace) {
-		buildNumber = "SNAPSHOT"
-	}
-	return buildNumber
+jacoco {
+	toolVersion = "0.8.5"
 }
-
-project.version = (System.getenv("VERSION") ?: "3.0-SNAPSHOT")
-
-sourceCompatibility = 11
-targetCompatibility = 11
 
 configurations {
 	compileOnly {
@@ -31,17 +22,33 @@ repositories {
 }
 
 ext {
-	set('springCloudVersion', "Hoxton.SR1")
+	set('springCloudVersion', "Hoxton.SR5")
 }
+
+ext.buildNumber = {
+	def buildNumber = System.getenv("VERSION")
+	if (buildNumber == null || buildNumber.allWhitespace) {
+		buildNumber = "SNAPSHOT"
+	}
+	return buildNumber
+}
+
+project.version = buildNumber()
+
+sourceCompatibility = 14
+targetCompatibility = 14
+
+group = 'wonderland'
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.cloud:spring-cloud-starter-config'
 	implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
+	implementation 'org.springframework.cloud:spring-cloud-loadbalancer'
 
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-	implementation "com.google.guava:guava:28.1-jre"
+	implementation "com.google.guava:guava:29.0-jre"
 	implementation 'org.springframework.kafka:spring-kafka'
 
 	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
@@ -68,14 +75,31 @@ test {
 	useJUnitPlatform()
 }
 
+springBoot {
+	buildInfo()
+}
+
+task printVersion {
+	doLast {
+		println project.version
+	}
+}
+
 wrapper {
-	gradleVersion = "6.0"
+	gradleVersion = "6.5"
 	distributionType = Wrapper.DistributionType.ALL
 }
 
-defaultTasks "clean", "build"
-
 bootJar {
-	archiveFileName = 'message-search.jar'
+	layered()
+	layered {
+		includeLayerTools = false
+	}
+}
+
+bootBuildImage {
+//	imageName = "bmd007/${project.name}:${project.version}"
+	imageName = "bmd007/${project.name}"
+	environment = ["BP_JVM_VERSION" : "14.0.1"]
 }
 

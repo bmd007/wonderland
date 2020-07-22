@@ -1,8 +1,11 @@
-FROM adoptopenjdk/openjdk11
+FROM adoptopenjdk/openjdk14
 
 MAINTAINER "Mohammad Mahdi Amini 'bmd579@gmail.com'"
 
-ADD build/libs/message-counter.jar /application.jar
+ARG PROJECT_NAME
+ARG VERSION
+
+ADD build/libs/$PROJECT_NAME-$VERSION.jar /application.jar
 
 ENV JAVA_OPTS ""
 
