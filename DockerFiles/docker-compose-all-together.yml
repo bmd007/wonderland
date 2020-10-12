@@ -141,6 +141,8 @@ services:
 
   kibana:
     hostname: kibana
+    depends_on:
+      - elasticsearch
     image: docker.elastic.co/kibana/kibana:6.8.6
     environment:
       SERVER_NAME: kibana
@@ -199,6 +201,7 @@ services:
     depends_on:
       - consul
       - config-center
+      - rabbitmq
       - kafka
       - kafka2
       - kafka3
