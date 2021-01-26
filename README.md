@@ -4,15 +4,15 @@ I can say the architecture is event driven and everything is an event inside the
 There is also amqp based comminucation to outside (an Android app) (with help of rabbit mq) as push solution 
 
 ## ToDo:
+	* use consul instead of config server
     * upgrade elastic search stack to 7 and higher
     * make health check of services coupled to their connection to their dbs (is it a good idea?)
     * add health checks for each service into their docker-compose (because of previous point, it should be alwalys GET:http://servicesname/actuactor/health)
-    * make hcl files useable without need to change them each time
     * add API gateway for authorization checks (resource server in OAuath2 world) (and connect it to google)
     * complete person_profile and ui apps
     * publish logs into elastic search as application_log index
-    * add an application that is based on DDD or try to apply DDDs concepts to the whole system (Its alraedy somehow there but not completely)
-
+    * add an application that is based on DDD or try to apply DDDs concepts to the whole system (game-engine, match-making)
+	* integrate nomad (use information from master thesis)
 ## Bounded contexts and Teams > ? <
 
 ### services and their relation to kafka topics
