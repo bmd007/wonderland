@@ -1,11 +1,11 @@
 plugins {
-	id 'org.springframework.boot' version '2.3.7.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+	id 'org.springframework.boot' version '2.4.2'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'org.asciidoctor.convert' version '1.5.8'
 	id 'java'
 }
 
-group = 'wonderland.reactive.game'
+group = 'wonderland.game'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '15'
 
@@ -17,14 +17,16 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' }
 }
 
 ext {
 	set('snippetsDir', file("build/generated-snippets"))
-	set('springCloudVersion', "Hoxton.SR9")
+	set('springCloudVersion', "2020.0.0")
 }
 
 dependencies {
+	runtime("org.springframework.boot:spring-boot-properties-migrator")
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.cloud:spring-cloud-starter'
@@ -51,4 +53,16 @@ test {
 asciidoctor {
 	inputs.dir snippetsDir
 	dependsOn test
+}
+
+bootJar {
+	layered()
+}
+
+tasks.named('wrapper') {
+	distributionType = Wrapper.DistributionType.ALL
+}
+
+bootBuildImage {
+	imageName = "bmd007/wonderland-game-engine"
 }

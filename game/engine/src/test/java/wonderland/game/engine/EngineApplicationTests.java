@@ -1,4 +1,4 @@
-package wonderland.reactive.game.engine;
+package wonderland.game.engine;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

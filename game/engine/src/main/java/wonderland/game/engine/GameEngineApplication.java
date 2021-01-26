@@ -1,4 +1,4 @@
-package wonderland.reactive.game.engine;
+package wonderland.game.engine;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
