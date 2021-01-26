@@ -1,7 +1,6 @@
 job "message-counter" {
   region = "global"
-  datacenters = [
-    "dc1"]
+  datacenters = ["dc1"]
   type = "service"
 
   update {
