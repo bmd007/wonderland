@@ -4,6 +4,7 @@ I can say the architecture is event driven and everything is an event inside the
 There is also amqp based comminucation to outside (an Android app) (with help of rabbit mq) as push solution 
 
 ## ToDo:
+    * add renovate bot
 	* use consul instead of config server
     * upgrade elastic search stack to 7 and higher
     * make health check of services coupled to their connection to their dbs (is it a good idea?)
