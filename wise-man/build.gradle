@@ -10,7 +10,7 @@ jacoco {
     toolVersion = "0.8.7"
 }
 
-group = 'wonderland'
+group = 'wonderlan'
 
 ext.buildNumber = {
     def buildNumber = System.getenv('VERSION')
@@ -46,21 +46,17 @@ dependencies {
     implementation "org.springframework.cloud:spring-cloud-starter-consul-config"
     implementation "org.springframework.cloud:spring-cloud-starter-consul-discovery"
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation 'org.springframework.kafka:spring-kafka'
+    implementation('com.jayway.jsonpath:json-path')
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
-    testImplementation 'org.springframework.kafka:spring-kafka-test'
     testImplementation 'org.mockito:mockito-junit-jupiter'
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     implementation 'com.github.javafaker:javafaker:1.0.2'
     implementation 'org.projectlombok:lombok:1.18.22'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
-    implementation 'org.springframework.boot:spring-boot-starter-amqp'
-    testImplementation 'org.springframework.amqp:spring-rabbit-test'
-
 }
 
 dependencyManagement {

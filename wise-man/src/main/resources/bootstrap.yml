@@ -1,0 +1,26 @@
+spring:
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      config:
+        enabled: true
+      enabled: true
+      discovery:
+        enabled: true
+    loadbalancer:
+      ribbon:
+        enabled: false
+
+---
+spring:
+  config:
+    activate:
+      on-profile: no-consul
+  cloud:
+    consul:
+      config:
+        enabled: false
+      enabled: false
+      discovery:
+        enabled: false
