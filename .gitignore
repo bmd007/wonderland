@@ -6,6 +6,6 @@
 *.jar
 **/someBackUp/**
 /tmp
-/DockerFiles/neo4j/
-/DockerFiles/neo4j/*
+/DockerComposeFiles/neo4j/
+/DockerComposeFiles/neo4j/*
 /temp
