@@ -1,15 +1,27 @@
 plugins {
-	id "java"
-	id "idea"
-	id "org.springframework.boot" version "2.3.1.RELEASE"
-	id "io.spring.dependency-management" version "1.0.9.RELEASE"
-	id "com.gorylenko.gradle-git-properties" version "2.2.2"
+	id 'org.springframework.boot' version '2.5.5'
+	id "io.spring.dependency-management" version "1.0.11.RELEASE"
+	id 'java'
+	id 'idea'
 	id "jacoco" //code coverage
+	id "com.gorylenko.gradle-git-properties" version "2.3.1"
 }
 
 jacoco {
-	toolVersion = "0.8.5"
+	toolVersion = "0.8.7"
 }
+
+ext.buildNumber = {
+	def buildNumber = System.getenv('VERSION')
+	if (buildNumber == null || buildNumber.allWhitespace) {
+		buildNumber = 'beta'
+	}
+	return buildNumber
+}
+
+project.version = buildNumber()
+
+sourceCompatibility = 15
 
 configurations {
 	compileOnly {
@@ -22,46 +34,37 @@ repositories {
 }
 
 ext {
-	set('springCloudVersion', "Hoxton.SR5")
+	set('springCloudVersion', "2020.0.4")
 }
-
-ext.buildNumber = {
-	def buildNumber = System.getenv("VERSION")
-	if (buildNumber == null || buildNumber.allWhitespace) {
-		buildNumber = "SNAPSHOT"
-	}
-	return buildNumber
-}
-
-project.version = buildNumber()
-
-sourceCompatibility = 14
-targetCompatibility = 14
 
 group = 'wonderland'
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-	implementation 'org.springframework.cloud:spring-cloud-starter-config'
-	implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
-	implementation 'org.springframework.cloud:spring-cloud-loadbalancer'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-
-	annotationProcessor 'org.projectlombok:lombok:1.18.12'
-	implementation 'org.projectlombok:lombok:1.18.12'
-
-	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+	implementation 'org.springframework.cloud:spring-cloud-starter'
+	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+	implementation "org.springframework.cloud:spring-cloud-loadbalancer"
+	implementation "org.springframework.cloud:spring-cloud-starter-consul-config"
+	implementation "org.springframework.cloud:spring-cloud-starter-consul-discovery"
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.kafka:spring-kafka'
+	implementation 'org.locationtech.jts:jts-core:1.18.1'
+	implementation "com.google.guava:guava"
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
-	testImplementation 'io.projectreactor:reactor-test'
-	testCompile("org.junit.jupiter:junit-jupiter-api")
-	testRuntime("org.junit.jupiter:junit-jupiter-engine")
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
+	testImplementation 'org.mockito:mockito-junit-jupiter'
+	testImplementation 'org.junit.jupiter:junit-jupiter-api'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+	implementation 'com.github.javafaker:javafaker:1.0.2'
+	annotationProcessor 'org.projectlombok:lombok:1.18.12'
+	implementation 'org.projectlombok:lombok:1.18.12'
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 	testImplementation 'org.springframework.amqp:spring-rabbit-test'
-	testImplementation "org.springframework.kafka:spring-kafka-test"
 }
 
 dependencyManagement {
@@ -74,6 +77,18 @@ test {
 	useJUnitPlatform()
 }
 
+jacocoTestReport {
+	reports {
+		xml.enabled = true
+		html.enabled = true
+	}
+}
+
+tasks.named('wrapper') {
+	distributionType = Wrapper.DistributionType.ALL
+}
+
+
 springBoot {
 	buildInfo()
 }
@@ -84,20 +99,8 @@ task printVersion {
 	}
 }
 
-wrapper {
-	gradleVersion = "6.5"
-	distributionType = Wrapper.DistributionType.ALL
-}
-
-bootJar {
-	layered()
-	layered {
-		includeLayerTools = false
-	}
-}
-
 bootBuildImage {
 //	imageName = "bmd007/${project.name}:${project.version}"
 	imageName = "bmd007/${project.name}"
-	environment = ["BP_JVM_VERSION" : "14.0.1"]
+	environment = ["BP_JVM_VERSION" : "17"]
 }
