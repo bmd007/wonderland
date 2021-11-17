@@ -12,7 +12,7 @@
         android:id="@+id/serverIdEditText"
         android:layout_width="160dp"
         android:layout_height="50dp"
-        android:text="10.61.9.69"
+        android:text="192.168.10.179"
         tools:layout_editor_absoluteX="143dp"
         tools:layout_editor_absoluteY="87dp" />
 

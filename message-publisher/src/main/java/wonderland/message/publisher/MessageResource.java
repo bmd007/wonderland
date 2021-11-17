@@ -38,7 +38,7 @@ public class MessageResource {
                     .build();
             var producerRecord = new ProducerRecord<String, MessageSentEvent>(Topics.MESSAGES_EVENTS_TOPIC, from, messageSentEvent);
             kafkaTemplate.send(producerRecord);
-            return body + " sent to " + to + "at " + sendTime;
+            return body + " sent to " + to + " at " + sendTime;
         } catch (AmqpException e) {
             return e.getMessage();
         }

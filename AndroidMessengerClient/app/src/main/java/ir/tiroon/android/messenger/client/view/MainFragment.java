@@ -67,7 +67,7 @@ public class MainFragment extends Fragment {
             String userName = usernameEditText.getText().toString();
             String password = passwordEditText.getText().toString();
             String ip = serverIdEditText.getText().toString();
-            String queueName = "bmd579@gmail.com";
+            String queueName = "mm7amini@gmail.com";
             rabbitMQService = new RabbitMQService(ip, userName, password, queueName, amqpConnectButton::setText);
             amqpConnectButton.setClickable(false);
         });

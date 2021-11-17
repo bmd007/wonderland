@@ -9,3 +9,47 @@
 /DockerComposeFiles/neo4j/
 /DockerComposeFiles/neo4j/*
 /temp
+
+/articles/
+
+/auxil/
+
+HELP.md
+.gradle
+/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+###local config###
+/deployment/docker/metrics/
+!/deployment/docker/metrics/prometheus.yml
+!/deployment/docker/metrics/consul.json
+
+/deployment/development-machine/metrics/
+!/deployment/development-machine/metrics/prometheus.yml
+!/deployment/development-machine/metrics/consul.json
