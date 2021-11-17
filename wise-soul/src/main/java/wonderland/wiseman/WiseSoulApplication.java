@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.Duration;
 import java.util.List;
 import java.util.Random;
 
@@ -58,7 +59,7 @@ public class WiseSoulApplication {
             safeSleep(100);
             var from = aRandomPerson();
             var to = aRandomPerson();
-            advice().subscribe(text -> {
+            advice().cache(Duration.ofSeconds(2)).subscribe(text -> {
                 LOGGER.info("Sending \"{}\" from {} to {}", text, from, to);
                 sendMessage(from, to, text);
             });
