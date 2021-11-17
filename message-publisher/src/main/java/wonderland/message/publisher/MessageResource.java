@@ -10,6 +10,7 @@ import wonderland.message.publisher.config.Topics;
 import java.time.Instant;
 
 @RestController
+@RequestMapping("/massenger")
 public class MessageResource {
 
     private final AmqpTemplate rabbitTemplate;

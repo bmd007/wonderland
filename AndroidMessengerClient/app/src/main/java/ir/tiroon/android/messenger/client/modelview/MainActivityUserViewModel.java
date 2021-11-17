@@ -20,7 +20,4 @@ public class MainActivityUserViewModel extends ViewModel {
         echoMessage.postValue(newEchoMessage);
         EchoMessageRepository.getInstance().setEchoMessage(newEchoMessage);
     }
-
 }
-
-

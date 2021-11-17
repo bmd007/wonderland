@@ -1,7 +1,7 @@
 version: "3.7"
 services:
 
-  consul-server:
+  consul:
     container_name: consul
     hostname: consul
     image: consul
@@ -78,6 +78,7 @@ services:
       - 27017:27017
 
   rabbitmq:
+    container_name: rabbitmq
     hostname: rabbitmq
     build:
       context: .
@@ -94,7 +95,7 @@ services:
 
   postgresql:
     hostname: postgresql
-    image: postgres:4
+    image: postgres:14
     ports:
       - '5432:5432'
     environment:

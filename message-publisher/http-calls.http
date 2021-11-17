@@ -1,0 +1,5 @@
+###
+POST http://localhost:9566/massenger/send/message/abol/babol
+Content-Type: application/text
+
+my message
