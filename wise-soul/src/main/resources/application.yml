@@ -35,7 +35,7 @@ management:
 
 spring:
   application:
-    name: wise-man
+    name: wise-soul
   config:
     import: optional:consul:localhost:8500
   cloud:

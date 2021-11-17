@@ -1,5 +1,6 @@
 package wonderland.message.publisher;
 
+import io.micrometer.core.instrument.Metrics;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.AmqpAdmin;
@@ -44,6 +45,7 @@ public class MessageResource {
                     .build();
             var producerRecord = new ProducerRecord<String, MessageSentEvent>(Topics.MESSAGES_EVENTS_TOPIC, from, messageSentEvent);
             kafkaTemplate.send(producerRecord);
+            Metrics.counter("wonderland.message.publisher.messages.sent").increment();
             return body + " sent to " + to + " at " + sendTime;
         } catch (AmqpException e) {
             return e.getMessage();
