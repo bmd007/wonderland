@@ -19,10 +19,8 @@ import java.util.Random;
 @SpringBootApplication
 public class WiseManApplication {
     private static final Logger LOGGER = LoggerFactory.getLogger(WiseManApplication.class);
-
-    public static void main(String[] args) {
-        SpringApplication.run(WiseManApplication.class, args);
-    }
+    private WebClient loadBalancedWebClient;
+    private WebClient notLoadBalancedWebClient;
 
     @Autowired
     @Qualifier("loadBalancedClient")
@@ -32,6 +30,11 @@ public class WiseManApplication {
     @Qualifier("notLoadBalancedClient")
     WebClient.Builder notLoadBalancedWebClientBuilder;
 
+    List<String> people = List.of("Mahdi", "Rabia", "Chintal", "Set", "Bjorn", "Adeel", "Johan", "Felix");
+
+    public static void main(String[] args) {
+        SpringApplication.run(WiseManApplication.class, args);
+    }
 
     @EventListener(org.springframework.context.event.ContextRefreshedEvent.class)
     public void start() throws UnknownHostException {
@@ -39,7 +42,14 @@ public class WiseManApplication {
         System.out.println("IP Address:- " + inetAddress.getHostAddress());
         System.out.println("Host Name:- " + inetAddress.getHostName());
 
-        safeSleep(80000);
+        loadBalancedWebClient = loadBalancedWebClientBuilder
+                .baseUrl("http://localhost:9566")
+                .build();
+        notLoadBalancedWebClient = notLoadBalancedWebClientBuilder
+                .baseUrl("https://api.adviceslip.com")
+                .build();
+
+//        safeSleep(80000);
         people.stream().forEach(this::requestQueueFor);
         for (int i = 0; i < 3000; i++) {
             safeSleep(1000);
@@ -65,17 +75,15 @@ public class WiseManApplication {
         }
     }
 
-    List<String> people = List.of("Mahdi", "Rabia", "Chintal", "Set", "Bjorn", "Adeel", "Johan", "Felix");
-
     private String aRandomPerson() {
         int nextIndex = Math.abs(new Random().nextInt()) % people.size();
         return people.get(nextIndex);
     }
 
     private Mono<String> advice() {
-        return notLoadBalancedWebClientBuilder.build()
+        return notLoadBalancedWebClient
                 .get()
-                .uri("https://api.adviceslip.com/advice")
+                .uri("/advice")
                 .retrieve()
                 .bodyToMono(String.class)
                 .map(JsonPath::parse)
@@ -86,9 +94,9 @@ public class WiseManApplication {
 
     private void requestQueueFor(String email) {
         LOGGER.info("requesting creation of queue with name {}", email);
-        loadBalancedWebClientBuilder.build()
+        loadBalancedWebClient
                 .post()
-                .uri("http://messenger/create/queue/for/" + email)
+                .uri("/create/queue/for/" + email)
                 .retrieve()
                 .bodyToMono(String.class)
                 .retry(Long.MAX_VALUE)
@@ -97,9 +105,9 @@ public class WiseManApplication {
     }
 
     private void sendMessage(String from, String to, String message) {
-        loadBalancedWebClientBuilder.build()
+        loadBalancedWebClient
                 .post()
-                .uri("http://messenger/send/message/" + from + "/" + to)
+                .uri("http://localhost:9566/send/message/" + from + "/" + to)
                 .bodyValue(message)
                 .retrieve()
                 .bodyToMono(String.class)
@@ -107,5 +115,4 @@ public class WiseManApplication {
                 .doOnError(throwable -> LOGGER.error("error:{} from load balanced client", throwable.getMessage()))
                 .subscribe(s -> System.out.println("Answer got by loadBalancedClient from messenger : " + s));
     }
-
 }

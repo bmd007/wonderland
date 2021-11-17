@@ -12,7 +12,7 @@ public class MetricsFacade {
         locationUpdatePublishedCounter = registry.counter("wonderland.messages.published.counter");
     }
 
-    public void incrementLocationUpdatePublishedCounter(){
+    public void incrementLocationUpdatePublishedCounter() {
         locationUpdatePublishedCounter.increment();
     }
 

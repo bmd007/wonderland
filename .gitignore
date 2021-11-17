@@ -53,3 +53,5 @@ HELP.md
 /deployment/development-machine/metrics/
 !/deployment/development-machine/metrics/prometheus.yml
 !/deployment/development-machine/metrics/consul.json
+
+deployment/development-machine/neo4j/
