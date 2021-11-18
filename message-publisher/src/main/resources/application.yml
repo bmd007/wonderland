@@ -69,9 +69,6 @@ kafka:
     host: localhost
     port: 5672
 
-topic-defs:
-  messageEvents: '1:1'
-
 ---
 spring:
   config:

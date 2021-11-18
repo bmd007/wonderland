@@ -68,14 +68,14 @@ services:
     ports:
       - '3000:3000'
 
-  mongo:
-    image: mongo
-    container_name: mongo
-    #    environment:
-    #      MONGO_INITDB_ROOT_USERNAME: root
-    #      MONGO_INITDB_ROOT_PASSWORD: rootpassword
-    ports:
-      - 27017:27017
+#  mongo:
+#    image: mongo
+#    container_name: mongo
+#    #    environment:
+#    #      MONGO_INITDB_ROOT_USERNAME: root
+#    #      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+#    ports:
+#      - 27017:27017
 
   rabbitmq:
     container_name: rabbitmq
@@ -93,67 +93,73 @@ services:
     environment:
       SERVICE_IGNORE: any_value
 
-  postgresql:
-    hostname: postgresql
-    image: postgres:14
-    ports:
-      - '5432:5432'
-    environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_USER=wonderland
+#  postgresql:
+#    container_name: postgreql
+#    hostname: postgresql
+#    image: postgres:14
+#    ports:
+#      - '5432:5432'
+#    environment:
+#      - POSTGRES_PASSWORD=postgres
+#      - POSTGRES_USER=wonderland
+#
+#  pgadmin:
+#    container_name: pgadmin
+#    image: thajeztah/pgadmin4
+#    ports:
+#      - '89:5050'
 
-  pgadmin:
-    image: thajeztah/pgadmin4
-    ports:
-      - '89:5050'
+#  kafka-manager:
+#    container_name: kafka-manager
+#    depends_on:
+#      - zookeeper
+#      - kafka
+#    image: rafabsb/kafka-manager-docker:2.4
+#    ports:
+#      - "9000:9000"
+#    environment:
+#      ZK_HOSTS: zookeeper:2181
+#      APPLICATION_SECRET: letmein
+#      KM_ARGS: -Djava.net.preferIPv4Stack=true
 
-  kafka-manager:
-    depends_on:
-      - zookeeper
-      - kafka
-    image: rafabsb/kafka-manager-docker:2.4
-    ports:
-      - "9000:9000"
-    environment:
-      ZK_HOSTS: zookeeper:2181
-      APPLICATION_SECRET: letmein
-      KM_ARGS: -Djava.net.preferIPv4Stack=true
-
-  elasticsearch:
-    hostname: elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.6
-    environment:
-      - cluster.name=elasticsearch
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
-      - discovery.type=single-node
-      - http.host=0.0.0.0
-      - transport.tcp.port=9300
-      - transport.host=0.0.0.0
-      - transport.publish_port=9300
-      - SERVICE_9300_NAME=elasticsearch
-      - SERVICE_9200_NAME=elasticsearch
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    ports:
-      - '9300:9300'
-      - '9200:9200'
-
-  kibana:
-    hostname: kibana
-    depends_on:
-      - elasticsearch
-    image: docker.elastic.co/kibana/kibana:6.8.6
-    environment:
-      SERVER_NAME: kibana
-      ELASTICSEARCH_HOSTS: http://elasticsearch
-    ports:
-      - '5601:5601'
+#  elasticsearch:
+#    container_name: elasticsearch
+#    hostname: elasticsearch
+#    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.6
+#    environment:
+#      - cluster.name=elasticsearch
+#      - bootstrap.memory_lock=true
+#      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+#      - discovery.type=single-node
+#      - http.host=0.0.0.0
+#      - transport.tcp.port=9300
+#      - transport.host=0.0.0.0
+#      - transport.publish_port=9300
+#      - SERVICE_9300_NAME=elasticsearch
+#      - SERVICE_9200_NAME=elasticsearch
+#    ulimits:
+#      memlock:
+#        soft: -1
+#        hard: -1
+#    ports:
+#      - '9300:9300'
+#      - '9200:9200'
+#
+#  kibana:
+#    container_name: kibana
+#    hostname: kibana
+#    depends_on:
+#      - elasticsearch
+#    image: docker.elastic.co/kibana/kibana:6.8.6
+#    environment:
+#      SERVER_NAME: kibana
+#      ELASTICSEARCH_HOSTS: http://elasticsearch
+#    ports:
+#      - '5601:5601'
 
   # Registrator to register services in consul
   registrator:
+    container_name: registrator
     image: gliderlabs/registrator
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock
@@ -162,10 +168,9 @@ services:
       - consul
 
   neo4j:
-    depends_on:
-      - registrator
-    image: neo4j:4.0.6
+    image: neo4j:4.3.7-community
     hostname: neo4j
+    container_name: neo4j
     ports:
       - "7474:7474"
       - "7687:7687"
@@ -176,19 +181,16 @@ services:
       - ./neo4j/plugins:/plugins
       - ./neo4j/import:/var/lib/neo4j/import
     environment:
-      - SERVICE_7473_NAME=neo4j
-      - SERVICE_7474_NAME=neo4j
-      - SERVICE_7687_NAME=neo4j
-      - SERVICE_6477_NAME=neo4j
       - NEO4J_AUTH=neo4j/test
-      - NEO4JLABS_PLUGINS=["apoc", "graph-algorithms"]
+      - NEO4JLABS_PLUGINS=["apoc", "graph-data-science"]
       - NEO4J_dbms_connector_http_listen__address= :7474
       - NEO4J_dbms_connector_https_listen__address= :6477
       - NEO4J_dbms_connector_bolt_listen__address= :7687
       - NEO4J_dbms_logs_debug_level=DEBUG
-      - NEO4J_apoc_import_file_enabled="true"
+      - NEO4J_apoc_import_file_enabled=true
       #      - NEO4J_HEAP_MEMORY=1G
       #      - NEO4J_CACHE_MEMORY=1G
-      - NEO4J_dbms_security_procedures_whitelist= apoc.*, algo.*
-      - NEO4J_dbms_security_procedures_unrestricted= apoc.*,algo.*
+      - NEO4J_dbms_security_procedures_whitelist= apoc.*, algo.*, gds.*
+      - NEO4J_dbms_security_procedures_unrestricted= apoc.*, algo.*, gds.*
+      - NEO4J_dbms_shell_enabled=true
   #      NEO4J_AUTH: none

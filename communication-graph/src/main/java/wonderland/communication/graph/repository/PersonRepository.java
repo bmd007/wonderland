@@ -1,21 +1,24 @@
 package wonderland.communication.graph.repository;
 
-import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
+import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.stereotype.Repository;
 import wonderland.communication.graph.domain.Person;
-import wonderland.communication.graph.domain.PersonInfluenceRankDto;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface PersonRepository extends Neo4jRepository<Person, String> {
+public interface PersonRepository extends Neo4jRepository<Person, Long> {
 
-    @Query("CALL algo.pageRank.stream(\"Person\", \"SENT_MESSAGE\", {iterations:20})" +
-            "    YIELD nodeId, score" +
-            "    MATCH (node) WHERE id(node) = nodeId" +
-            "    RETURN node.email AS email, score" +
-            "    ORDER BY score DESC")
+    @Query("""
+                CALL gds.pageRank.stream("Person")
+                  YIELD nodeId, score
+                  MATCH (node) WHERE id(node) = nodeId
+                  RETURN node.email AS email, score
+                  ORDER BY score DESC
+            """)
     List<PersonInfluenceRankDto> getInfluenceRank();
 
+    Optional<Person> findByEmail(String email);
 }

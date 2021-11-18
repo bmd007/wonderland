@@ -1,0 +1,35 @@
+management:
+  server:
+    port: 0
+
+logging:
+  level:
+    org.springframework.jdbc: INFO
+    org.springframework.web: INFO
+    org.springframework.kafka: WARN
+    org.apache.zookeeper: WARN
+    org.apache.kafka: WARN
+    kafka: WARN
+
+spring:
+  zipkin.enabled: false
+  sleuth.enabled: false
+  # Kafka enable for tests
+  kafka:
+    enabled: true
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
+
+#    embedded.neo4j.user
+#
+#    embedded.neo4j.password
+#
+#    embedded.neo4j.httpsPort
+#
+#    embedded.neo4j.httpPort
+#
+#    embedded.neo4j.boltPort
+
+kafka:
+  topic-partitions:
+    eventTopic: '1:1'
+    changeLogTopic: '1:1'
