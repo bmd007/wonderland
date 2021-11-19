@@ -52,24 +52,22 @@ public class CommunicationGraphApplication {
         var communication5 = new Communication(null, p6, Instant.now());
         p1.addCommunication(communication);
         p1.addCommunication(communication2);
-        p1.addCommunication(communication3);
-        p1.addCommunication(communication4);
-        p1.addCommunication(communication5);
-        personRepository.saveAll(List.of(p2, p3, p4, p5, p6));
-        personRepository.save(p1);
+//        p1.addCommunication(communication3);
+//        p1.addCommunication(communication4);
+//        p1.addCommunication(communication5);
+//        personRepository.saveAll(List.of(p2, p3, p4, p5, p6));
+//        personRepository.save(p1);
+        personRepository.save(p2);
 
         var communication6 = new Communication(null, p1, Instant.now());
-        p2.addCommunication(communication6);
-        p4.addCommunication(communication6);
-        personRepository.save(p2);
-        personRepository.save(p4);
+        var p22 = personRepository.findByEmail("p2").get().addCommunication(communication6);
+        personRepository.save(p22);
 
-        var communication7 = new Communication(null, p2, Instant.now());
-        p4.addCommunication(communication7);
-        personRepository.save(p4);
+//        var communication7 = new Communication(null, p1, Instant.now());
+//        personRepository.save(personRepository.findByEmail("p4").get().addCommunication(communication7));
     }
 
-    @KafkaListener(topicPattern = Topics.MESSAGES_EVENTS_TOPIC)
+//    @KafkaListener(topicPattern = Topics.MESSAGES_EVENTS_TOPIC)
     public void messageEventsSentSubscription(@Payload MessageSentEvent messageSentEvent,
                                               @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key) {
         try {

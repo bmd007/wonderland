@@ -20,7 +20,7 @@ public interface PersonRepository extends Neo4jRepository<Person, Long> {
           MATCH (node) WHERE id(node) = nodeId
           RETURN node.email AS email, score
           ORDER BY score DESC """)
-    List<PersonInfluenceRankDto> getInfluenceRank();
+    List<String> getInfluenceRank();
 
     Optional<Person> findByEmail(String email);
 }

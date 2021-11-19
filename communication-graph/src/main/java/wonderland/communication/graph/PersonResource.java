@@ -20,7 +20,7 @@ public class PersonResource {
     }
 
     @GetMapping("/most/influential/person")
-    public List<PersonInfluenceRankDto> getMostInfluentialPerson() {
+    public List<String> getMostInfluentialPerson() {
         return personRepository.getInfluenceRank();
     }
 }
