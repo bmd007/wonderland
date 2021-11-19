@@ -22,10 +22,10 @@ public final class Person {
 
     @Id
     @GeneratedValue
-    private final Long id;
+    private Long id;
 
     @Property
-    private final String email;
+    private String email;
 
     @Relationship(direction = OUTGOING, type = "SENT_MESSAGE_TO")
     private List<Communication> communications = new ArrayList<>();
@@ -42,16 +42,29 @@ public final class Person {
         }
     }
 
-    public Person addCommunications(Communication communication) {
-        if (this.communications != null && !this.communications.contains(communication)) {
-            List<Communication> communications = Stream
-                    .concat(Stream.of(communication), this.communications.stream())
-                    .collect(Collectors.toList());
-            return withCommunications(communications);
-        } else if (this.communications == null ){
-            return withCommunications(List.of(communication));
-        }
+    public Person addCommunication(Communication communication) {
+//        if (this.communications != null && !this.communications.contains(communication)) {
+//            List<Communication> communications = Stream
+//                    .concat(Stream.of(communication), this.communications.stream())
+//                    .collect(Collectors.toList());
+//            return withCommunications(communications);
+//        } else if (this.communications == null ){
+//            return withCommunications(List.of(communication));
+//        }
+        this.communications.add(communication);
         return this;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setCommunications(List<Communication> communications) {
+        this.communications = communications;
     }
 
     public Person withId(Long id) {

@@ -7,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.neo4j.core.Neo4jTemplate;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
@@ -17,13 +18,11 @@ import wonderland.communication.graph.config.Topics;
 import wonderland.communication.graph.domain.Communication;
 import wonderland.communication.graph.domain.Person;
 import wonderland.communication.graph.event.MessageSentEvent;
-import wonderland.communication.graph.repository.CommunicationRepository;
 import wonderland.communication.graph.repository.PersonRepository;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @EnableNeo4jRepositories("wonderland.*")
 @RestController
@@ -31,10 +30,7 @@ import java.util.Optional;
 public class CommunicationGraphApplication {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommunicationGraphApplication.class);
-    @Autowired
-    private PersonRepository personRepository;
-    @Autowired
-    private CommunicationRepository communicationRepository;
+    @Autowired private PersonRepository personRepository;
 
     public static void main(String[] args) {
         SpringApplication.run(CommunicationGraphApplication.class, args);
@@ -43,42 +39,42 @@ public class CommunicationGraphApplication {
     @EventListener(ApplicationReadyEvent.class)
     public void start() {
         personRepository.deleteAll();
-        communicationRepository.deleteAll();
-        var p1 = new Person(null, "p1", List.of());
-        var p2 = new Person(null, "p2", List.of());
-        var p3 = new Person(null, "p3", List.of());
-        p1 = personRepository.save(p1);
-        p2 = personRepository.save(p2);
-        p3 = personRepository.save(p3);
-        System.out.println(personRepository.findAll());
-        var communication = new Communication(null, p1, p2, Instant.now());
-        var communication2 = new Communication(null, p1, p3, Instant.now());
-//        p1.addCommunication(communication);
-//        p1.addCommunication(communication2);
-        communication = communicationRepository.save(communication);
-        communication2 = communicationRepository.save(communication2);
-        System.out.println(communicationRepository.findAll());
-//        System.out.println(communication2);
-//        p1 = p1.addCommunication(communication);
-//        p1 = p1.addCommunication(communication2);
-//        personRepository.save(p1);
+        var p1 = new Person(null, "p1", new ArrayList<>());
+        var p2 = new Person(null, "p2", new ArrayList<>());
+        var p3 = new Person(null, "p3", new ArrayList<>());
+        var p4 = new Person(null, "p4", new ArrayList<>());
+        var p5 = new Person(null, "p5", new ArrayList<>());
+        var p6 = new Person(null, "p6", new ArrayList<>());
+        var communication = new Communication(null, p2, Instant.now());
+        var communication2 = new Communication(null, p3, Instant.now());
+        var communication3 = new Communication(null, p4, Instant.now());
+        var communication4 = new Communication(null, p5, Instant.now());
+        var communication5 = new Communication(null, p6, Instant.now());
+        p1.addCommunication(communication);
+        p1.addCommunication(communication2);
+        p1.addCommunication(communication3);
+        p1.addCommunication(communication4);
+        p1.addCommunication(communication5);
+        personRepository.saveAll(List.of(p2, p3, p4, p5, p6));
+        personRepository.save(p1);
+
+        var communication6 = new Communication(null, p1, Instant.now());
+        p2.addCommunication(communication6);
+        p4.addCommunication(communication6);
+        personRepository.save(p2);
+        personRepository.save(p4);
+
+        var communication7 = new Communication(null, p2, Instant.now());
+        p4.addCommunication(communication7);
+        personRepository.save(p4);
     }
 
-//    @KafkaListener(topicPattern = Topics.MESSAGES_EVENTS_TOPIC)
-    public void messageEventsSentSubscription(@Payload MessageSentEvent messageSentEvent, @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key) {
+    @KafkaListener(topicPattern = Topics.MESSAGES_EVENTS_TOPIC)
+    public void messageEventsSentSubscription(@Payload MessageSentEvent messageSentEvent,
+                                              @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key) {
         try {
-            Person sender = personRepository.findByEmail(messageSentEvent.from())
-                    .orElseGet(() -> personRepository.save(Person.of(messageSentEvent.from())));
-            LOGGER.info("sender {} saved", sender);
 
-            Person receiver = personRepository.findByEmail(messageSentEvent.to())
-                    .orElseGet(() -> personRepository.save(Person.of(messageSentEvent.to())));
-            LOGGER.info("receiver {} receiver", receiver);
-
-            var communication = Communication.defineNew(sender, receiver, messageSentEvent.time());
-            var savedCommunication = communicationRepository.save(communication);
-
-            LOGGER.info("communication {} saved", savedCommunication);
+//            LOGGER.info("communication {} saved", savedCommunication);
         } catch (Exception e) {
             LOGGER.error("Problem {} while processing {}", e.getMessage(), messageSentEvent);
         }

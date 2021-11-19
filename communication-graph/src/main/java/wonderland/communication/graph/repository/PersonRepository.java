@@ -12,12 +12,14 @@ import java.util.Optional;
 public interface PersonRepository extends Neo4jRepository<Person, Long> {
 
     @Query("""
-                CALL gds.pageRank.stream("Person")
-                  YIELD nodeId, score
-                  MATCH (node) WHERE id(node) = nodeId
-                  RETURN node.email AS email, score
-                  ORDER BY score DESC
-            """)
+          CALL gds.pageRank.stream({
+              nodeProjection: 'Person',
+              relationshipProjection: 'SENT_MESSAGE_TO'
+          })
+          YIELD nodeId, score
+          MATCH (node) WHERE id(node) = nodeId
+          RETURN node.email AS email, score
+          ORDER BY score DESC """)
     List<PersonInfluenceRankDto> getInfluenceRank();
 
     Optional<Person> findByEmail(String email);
