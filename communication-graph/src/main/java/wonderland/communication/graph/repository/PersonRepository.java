@@ -9,7 +9,7 @@ import wonderland.communication.graph.dto.PersonInfluenceRankDto;
 import java.util.Optional;
 
 @Repository
-public interface PersonRepository extends Neo4jRepository<Person, Long> {
+public interface PersonRepository extends Neo4jRepository<Person, String> {
 
     @Query("""
           CALL gds.pageRank.stream({
@@ -22,6 +22,4 @@ public interface PersonRepository extends Neo4jRepository<Person, Long> {
           ORDER BY score DESC
           LIMIT 1""")
     PersonInfluenceRankDto getInfluenceRank();
-
-    Optional<Person> findByEmail(String email);
 }

@@ -34,7 +34,7 @@ public class WiseSoulApplication {
     @Qualifier("notLoadBalancedClient")
     WebClient.Builder notLoadBalancedWebClientBuilder;
 
-    List<String> people = List.of("Mahdi", "Rabia");
+    List<String> people = List.of("Mahdi", "Mahroo");
 
     public static void main(String[] args) {
         SpringApplication.run(WiseSoulApplication.class, args);
@@ -55,8 +55,8 @@ public class WiseSoulApplication {
 
 //        safeSleep(80000);
         people.stream().forEach(this::requestQueueFor);
-        for (int i = 0; i < 4; i++) {
-            safeSleep(100);
+        for (int i = 0; i < 8 ; i++) {
+            safeSleep(200);
             var from = aRandomPerson();
             var to = aRandomPerson();
             advice().cache(Duration.ofSeconds(2)).subscribe(text -> {

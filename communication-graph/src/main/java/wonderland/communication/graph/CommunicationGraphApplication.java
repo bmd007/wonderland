@@ -9,10 +9,12 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.web.bind.annotation.RestController;
+import wonderland.communication.graph.config.Topics;
 import wonderland.communication.graph.domain.Communication;
 import wonderland.communication.graph.domain.Person;
 import wonderland.communication.graph.event.MessageSentEvent;
@@ -41,30 +43,11 @@ public class CommunicationGraphApplication {
     @EventListener(ApplicationReadyEvent.class)
     public void start() {
         personRepository.deleteAll();
-        var p1 = new Person(null, "p1", new ArrayList<>());
-        var p2 = new Person(null, "p2", new ArrayList<>());
-        var p3 = new Person(null, "p3", new ArrayList<>());
-        var p4 = new Person(null, "p4", new ArrayList<>());
-        var p5 = new Person(null, "p5", new ArrayList<>());
-        var p6 = new Person(null, "p6", new ArrayList<>());
-        var communication = new Communication(null, p2, Instant.now());
-        var communication2 = new Communication(null, p3, Instant.now());
-        var communication3 = new Communication(null, p4, Instant.now());
-        var communication4 = new Communication(null, p5, Instant.now());
-        var communication5 = new Communication(null, p6, Instant.now());
-        p1.addCommunication(communication);
-        p1.addCommunication(communication2);
-        p1.addCommunication(communication3);
-        p1.addCommunication(communication4);
-        p1.addCommunication(communication5);
-        personRepository.saveAll(List.of(p2, p3, p4, p5, p6));
-        personRepository.save(p1);
-        var communication6 = new Communication(null, p1, Instant.now());
-        var p22 = personRepository.findByEmail("p2").get().addCommunication(communication6);
-        System.out.println("p2 communications: " + p22.getCommunications());
+        var p2 = Person.of("p2");
+        personRepository.save(p2);
+        var communication6 = new Communication(null, p2, Instant.now());
+        var p22 = personRepository.findById("p2").get().addCommunication(communication6);
         personRepository.save(p22);
-        var communication7 = new Communication(null, p1, Instant.now());
-        personRepository.save(personRepository.findByEmail("p4").get().addCommunication(communication7));
         client.query("""
                         CALL gds.pageRank.stream({
                             nodeProjection: 'Person',
@@ -82,14 +65,21 @@ public class CommunicationGraphApplication {
                 .ifPresent(System.out::println);
     }
 
-    //    @KafkaListener(topicPattern = Topics.MESSAGES_EVENTS_TOPIC)
+    @KafkaListener(topicPattern = Topics.MESSAGES_EVENTS_TOPIC)
     public void messageEventsSentSubscription(@Payload MessageSentEvent messageSentEvent,
                                               @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key) {
         try {
-
+            var sender = personRepository.findById(messageSentEvent.from())
+                    .orElseGet(() -> Person.of(messageSentEvent.from()));
+            var receiver = personRepository.findById(messageSentEvent.to())
+                    .orElseGet(() -> Person.of(messageSentEvent.to()));
+            var communication = new Communication(null, receiver, messageSentEvent.time());
+            var toBeSavedSender = sender.addCommunication(communication);
+            var savedSender = personRepository.save(sender);
+            LOGGER.info("person {} saved", toBeSavedSender);
 //            LOGGER.info("communication {} saved", savedCommunication);
         } catch (Exception e) {
-            LOGGER.error("Problem {} while processing {}", e.getMessage(), messageSentEvent);
+            LOGGER.error("Problem while processing {}", messageSentEvent, e);
         }
     }
 
