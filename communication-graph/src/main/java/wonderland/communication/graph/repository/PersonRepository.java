@@ -4,8 +4,8 @@ import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.stereotype.Repository;
 import wonderland.communication.graph.domain.Person;
+import wonderland.communication.graph.dto.PersonInfluenceRankDto;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -19,8 +19,9 @@ public interface PersonRepository extends Neo4jRepository<Person, Long> {
           YIELD nodeId, score
           MATCH (node) WHERE id(node) = nodeId
           RETURN node.email AS email, score
-          ORDER BY score DESC """)
-    List<String> getInfluenceRank();
+          ORDER BY score DESC
+          LIMIT 1""")
+    PersonInfluenceRankDto getInfluenceRank();
 
     Optional<Person> findByEmail(String email);
 }
