@@ -5,10 +5,8 @@ There is also amqp based comminucation to outside (an Android app) (with help of
 
 ## ToDo:
     * add renovate bot
-	* use consul instead of config server
     * upgrade elastic search stack to 7 and higher
     * make health check of services coupled to their connection to their dbs (is it a good idea?)
-    * add health checks for each service into their docker-compose (because of previous point, it should be alwalys GET:http://servicesname/actuactor/health)
     * add API gateway for authorization checks (resource server in OAuath2 world) (and connect it to google)
     * complete person_profile and ui apps
     * publish logs into elastic search as application_log index
@@ -17,6 +15,6 @@ There is also amqp based comminucation to outside (an Android app) (with help of
 ## Bounded contexts and Teams > ? <
 
 ### services and their relation to kafka topics
-#### generally, a command listener specifies where to send commands to. An event producer specifies where it will send events. (Events=notification (something happenede, delta of domain), Commands=requests for something to be done)
+#### generally, a command listener specifies where to send commands to. An event producer specifies where it will send events. (Events=notification (something happenede, delta of domain, record updates, notification change), Commands=requests for something to be done)
     * messenger owns these topics: message_events,
     * message_counter owns thses topics: event_log (internally used for event sourcing)
