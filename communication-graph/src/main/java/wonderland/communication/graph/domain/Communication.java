@@ -15,7 +15,8 @@ import java.time.Instant;
 @RelationshipProperties
 public final class Communication {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     private Long id;
 
     @TargetNode
@@ -24,14 +25,14 @@ public final class Communication {
     @Property
     private Instant time;
 
-    public static Communication toward(Person to) {
-        return new Communication(null, to, Instant.now());
-    }
-
     public Communication(Long id, Person to, Instant time) {
         this.id = id;
         this.to = to;
         this.time = time;
+    }
+
+    public static Communication toward(Person to) {
+        return new Communication(null, to, Instant.now());
     }
 
     @Override

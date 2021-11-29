@@ -48,7 +48,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
 //    implementation group: 'org.springframework.data', name: 'spring-data-neo4j', version: '6.2.0'
-    implementation ('org.springframework.boot:spring-boot-starter-data-neo4j'){
+    implementation('org.springframework.boot:spring-boot-starter-data-neo4j') {
     }
     implementation 'org.springframework.kafka:spring-kafka'
     implementation group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'

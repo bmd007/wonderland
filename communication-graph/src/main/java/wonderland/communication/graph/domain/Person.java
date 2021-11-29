@@ -1,15 +1,13 @@
 package wonderland.communication.graph.domain;
 
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Value;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Property;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.util.ArrayList;
@@ -18,12 +16,13 @@ import java.util.List;
 import static org.springframework.data.neo4j.core.schema.Relationship.Direction.OUTGOING;
 
 //this class represents nodes on graph
-@Data
+@Value
 @Builder
 @Node("Person")
 public final class Person {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     private Long id;
 
     @Version
@@ -47,5 +46,4 @@ public final class Person {
         this.communications.add(communication);
         return this;
     }
-
 }
