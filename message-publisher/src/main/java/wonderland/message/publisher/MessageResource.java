@@ -2,6 +2,8 @@ package wonderland.message.publisher;
 
 import io.micrometer.core.instrument.Metrics;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -25,6 +27,8 @@ public class MessageResource {
     private final DirectExchange messagesExchange;
     private final KafkaTemplate<String, MessageSentEvent> kafkaTemplate;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessageResource.class);
+
     public MessageResource(AmqpTemplate rabbitTemplate, AmqpAdmin rabbitAdmin, DirectExchange messagesExchange, KafkaTemplate<String, MessageSentEvent> kafkaTemplate) {
         this.rabbitTemplate = rabbitTemplate;
         this.rabbitAdmin = rabbitAdmin;
@@ -46,6 +50,7 @@ public class MessageResource {
             var producerRecord = new ProducerRecord<String, MessageSentEvent>(Topics.MESSAGES_EVENTS_TOPIC, from, messageSentEvent);
             kafkaTemplate.send(producerRecord);
             Metrics.counter("wonderland.message.publisher.messages.sent").increment();
+            LOGGER.info("message {} sent to {} from {}", body, to, from);
             return body + " sent to " + to + " at " + sendTime;
         } catch (AmqpException e) {
             return e.getMessage();
@@ -58,6 +63,7 @@ public class MessageResource {
         var binding = new Binding(email, Binding.DestinationType.QUEUE, messagesExchange.getName(), email, null);
         rabbitAdmin.declareQueue(queue);
         rabbitAdmin.declareBinding(binding);
+        LOGGER.info("queue {} created", queue);
         return queue.getName() + ":" + queue.getActualName() + " is created and bind to " + messagesExchange.getName() + " exchange";
     }
 

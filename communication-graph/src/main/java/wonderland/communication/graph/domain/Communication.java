@@ -24,6 +24,10 @@ public final class Communication {
     @Property
     private Instant time;
 
+    public static Communication toward(Person to) {
+        return new Communication(null, to, Instant.now());
+    }
+
     public Communication(Long id, Person to, Instant time) {
         this.id = id;
         this.to = to;

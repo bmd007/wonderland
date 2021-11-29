@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import wonderland.communication.graph.config.Topics;
 import wonderland.communication.graph.domain.Communication;
 import wonderland.communication.graph.domain.Person;
-import wonderland.communication.graph.event.MessageSentEvent;
 import wonderland.communication.graph.dto.PersonInfluenceRankDto;
+import wonderland.communication.graph.event.MessageSentEvent;
 import wonderland.communication.graph.repository.PersonRepository;
 
 import java.time.Instant;
@@ -43,11 +43,44 @@ public class CommunicationGraphApplication {
     @EventListener(ApplicationReadyEvent.class)
     public void start() {
         personRepository.deleteAll();
-        var p2 = Person.of("p2");
-        personRepository.save(p2);
-        var communication6 = new Communication(null, p2, Instant.now());
-        var p22 = personRepository.findById("p2").get().addCommunication(communication6);
-        personRepository.save(p22);
+
+        var receiver = personRepository.findByEmail("e")
+                .orElseGet(() -> personRepository.save(Person.of("e")));
+        var communication = Communication.toward(receiver);
+        var sender = personRepository.findByEmail("pi")
+                .orElseGet(() -> Person.of("pi"));
+        var toBeSavedSender = sender.addCommunication(communication);
+        var savedSender = personRepository.save(toBeSavedSender);
+        LOGGER.info("person {} saved", savedSender);
+
+
+        var receiver3 = personRepository.findByEmail("e")
+                .orElseGet(() -> personRepository.save(Person.of("e")));
+        var communication3 = Communication.toward(receiver3);
+        var sender3 = personRepository.findByEmail("pi")
+                .orElseGet(() -> Person.of("pi"));
+        var toBeSavedSender3 = sender3.addCommunication(communication3);
+        var savedSender3 = personRepository.save(toBeSavedSender3);
+        LOGGER.info("person {} saved", savedSender3);
+
+        var receiver2 = personRepository.findByEmail("pi")
+                .orElseGet(() -> personRepository.save(Person.of("pi")));
+        var communication2 = Communication.toward(receiver2);
+        var sender2 = personRepository.findByEmail("pi")
+                .orElseGet(() -> Person.of("pi"));
+        var toBeSavedSender2 = sender2.addCommunication(communication2);
+        var savedSender2 = personRepository.save(toBeSavedSender2);
+        LOGGER.info("person {} saved", savedSender2);
+
+        var receiver4 = personRepository.findByEmail("e2")
+                .orElseGet(() -> personRepository.save(Person.of("e2")));
+        var communication4 = Communication.toward(receiver4);
+        var sender4 = personRepository.findByEmail("pi")
+                .orElseGet(() -> Person.of("pi"));
+        var toBeSavedSender4 = sender4.addCommunication(communication4);
+        var savedSender4 = personRepository.save(toBeSavedSender4);
+        LOGGER.info("person {} saved", savedSender4);
+
         client.query("""
                         CALL gds.pageRank.stream({
                             nodeProjection: 'Person',
@@ -59,8 +92,8 @@ public class CommunicationGraphApplication {
                         ORDER BY score DESC
                         LIMIT 1""")
                 .fetchAs(PersonInfluenceRankDto.class)
-                .mappedBy((typeSystem, record) -> new PersonInfluenceRankDto(record.get("email").asString(),
-                        record.get("score").asDouble()))
+                .mappedBy((typeSystem, record) ->
+                        new PersonInfluenceRankDto(record.get("email").asString(), record.get("score").asDouble()))
                 .one()
                 .ifPresent(System.out::println);
     }
@@ -69,15 +102,16 @@ public class CommunicationGraphApplication {
     public void messageEventsSentSubscription(@Payload MessageSentEvent messageSentEvent,
                                               @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key) {
         try {
-            var sender = personRepository.findById(messageSentEvent.from())
-                    .orElseGet(() -> Person.of(messageSentEvent.from()));
-            var receiver = personRepository.findById(messageSentEvent.to())
-                    .orElseGet(() -> Person.of(messageSentEvent.to()));
-            var communication = new Communication(null, receiver, messageSentEvent.time());
-            var toBeSavedSender = sender.addCommunication(communication);
-            var savedSender = personRepository.save(sender);
-            LOGGER.info("person {} saved", toBeSavedSender);
-//            LOGGER.info("communication {} saved", savedCommunication);
+            if (!messageSentEvent.from().equals(messageSentEvent.to())) {
+                var receiver = personRepository.findByEmail(messageSentEvent.to())
+                        .orElseGet(() -> personRepository.save(Person.of(messageSentEvent.to())));
+                var communication = new Communication(null, receiver, messageSentEvent.time());
+                var sender = personRepository.findByEmail(messageSentEvent.from())
+                        .orElseGet(() -> Person.of(messageSentEvent.from()));
+                var toBeSavedSender = sender.addCommunication(communication);
+                var savedSender = personRepository.save(toBeSavedSender);
+                LOGGER.info("person {} saved", savedSender);
+            }
         } catch (Exception e) {
             LOGGER.error("Problem while processing {}", messageSentEvent, e);
         }
