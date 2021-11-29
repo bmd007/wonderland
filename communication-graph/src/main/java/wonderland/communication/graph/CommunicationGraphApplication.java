@@ -33,8 +33,6 @@ public class CommunicationGraphApplication {
     private PersonRepository personRepository;
     @Autowired
     private Neo4jClient client;
-    @Autowired
-    private Neo4jTemplate template;
 
     public static void main(String[] args) {
         SpringApplication.run(CommunicationGraphApplication.class, args);
@@ -71,7 +69,8 @@ public class CommunicationGraphApplication {
         var receiver4 = personRepository.findByEmail("e2")
                 .orElseGet(() -> personRepository.save(Person.of("e2")));
         var communication4 = Communication.toward(receiver4);
-        var sender4 = personRepository.findByEmail("pi").orElseGet(() -> Person.of("pi"));
+        var personProjection = personRepository.getPersonByEmail("pi").orElseThrow();
+        var sender4 = Person.of(personProjection);
         var toBeSavedSender4 = sender4.addCommunication(communication4);
         var savedSender4 = personRepository.save(toBeSavedSender4);
         LOGGER.info("person {} saved", savedSender4);

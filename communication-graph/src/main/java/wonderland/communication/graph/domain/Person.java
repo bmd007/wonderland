@@ -42,6 +42,24 @@ public final class Person {
                 .build();
     }
 
+    public static Person of(CommunicationLessPersonProjection projection) {
+        return Person.builder()
+                .id(projection.id())
+                .version(projection.version())
+                .email(projection.email())
+                .communications(new ArrayList<>())
+                .build();
+    }
+
+    public static Person of(CommunicationLessPersonProjection projection, List<Communication> communications) {
+        return Person.builder()
+                .id(projection.id())
+                .version(projection.version())
+                .email(projection.email())
+                .communications(communications)
+                .build();
+    }
+
     public Person addCommunication(Communication communication) {
         this.communications.add(communication);
         return this;

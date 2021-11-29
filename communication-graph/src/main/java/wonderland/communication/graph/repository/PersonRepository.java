@@ -4,8 +4,8 @@ import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import wonderland.communication.graph.domain.CommunicationLessPersonProjection;
 import wonderland.communication.graph.domain.Person;
-import wonderland.communication.graph.dto.PersonCommunicationLessProjection;
 import wonderland.communication.graph.dto.PersonInfluenceRankDto;
 
 import java.util.Optional;
@@ -25,6 +25,12 @@ public interface PersonRepository extends Neo4jRepository<Person, Long> {
             ORDER BY score DESC
             LIMIT 1""")
     PersonInfluenceRankDto getInfluenceRank();
+
+//    @Query("""
+//            YIELD node
+//            MATCH (node) WHERE node.email =: email
+//            RETURN node.email AS email, node.id as id, node.version as version""")
+    Optional<CommunicationLessPersonProjection> getPersonByEmail(String email);
 
     Optional<Person> findByEmail(String email);
 }
