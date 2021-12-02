@@ -123,6 +123,8 @@ services:
 #      KM_ARGS: -Djava.net.preferIPv4Stack=true
 
   elasticsearch:
+    depends_on:
+      - registrator
     container_name: elasticsearch
     hostname: elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
@@ -153,7 +155,7 @@ services:
     image: docker.elastic.co/kibana/kibana:7.12.1
     environment:
       SERVER_NAME: kibana
-      ELASTICSEARCH_HOSTS: "[elasticsearch:9200]"
+      ELASTICSEARCH_HOSTS: "http://elasticsearch:9200"
     ports:
       - '5601:5601'
 

@@ -1,6 +1,8 @@
 package wonderland.message.search.domain;
 
 
+import lombok.Builder;
+import lombok.Value;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -11,17 +13,18 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.UUID;
 
+@Value
+@Builder
 @Document(indexName = "message_history")
-public record Message (
-    @Id  String id,
-    @Field(type = FieldType.Text) String sender,
-    @Field(type = FieldType.Text) String receiver,
-    @Field(type = FieldType.Text) String text,
-    @Field(type = FieldType.Date, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") LocalDateTime sentAt
-) {
+public class Message {
+    @Id private String id;
+    @Field(type = FieldType.Text) private String sender;
+    @Field(type = FieldType.Text) private String receiver;
+    @Field(type = FieldType.Text) private String text;
+    @Field(type = FieldType.Date, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") private LocalDateTime sentAt;
 
-    public static Message of(String sender, String receiver, String text, Instant time ){
-        var sentAt = LocalDateTime.ofInstant(time, ZoneId.of("UTC"));
+    public static Message define(String sender, String receiver, String text, Instant time ){
+        var sentAt = LocalDateTime.ofInstant(time, ZoneId.systemDefault());
         var id = UUID.randomUUID().toString();
         return new Message(id, sender, receiver, text, sentAt);
     }
