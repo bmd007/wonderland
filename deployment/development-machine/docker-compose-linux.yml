@@ -153,7 +153,7 @@ services:
     image: docker.elastic.co/kibana/kibana:7.12.1
     environment:
       SERVER_NAME: kibana
-      ELASTICSEARCH_HOSTS: http://elasticsearch
+      ELASTICSEARCH_HOSTS: "[elasticsearch:9200]"
     ports:
       - '5601:5601'
 

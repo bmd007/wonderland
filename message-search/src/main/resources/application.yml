@@ -35,7 +35,7 @@ management:
 
 spring:
   application:
-    name: communication-graph
+    name: message-search
   config:
     import: optional:consul:localhost:8500
   cloud:
@@ -66,6 +66,6 @@ spring:
     activate:
       on-profile: no-consul
   application:
-    name: communication-graph
+    name: message-search
 
 
