@@ -1,6 +1,5 @@
 package wonderland.communication.graph;
 
-import org.neo4j.cypherdsl.core.StatementBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.neo4j.core.Neo4jClient;
-import org.springframework.data.neo4j.core.Neo4jTemplate;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
@@ -19,8 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import wonderland.communication.graph.config.Topics;
 import wonderland.communication.graph.domain.Communication;
 import wonderland.communication.graph.domain.Person;
-import wonderland.communication.graph.dto.PersonInfluenceRankDto;
+import wonderland.communication.graph.domain.PersonInfluenceScoreProjection;
 import wonderland.communication.graph.event.MessageSentEvent;
+import wonderland.communication.graph.repository.CommunicationRepository;
 import wonderland.communication.graph.repository.PersonRepository;
 
 @EnableNeo4jRepositories("wonderland.*")
@@ -33,6 +32,8 @@ public class CommunicationGraphApplication {
     private PersonRepository personRepository;
     @Autowired
     private Neo4jClient client;
+    @Autowired
+    private CommunicationRepository communicationRepository;
 
     public static void main(String[] args) {
         SpringApplication.run(CommunicationGraphApplication.class, args);
@@ -69,9 +70,11 @@ public class CommunicationGraphApplication {
         var receiver4 = personRepository.findByEmail("e2")
                 .orElseGet(() -> personRepository.save(Person.of("e2")));
         var communication4 = Communication.toward(receiver4);
-        var personProjection = personRepository.getPersonByEmail("pi").orElseThrow();
-        var sender4 = Person.of(personProjection);
+        var sender4 = personRepository.findByEmail("pi").orElseThrow();
+//        var sender4 = Person.of(personProjection);
+//        var currentCommunications = communicationRepository.findAllByTo(sender4);
         var toBeSavedSender4 = sender4.addCommunication(communication4);
+//                .addCommunications(currentCommunications);
         var savedSender4 = personRepository.save(toBeSavedSender4);
         LOGGER.info("person {} saved", savedSender4);
 
@@ -85,9 +88,9 @@ public class CommunicationGraphApplication {
                         RETURN node.email AS email, score
                         ORDER BY score DESC
                         LIMIT 1""")
-                .fetchAs(PersonInfluenceRankDto.class)
+                .fetchAs(PersonInfluenceScoreProjection.class)
                 .mappedBy((typeSystem, record) ->
-                        new PersonInfluenceRankDto(record.get("email").asString(), record.get("score").asDouble()))
+                        new PersonInfluenceScoreProjection(record.get("email").asString(), record.get("score").asDouble()))
                 .one()
                 .ifPresent(System.out::println);
     }

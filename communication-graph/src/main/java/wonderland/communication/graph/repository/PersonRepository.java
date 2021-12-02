@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import wonderland.communication.graph.domain.CommunicationLessPersonProjection;
 import wonderland.communication.graph.domain.Person;
-import wonderland.communication.graph.dto.PersonInfluenceRankDto;
+import wonderland.communication.graph.domain.PersonInfluenceScoreProjection;
 
 import java.util.Optional;
 
@@ -24,7 +24,7 @@ public interface PersonRepository extends Neo4jRepository<Person, Long> {
             RETURN node.email AS email, score
             ORDER BY score DESC
             LIMIT 1""")
-    PersonInfluenceRankDto getInfluenceRank();
+    PersonInfluenceScoreProjection getInfluenceRank();
 
 //    @Query("""
 //            YIELD node

@@ -10,8 +10,11 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.springframework.data.neo4j.core.schema.Relationship.Direction.OUTGOING;
 
@@ -31,14 +34,14 @@ public final class Person {
     private String email;
 
     @Relationship(direction = OUTGOING, type = "SENT_MESSAGE_TO")
-    private List<Communication> communications;
+    private Set<Communication> communications;
 
     public static Person of(String email) {
         return Person.builder()
                 .id(null)
                 .version(0L)
                 .email(email)
-                .communications(new ArrayList<>())
+                .communications(new HashSet<>())
                 .build();
     }
 
@@ -47,11 +50,11 @@ public final class Person {
                 .id(projection.id())
                 .version(projection.version())
                 .email(projection.email())
-                .communications(new ArrayList<>())
+                .communications(new HashSet<>())
                 .build();
     }
 
-    public static Person of(CommunicationLessPersonProjection projection, List<Communication> communications) {
+    public static Person of(CommunicationLessPersonProjection projection, Set<Communication> communications) {
         return Person.builder()
                 .id(projection.id())
                 .version(projection.version())
@@ -60,8 +63,22 @@ public final class Person {
                 .build();
     }
 
+    public Person.PersonBuilder cloneBuilder(){
+        return Person.builder()
+                .id(this.getId())
+                .version(this.getVersion())
+                .email(this.getEmail())
+                .communications(this.getCommunications());
+    }
+
     public Person addCommunication(Communication communication) {
         this.communications.add(communication);
         return this;
+    }
+
+    public Person addCommunications(Set<Communication> communications) {
+        return cloneBuilder()
+                .communications(communications)
+                .build();
     }
 }
