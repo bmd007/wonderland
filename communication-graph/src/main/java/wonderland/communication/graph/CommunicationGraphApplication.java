@@ -73,8 +73,7 @@ public class CommunicationGraphApplication {
         var sender4 = personRepository.findByEmail("pi").orElseThrow();
 //        var sender4 = Person.of(personProjection);
 //        var currentCommunications = communicationRepository.findAllByTo(sender4);
-        var toBeSavedSender4 = sender4.addCommunication(communication4);
-//                .addCommunications(currentCommunications);
+        var toBeSavedSender4 = sender4.addCommunication(communication4);//                .addCommunications(currentCommunications);
         var savedSender4 = personRepository.save(toBeSavedSender4);
         LOGGER.info("person {} saved", savedSender4);
 
