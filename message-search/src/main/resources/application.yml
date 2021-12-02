@@ -1,7 +1,7 @@
-server.port: 9570
+server.port: 9573
 
 management:
-  server.port: 9571
+  server.port: 9574
   health:
     defaults.enabled: true
     diskspace.enabled: false

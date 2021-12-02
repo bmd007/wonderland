@@ -21,7 +21,7 @@ public class Message {
     @Field(type = FieldType.Text) private String sender;
     @Field(type = FieldType.Text) private String receiver;
     @Field(type = FieldType.Text) private String text;
-    @Field(type = FieldType.Date, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") private LocalDateTime sentAt;
+    @Field(type = FieldType.Date) private LocalDateTime sentAt; //todo fix the date pattern so that you see correct data in kibana
 
     public static Message define(String sender, String receiver, String text, Instant time ){
         var sentAt = LocalDateTime.ofInstant(time, ZoneId.systemDefault());
