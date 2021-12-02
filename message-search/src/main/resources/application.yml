@@ -1,17 +1,71 @@
-server:
-  port: 8089
+server.port: 9570
+
+management:
+  server.port: 9571
+  health:
+    defaults.enabled: true
+    diskspace.enabled: false
+  endpoints:
+    web:
+      base-path: /
+      exposure.include: "*"
+  endpoint:
+    prometheus:
+      enabled: true
+    health:
+      enabled: true
+      show-details: never
+    auditevents.enabled: false
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    enable.jvm: true
+    enable.jvm.gc.pause: true
+    enable.jvm.memory: true
+    enable.jvm.threads: true
+    enable.process: true
+    enable.process.files: true
+    enable.http: true
+    enable.http.server.requests: true
+    enable.logback: true
+    enable.system: true
+    export:
+      prometheus:
+        enabled: true
 
 spring:
+  application:
+    name: communication-graph
+  config:
+    import: optional:consul:localhost:8500
   cloud:
-    service-registry.auto-registration.enabled: true
-    loadbalancer:
-      ribbon:
-        enabled: false
----
-spring:
-  profiles: nomad
+    consul:
+      discovery:
+        prefer-ip-address: true
+        health-check-path: /health
+  kafka:
+    bootstrap-servers: "localhost:9092"
+    consumer:
+      group-id: ${spring.application.name}
+    #      auto-offset-reset: earliest
+    retries: 3
+    acks: all
 
 ---
 spring:
-  profiles:
-    - docker_compose
+  config:
+    activate:
+      on-profile: local
+  kafka:
+    streams:
+      replication-factor: 1
+
+---
+spring:
+  config:
+    activate:
+      on-profile: no-consul
+  application:
+    name: communication-graph
+
+

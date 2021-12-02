@@ -55,27 +55,12 @@ spring:
   neo4j.authentication.username: "neo4j"
   neo4j.authentication.password: "test"
 
-kafka:
-  topic:
-    config:
-      changelog: '3:2'
-      messageEvents: '3:2'
-
 
 ---
 spring:
   config:
     activate:
       on-profile: local
-  kafka:
-    streams:
-      replication-factor: 1
-
-kafka:
-  topic:
-    config:
-      changelog: '1:1'
-      messageEvents: '1:1'
 
 ---
 spring:
@@ -84,13 +69,6 @@ spring:
       on-profile: no-consul
   application:
     name: communication-graph
-  kafka:
-    streams:
-      replication-factor: 1
 
-kafka:
-  topic:
-    config:
-      changelog: '1:1'
-      messageEvents: '1:1'
+
 

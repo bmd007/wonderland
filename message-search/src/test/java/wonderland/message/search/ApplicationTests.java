@@ -1,4 +1,4 @@
-package wonderland.communication.graph;
+package wonderland.message.search;
 
 
 import org.junit.jupiter.api.Test;

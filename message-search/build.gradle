@@ -1,105 +1,94 @@
 plugins {
-	id "java"
-	id "idea"
-	id "org.springframework.boot" version "2.3.1.RELEASE"
-	id "io.spring.dependency-management" version "1.0.9.RELEASE"
-	id "com.gorylenko.gradle-git-properties" version "2.2.2"
-	id "jacoco" //code coverage
+    id 'org.springframework.boot' version '2.5.7'
+    id "io.spring.dependency-management" version "1.0.11.RELEASE"
+    id 'java'
+    id 'idea'
+    id "jacoco" //code coverage
 }
 
 jacoco {
-	toolVersion = "0.8.5"
+    toolVersion = "0.8.7"
 }
 
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
-}
-
-repositories {
-	mavenCentral()
-}
-
-ext {
-	set('springCloudVersion', "Hoxton.SR5")
-}
+group = 'wonderland'
 
 ext.buildNumber = {
-	def buildNumber = System.getenv("VERSION")
-	if (buildNumber == null || buildNumber.allWhitespace) {
-		buildNumber = "SNAPSHOT"
-	}
-	return buildNumber
+    def buildNumber = System.getenv('VERSION')
+    if (buildNumber == null || buildNumber.allWhitespace) {
+        buildNumber = 'beta'
+    }
+    return buildNumber
 }
 
 project.version = buildNumber()
 
-sourceCompatibility = 14
-targetCompatibility = 14
+sourceCompatibility = 17
 
-group = 'wonderland'
+repositories {
+    mavenLocal()
+    mavenCentral()
 
-dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-	implementation 'org.springframework.cloud:spring-cloud-starter-config'
-	implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
-	implementation 'org.springframework.cloud:spring-cloud-loadbalancer'
 
-	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-	implementation "com.google.guava:guava:29.0-jre"
-	implementation 'org.springframework.kafka:spring-kafka'
 
-	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
-
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-	}
-	testImplementation 'io.projectreactor:reactor-test'
-	testCompile("org.junit.jupiter:junit-jupiter-api")
-	testRuntime("org.junit.jupiter:junit-jupiter-engine")
-	testImplementation "org.springframework.kafka:spring-kafka-test"
-	testImplementation "org.testcontainers:testcontainers:1.12.4"
-	testImplementation "org.testcontainers:elasticsearch:1.12.4"
-//	testImplementation("org.testcontainers:kafka:1.12.4")
 }
 
+ext {
+    set('springCloudVersion', "2020.0.4")
+}
+
+dependencies {
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    implementation 'org.springframework.cloud:spring-cloud-starter'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+    implementation "org.springframework.cloud:spring-cloud-loadbalancer"
+    implementation "org.springframework.cloud:spring-cloud-starter-consul-config"
+    implementation "org.springframework.cloud:spring-cloud-starter-consul-discovery"
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
+    implementation 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+    testImplementation 'org.mockito:mockito-junit-jupiter'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation 'com.playtika.testcontainers:embedded-kafka:2.0.16'
+    testImplementation 'com.playtika.testcontainers:embedded-elasticsearch:2.0.16'
+}
+
+
 dependencyManagement {
-	imports {
-		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-	}
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
 }
 
 test {
-	useJUnitPlatform()
+    useJUnitPlatform {}
 }
 
-springBoot {
-	buildInfo()
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
 }
 
-task printVersion {
-	doLast {
-		println project.version
-	}
-}
-
-wrapper {
-	gradleVersion = "6.5"
-	distributionType = Wrapper.DistributionType.ALL
-}
-
-bootJar {
-	layered()
-	layered {
-		includeLayerTools = false
-	}
+tasks.named('wrapper') {
+    distributionType = Wrapper.DistributionType.ALL
 }
 
 bootBuildImage {
 //	imageName = "bmd007/${project.name}:${project.version}"
-	imageName = "bmd007/${project.name}"
-	environment = ["BP_JVM_VERSION" : "14.0.1"]
+    imageName = "bmd007/${project.name}"
+    environment = ["BP_JVM_VERSION": "17"]
 }
-

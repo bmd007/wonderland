@@ -15,12 +15,14 @@ import org.springframework.web.reactive.function.client.ExchangeStrategies;
 public class ElasticSearchConfig extends AbstractReactiveElasticsearchConfiguration {
 
     @Value("${elasticsearch.rest.ip}")
-    String elasticSearchRestIp;
+    private String elasticSearchRestIp;
 
     @Bean
     @Override
     public ReactiveElasticsearchClient reactiveElasticsearchClient() {
-        var exchangeStrategies = ExchangeStrategies.builder().codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(-1)).build();
+        var exchangeStrategies = ExchangeStrategies.builder()
+                .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(-1))
+                .build();
         var clientConfiguration = ClientConfiguration.builder()
                 .connectedTo(elasticSearchRestIp+":9200")
                 .withWebClientConfigurer(webClient -> webClient.mutate().exchangeStrategies(exchangeStrategies).build())

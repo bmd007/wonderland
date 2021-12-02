@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.5.6'
+    id 'org.springframework.boot' version '2.5.7'
     id "io.spring.dependency-management" version "1.0.11.RELEASE"
     id 'java'
     id 'idea'
@@ -48,10 +48,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
 //    implementation group: 'org.springframework.data', name: 'spring-data-neo4j', version: '6.2.0'
-    implementation('org.springframework.boot:spring-boot-starter-data-neo4j') {
-    }
+    implementation 'org.springframework.boot:spring-boot-starter-data-neo4j'
     implementation 'org.springframework.kafka:spring-kafka'
     implementation group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
+    implementation 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -59,11 +60,9 @@ dependencies {
     testImplementation 'org.springframework.kafka:spring-kafka-test'
     testImplementation 'org.mockito:mockito-junit-jupiter'
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
-    testImplementation 'com.playtika.testcontainers:embedded-neo4j:2.0.16'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-    implementation 'org.projectlombok:lombok:1.18.22'
-    annotationProcessor 'org.projectlombok:lombok:1.18.22'
-
+	testImplementation 'com.playtika.testcontainers:embedded-kafka:2.0.16'
+	testImplementation 'com.playtika.testcontainers:embedded-elasticsearch:2.0.16'
 }
 
 dependencyManagement {
@@ -75,6 +74,7 @@ dependencyManagement {
 test {
     useJUnitPlatform {}
 }
+
 jacocoTestReport {
     reports {
         xml.enabled = true

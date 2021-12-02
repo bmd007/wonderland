@@ -13,32 +13,31 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
-import wonderland.message.search.repository.MessageRepository;
 import wonderland.message.search.domain.Message;
 import wonderland.message.search.event.MessageSentEvent;
+import wonderland.message.search.repository.MessageRepository;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+
 
 @RestController
 @SpringBootApplication
 public class MessageSearchApplication {
 
-    public static final String MESSAGE_EVENT_TOPIC = "message_events";
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessageSearchApplication.class);
+
+    public static final String MESSAGES_EVENTS_TOPIC = "messageEvents";
 
     public static void main(String[] args) {
         SpringApplication.run(MessageSearchApplication.class, args);
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MessageSearchApplication.class);
+    @Autowired private MessageRepository messageRepository;
 
-    @Autowired
-    private MessageRepository messageRepository;
-
-    @KafkaListener(topicPattern = MESSAGE_EVENT_TOPIC)
+    @KafkaListener(topicPattern = MESSAGES_EVENTS_TOPIC)
     public void messageEventsSentSubscription(@Payload MessageSentEvent messageSentEvent, @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key){
-        var sentTime = LocalDateTime.ofInstant(messageSentEvent.getTime(), ZoneId.systemDefault());
-        var msg = new Message(messageSentEvent.getFrom(), messageSentEvent.getTo(), messageSentEvent.getBody(), sentTime);
+        var msg = new Message.of(messageSentEvent.from(), messageSentEvent.to(), messageSentEvent.body(), messageSentEvent.time());
         messageRepository.save(msg).subscribe(message -> LOGGER.info("Message {} saved", message));
     }
 
@@ -49,14 +48,3 @@ public class MessageSearchApplication {
 
     //todo add a profile call re indexing that reads the messages from topic from beginning and re fill the elastic index
 }
-
-
-//    private ElasticsearchTemplate elasticsearchTemplate;
-//
-//    SearchQuery searchQuery = new NativeSearchQueryBuilder()
-//            .withQuery(matchAllQuery())
-//            .withFilter(boolFilter().must(termFilter("id", documentId)))
-//            .build();
-//
-//    Page<SampleEntity> sampleEntities =
-//            elasticsearchTemplate.queryForPage(searchQuery,SampleEntity.class);

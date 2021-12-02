@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
-import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.util.List;
@@ -28,7 +27,7 @@ public class ElasticSearchServiceLocator {
     private String hostIp;
 
     public ElasticSearchServiceLocator(DiscoveryClient discoveryClient,
-            @Value("${core-elasticsearch.bootstrap.servers.http:9200}") String portHolder) {
+                                       @Value("${core-elasticsearch.bootstrap.servers.http:9200}") String portHolder) {
         this.discoveryClient = discoveryClient;
         // for tests, the embedded elastic search will only put a port in the property instead of
         // localhost:9200
