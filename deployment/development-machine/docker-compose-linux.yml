@@ -152,7 +152,7 @@ services:
     hostname: kibana
     depends_on:
       - elasticsearch
-    image: docker.elastic.co/kibana/kibana:7.12.1
+    image: docker.elastic.co/kibana/kibana:7.16.2
     environment:
       SERVER_NAME: kibana
       ELASTICSEARCH_HOSTS: "http://elasticsearch:9200"
