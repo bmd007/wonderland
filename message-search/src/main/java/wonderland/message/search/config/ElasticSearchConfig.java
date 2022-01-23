@@ -18,7 +18,6 @@ import java.util.Arrays;
 @EnableReactiveElasticsearchRepositories
 public class ElasticSearchConfig extends AbstractReactiveElasticsearchConfiguration {
 
-
     private final DiscoveryClient discoveryClient;
     private final Environment environment;
 
