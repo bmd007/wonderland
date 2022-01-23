@@ -29,7 +29,7 @@ repositories {
 
 ext {
     set('snippetsDir', file("build/generated-snippets"))
-    set('springCloudVersion', "Hoxton.RELEASE")
+    set('springCloudVersion', "2021.0.0")
 }
 
 ext.buildNumber = {

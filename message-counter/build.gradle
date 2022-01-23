@@ -22,7 +22,7 @@ repositories {
 }
 
 ext {
-	set('springCloudVersion', "Hoxton.SR5")
+	set('springCloudVersion', "2021.0.0")
 }
 
 ext.buildNumber = {
