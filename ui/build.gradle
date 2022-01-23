@@ -51,7 +51,7 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-actuator')
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     compile group: 'org.joinfaces', name: 'jsf-spring-boot-starter', version: '3.2.6'
-    compile group: 'org.primefaces', name: 'primefaces', version: '6.2'
+    compile group: 'org.primefaces', name: 'primefaces', version: '11.0.0'
     implementation('org.springframework.cloud:spring-cloud-starter-config')
     implementation('org.springframework.cloud:spring-cloud-loadbalancer')
     implementation 'org.springframework.boot:spring-boot-starter-web'
