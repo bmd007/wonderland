@@ -1,6 +1,7 @@
 package wonderland.message.counter.config;
 
 import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.common.config.TopicConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,51 +10,41 @@ import org.springframework.context.annotation.Profile;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static org.apache.kafka.common.config.TopicConfig.*;
+import static org.apache.kafka.common.config.TopicConfig.RETENTION_MS_CONFIG;
 
 /**
  * Configuration class to automatically create the topics with the configured partitions and replication factor.
  */
 @Configuration
 @Profile("!test")
-public class TopicCreationConfig {
+public class TopicCreator {
 
-    private PartitionDef eventTopicDefinition;
-    private PartitionDef changeLogTopicDefinition;
-    private String applicationName;
+    private final PartitionDef messageEventsTopicDefinition;
+    private final PartitionDef changeLogTopicDefinition;
+    private final String applicationName;
 
-    public TopicCreationConfig(
+    public TopicCreator(
             @Value("${spring.application.name}") String applicationName,
-            @Value("${kafka.topic-partitions.eventTopic}") String eventTopicDefinition,
-            @Value("${kafka.topic-partitions.changeLogTopic}") String changeLogTopicDefinition) {
+            @Value("${kafka.topic.config.messageEvents}") String messageEventsTopicDefinition,
+            @Value("${kafka.topic.config.changelog}") String changeLogTopicDefinition) {
         this.applicationName = applicationName;
-        this.eventTopicDefinition = PartitionDef.parse(eventTopicDefinition);
+        this.messageEventsTopicDefinition = PartitionDef.parse(messageEventsTopicDefinition);
         this.changeLogTopicDefinition = PartitionDef.parse(changeLogTopicDefinition);
 
     }
 
     @Bean
-    public NewTopic eventsTopic() {
-        return new NewTopic(Topics.EVENT_LOG, eventTopicDefinition.numPartitions, eventTopicDefinition.replicationFactor)
-                .configs(Map.of(RETENTION_MS_CONFIG, "-1", RETENTION_BYTES_CONFIG, "-1"));
-    }
-
-    @Bean
-    public NewTopic counterStateTopic() {
-        return new NewTopic(storeTopicName(Stores.MESSAGE_COUNTER_STATE), changeLogTopicDefinition.numPartitions, changeLogTopicDefinition.replicationFactor)
+    public NewTopic eventLogTopic() {
+        return new NewTopic(Topics.EVENT_LOG, changeLogTopicDefinition.numPartitions, changeLogTopicDefinition.replicationFactor)
                 .configs(Map.of(CLEANUP_POLICY_CONFIG, CLEANUP_POLICY_COMPACT));
-    }
-
-    private String storeTopicName(String storeName) {
-        return String.format("%s-%s-changelog", applicationName, storeName);
     }
 
     private static class PartitionDef {
 
         private final static Pattern PATTERN = Pattern.compile("(\\d+):(\\d+)");
 
-        private int numPartitions;
-        private short replicationFactor;
+        private final int numPartitions;
+        private final short replicationFactor;
 
         private PartitionDef(int numPartitions, short replicationFactor) {
             this.numPartitions = numPartitions;

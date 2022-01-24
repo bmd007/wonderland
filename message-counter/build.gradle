@@ -8,14 +8,22 @@ plugins {
 }
 
 jacoco {
-	toolVersion = "0.8.5"
+	toolVersion = "0.8.7"
 }
 
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
+group = 'wonderland'
+
+ext.buildNumber = {
+	def buildNumber = System.getenv('VERSION')
+	if (buildNumber == null || buildNumber.allWhitespace) {
+		buildNumber = 'beta'
 	}
+	return buildNumber
 }
+
+project.version = buildNumber()
+
+sourceCompatibility = 17
 
 repositories {
 	mavenCentral()
@@ -24,21 +32,6 @@ repositories {
 ext {
 	set('springCloudVersion', "2021.0.0")
 }
-
-ext.buildNumber = {
-	def buildNumber = System.getenv("VERSION")
-	if (buildNumber == null || buildNumber.allWhitespace) {
-		buildNumber = "SNAPSHOT"
-	}
-	return buildNumber
-}
-
-project.version = buildNumber()
-
-sourceCompatibility = 14
-targetCompatibility = 14
-
-group = 'wonderland'
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
@@ -49,7 +42,7 @@ dependencies {
 	implementation 'org.apache.kafka:kafka-streams'
 	implementation 'org.springframework.kafka:spring-kafka'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-	implementation('com.google.guava:guava:31.0.1-jre')
+	implementation 'com.google.guava:guava:31.0.1-jre'
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -70,30 +63,12 @@ test {
 	useJUnitPlatform()
 }
 
-springBoot {
-	buildInfo()
-}
-
-task printVersion {
-	doLast {
-		println project.version
-	}
-}
-
 wrapper {
-	gradleVersion = "6.5"
 	distributionType = Wrapper.DistributionType.ALL
-}
-
-bootJar {
-	layered()
-	layered {
-		includeLayerTools = false
-	}
 }
 
 bootBuildImage {
 //	imageName = "bmd007/${project.name}:${project.version}"
 	imageName = "bmd007/${project.name}"
-	environment = ["BP_JVM_VERSION" : "14.0.1"]
+	environment = ["BP_JVM_VERSION" : "17"]
 }

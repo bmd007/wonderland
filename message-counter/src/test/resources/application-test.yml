@@ -2,22 +2,30 @@ management:
   server:
     port: 0
 
+logging:
+  level:
+    org.springframework.jdbc: INFO
+    org.springframework.web: INFO
+    org.springframework.kafka: WARN
+    org.apache.zookeeper: WARN
+    org.apache.kafka: WARN
+    kafka: WARN
+
 spring:
+  zipkin.enabled: false
+  sleuth.enabled: false
   # Kafka enable for tests
   kafka:
     enabled: true
     bootstrap-servers: ${spring.embedded.kafka.brokers}
 
-
-# This is the mapped ip:port for inter instance communication.
-# This port is never opened during testing.
 kafka:
+  topic-partitions:
+    eventTopic: '1:1'
+    changeLogTopic: '1:1'
+
   streams:
     server:
       config:
         app-ip: localhost
         app-port: 9585
-
-  topic-partitions:
-    eventTopic: '1:1'
-    changeLogTopic: '1:1'

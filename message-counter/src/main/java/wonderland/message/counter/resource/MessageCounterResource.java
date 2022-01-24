@@ -56,5 +56,4 @@ public class MessageCounterResource {
         return messageCounterViewService.getById(sender)
                 .switchIfEmpty(Mono.error(new NotFoundException(String.format("%s not found (%s doesn't exist). Maybe has not sent any messages yet", "Sender", sender))));
     }
-
 }

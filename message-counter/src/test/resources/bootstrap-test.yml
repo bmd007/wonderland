@@ -1,8 +1,8 @@
 spring:
   cloud:
     consul:
-#      config:
-#        enabled: false
+      config:
+        enabled: false
       enabled: false
       discovery:
         enabled: false

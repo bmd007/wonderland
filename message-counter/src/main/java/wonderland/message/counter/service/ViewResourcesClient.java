@@ -26,15 +26,14 @@ public class ViewResourcesClient {
                                @Qualifier("notLoadBalancedClient") WebClient.Builder notLoadBalancedWebClientBuilder,
                                Environment environment) {
         var activeProfiles = Arrays.stream(environment.getActiveProfiles()).collect(Collectors.toSet());
-        if (activeProfiles.contains("docker_compose")){
+        if (!activeProfiles.contains("no-consul") && !activeProfiles.contains("local") ){
             webClientBuilder = loadBalancedWebClientBuilder;
         }else{
             webClientBuilder = notLoadBalancedWebClientBuilder;
         }
     }
 
-    // We are not injecting here because the available web client does load balancing which is not wanted here
-    private WebClient.Builder webClientBuilder = WebClient.builder();
+    private WebClient.Builder webClientBuilder;
 
     public <T> Mono<T> getOne(Class<T> bodyType, String url) {
         return webClientBuilder

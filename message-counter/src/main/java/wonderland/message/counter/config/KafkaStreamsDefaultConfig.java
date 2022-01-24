@@ -36,8 +36,7 @@ public class KafkaStreamsDefaultConfig {
         props.put(StreamsConfig.CLIENT_ID_CONFIG, applicationName + "-" + UUID.randomUUID().toString());
 
         // Using this means accepting the app to continue when it faces a deserialization error, instead of break down
-        props.put(StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG,
-                LogAndContinueExceptionHandler.class);
+        props.put(StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG, LogAndContinueExceptionHandler.class);
 
         // this is needed
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
