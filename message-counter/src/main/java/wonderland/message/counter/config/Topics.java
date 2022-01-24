@@ -5,5 +5,5 @@ public class Topics {
     public static final String EVENT_LOG = "event_log";
 
     //NOT owned by this service
-    public static final String MESSAGE_EVENT_TOPIC = "message_events";
+    public static final String MESSAGE_EVENT_TOPIC = "messageEvents";
 }

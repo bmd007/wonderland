@@ -63,7 +63,7 @@ kafka:
       changelog: '3:2'
       messageEvents: '3:2'
 
-  rabbitmq:
+rabbitmq:
     password: guest
     username: guest
     host: localhost

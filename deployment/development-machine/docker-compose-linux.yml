@@ -109,18 +109,19 @@ services:
 #    ports:
 #      - '89:5050'
 
-#  kafka-manager:
-#    container_name: kafka-manager
-#    depends_on:
-#      - zookeeper
-#      - kafka
-#    image: rafabsb/kafka-manager-docker:2.4
-#    ports:
-#      - "9000:9000"
-#    environment:
-#      ZK_HOSTS: zookeeper:2181
-#      APPLICATION_SECRET: letmein
-#      KM_ARGS: -Djava.net.preferIPv4Stack=true
+  kafka-manager:
+    container_name: kafka-manager
+    hostname: kafka-manager
+    depends_on:
+      - zookeeper
+      - kafka
+    image: rafabsb/kafka-manager-docker
+    ports:
+      - "9000:9000"
+    environment:
+      ZK_HOSTS: zookeeper:2181
+      APPLICATION_SECRET: letmein
+      KM_ARGS: -Djava.net.preferIPv4Stack=true
 
   elasticsearch:
     depends_on:

@@ -1,17 +1,18 @@
 package wonderland.message.counter.service;
 
-import wonderland.message.counter.exception.ServiceUnavailableException;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.kafka.streams.KeyQueryMetadata;
+import org.apache.kafka.streams.StoreQueryParameters;
+import org.apache.kafka.streams.StreamsMetadata;
 import org.apache.kafka.streams.errors.InvalidStateStoreException;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
-import org.apache.kafka.streams.state.StreamsMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import wonderland.message.counter.exception.ServiceUnavailableException;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +28,7 @@ import static java.util.Objects.isNull;
  * <li>M is the external representation of I (dto)
  * <li>E is a Dto that includes a list of Ms. So for getting more than one instance of I, instead of
  * <code>Flux&lt;M></code>, it will be <code>Mono&lt;E></code> <br>
- * For now we don't test this class separately. Instead we test each resource class that uses this class.
+ * For now we don't test this class separately. Instead, we test each resource class that uses this class.
  **/
 public class ViewService<E, M, I> {
 
@@ -36,11 +37,10 @@ public class ViewService<E, M, I> {
     private final String storeName;
     private final Class<E> externalClass;
     private final Class<M> middleClass;
-    private final  BiFunction<String, I, M> mapperFromItoE;
+    private final BiFunction<String, I, M> mapperFromItoE;
     private final Function<E, List<M>> listOfMfromEextractor;
     private final Function<List<M>, E> listOfMtoE;
     private final String pathPart;
-    WebClient.Builder webClientBuilder;
     private String ip;
     private int port;
     private StreamsBuilderFactoryBean streams;
@@ -61,7 +61,6 @@ public class ViewService<E, M, I> {
         this.listOfMtoE = listOfMtoE;
         this.pathPart = pathPart;
         this.commonClient = commonClient;
-        this.webClientBuilder = WebClient.builder();
     }
 
     public Mono<E> getAll(boolean isHighLevelQuery) {
@@ -83,7 +82,7 @@ public class ViewService<E, M, I> {
     }
 
     private Flux<M> getAllFromRemoteStorage() {
-        var metadataCollection = streams.getKafkaStreams().allMetadataForStore(storeName);
+        var metadataCollection = streams.getKafkaStreams().streamsMetadataForStore(storeName);
         return Flux.fromIterable(metadataCollection)
                 .switchIfEmpty(Flux.error(() -> new ServiceUnavailableException("No metadata found for " + storeName)))
                 .filter(this::isRemoteNode)
@@ -111,14 +110,14 @@ public class ViewService<E, M, I> {
     }
 
     public Mono<M> getById(String id) {
-        var metadata = streams.getKafkaStreams().metadataForKey(storeName, id, new StringSerializer());
+        var metadata = streams.getKafkaStreams().queryMetadataForKey(storeName, id, new StringSerializer());
 
-        if (metadata.equals(StreamsMetadata.NOT_AVAILABLE)) {
+        if (metadata.equals(KeyQueryMetadata.NOT_AVAILABLE) || metadata == null) {
             LOGGER.error("Neither this nor other instances has access to requested key. Metadata: {}", metadata);
             return Mono.empty();//No metadata for that key
         }
 
-        if (metadata.host().equals(ip) && metadata.port() == port) {
+        if (metadata.activeHost().host().equals(ip) && metadata.activeHost().port() == port) {
             LOGGER.debug("Querying local store {} for id: {}", storeName, id);
             var store = waitUntilStoreIsQueryable();
             return Optional.ofNullable(store.get(id))
@@ -127,17 +126,17 @@ public class ViewService<E, M, I> {
                     .orElseGet(() -> Mono.empty());//No data for that key locally
         }
 
-        var url = String.format("http://%s:%d/api/counter/message/%s/%s", metadata.host(), metadata.port(), pathPart, id);
+        var url = String.format("http://%s:%d/api/counter/message/%s/%s", metadata.activeHost().host(), metadata.activeHost().port(), pathPart, id);
         LOGGER.debug("Querying other instance's {} store for id: {} from {}", storeName, id, url);
         return commonClient.getOne(middleClass, url)
                 .switchIfEmpty(Mono.empty());//No data for that key remotely
     }
 
     public Mono<M> getByIdFromGlobalStore(String id) {
-        var metadata = streams.getKafkaStreams().metadataForKey(storeName, id, new StringSerializer());
+        var metadata = streams.getKafkaStreams().queryMetadataForKey(storeName, id, new StringSerializer());
 
-        if (metadata.equals(StreamsMetadata.NOT_AVAILABLE)) {
-            LOGGER.error("Neither this or other instances has access to requested key. Metadata: {}", metadata);
+        if (metadata.equals(KeyQueryMetadata.NOT_AVAILABLE) || metadata == null) {
+            LOGGER.error("Neither this nor other instances has access to requested key. Metadata: {}", metadata);
             return Mono.empty();//No metadata for that key
         }
 
@@ -152,12 +151,11 @@ public class ViewService<E, M, I> {
     public ReadOnlyKeyValueStore<String, I> waitUntilStoreIsQueryable() {
         for (int i = 0; i < 10; i++) {
             try {
-                return streams.getKafkaStreams().store(storeName, QueryableStoreTypes.keyValueStore());
+                var storeQueryParameters = StoreQueryParameters.fromNameAndType(storeName, QueryableStoreTypes.<String, I>keyValueStore());
+                return streams.getKafkaStreams().store(storeQueryParameters);
             } catch (InvalidStateStoreException e2) {
                 // store not yet ready for querying
-                LOGGER.error(
-                        "Invalid State Store Error while fetching the kafkaStream store: {}. A retry will happen after 300 ms",
-                        storeName);
+                LOGGER.error("Invalid State Store Error while fetching the kafkaStream store: {}. A retry will happen after 300 ms", storeName);
                 try {
                     Thread.sleep(300);
                 } catch (InterruptedException e) {
@@ -166,7 +164,6 @@ public class ViewService<E, M, I> {
                 }
             }
         }
-        throw new ServiceUnavailableException(
-                "Invalid State Store Error while fetching the kafkaStream store. The service is not available at the moment");
+        throw new ServiceUnavailableException("Invalid State Store Error while fetching the kafkaStream store. The service is not available at the moment");
     }
 }

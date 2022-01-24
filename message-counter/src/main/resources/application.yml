@@ -79,6 +79,10 @@ kafka:
       changelog: '1:1'
       messageEvents: '1:1'
 
+  streams:
+    server.config:
+      app-ip: localhost
+      app-port: ${server.port}
 ---
 spring:
   config:

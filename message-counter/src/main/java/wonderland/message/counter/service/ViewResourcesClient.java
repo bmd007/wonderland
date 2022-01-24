@@ -22,6 +22,8 @@ import java.util.stream.Collectors;
 @Component
 public class ViewResourcesClient {
 
+    private WebClient.Builder webClientBuilder;
+
     public ViewResourcesClient(@Qualifier("loadBalancedClient") WebClient.Builder loadBalancedWebClientBuilder,
                                @Qualifier("notLoadBalancedClient") WebClient.Builder notLoadBalancedWebClientBuilder,
                                Environment environment) {
@@ -32,8 +34,6 @@ public class ViewResourcesClient {
             webClientBuilder = notLoadBalancedWebClientBuilder;
         }
     }
-
-    private WebClient.Builder webClientBuilder;
 
     public <T> Mono<T> getOne(Class<T> bodyType, String url) {
         return webClientBuilder

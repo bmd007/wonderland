@@ -18,6 +18,8 @@ spring:
   kafka:
     enabled: true
     bootstrap-servers: ${spring.embedded.kafka.brokers}
+    streams:
+      replication-factor: 1
 
 kafka:
   topic-partitions:
