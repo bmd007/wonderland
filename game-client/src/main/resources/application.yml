@@ -1,7 +1,7 @@
-server.port: 9566
+server.port: 9578
 
 management:
-  server.port: 9567
+  server.port: 9579
   health:
     defaults.enabled: true
     diskspace.enabled: false
@@ -35,7 +35,7 @@ management:
 
 spring:
   application:
-    name: message-publisher
+    name: game-client
   config:
     import: optional:consul:localhost:8500
   cloud:
@@ -43,31 +43,6 @@ spring:
       discovery:
         prefer-ip-address: true
         health-check-path: /health
-  kafka:
-    bootstrap-servers: "localhost:9092"
-    producer:
-      key-serializer: org.springframework.kafka.support.serializer.StringOrBytesSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-    #      properties:
-    #        - spring.json.type.mapping: MoverLocationUpdate:statefull.geofencing.faas.common.dto.MoverLocationUpdate
-    consumer:
-      group-id: ${spring.application.name}
-      auto-offset-reset: earliest
-    retries: 3
-    acks: all
-
-kafka:
-  topic:
-    config:
-      event: '3:2'
-      changelog: '3:2'
-      messageEvents: '3:2'
-
-rabbitmq:
-    password: guest
-    username: guest
-    host: localhost
-    port: 5672
 
 ---
 spring:
@@ -75,12 +50,6 @@ spring:
     activate:
       on-profile: local
 
-kafka:
-  topic:
-    config:
-      event: '1:1'
-      changelog: '1:1'
-      messageEvents: '1:1'
 
 ---
 spring:
@@ -88,12 +57,4 @@ spring:
     activate:
       on-profile: no-consul
   application:
-    name: message-publisher
-
-kafka:
-  topic:
-    config:
-      event: '1:1'
-      changelog: '1:1'
-      messageEvents: '1:1'
-
+    name: game-client
