@@ -55,3 +55,6 @@ HELP.md
 !/deployment/development-machine/metrics/consul.json
 
 deployment/development-machine/neo4j/
+
+liblwjgl.dylib
+libopenal.dylib
