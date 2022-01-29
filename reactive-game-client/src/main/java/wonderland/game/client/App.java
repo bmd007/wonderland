@@ -10,18 +10,21 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
+import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.system.AppSettings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import reactor.core.publisher.Flux;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -63,6 +66,18 @@ public class App extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
+        Spatial car = assetManager.loadModel("Models/Formula1mesh.obj");
+        Material mat_default = new Material(assetManager, "Common/MatDefs/Misc/ShowNormals.j3md");
+        car.setMaterial(mat_default);
+        car.scale(0.3f);
+        rootNode.attachChild(car);
+
+        // You must add a light to make the model visible
+        DirectionalLight sun = new DirectionalLight();
+        sun.setDirection(new Vector3f(-0.1f, -0.7f, -1.0f));
+        rootNode.addLight(sun);
+
+
         Material backgroundMaterial = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         backgroundMaterial.setColor("Color", ColorRGBA.White);
         rootNode.setMaterial(backgroundMaterial);
@@ -87,8 +102,8 @@ public class App extends SimpleApplication {
         inputManager.addListener(actionListener, new String[]{"Pause Game", "Left", "Right"});
 
         inputManager.addMapping("pick target", new MouseButtonTrigger(BUTTON_LEFT));
-        flyCam.setEnabled(false);
-        inputManager.setCursorVisible(true);
+//        flyCam.setEnabled(false);
+//        inputManager.setCursorVisible(true);
         inputManager.addListener(analogListener, new String[]{"pick target"});
 
         viewPort.setBackgroundColor(new ColorRGBA(0.7f, 0.8f, 1f, 1f));

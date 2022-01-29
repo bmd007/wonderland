@@ -36,3 +36,12 @@ out/
 
 # Ignore Gradle build output directory
 build
+
+
+/src/main/resources/assets
+
+/src/main/resources/assets/*
+/src/main/resources/assets/
+/src/main/resources/assets/
+/src/main/resources/assets/
+/assets/

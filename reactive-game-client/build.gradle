@@ -33,6 +33,7 @@ dependencies {
     implementation "org.jmonkeyengine:jme3-core:3.3.2-stable"
     implementation "org.jmonkeyengine:jme3-desktop:3.3.2-stable"
     implementation "org.jmonkeyengine:jme3-lwjgl:3.3.2-stable"
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
     testImplementation 'io.projectreactor:reactor-test:3.4.14'
@@ -49,6 +50,13 @@ testing {
 }
 
 application {
-    // Define the main class for the application.
     mainClass = 'wonderland.game.client.App'
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir 'assets'
+        }
+    }
 }
