@@ -91,6 +91,8 @@ public class App extends SimpleApplication {
         inputManager.setCursorVisible(true);
         inputManager.addListener(analogListener, new String[]{"pick target"});
 
+        viewPort.setBackgroundColor(new ColorRGBA(0.7f, 0.8f, 1f, 1f));
+        flyCam.setMoveSpeed(100);
     }
 
     private ActionListener actionListener = (name, keyPressed, tpf) -> {
