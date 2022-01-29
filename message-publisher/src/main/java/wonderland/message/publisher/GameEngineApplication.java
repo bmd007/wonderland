@@ -1,4 +1,4 @@
-package wonderland.game.engine;
+package wonderland.message.publisher;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

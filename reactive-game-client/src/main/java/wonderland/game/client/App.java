@@ -23,6 +23,7 @@ import io.rsocket.metadata.TaggingMetadataCodec;
 import io.rsocket.metadata.WellKnownMimeType;
 import io.rsocket.transport.netty.client.TcpClientTransport;
 import io.rsocket.util.DefaultPayload;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Scheduler;
@@ -34,6 +35,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+@Slf4j
 public class App extends SimpleApplication {
 
     Box b = new Box(1, 1, 1);
@@ -55,8 +57,10 @@ public class App extends SimpleApplication {
             .filter(values -> values.length == 2)
             .map(values -> new Rocket(Integer.valueOf(values[0]), Integer.valueOf(values[1])))
             .doOnNext(localValues::add);
+//    app.enqueue(callable);
 
-    public static void main(String[] args) throws InterruptedException {
+
+    public static void main(String[] args) {
         rockets.subscribe();
         App app = new App();
         AppSettings settings = new AppSettings(true);
@@ -76,7 +80,6 @@ public class App extends SimpleApplication {
     @Override
     public void simpleUpdate(float tpf) {
         var rocket = localValues.poll();
-//        geom.setLocalTranslation(rocket.x, 4, rocket.y);
         geom.setLocalTranslation(rocket.y, 4, 1);
     }
 }

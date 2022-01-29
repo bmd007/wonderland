@@ -6,8 +6,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-import static wonderland.message.publisher.serialization.JsonMapperProvider.MAPPER;
-
 public class JsonSerializer<T> implements Serializer<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JsonSerializer.class);
@@ -15,7 +13,7 @@ public class JsonSerializer<T> implements Serializer<T> {
     @Override
     public byte[] serialize(String topic, T data) {
         try {
-            return MAPPER.writeValueAsBytes(data);
+            return JsonMapperProvider.MAPPER.writeValueAsBytes(data);
         } catch (IOException e) {
             LOGGER.error("Cannot serialize {}", data);
             e.printStackTrace();

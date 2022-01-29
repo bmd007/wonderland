@@ -1,7 +1,7 @@
-server.port: 9511
+server.port: 9530
 
 management:
-  server.port: 9512
+  server.port: 9531
   health:
     defaults.enabled: true
     diskspace.enabled: false
@@ -36,43 +36,37 @@ management:
 spring:
   application:
     name: game-engine
-
-  data:
-    mongodb:
-      uri: mongodb://mongo:27017/game-engine
-
+  config:
+    import: "optional:consul:"
   cloud:
     consul:
       discovery:
         prefer-ip-address: true
         health-check-path: /health
+  kafka:
+    bootstrap-servers: "localhost:9092"
+    producer:
+      key-serializer: org.springframework.kafka.support.serializer.StringOrBytesSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    #      properties:
+    #        - spring.json.type.mapping: MoverLocationUpdate:statefull.geofencing.faas.common.dto.MoverLocationUpdate
+    consumer:
+      group-id: ${spring.application.name}
+      auto-offset-reset: earliest
+    retries: 3
+    acks: all
+  rsocket.server.port: 4789
+#  spring.rsocket.server.transport=websocket
+#  spring.rsocket.server.mapping-path=/rsocket
 
 ---
 spring:
   config:
     activate:
       on-profile: local
-  zipkin:
-    enabled: false
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/game-engine?maxPoolSize=1
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
 
 ---
 spring:
   config:
     activate:
       on-profile: no-consul
-  application:
-    name: game-engine
-  zipkin:
-    enabled: false
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/game-engine?maxPoolSize=1
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration

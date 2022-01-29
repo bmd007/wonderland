@@ -1,4 +1,4 @@
-package wonderland.message.publisher;
+package wonderland.game.server;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;

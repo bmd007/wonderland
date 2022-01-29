@@ -30,6 +30,9 @@ spring:
 #    embedded.neo4j.boltPort
 
 kafka:
-  topic-partitions:
-    eventTopic: '1:1'
-    changeLogTopic: '1:1'
+  topic:
+    config:
+      event: '1:1'
+      changelog: '1:1'
+      messageEvents: '1:1'
+
