@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import reactor.core.publisher.Flux;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -36,7 +35,7 @@ public class App extends SimpleApplication {
     Box blueBox = new Box(2, 2, 2);
     Geometry blueBoxGeom = new Geometry("BlueBox", blueBox);
 
-    Box redBox = new Box(1, 1, 1);
+    Box redBox = new Box(1, 1, -1);
     Geometry redBoxGeom = new Geometry("RedBox", redBox);
 
     record Rocket(int x, int y){ }
@@ -56,7 +55,7 @@ public class App extends SimpleApplication {
 
 
     public static void main(String[] args) {
-        rockets.subscribe();
+//        rockets.subscribe();
         App app = new App();
         AppSettings settings = new AppSettings(true);
         settings.setTitle("My Awesome Game");
@@ -66,21 +65,29 @@ public class App extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
-        Spatial car = assetManager.loadModel("Models/Formula1mesh.obj");
-        Material mat_default = new Material(assetManager, "Common/MatDefs/Misc/ShowNormals.j3md");
-        car.setMaterial(mat_default);
-        car.scale(0.3f);
-        rootNode.attachChild(car);
+        Spatial city = assetManager.loadModel("Models/city/Center City Sci-Fi.obj");
+        rootNode.attachChild(city);
 
         // You must add a light to make the model visible
         DirectionalLight sun = new DirectionalLight();
         sun.setDirection(new Vector3f(-0.1f, -0.7f, -1.0f));
         rootNode.addLight(sun);
 
+        Spatial tree = assetManager.loadModel("Models/tree/Lowpoly_tree_sample.obj");
+        tree.setLocalTranslation(200, 200, -10);
+        rootNode.attachChild(tree);
 
-        Material backgroundMaterial = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        backgroundMaterial.setColor("Color", ColorRGBA.White);
-        rootNode.setMaterial(backgroundMaterial);
+        Spatial car = assetManager.loadModel("Models/koenigsegg-agera/uploads_files_2792345_Koenigsegg.obj");
+        car.setLocalTranslation(200, 100, -10);
+        rootNode.attachChild(car);
+
+        Spatial soldier = assetManager.loadModel("Models/soldier/OBJ.obj");
+        soldier.setLocalTranslation(100, 300, -10);
+        rootNode.attachChild(soldier);
+
+        Spatial sniper = assetManager.loadModel("Models/sniper/OBJ.obj");
+        sniper.setLocalTranslation(130, 300, -10);
+        rootNode.attachChild(sniper);
 
         Material redBoxMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         Material blueBoxMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -88,7 +95,7 @@ public class App extends SimpleApplication {
         redBoxMat.setColor("Color", ColorRGBA.Red);
         blueBoxGeom.setMaterial(blueBoxMat);
         redBoxGeom.setMaterial(redBoxMat);
-
+        redBoxGeom.setLocalTranslation(7,8,-17);
         rootNode.attachChild(blueBoxGeom);
         rootNode.attachChild(redBoxGeom);
 
@@ -102,7 +109,7 @@ public class App extends SimpleApplication {
         inputManager.addListener(actionListener, new String[]{"Pause Game", "Left", "Right"});
 
         inputManager.addMapping("pick target", new MouseButtonTrigger(BUTTON_LEFT));
-//        flyCam.setEnabled(false);
+        flyCam.setEnabled(true);
 //        inputManager.setCursorVisible(true);
         inputManager.addListener(analogListener, new String[]{"pick target"});
 
@@ -152,7 +159,7 @@ public class App extends SimpleApplication {
     @Override
     public void simpleUpdate(float tpf) {
         var rocket = Optional.ofNullable(localValues.poll())
-                .orElseGet(() -> new Rocket(1,5));
-        blueBoxGeom.setLocalTranslation(rocket.y, 4, 1);
+                .orElseGet(() -> new Rocket(-4,5));
+        blueBoxGeom.setLocalTranslation(rocket.y, rocket.x, 4);
     }
 }
