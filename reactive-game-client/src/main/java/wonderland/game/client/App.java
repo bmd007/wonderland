@@ -18,7 +18,6 @@ import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
-import com.jme3.scene.shape.Box;
 import com.jme3.system.AppSettings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.rsocket.RSocketRequester;
@@ -32,11 +31,7 @@ import static com.jme3.input.MouseInput.BUTTON_LEFT;
 @Slf4j
 public class App extends SimpleApplication {
 
-    Box blueBox = new Box(2, 2, 2);
-    Geometry blueBoxGeom = new Geometry("BlueBox", blueBox);
-
-    Box redBox = new Box(1, 1, -1);
-    Geometry redBoxGeom = new Geometry("RedBox", redBox);
+    private Spatial sniperSpatial;
 
     record Rocket(int x, int y){ }
     static ConcurrentLinkedQueue<Rocket> localValues = new ConcurrentLinkedQueue<>();
@@ -65,56 +60,34 @@ public class App extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
-        Spatial city = assetManager.loadModel("Models/city/Center City Sci-Fi.obj");
-        rootNode.attachChild(city);
-
         // You must add a light to make the model visible
         DirectionalLight sun = new DirectionalLight();
         sun.setDirection(new Vector3f(-0.1f, -0.7f, -1.0f));
         rootNode.addLight(sun);
 
-        Spatial tree = assetManager.loadModel("Models/tree/Lowpoly_tree_sample.obj");
-        tree.setLocalTranslation(200, 200, -10);
-        rootNode.attachChild(tree);
+        Spatial city = assetManager.loadModel("Models/city/Center City Sci-Fi.obj");
+        rootNode.attachChild(city);
 
-        Spatial car = assetManager.loadModel("Models/koenigsegg-agera/uploads_files_2792345_Koenigsegg.obj");
-        car.setLocalTranslation(200, 100, -10);
-        rootNode.attachChild(car);
 
-        Spatial soldier = assetManager.loadModel("Models/soldier/OBJ.obj");
-        soldier.setLocalTranslation(100, 300, -10);
-        rootNode.attachChild(soldier);
+        Spatial lara = assetManager.loadModel("Models/lara/lara_max_2010_OBJ.obj");
+        lara.setLocalTranslation(-200, 55, 5);
+        lara.scale(0.004f);
+        rootNode.attachChild(lara);
 
-        Spatial sniper = assetManager.loadModel("Models/sniper/OBJ.obj");
-        sniper.setLocalTranslation(130, 300, -10);
-        rootNode.attachChild(sniper);
+        sniperSpatial = assetManager.loadModel("Models/sniper/OBJ.obj");
+        sniperSpatial.setLocalTranslation(-100, 10, 3);
+        sniperSpatial.scale(6f);
+        cam.setLocation(new Vector3f(-100, 14, 8));
+        rootNode.attachChild(sniperSpatial);
 
-        Material redBoxMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        Material blueBoxMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        blueBoxMat.setColor("Color", ColorRGBA.Blue);
-        redBoxMat.setColor("Color", ColorRGBA.Red);
-        blueBoxGeom.setMaterial(blueBoxMat);
-        redBoxGeom.setMaterial(redBoxMat);
-        redBoxGeom.setLocalTranslation(7,8,-17);
-        rootNode.attachChild(blueBoxGeom);
-        rootNode.attachChild(redBoxGeom);
-
-        inputManager.deleteMapping( SimpleApplication.INPUT_MAPPING_MEMORY);
-        inputManager.addMapping("Pause Game", new KeyTrigger(KeyInput.KEY_P));
-        inputManager.addMapping("Rotate",     new KeyTrigger(KeyInput.KEY_SPACE));
-        inputManager.addMapping("Left",  new KeyTrigger(KeyInput.KEY_A),
-                new KeyTrigger(KeyInput.KEY_LEFT)); // A and left arrow
-        inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D),
-                new KeyTrigger(KeyInput.KEY_RIGHT));
-        inputManager.addListener(actionListener, new String[]{"Pause Game", "Left", "Right"});
-
+        flyCam.setEnabled(false);
+        inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_LEFT));
+        inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_RIGHT));
+        inputManager.addMapping("Forward", new KeyTrigger(KeyInput.KEY_UP));
+        inputManager.addMapping("Backward", new KeyTrigger(KeyInput.KEY_DOWN));
+        inputManager.addListener(analogListener, new String[]{"Left", "Right", "Forward", "Backward"});
         inputManager.addMapping("pick target", new MouseButtonTrigger(BUTTON_LEFT));
-        flyCam.setEnabled(true);
-//        inputManager.setCursorVisible(true);
         inputManager.addListener(analogListener, new String[]{"pick target"});
-
-        viewPort.setBackgroundColor(new ColorRGBA(0.7f, 0.8f, 1f, 1f));
-        flyCam.setMoveSpeed(100);
     }
 
     private ActionListener actionListener = (name, keyPressed, tpf) -> {
@@ -122,7 +95,28 @@ public class App extends SimpleApplication {
     };
 
     private AnalogListener analogListener = (name, intensity, tpf) -> {
-        if (name.equals("pick target")) {
+        intensity = intensity * 3;
+        if (name.equals("Left")){
+            var currentX = sniperSpatial.getWorldTranslation().getX();
+            var currentY = sniperSpatial.getWorldTranslation().getY();
+            var currentZ = sniperSpatial.getWorldTranslation().getZ();
+            sniperSpatial.setLocalTranslation(currentX-intensity, currentY, currentZ);
+        } else if (name.equals("Right")){
+            var currentX = sniperSpatial.getWorldTranslation().getX();
+            var currentY = sniperSpatial.getWorldTranslation().getY();
+            var currentZ = sniperSpatial.getWorldTranslation().getZ();
+            sniperSpatial.setLocalTranslation(currentX+intensity, currentY, currentZ);
+        } else if (name.equals("Forward")){
+            var currentX = sniperSpatial.getWorldTranslation().getX();
+            var currentY = sniperSpatial.getWorldTranslation().getY();
+            var currentZ = sniperSpatial.getWorldTranslation().getZ();
+            sniperSpatial.setLocalTranslation(currentX, currentY, currentZ-intensity);
+        } else if (name.equals("Backward")){
+            var currentX = sniperSpatial.getWorldTranslation().getX();
+            var currentY = sniperSpatial.getWorldTranslation().getY();
+            var currentZ = sniperSpatial.getWorldTranslation().getZ();
+            sniperSpatial.setLocalTranslation(currentX, currentY, currentZ+intensity);
+        }else if (name.equals("pick target")) {
             // Reset results list.
             CollisionResults results = new CollisionResults();
             // Convert screen click to 3d position
@@ -149,8 +143,6 @@ public class App extends SimpleApplication {
                 if (target.getName().equals("RedBox")) {
                     target.rotate(0, -intensity, 0);
                     target.scale(0.5F, 0.5F, 0.5F);
-                } else if (target.getName().equals("BlueBox")) {
-                    target.scale(0.5F, 0.5F, 0.5F);
                 }
             }
         } // else if ...
@@ -158,8 +150,9 @@ public class App extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-        var rocket = Optional.ofNullable(localValues.poll())
-                .orElseGet(() -> new Rocket(-4,5));
-        blueBoxGeom.setLocalTranslation(rocket.y, rocket.x, 4);
+        var currentX = sniperSpatial.getWorldTranslation().getX();
+        var currentY = sniperSpatial.getWorldTranslation().getY();
+        var currentZ = sniperSpatial.getWorldTranslation().getZ();
+        cam.setLocation(new Vector3f(currentX, currentY+8, currentZ+25F));
     }
 }
