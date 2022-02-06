@@ -4,8 +4,18 @@
 package wonderland.game.client;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
+import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.bullet.control.CharacterControl;
+import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.bullet.util.CollisionShapeFactory;
+import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
+import com.jme3.cursors.plugins.JmeCursor;
+import com.jme3.font.BitmapText;
 import com.jme3.input.KeyInput;
+import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
@@ -17,23 +27,24 @@ import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Sphere;
 import com.jme3.system.AppSettings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import reactor.core.publisher.Flux;
 
-import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import static com.jme3.input.MouseInput.BUTTON_LEFT;
 
 @Slf4j
 public class App extends SimpleApplication {
 
     private Spatial sniperSpatial;
+    private final Node shootables = new Node("Shootables");
+    private Geometry mark;
+    private Spatial sceneModel;
 
-    record Rocket(int x, int y){ }
     static ConcurrentLinkedQueue<Rocket> localValues = new ConcurrentLinkedQueue<>();
 
     private static Flux<Rocket> rockets = RSocketRequester.builder()
@@ -57,102 +68,186 @@ public class App extends SimpleApplication {
         app.setSettings(settings);
         app.start();
     }
+    private BulletAppState bulletAppState;
+    private RigidBodyControl landscape;
+    private CharacterControl player;
+    private final Vector3f toBeUpdatedWalkDirection = new Vector3f();
+    private boolean left = false, right = false, fowrad = false, backward = false;
+    private final Vector3f tempPlayerWalkDirection = new Vector3f();
+    private final Vector3f tempPlayerViewDirection = new Vector3f();
+    private final ActionListener actionListener = (binding, isPressed, tpf) -> {
+        if (binding.equals("Shoot") && !isPressed) {
+            CollisionResults results = new CollisionResults();
+            Vector2f click2d = inputManager.getCursorPosition().clone();
+            Vector3f click3d = cam.getWorldCoordinates(click2d, 0f).clone();
+            Vector3f dir = cam.getWorldCoordinates(click2d, 1f).subtractLocal(click3d).normalizeLocal();//todo what the hell
+            Ray ray = new Ray(click3d, dir);
+            shootables.collideWith(ray, results);
+            for (int i = 0; i < results.size(); i++) {
+                // For each hit, we know distance, impact point, name of geometry.
+                float dist = results.getCollision(i).getDistance();
+                Vector3f pt = results.getCollision(i).getContactPoint();
+                String hit = results.getCollision(i).getGeometry().getName();
+            }
+            if (results.size() > 0) {
+                CollisionResult closest = results.getClosestCollision();
+                mark.setLocalTranslation(closest.getContactPoint());
+                rootNode.attachChild(mark);
+            } else {
+                rootNode.detachChild(mark);
+            }
+        } else if (binding.equals("Jump")) {
+            if (isPressed) {
+                player.jump();
+            }
+        } else if (binding.equals("Left")) {
+            left = isPressed;
+            right = false;
+            fowrad = false;
+            backward = false;
+        } else if (binding.equals("Right")) {
+            left = false;
+            right = isPressed;
+            fowrad = false;
+            backward = false;
+        } else if (binding.equals("Forward")) {
+            left = false;
+            right = false;
+            fowrad = isPressed;
+            backward = false;
+        } else if (binding.equals("Backward")) {
+            left = false;
+            right = false;
+            fowrad = false;
+            backward = isPressed;
+        }
+    };
+    private final AnalogListener analogListener = (binding, intensity, tpf) -> {
+//        intensity = intensity * 6;
+//        if (binding.equals("Left")){
+//            var currentX = sniperSpatial.getWorldTranslation().getX();
+//            var currentY = sniperSpatial.getWorldTranslation().getY();
+//            var currentZ = sniperSpatial.getWorldTranslation().getZ();
+//            sniperSpatial.setLocalTranslation(currentX-intensity, currentY, currentZ);
+//        } else if (binding.equals("Right")){
+//            var currentX = sniperSpatial.getWorldTranslation().getX();
+//            var currentY = sniperSpatial.getWorldTranslation().getY();
+//            var currentZ = sniperSpatial.getWorldTranslation().getZ();
+//            sniperSpatial.setLocalTranslation(currentX+intensity, currentY, currentZ);
+//        } else if (binding.equals("Forward")){
+//            var currentX = sniperSpatial.getWorldTranslation().getX();
+//            var currentY = sniperSpatial.getWorldTranslation().getY();
+//            var currentZ = sniperSpatial.getWorldTranslation().getZ();
+//            sniperSpatial.setLocalTranslation(currentX, currentY, currentZ-intensity);
+//        } else if (binding.equals("Backward")){
+//            var currentX = sniperSpatial.getWorldTranslation().getX();
+//            var currentY = sniperSpatial.getWorldTranslation().getY();
+//            var currentZ = sniperSpatial.getWorldTranslation().getZ();
+//            sniperSpatial.setLocalTranslation(currentX, currentY, currentZ+intensity);
+//        }
+    };
 
     @Override
     public void simpleInitApp() {
+        bulletAppState = new BulletAppState();
+        stateManager.attach(bulletAppState);
+
         // You must add a light to make the model visible
         DirectionalLight sun = new DirectionalLight();
         sun.setDirection(new Vector3f(-0.1f, -0.7f, -1.0f));
         rootNode.addLight(sun);
 
-        Spatial city = assetManager.loadModel("Models/city/Center City Sci-Fi.obj");
-        rootNode.attachChild(city);
+        sceneModel = assetManager.loadModel("Models/city/Center City Sci-Fi.obj");
+        CollisionShape sceneShape = CollisionShapeFactory.createMeshShape(sceneModel);
+        landscape = new RigidBodyControl(sceneShape, 0);
+        sceneModel.addControl(landscape);
+        rootNode.attachChild(sceneModel);
+        bulletAppState.getPhysicsSpace().add(landscape);
+
+        rootNode.attachChild(shootables);
+        Spatial golem = assetManager.loadModel("Models/Oto/Oto.mesh.xml");
+        golem.setLocalTranslation(-100, 20, -345);
+        shootables.attachChild(golem);
 
 
         Spatial lara = assetManager.loadModel("Models/lara/lara_max_2010_OBJ.obj");
-        lara.setLocalTranslation(-200, 55, 5);
+        lara.setLocalTranslation(-200, 0, -345);
         lara.scale(0.004f);
-        rootNode.attachChild(lara);
+        shootables.attachChild(lara);
 
         sniperSpatial = assetManager.loadModel("Models/sniper/OBJ.obj");
-        sniperSpatial.setLocalTranslation(-100, 10, 3);
         sniperSpatial.scale(6f);
-        cam.setLocation(new Vector3f(-100, 14, 8));
+        var sniperRadius = sniperSpatial.getLocalScale().getX() / 2;
+        var sniperHeight = sniperSpatial.getLocalScale().getY();
+        CapsuleCollisionShape capsuleShape = new CapsuleCollisionShape(sniperRadius, sniperHeight, 1);
+        player = new CharacterControl(capsuleShape, 0.01f);
+        player.setJumpSpeed(30);
+        player.setFallSpeed(30);
+        player.setGravity(30f);
+        sniperSpatial.addControl(player);
+        player.setPhysicsLocation(new Vector3f(-150f, 0f, -100f));
         rootNode.attachChild(sniperSpatial);
+        bulletAppState.setDebugEnabled(true);
+        bulletAppState.getPhysicsSpace().add(player);
+
 
         flyCam.setEnabled(false);
+        initCrossHairs();
+        initMark();
+
         inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_LEFT));
         inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_RIGHT));
         inputManager.addMapping("Forward", new KeyTrigger(KeyInput.KEY_UP));
         inputManager.addMapping("Backward", new KeyTrigger(KeyInput.KEY_DOWN));
-        inputManager.addListener(analogListener, new String[]{"Left", "Right", "Forward", "Backward"});
-        inputManager.addMapping("pick target", new MouseButtonTrigger(BUTTON_LEFT));
-        inputManager.addListener(analogListener, new String[]{"pick target"});
+//        inputManager.addListener(analogListener, new String[]{"Left", "Right", "Forward", "Backward"});
+
+        inputManager.addMapping("Jump", new KeyTrigger(KeyInput.KEY_SPACE));
+        inputManager.addMapping("Shoot", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+        inputManager.addListener(actionListener, "Left", "Right", "Forward", "Backward", "Shoot", "Jump");
     }
 
-    private ActionListener actionListener = (name, keyPressed, tpf) -> {
-        System.out.println(name + ", is pressed: "+ keyPressed + " at "+ tpf);
-    };
+    protected void initMark() {
+        Sphere sphere = new Sphere(30, 30, 0.2f);
+        mark = new Geometry("BOOM!", sphere);
+        Material mark_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mark_mat.setColor("Color", ColorRGBA.Red);
+        mark.setMaterial(mark_mat);
+    }
 
-    private AnalogListener analogListener = (name, intensity, tpf) -> {
-        intensity = intensity * 3;
-        if (name.equals("Left")){
-            var currentX = sniperSpatial.getWorldTranslation().getX();
-            var currentY = sniperSpatial.getWorldTranslation().getY();
-            var currentZ = sniperSpatial.getWorldTranslation().getZ();
-            sniperSpatial.setLocalTranslation(currentX-intensity, currentY, currentZ);
-        } else if (name.equals("Right")){
-            var currentX = sniperSpatial.getWorldTranslation().getX();
-            var currentY = sniperSpatial.getWorldTranslation().getY();
-            var currentZ = sniperSpatial.getWorldTranslation().getZ();
-            sniperSpatial.setLocalTranslation(currentX+intensity, currentY, currentZ);
-        } else if (name.equals("Forward")){
-            var currentX = sniperSpatial.getWorldTranslation().getX();
-            var currentY = sniperSpatial.getWorldTranslation().getY();
-            var currentZ = sniperSpatial.getWorldTranslation().getZ();
-            sniperSpatial.setLocalTranslation(currentX, currentY, currentZ-intensity);
-        } else if (name.equals("Backward")){
-            var currentX = sniperSpatial.getWorldTranslation().getX();
-            var currentY = sniperSpatial.getWorldTranslation().getY();
-            var currentZ = sniperSpatial.getWorldTranslation().getZ();
-            sniperSpatial.setLocalTranslation(currentX, currentY, currentZ+intensity);
-        }else if (name.equals("pick target")) {
-            // Reset results list.
-            CollisionResults results = new CollisionResults();
-            // Convert screen click to 3d position
-            Vector2f click2d = inputManager.getCursorPosition();
-            Vector3f click3d = cam.getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 0f).clone();
-            Vector3f dir = cam.getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d).normalizeLocal();
-            // Aim the ray from the clicked spot forwards.
-            Ray ray = new Ray(click3d, dir);
-            // Collect intersections between ray and all nodes in results list.
-            rootNode.collideWith(ray, results);
-            // (Print the results so we see what is going on:)
-            for (int i = 0; i < results.size(); i++) {
-                // (For each "hit", we know distance, impact point, geometry.)
-                float dist = results.getCollision(i).getDistance();
-                Vector3f pt = results.getCollision(i).getContactPoint();
-                String target = results.getCollision(i).getGeometry().getName();
-                System.out.println("Selection #" + i + ": " + target + " at " + pt + ", " + dist + " WU away.");
-            }
-            // Use the results -- we rotate the selected geometry.
-            if (results.size() > 0) {
-                // The closest result is the target that the player picked:
-                Geometry target = results.getClosestCollision().getGeometry();
-                // Here comes the action:
-                if (target.getName().equals("RedBox")) {
-                    target.rotate(0, -intensity, 0);
-                    target.scale(0.5F, 0.5F, 0.5F);
-                }
-            }
-        } // else if ...
-    };
+    protected void initCrossHairs() {
+        inputManager.setCursorVisible(true);
+//        setDisplayStatView(false);
+        guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
+        BitmapText ch = new BitmapText(guiFont);
+        ch.setSize(guiFont.getCharSet().getRenderedSize() * 2);
+        ch.setText("+");
+        ch.setLocalTranslation( // center
+                settings.getWidth() / 2 - ch.getLineWidth() / 2,
+                settings.getHeight() / 2 + ch.getLineHeight() / 2, 0);
+        inputManager.setMouseCursor((JmeCursor) assetManager.loadAsset("Textures/Cursors/meme.cur"));
+    }
 
     @Override
     public void simpleUpdate(float tpf) {
-        var currentX = sniperSpatial.getWorldTranslation().getX();
-        var currentY = sniperSpatial.getWorldTranslation().getY();
-        var currentZ = sniperSpatial.getWorldTranslation().getZ();
-        cam.setLocation(new Vector3f(currentX, currentY+8, currentZ+25F));
+        tempPlayerWalkDirection.set(sniperSpatial.getWorldRotation().getRotationColumn(2)).multLocal(0.6f);
+        tempPlayerViewDirection.set(sniperSpatial.getWorldRotation().getRotationColumn(0)).multLocal(0.4f);
+        toBeUpdatedWalkDirection.set(0, 0, 0);
+        if (left) {
+            toBeUpdatedWalkDirection.addLocal(tempPlayerViewDirection.negate());
+        }
+        if (right) {
+            toBeUpdatedWalkDirection.addLocal(tempPlayerViewDirection);
+        }
+        if (fowrad) {
+            toBeUpdatedWalkDirection.addLocal(tempPlayerWalkDirection.negate());
+        }
+        if (backward) {
+            toBeUpdatedWalkDirection.addLocal(tempPlayerWalkDirection);
+        }
+        player.setWalkDirection(toBeUpdatedWalkDirection);
+        cam.setLocation(player.getPhysicsLocation().add(new Vector3f(-5, 10f, 70f)));
+    }
+
+    record Rocket(int x, int y) {
     }
 }
