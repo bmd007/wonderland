@@ -9,6 +9,7 @@ import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.bullet.objects.PhysicsCharacter;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
@@ -19,6 +20,7 @@ import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
@@ -35,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import reactor.core.publisher.Flux;
 
+import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Slf4j
@@ -57,7 +60,7 @@ public class App extends SimpleApplication {
             .filter(values -> values.length == 2)
             .map(values -> new Rocket(Integer.valueOf(values[0]), Integer.valueOf(values[1])))
             .doOnNext(localValues::add);
-//    app.enqueue(callable);
+    //    app.enqueue(callable);
 
 
     public static void main(String[] args) {
@@ -83,16 +86,13 @@ public class App extends SimpleApplication {
             Vector3f dir = cam.getWorldCoordinates(click2d, 1f).subtractLocal(click3d).normalizeLocal();//todo what the hell
             Ray ray = new Ray(click3d, dir);
             shootables.collideWith(ray, results);
-            for (int i = 0; i < results.size(); i++) {
-                // For each hit, we know distance, impact point, name of geometry.
-                float dist = results.getCollision(i).getDistance();
-                Vector3f pt = results.getCollision(i).getContactPoint();
-                String hit = results.getCollision(i).getGeometry().getName();
-            }
             if (results.size() > 0) {
                 CollisionResult closest = results.getClosestCollision();
                 mark.setLocalTranslation(closest.getContactPoint());
                 rootNode.attachChild(mark);
+                Optional.ofNullable(closest.getGeometry().getControl(CharacterControl.class)).ifPresent(PhysicsCharacter::jump);
+                Optional.ofNullable(closest.getGeometry().getControl(RigidBodyControl.class))
+                        .ifPresent(rigidBodyControl -> rigidBodyControl.applyCentralForce(new Vector3f(0, 3f, 4f)));
             } else {
                 rootNode.detachChild(mark);
             }
@@ -123,28 +123,10 @@ public class App extends SimpleApplication {
         }
     };
     private final AnalogListener analogListener = (binding, intensity, tpf) -> {
-//        intensity = intensity * 6;
-//        if (binding.equals("Left")){
-//            var currentX = sniperSpatial.getWorldTranslation().getX();
-//            var currentY = sniperSpatial.getWorldTranslation().getY();
-//            var currentZ = sniperSpatial.getWorldTranslation().getZ();
-//            sniperSpatial.setLocalTranslation(currentX-intensity, currentY, currentZ);
-//        } else if (binding.equals("Right")){
-//            var currentX = sniperSpatial.getWorldTranslation().getX();
-//            var currentY = sniperSpatial.getWorldTranslation().getY();
-//            var currentZ = sniperSpatial.getWorldTranslation().getZ();
-//            sniperSpatial.setLocalTranslation(currentX+intensity, currentY, currentZ);
-//        } else if (binding.equals("Forward")){
-//            var currentX = sniperSpatial.getWorldTranslation().getX();
-//            var currentY = sniperSpatial.getWorldTranslation().getY();
-//            var currentZ = sniperSpatial.getWorldTranslation().getZ();
-//            sniperSpatial.setLocalTranslation(currentX, currentY, currentZ-intensity);
-//        } else if (binding.equals("Backward")){
-//            var currentX = sniperSpatial.getWorldTranslation().getX();
-//            var currentY = sniperSpatial.getWorldTranslation().getY();
-//            var currentZ = sniperSpatial.getWorldTranslation().getZ();
-//            sniperSpatial.setLocalTranslation(currentX, currentY, currentZ+intensity);
-//        }
+        if (binding.equals("rotate")){
+//            sniperSpatial.rotate(0, intensity, 0);
+//            sniperSpatial.setLocalRotation(new Quaternion().fromAngleAxis(intensity, UNIT_Y));
+        }
     };
 
     @Override
@@ -165,22 +147,32 @@ public class App extends SimpleApplication {
         bulletAppState.getPhysicsSpace().add(landscape);
 
         rootNode.attachChild(shootables);
-        Spatial golem = assetManager.loadModel("Models/Oto/Oto.mesh.xml");
-        golem.setLocalTranslation(-100, 20, -345);
-        shootables.attachChild(golem);
 
+        Spatial enemy = assetManager.loadModel("Models/sniper/OBJ.obj");
+        enemy.scale(5f);
+        var enemyRadius = enemy.getWorldScale().getX()/2;
+        var enemyHeight = enemy.getWorldScale().getY()/2;
+        CapsuleCollisionShape enemyCapsuleShape = new CapsuleCollisionShape(enemyRadius, enemyHeight, 1);
+        CharacterControl enemyCharacterControl = new CharacterControl(enemyCapsuleShape, 0.02f);
+        enemyCharacterControl.setGravity(30f);
+        enemyCharacterControl.setJumpSpeed(30);
+        enemy.addControl(enemyCharacterControl);
+        enemyCharacterControl.setPhysicsLocation(new Vector3f(-150f, 6f, -100f));
+        bulletAppState.getPhysicsSpace().add(enemyCharacterControl);
+
+        shootables.attachChild(enemy);
 
         Spatial lara = assetManager.loadModel("Models/lara/lara_max_2010_OBJ.obj");
         lara.setLocalTranslation(-200, 0, -345);
         lara.scale(0.004f);
         shootables.attachChild(lara);
 
-        sniperSpatial = assetManager.loadModel("Models/sniper/OBJ.obj");
-        sniperSpatial.scale(6f);
+        sniperSpatial = assetManager.loadModel("Models/soldier/OBJ.obj");
+        sniperSpatial.scale(4f);
         var sniperRadius = sniperSpatial.getLocalScale().getX() / 2;
-        var sniperHeight = sniperSpatial.getLocalScale().getY();
+        var sniperHeight = sniperSpatial.getLocalScale().getY() / 2;
         CapsuleCollisionShape capsuleShape = new CapsuleCollisionShape(sniperRadius, sniperHeight, 1);
-        player = new CharacterControl(capsuleShape, 0.01f);
+        player = new CharacterControl(capsuleShape, 0.02f);
         player.setJumpSpeed(30);
         player.setFallSpeed(30);
         player.setGravity(30f);
@@ -195,15 +187,17 @@ public class App extends SimpleApplication {
         initCrossHairs();
         initMark();
 
-        inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_LEFT));
-        inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_RIGHT));
-        inputManager.addMapping("Forward", new KeyTrigger(KeyInput.KEY_UP));
-        inputManager.addMapping("Backward", new KeyTrigger(KeyInput.KEY_DOWN));
-//        inputManager.addListener(analogListener, new String[]{"Left", "Right", "Forward", "Backward"});
-
+        inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
+        inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
+        inputManager.addMapping("Forward", new KeyTrigger(KeyInput.KEY_W));
+        inputManager.addMapping("Backward", new KeyTrigger(KeyInput.KEY_S));
         inputManager.addMapping("Jump", new KeyTrigger(KeyInput.KEY_SPACE));
         inputManager.addMapping("Shoot", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
         inputManager.addListener(actionListener, "Left", "Right", "Forward", "Backward", "Shoot", "Jump");
+
+        inputManager.addMapping("rotate", new MouseAxisTrigger(MouseInput.AXIS_Y, false)
+               , new KeyTrigger(KeyInput.KEY_R) );
+        inputManager.addListener(analogListener, new String[]{"rotate"});
     }
 
     protected void initMark() {
@@ -245,7 +239,7 @@ public class App extends SimpleApplication {
             toBeUpdatedWalkDirection.addLocal(tempPlayerWalkDirection);
         }
         player.setWalkDirection(toBeUpdatedWalkDirection);
-        cam.setLocation(player.getPhysicsLocation().add(new Vector3f(-5, 10f, 70f)));
+        cam.setLocation(player.getPhysicsLocation().add(new Vector3f(-5, 7f, 30f)));
     }
 
     record Rocket(int x, int y) {
