@@ -120,7 +120,14 @@ public class TestFinderApplication {
                 .build();
 
         Flux.interval(Duration.ofHours(1))
-                .flatMapSequential(signal -> findExamsInTheFollowingWeek())
+                .flatMapSequential(ignore -> loadExams())
+                .filter(AvailableExamsResponse::isOk)
+                .map(AvailableExamsResponse::data)
+                .flatMapIterable(Data::bundles)
+                .flatMapIterable(Bundle::occasions)
+                .filter(Occasion::isAroundUppsala)
+                .filter(exam -> exam.date().isAfter(LocalDate.now()))
+                .filter(exam -> exam.date().isBefore(LocalDate.now().plusDays(7)))
                 .doOnNext(exam -> {
                     if (exam.date().isEqual(LocalDate.parse("2022-02-16"))){
                         playSound();
@@ -134,18 +141,6 @@ public class TestFinderApplication {
                 ))
                 .subscribe();
     }
-
-    private Flux<Occasion> findExamsInTheFollowingWeek() {
-        return loadExams()
-                .filter(AvailableExamsResponse::isOk)
-                .map(AvailableExamsResponse::data)
-                .flatMapIterable(Data::bundles)
-                .flatMapIterable(Bundle::occasions)
-                .filter(Occasion::isAroundUppsala)
-                .filter(exam -> exam.date().isAfter(LocalDate.now()))
-                .filter(exam -> exam.date().isBefore(LocalDate.now().plusDays(7)));
-    }
-
 
     void playSound() {
         try {
