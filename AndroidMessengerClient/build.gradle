@@ -2,7 +2,7 @@
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.1.1'
@@ -14,7 +14,7 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 
@@ -23,5 +23,4 @@ task clean(type: Delete) {
 }
 
 dependencies {
-    implementation 'org.webjars.bower:github-com-happyworm-jPlayer:2.9.2'
 }

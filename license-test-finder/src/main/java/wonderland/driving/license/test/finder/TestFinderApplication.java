@@ -120,7 +120,8 @@ public class TestFinderApplication {
                 .build();
 
         notifyIfFoundExamOnFeb16th()
-                .map(Occasion::summary);
+                .map(Occasion::summary)
+                .subscribe(System.out::println);
 
 
         Flux.interval(Duration.ofMinutes(30))
