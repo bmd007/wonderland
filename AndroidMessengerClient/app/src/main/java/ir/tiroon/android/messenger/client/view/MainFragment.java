@@ -94,7 +94,7 @@ public class MainFragment extends Fragment {
             simpleWebSocketConnectButton.setClickable(false);
         });
 
-        mMainActivityViewModel.getEchoMessage().observe(this, simpleWebSocketConnectButton::setText);
+        mMainActivityViewModel.getEchoMessage().observe(this.getViewLifecycleOwner(), simpleWebSocketConnectButton::setText);
     }
 
 }
