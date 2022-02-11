@@ -21,3 +21,7 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+dependencies {
+    implementation 'org.webjars.bower:github-com-happyworm-jPlayer:2.9.2'
+}

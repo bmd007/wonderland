@@ -45,7 +45,8 @@ dependencies {
 
 	implementation 'org.apache.kafka:kafka-streams'
 	implementation 'org.springframework.kafka:spring-kafka'
-	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    implementation 'org.webjars.bower:github-com-happyworm-jPlayer:2.9.2'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	implementation 'com.google.guava:guava:31.0.1-jre'
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {

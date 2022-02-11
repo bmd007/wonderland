@@ -1,6 +1,7 @@
 package wonderland.driving.license.test.finder;
 
-import com.jayway.jsonpath.JsonPath;
+import javazoom.jl.decoder.JavaLayerException;
+import javazoom.jl.player.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -19,13 +21,14 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @SpringBootApplication
@@ -92,41 +95,53 @@ public class TestFinderApplication {
                 .codecs(codec -> codec.defaultCodecs().maxInMemorySize(2024 * 2024))
                 .build();
 
-        findATest()
+        playSound();
+
+        Flux.interval(Duration.ofHours(1))
+                .flatMapSequential(signal -> findExamsInTheFollowingWeek())
+                .doOnNext(exam -> System.out.println(
+                        exam.duration().startsAt().getDayOfWeek().name()
+                                + "     " + exam.duration().startsAt().getMonth().name() + "  " + exam.duration().startsAt().getDayOfMonth()
+                                + "  at " + exam.duration().startsAt().toLocalTime()
+                                + "  in " + exam.locationName()
+                ))
+                .subscribe();
+    }
+
+    private Flux<Occasion> findExamsInTheFollowingWeek() {
+        return loadExams()
                 .filter(AvailableExamsResponse::isOk)
                 .map(AvailableExamsResponse::data)
                 .flatMapIterable(Data::bundles)
                 .flatMapIterable(Bundle::occasions)
                 .filter(Occasion::isAroundUppsala)
                 .filter(exam -> exam.date().isAfter(LocalDate.now()))
-                .filter(exam -> exam.date().isBefore(LocalDate.now().plusDays(7)))
-                .doOnNext(a -> System.out.println(
-                          a.duration().startsAt().getDayOfWeek().name()
-                        + "     " + a.duration().startsAt().getMonth().name() + "  " + a.duration().startsAt().getDayOfMonth()
-                        + "  at " + a.duration().startsAt().toLocalTime()
-                        + "  in " + a.locationName()
-                ))
-                .subscribe();
+                .filter(exam -> exam.date().isBefore(LocalDate.now().plusDays(7)));
     }
 
 
     void playSound() {
         try {
-            File f = new File("classpath:mmm-2-tone-sexy.mp3");
-            AudioInputStream audioIn =  AudioSystem.getAudioInputStream(f.toURI().toURL());
-            Clip clip = AudioSystem.getClip();
-            clip.open(audioIn);
-            clip.start();
-        } catch (UnsupportedAudioFileException e) {
-            e.printStackTrace();
+            File f = new ClassPathResource("mmm-2-tone-sexy.mp3").getFile();
+            FileInputStream fileInputStream = new FileInputStream(f);
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
+            Player jlPlayer = new Player(bufferedInputStream);
+            new Thread(() -> {
+                try {
+                    jlPlayer.play();
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }).start();
+
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (LineUnavailableException e) {
+        }catch (JavaLayerException e) {
             e.printStackTrace();
         }
     }
 
-    private Mono<AvailableExamsResponse> findATest() {
+    private Mono<AvailableExamsResponse> loadExams() {
         return testFinder.post()
                 .uri("/Boka/occasion-bundles")
                 .contentType(MediaType.APPLICATION_JSON)
