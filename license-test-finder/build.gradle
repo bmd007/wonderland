@@ -1,0 +1,83 @@
+plugins {
+    id 'org.springframework.boot' version '2.6.3'
+    id "io.spring.dependency-management" version "1.0.11.RELEASE"
+    id 'java'
+    id 'idea'
+    id "jacoco" //code coverage
+}
+
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+group = 'wonderlan'
+
+ext.buildNumber = {
+    def buildNumber = System.getenv('VERSION')
+    if (buildNumber == null || buildNumber.allWhitespace) {
+        buildNumber = 'beta'
+    }
+    return buildNumber
+}
+
+project.version = buildNumber()
+
+sourceCompatibility = 17
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+ext {
+    set('springCloudVersion', "2021.0.0")
+}
+
+dependencies {
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    implementation 'org.springframework.cloud:spring-cloud-starter'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+    implementation "org.springframework.cloud:spring-cloud-loadbalancer"
+    implementation "org.springframework.cloud:spring-cloud-starter-consul-config"
+    implementation "org.springframework.cloud:spring-cloud-starter-consul-discovery"
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'com.jayway.jsonpath:json-path'
+    implementation 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation 'org.mockito:mockito-junit-jupiter'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    implementation 'com.github.javafaker:javafaker:1.0.2'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+test {
+    useJUnitPlatform {}
+}
+jacocoTestReport {
+    reports {
+        xml.required = false
+        html.required = true
+    }
+}
+
+tasks.named('wrapper') {
+    distributionType = Wrapper.DistributionType.ALL
+}
+
+bootBuildImage {
+//	imageName = "bmd007/${project.name}:${project.version}"
+    imageName = "bmd007/${project.name}"
+    environment = ["BP_JVM_VERSION": "17"]
+}

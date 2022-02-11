@@ -1,0 +1,51 @@
+server.port: 9528
+
+management:
+  server.port: 9529
+  health:
+    defaults.enabled: true
+    diskspace.enabled: false
+  endpoints:
+    web:
+      base-path: /
+      exposure.include: "*"
+  endpoint:
+    prometheus:
+      enabled: true
+    health:
+      enabled: true
+      show-details: never
+    auditevents.enabled: false
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    enable.jvm: true
+    enable.jvm.gc.pause: true
+    enable.jvm.memory: true
+    enable.jvm.threads: true
+    enable.process: true
+    enable.process.files: true
+    enable.http: true
+    enable.http.server.requests: true
+    enable.logback: true
+    enable.system: true
+    export:
+      prometheus:
+        enabled: true
+
+spring:
+  application:
+    name: license-test-finder
+  config:
+    import: optional:consul:localhost:8500
+  cloud:
+    consul:
+      discovery:
+        prefer-ip-address: true
+        health-check-path: /health
+
+---
+spring:
+  config:
+    activate:
+      on-profile: no-consul

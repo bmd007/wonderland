@@ -1,0 +1,58 @@
+version: "3.7"
+services:
+
+  consul:
+    container_name: consul
+    hostname: consul
+    image: consul
+    ports:
+      - "8500:8500"
+      - "8300:8300"
+    volumes:
+      - ./metrics/consul.json:/consul/config/consul.json
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    hostname: zookeeper
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: localhost
+      #      KAFKA_CREATE_TOPICS: >-
+      #        mover-position-updates:1:1,
+      #        event_log:1:1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  rabbitmq:
+    container_name: rabbitmq
+    hostname: rabbitmq
+    build:
+      context: .
+      dockerfile: RabbitMQwithStompDockerfile
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "4369:4369"
+      - "25672:25672"
+      - "61613:61613"
+      - "61614:61614"
+    environment:
+      SERVICE_IGNORE: any_value
+
+  registrator:
+    container_name: registrator
+    image: gliderlabs/registrator
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    command: "-internal consul://consul:8500"
+    depends_on:
+      - consul
