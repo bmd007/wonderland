@@ -49,7 +49,7 @@ public class TestFinderApplication {
     public static final String Find_English_Theory_Exams_Request_Body = """
               {
               "bookingSession": {
-                "socialSecurityNumber": "199508027555",
+                "socialSecurityNumber": "199508020000",
                 "licenceId": 5,
                 "bookingModeId": 0,
                 "ignoreDebt": false,
@@ -78,7 +78,7 @@ public class TestFinderApplication {
     public static final String Find_MANUAL_PRACRICAL_Exams_Request_Body = """
                 {
                   "bookingSession": {
-                    "socialSecurityNumber": "199508027555",
+                    "socialSecurityNumber": "199508020000",
                     "licenceId": 5,
                     "bookingModeId": 0,
                     "ignoreDebt": false,
