@@ -16,11 +16,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -51,7 +46,7 @@ public class TestFinderApplication {
         SpringApplication.run(TestFinderApplication.class, args);
     }
 
-    String testFinderRequestBody = """
+    public static final String Find_English_Theory_Exams_Request_Body = """
               {
               "bookingSession": {
                 "socialSecurityNumber": "199508027555",
@@ -78,6 +73,35 @@ public class TestFinderApplication {
                 "examinationTypeId": 3
               }
             }
+            """;
+
+    public static final String Find_MANUAL_PRACRICAL_Exams_Request_Body = """
+                {
+                  "bookingSession": {
+                    "socialSecurityNumber": "199508027555",
+                    "licenceId": 5,
+                    "bookingModeId": 0,
+                    "ignoreDebt": false,
+                    "ignoreBookingHindrance": false,
+                    "examinationTypeId": 0,
+                    "excludeExaminationCategories": [],
+                    "rescheduleTypeId": 0,
+                    "paymentIsActive": false,
+                    "paymentReference": null,
+                    "paymentUrl": null,
+                    "searchedMonths": 0
+                  },
+                  "occasionBundleQuery": {
+                    "startDate": "1970-01-01T00:00:00.000Z",
+                    "searchedMonths": 0,
+                    "locationId": 1000071,
+                    "nearbyLocationIds": [],
+                    "vehicleTypeId": 2,
+                    "tachographTypeId": 1,
+                    "occasionChoiceId": 1,
+                    "examinationTypeId": 12
+                  }
+                }
             """;
 
     @EventListener(ApplicationReadyEvent.class)
@@ -145,7 +169,7 @@ public class TestFinderApplication {
         return testFinder.post()
                 .uri("/Boka/occasion-bundles")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(testFinderRequestBody)
+                .bodyValue(Find_English_Theory_Exams_Request_Body)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(AvailableExamsResponse.class);

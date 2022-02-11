@@ -52,11 +52,78 @@ Content-Type: application/json
     "startDate": "1970-01-01T00:00:00.000Z",
     "searchedMonths": 0,
     "locationId": 1000140,
-    "nearbyLocationIds": [1000071],
+    "nearbyLocationIds": [
+      1000071
+    ],
     "languageId": 4,
     "tachographTypeId": 1,
     "occasionChoiceId": 1,
     "examinationTypeId": 3
+  }
+}
+
+###
+
+
+# curl 'https://fp.trafikverket.se/Boka/occasion-bundles'
+#  -H 'Connection: keep-alive'
+#  -H 'sec-ch-ua: " Not A;Brand";v="99", "Chromium";v="98", "Google Chrome";v="98"'
+#  -H 'Accept: application/json, text/javascript, */*; q=0.01'
+#  -H 'Content-Type: application/json'
+#  -H 'X-Requested-With: XMLHttpRequest'
+#  -H 'sec-ch-ua-mobile: ?0'
+#  -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36'
+#  -H 'sec-ch-ua-platform: "macOS"'
+#  -H 'Origin: https://fp.trafikverket.se'
+#  -H 'Sec-Fetch-Site: same-origin'
+#  -H 'Sec-Fetch-Mode: cors'
+#  -H 'Sec-Fetch-Dest: empty'
+#  -H 'Referer: https://fp.trafikverket.se/Boka/'
+#  -H 'Accept-Language: en-US,en;q=0.9,fa;q=0.8'
+#  -H 'Cookie: ASP.NET_SessionId=13zpquwq5ghshkzjpxb4o1d3; _pk_id.4.825a=a54585a99c54fd51.1644497025.; language=en_GB; LoginValid=2022-02-11 14:26; FpsExternalIdentity=B81A49CBF6DFF319A8B703FDDC6EBCF6B48AB1B054B20A8326D2269B147C40A54F5D3071073FEB93187DFEA2B801782F1916761572F9BD6DEF7C6EC7E644E4E1B858C1AB3D247069CE806B628C7B7EA0D398EE497B59488F71AA651ECF9A6716B2DF95E6FEC193F1396E7E940D0E041FC3FDFFD87283484D3C509F80AC503021F7D892731205A95E3C016B84E491EAF139A402CA79C2F02FA1F70374DECFBCADC99A873948EA6B4F36800C98BACBEC21C8230FAA52E168BF4C3B3530327277A09DC8EEDAF535A75F24CF112AECF0977B23313455C93FC219C251C6ED6AEE2D31B872E7BA75D5621699455AA7EC91B5D039832994983707E8E87DA55B269CF5E456AF94AAE433D6802999893190170DEC185215A4426CA752110B8E1AA4121275DE1532248B0150517765114AEBCA6956F8AB8368D442A3051027F8308DD5B13DEC59F28D22DC42EBCE876725EA57151AE3F0E78BDDBBD71260CF3A3DD4BF28C4E201691FF1AE3454BBDF29A4C1B00C80C2BC890379CE6CF76297E3DC3E17BAF31F77FBCBA44A3EF4EED514E6BC2F9B82C1CFC593D682BF97EA9D48D7C89F54F8CF990F40578EAEF348F9D31427FAA5F9A288951E6C20B2241EA050147B0FD841; forarprov-ext=ffffffff0914194145525d5f4f58455e445a4a423660; _pk_ref..825a=%5B%22%22%2C%22%22%2C1644584177%2C%22https%3A%2F%2Fwww.trafikverket.se%2F%22%5D; _pk_ses..825a=1; _pk_ref.4.825a=%5B%22%22%2C%22%22%2C1644584177%2C%22https%3A%2F%2Fwww.trafikverket.se%2F%22%5D; _pk_ses.4.825a=1'
+#  --data-raw '{"bookingSession":{"socialSecurityNumber":"199508027555","licenceId":5,"bookingModeId":0,"ignoreDebt":false,"ignoreBookingHindrance":false,"examinationTypeId":0,"excludeExaminationCategories":[],"rescheduleTypeId":0,"paymentIsActive":false,"paymentReference":null,"paymentUrl":null,"searchedMonths":0},"occasionBundleQuery":{"startDate":"1970-01-01T00:00:00.000Z","searchedMonths":0,"locationId":1000071,"nearbyLocationIds":[],"vehicleTypeId":2,"tachographTypeId":1,"occasionChoiceId":1,"examinationTypeId":12}}'
+#  --compressed
+POST https://fp.trafikverket.se/Boka/occasion-bundles
+Connection: keep-alive
+sec-ch-ua: " Not A;Brand";v="99", "Chromium";v="98", "Google Chrome";v="98"
+Accept: application/json, text/javascript, */*; q=0.01
+X-Requested-With: XMLHttpRequest
+sec-ch-ua-mobile: ?0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36
+sec-ch-ua-platform: "macOS"
+Origin: https://fp.trafikverket.se
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: cors
+Sec-Fetch-Dest: empty
+Referer: https://fp.trafikverket.se/Boka/
+Accept-Language: en-US,en;q=0.9,fa;q=0.8
+Cookie: ASP.NET_SessionId=13zpquwq5ghshkzjpxb4o1d3; _pk_id.4.825a=a54585a99c54fd51.1644497025.; language=en_GB; LoginValid=2022-02-11 14:26; FpsExternalIdentity=B81A49CBF6DFF319A8B703FDDC6EBCF6B48AB1B054B20A8326D2269B147C40A54F5D3071073FEB93187DFEA2B801782F1916761572F9BD6DEF7C6EC7E644E4E1B858C1AB3D247069CE806B628C7B7EA0D398EE497B59488F71AA651ECF9A6716B2DF95E6FEC193F1396E7E940D0E041FC3FDFFD87283484D3C509F80AC503021F7D892731205A95E3C016B84E491EAF139A402CA79C2F02FA1F70374DECFBCADC99A873948EA6B4F36800C98BACBEC21C8230FAA52E168BF4C3B3530327277A09DC8EEDAF535A75F24CF112AECF0977B23313455C93FC219C251C6ED6AEE2D31B872E7BA75D5621699455AA7EC91B5D039832994983707E8E87DA55B269CF5E456AF94AAE433D6802999893190170DEC185215A4426CA752110B8E1AA4121275DE1532248B0150517765114AEBCA6956F8AB8368D442A3051027F8308DD5B13DEC59F28D22DC42EBCE876725EA57151AE3F0E78BDDBBD71260CF3A3DD4BF28C4E201691FF1AE3454BBDF29A4C1B00C80C2BC890379CE6CF76297E3DC3E17BAF31F77FBCBA44A3EF4EED514E6BC2F9B82C1CFC593D682BF97EA9D48D7C89F54F8CF990F40578EAEF348F9D31427FAA5F9A288951E6C20B2241EA050147B0FD841; forarprov-ext=ffffffff0914194145525d5f4f58455e445a4a423660; _pk_ref..825a=%5B%22%22%2C%22%22%2C1644584177%2C%22https%3A%2F%2Fwww.trafikverket.se%2F%22%5D; _pk_ses..825a=1; _pk_ref.4.825a=%5B%22%22%2C%22%22%2C1644584177%2C%22https%3A%2F%2Fwww.trafikverket.se%2F%22%5D; _pk_ses.4.825a=1
+Content-Type: application/json
+
+{
+  "bookingSession": {
+    "socialSecurityNumber": "199508027555",
+    "licenceId": 5,
+    "bookingModeId": 0,
+    "ignoreDebt": false,
+    "ignoreBookingHindrance": false,
+    "examinationTypeId": 0,
+    "excludeExaminationCategories": [],
+    "rescheduleTypeId": 0,
+    "paymentIsActive": false,
+    "paymentReference": null,
+    "paymentUrl": null,
+    "searchedMonths": 0
+  },
+  "occasionBundleQuery": {
+    "startDate": "1970-01-01T00:00:00.000Z",
+    "searchedMonths": 0,
+    "locationId": 1000071,
+    "nearbyLocationIds": [],
+    "vehicleTypeId": 2,
+    "tachographTypeId": 1,
+    "occasionChoiceId": 1,
+    "examinationTypeId": 12
   }
 }
 
