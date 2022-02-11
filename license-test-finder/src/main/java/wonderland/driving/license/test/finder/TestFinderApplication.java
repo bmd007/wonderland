@@ -119,8 +119,28 @@ public class TestFinderApplication {
                 .codecs(codec -> codec.defaultCodecs().maxInMemorySize(2024 * 2024))
                 .build();
 
-        Flux.interval(Duration.ofHours(1))
-                .flatMapSequential(ignore -> loadExams())
+        notifyIfFoundExamOnFeb16th()
+                .subscribe(exam -> System.out.println(
+                            exam.duration().startsAt().getDayOfWeek().name()
+                            + "     " + exam.duration().startsAt().getMonth().name() + "  " + exam.duration().startsAt().getDayOfMonth()
+                            + "  at " + exam.duration().startsAt().toLocalTime()
+                            + "  in " + exam.locationName()
+                        )
+                );
+
+        Flux.interval(Duration.ofMinutes(30))
+                .flatMapSequential(ignore -> notifyIfFoundExamOnFeb16th())
+                .doOnNext(exam -> System.out.println(
+                        exam.duration().startsAt().getDayOfWeek().name()
+                                + "     " + exam.duration().startsAt().getMonth().name() + "  " + exam.duration().startsAt().getDayOfMonth()
+                                + "  at " + exam.duration().startsAt().toLocalTime()
+                                + "  in " + exam.locationName()
+                ))
+                .subscribe();
+    }
+
+    private Flux<Occasion> notifyIfFoundExamOnFeb16th() {
+        return loadExams()
                 .filter(AvailableExamsResponse::isOk)
                 .map(AvailableExamsResponse::data)
                 .flatMapIterable(Data::bundles)
@@ -132,14 +152,7 @@ public class TestFinderApplication {
                     if (exam.date().isEqual(LocalDate.parse("2022-02-16"))){
                         playSound();
                     }
-                })
-                .doOnNext(exam -> System.out.println(
-                        exam.duration().startsAt().getDayOfWeek().name()
-                                + "     " + exam.duration().startsAt().getMonth().name() + "  " + exam.duration().startsAt().getDayOfMonth()
-                                + "  at " + exam.duration().startsAt().toLocalTime()
-                                + "  in " + exam.locationName()
-                ))
-                .subscribe();
+                });
     }
 
     void playSound() {
