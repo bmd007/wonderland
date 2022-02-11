@@ -121,13 +121,12 @@ public class TestFinderApplication {
 
         notifyIfFoundExamOnFeb16th()
                 .map(Occasion::summary)
-                .subscribe(System.out::println);
+
 
         Flux.interval(Duration.ofMinutes(30))
                 .flatMapSequential(ignore -> notifyIfFoundExamOnFeb16th())
                 .map(Occasion::summary)
-                .doOnNext(System.out::println)
-                .subscribe();
+                .subscribe(System.out::println);
     }
 
     private Flux<Occasion> notifyIfFoundExamOnFeb16th() {
