@@ -113,14 +113,14 @@ public class TestFinderApplication {
         messagePublisherClient = loadBalancedWebClientBuilder
                 .baseUrl("http://message-publisher")
                 .build();
-//        people.stream().forEach(this::requestQueueFor);
+        people.stream().forEach(this::requestQueueFor);
         testFinder = notLoadBalancedWebClientBuilder
                 .baseUrl("https://fp.trafikverket.se")
                 .codecs(codec -> codec.defaultCodecs().maxInMemorySize(2024 * 2024))
                 .build();
 
         notifyIfFoundExamOnFeb16th()
-                .map(Occasion::summary)
+                .map(Occasion::summary);
 
 
         Flux.interval(Duration.ofMinutes(30))
@@ -141,6 +141,8 @@ public class TestFinderApplication {
                 .doOnNext(exam -> {
                     if (exam.date().isEqual(LocalDate.parse("2022-02-16"))){
                         playSound();
+                        var message = "new suitable exam found on " + exam.summary();
+                        sendMessage("Mahroo", "Mahdi", message);
                     }
                 });
     }
