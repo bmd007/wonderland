@@ -14,9 +14,18 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @SpringBootApplication
@@ -88,9 +97,33 @@ public class TestFinderApplication {
                 .map(AvailableExamsResponse::data)
                 .flatMapIterable(Data::bundles)
                 .flatMapIterable(Bundle::occasions)
-                .log()
-                .doOnNext(exam -> System.out.println(exam.isInStockholmCity()))
+                .filter(Occasion::isAroundUppsala)
+                .filter(exam -> exam.date().isAfter(LocalDate.now()))
+                .filter(exam -> exam.date().isBefore(LocalDate.now().plusDays(7)))
+                .doOnNext(a -> System.out.println(
+                          a.duration().startsAt().getDayOfWeek().name()
+                        + "     " + a.duration().startsAt().getMonth().name() + "  " + a.duration().startsAt().getDayOfMonth()
+                        + "  at " + a.duration().startsAt().toLocalTime()
+                        + "  in " + a.locationName()
+                ))
                 .subscribe();
+    }
+
+
+    void playSound() {
+        try {
+            File f = new File("classpath:mmm-2-tone-sexy.mp3");
+            AudioInputStream audioIn =  AudioSystem.getAudioInputStream(f.toURI().toURL());
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioIn);
+            clip.start();
+        } catch (UnsupportedAudioFileException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (LineUnavailableException e) {
+            e.printStackTrace();
+        }
     }
 
     private Mono<AvailableExamsResponse> findATest() {
