@@ -41,17 +41,24 @@ record Occasion (
         String placeAddress,
         String placeCoordinate) {
 
-    boolean isInStockholmCity(){
+    public boolean isInStockholmCity(){
         return locationId == 1000140;
     }
 
-    boolean isInUppsala(){
+    public boolean isInUppsala(){
         return locationId == 1000071;
     }
 
-    boolean isAroundUppsala(){
+   public boolean isAroundUppsala(){
         return isInUppsala() || isInStockholmCity();
     }
+    
+   public String summary(){
+       return this.duration().startsAt().getDayOfWeek().name()
+               + "     " + this.duration().startsAt().getMonth().name() + "  " + this.duration().startsAt().getDayOfMonth()
+               + "  at " + this.duration().startsAt().toLocalTime()
+               + "  in " + this.locationName();
+   } 
 }
 
 record Duration(String start, String end){

@@ -120,22 +120,13 @@ public class TestFinderApplication {
                 .build();
 
         notifyIfFoundExamOnFeb16th()
-                .subscribe(exam -> System.out.println(
-                            exam.duration().startsAt().getDayOfWeek().name()
-                            + "     " + exam.duration().startsAt().getMonth().name() + "  " + exam.duration().startsAt().getDayOfMonth()
-                            + "  at " + exam.duration().startsAt().toLocalTime()
-                            + "  in " + exam.locationName()
-                        )
-                );
+                .map(Occasion::summary)
+                .subscribe(System.out::println);
 
         Flux.interval(Duration.ofMinutes(30))
                 .flatMapSequential(ignore -> notifyIfFoundExamOnFeb16th())
-                .doOnNext(exam -> System.out.println(
-                        exam.duration().startsAt().getDayOfWeek().name()
-                                + "     " + exam.duration().startsAt().getMonth().name() + "  " + exam.duration().startsAt().getDayOfMonth()
-                                + "  at " + exam.duration().startsAt().toLocalTime()
-                                + "  in " + exam.locationName()
-                ))
+                .map(Occasion::summary)
+                .doOnNext(System.out::println)
                 .subscribe();
     }
 
