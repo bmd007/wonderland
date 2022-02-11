@@ -119,10 +119,13 @@ public class TestFinderApplication {
                 .codecs(codec -> codec.defaultCodecs().maxInMemorySize(2024 * 2024))
                 .build();
 
-        playSound();
-
         Flux.interval(Duration.ofHours(1))
                 .flatMapSequential(signal -> findExamsInTheFollowingWeek())
+                .doOnNext(exam -> {
+                    if (exam.date().isEqual(LocalDate.parse("2022-02-16"))){
+                        playSound();
+                    }
+                })
                 .doOnNext(exam -> System.out.println(
                         exam.duration().startsAt().getDayOfWeek().name()
                                 + "     " + exam.duration().startsAt().getMonth().name() + "  " + exam.duration().startsAt().getDayOfMonth()
