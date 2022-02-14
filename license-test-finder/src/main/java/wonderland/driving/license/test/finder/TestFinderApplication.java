@@ -40,7 +40,7 @@ public class TestFinderApplication {
     @Qualifier("notLoadBalancedClient")
     WebClient.Builder notLoadBalancedWebClientBuilder;
 
-    List<String> people = List.of("Mahdi", "Mahroo", "mm7amini@gmail.com");
+    List<String> people = List.of("Mahdi", "mm7amini@gmail.com");
 
     public static void main(String[] args) {
         SpringApplication.run(TestFinderApplication.class, args);
@@ -143,7 +143,7 @@ public class TestFinderApplication {
                     if (exam.date().isEqual(LocalDate.parse("2022-02-16"))){
                         playSound();
                         var message = "new suitable exam found on " + exam.summary();
-                        sendMessage("Mahroo", "mm7amini@gmail.com", message);
+                        sendMessage("Mahdi", "mm7amini@gmail.com", message);
                     }
                 });
     }
