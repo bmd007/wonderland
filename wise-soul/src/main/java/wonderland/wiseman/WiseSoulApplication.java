@@ -34,7 +34,7 @@ public class WiseSoulApplication {
     @Qualifier("notLoadBalancedClient")
     WebClient.Builder notLoadBalancedWebClientBuilder;
 
-    List<String> people = List.of("Mahdi", "Mahroo", "mm7amini@gmail.com");
+    List<String> people = List.of("Mahdi", "mm7amini@gmail.com");
 
     public static void main(String[] args) {
         SpringApplication.run(WiseSoulApplication.class, args);
