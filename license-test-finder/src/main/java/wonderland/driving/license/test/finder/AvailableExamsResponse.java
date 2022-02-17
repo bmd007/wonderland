@@ -3,7 +3,6 @@ package wonderland.driving.license.test.finder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 
 public record AvailableExamsResponse(Data data, int status, String url){

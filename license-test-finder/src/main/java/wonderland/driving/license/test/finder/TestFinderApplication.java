@@ -31,6 +31,7 @@ public class TestFinderApplication {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestFinderApplication.class);
     private WebClient messagePublisherClient;
     private WebClient testFinder;
+    private WebClient telegramBotClient;
 
     @Autowired
     @Qualifier("loadBalancedClient")
@@ -119,6 +120,11 @@ public class TestFinderApplication {
                 .codecs(codec -> codec.defaultCodecs().maxInMemorySize(2024 * 2024))
                 .build();
 
+        telegramBotClient = notLoadBalancedWebClientBuilder
+                .baseUrl("https://api.telegram.org/bot5291539544:AAHTAjCZaLYZG4Oc3jMr_Ct5xQnKY77W5xE")
+                .codecs(codec -> codec.defaultCodecs().maxInMemorySize(2024 * 2024))
+                .build();
+
         notifyIfFoundExamOnFeb16th()
                 .map(Occasion::summary)
                 .subscribe(System.out::println);
@@ -132,25 +138,44 @@ public class TestFinderApplication {
 
     private Flux<Occasion> notifyIfFoundExamOnFeb16th() {
         return loadExams()
+                .doOnNext(ignore -> System.out.println("--------------"))
                 .filter(AvailableExamsResponse::isOk)
                 .map(AvailableExamsResponse::data)
                 .flatMapIterable(Data::bundles)
                 .flatMapIterable(Bundle::occasions)
                 .filter(Occasion::isAroundUppsala)
                 .filter(exam -> exam.date().isAfter(LocalDate.now()))
-                .filter(exam -> exam.date().isBefore(LocalDate.now().plusDays(7)))
+                .filter(exam -> exam.date().isBefore(LocalDate.now().plusMonths(6)))
                 .doOnNext(exam -> {
-                    if (exam.date().isEqual(LocalDate.parse("2022-02-16"))){
+                    if (exam.date().isAfter(LocalDate.parse("2022-03-01"))
+                    && exam.date().isBefore(LocalDate.parse("2022-06-30"))){
                         playSound();
                         var message = "new suitable exam found on " + exam.summary();
                         sendMessage("Mahdi", "mm7amini@gmail.com", message);
                     }
-                });
+                })
+                .doOnNext(exam -> notifyUsingTelegramBot(exam.summary()));
+    }
+
+    private void notifyUsingTelegramBot(String text) {
+        telegramBotClient.post()
+                .uri("/sendMessage")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue("""
+                        {
+                          "chat_id": "72624148",
+                          "text": "%s"
+                        }
+                        """.formatted(text))
+                .retrieve()
+                .bodyToMono(String.class)
+                .doOnError(e -> LOGGER.error("error while sending telegram message", e))
+                .subscribe();
     }
 
     void playSound() {
         try {
-            File f = new ClassPathResource("mmm-2-tone-sexy.mp3").getFile();
+            File f = new ClassPathResource("granted.mp3").getFile();
             FileInputStream fileInputStream = new FileInputStream(f);
             BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
             Player jlPlayer = new Player(bufferedInputStream);
@@ -173,7 +198,12 @@ public class TestFinderApplication {
         return testFinder.post()
                 .uri("/Boka/occasion-bundles")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(Find_English_Theory_Exams_Request_Body)
+                .bodyValue(Find_MANUAL_PRACRICAL_Exams_Request_Body)
+                .header("Referer","https://fp.trafikverket.se/Boka/")
+                .header("Origin","https://fp.trafikverket.se")
+                .header("sec-ch-ua-platform","\"macOS\"")
+                .header("User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36")
+
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(AvailableExamsResponse.class);

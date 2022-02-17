@@ -1,0 +1,14 @@
+###
+GET https://api.telegram.org/bot5291539544:AAHTAjCZaLYZG4Oc3jMr_Ct5xQnKY77W5xE/getMe
+
+###
+GET https://api.telegram.org/bot5291539544:AAHTAjCZaLYZG4Oc3jMr_Ct5xQnKY77W5xE/getUpdates
+
+###
+POST https://api.telegram.org/bot5291539544:AAHTAjCZaLYZG4Oc3jMr_Ct5xQnKY77W5xE/sendMessage
+Content-Type: application/json
+
+{
+  "chat_id": "72624148",
+  "text": "Hello there"
+}
