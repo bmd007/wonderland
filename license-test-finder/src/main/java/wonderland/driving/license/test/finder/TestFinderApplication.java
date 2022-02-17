@@ -10,6 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -25,6 +26,7 @@ import java.net.UnknownHostException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @SpringBootApplication
 public class TestFinderApplication {
@@ -50,7 +52,7 @@ public class TestFinderApplication {
     public static final String Find_English_Theory_Exams_Request_Body = """
               {
               "bookingSession": {
-                "socialSecurityNumber": "199508020000",
+                "socialSecurityNumber": "%s",
                 "licenceId": 5,
                 "bookingModeId": 0,
                 "ignoreDebt": false,
@@ -79,7 +81,7 @@ public class TestFinderApplication {
     public static final String Find_MANUAL_PRACRICAL_Exams_Request_Body = """
                 {
                   "bookingSession": {
-                    "socialSecurityNumber": "199508020000",
+                    "socialSecurityNumber": "%s",
                     "licenceId": 5,
                     "bookingModeId": 0,
                     "ignoreDebt": false,
@@ -105,16 +107,19 @@ public class TestFinderApplication {
                 }
             """;
 
+    @Autowired
+    Environment environment;
+
     @EventListener(ApplicationReadyEvent.class)
     public void start() throws UnknownHostException {
         InetAddress inetAddress = InetAddress.getLocalHost();
         LOGGER.info("IP Address:- " + inetAddress.getHostAddress());
         LOGGER.info("Host Name:- " + inetAddress.getHostName());
 
-        messagePublisherClient = loadBalancedWebClientBuilder
-                .baseUrl("http://message-publisher")
-                .build();
-        people.stream().forEach(this::requestQueueFor);
+//        messagePublisherClient = loadBalancedWebClientBuilder
+//                .baseUrl("http://message-publisher")
+//                .build();
+//        people.stream().forEach(this::requestQueueFor);
         testFinder = notLoadBalancedWebClientBuilder
                 .baseUrl("https://fp.trafikverket.se")
                 .codecs(codec -> codec.defaultCodecs().maxInMemorySize(2024 * 2024))
@@ -151,7 +156,8 @@ public class TestFinderApplication {
                     && exam.date().isBefore(LocalDate.parse("2022-06-30"))){
                         playSound();
                         var message = "new suitable exam found on " + exam.summary();
-                        sendMessage("Mahdi", "mm7amini@gmail.com", message);
+//                        sendMessage("Mahdi", "mm7amini@gmail.com", message);
+                        notifyUsingTelegramBot(message);
                     }
                 })
                 .doOnNext(exam -> notifyUsingTelegramBot(exam.summary()));
@@ -195,15 +201,17 @@ public class TestFinderApplication {
     }
 
     private Mono<AvailableExamsResponse> loadExams() {
+        String personNumber = Optional.ofNullable(environment.getProperty("ssn"))
+                .orElseThrow();
+        String requestBody = Find_MANUAL_PRACRICAL_Exams_Request_Body.formatted(personNumber);
         return testFinder.post()
                 .uri("/Boka/occasion-bundles")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(Find_MANUAL_PRACRICAL_Exams_Request_Body)
+                .bodyValue(requestBody)
                 .header("Referer","https://fp.trafikverket.se/Boka/")
                 .header("Origin","https://fp.trafikverket.se")
                 .header("sec-ch-ua-platform","\"macOS\"")
                 .header("User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36")
-
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(AvailableExamsResponse.class);
