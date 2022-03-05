@@ -139,65 +139,64 @@ public class App extends SimpleApplication {
         sun.setDirection(new Vector3f(-0.1f, -0.7f, -1.0f));
         rootNode.addLight(sun);
 
-        sceneModel = assetManager.loadModel("Models/city/Center City Sci-Fi.obj");
+        sceneModel = assetManager.loadModel("assets/simple_house/house.obj");
         CollisionShape sceneShape = CollisionShapeFactory.createMeshShape(sceneModel);
         landscape = new RigidBodyControl(sceneShape, 0);
         sceneModel.addControl(landscape);
         rootNode.attachChild(sceneModel);
         bulletAppState.getPhysicsSpace().add(landscape);
 
-        rootNode.attachChild(shootables);
+//        rootNode.attachChild(shootables);
 
-        Spatial enemy = assetManager.loadModel("Models/sniper/OBJ.obj");
-        enemy.scale(5f);
-        var enemyRadius = enemy.getWorldScale().getX()/2;
-        var enemyHeight = enemy.getWorldScale().getY()/2;
-        CapsuleCollisionShape enemyCapsuleShape = new CapsuleCollisionShape(enemyRadius, enemyHeight, 1);
-        CharacterControl enemyCharacterControl = new CharacterControl(enemyCapsuleShape, 0.02f);
-        enemyCharacterControl.setGravity(30f);
-        enemyCharacterControl.setJumpSpeed(30);
-        enemy.addControl(enemyCharacterControl);
-        enemyCharacterControl.setPhysicsLocation(new Vector3f(-150f, 6f, -100f));
-        bulletAppState.getPhysicsSpace().add(enemyCharacterControl);
+//        Spatial enemy = assetManager.loadModel("Models/sniper/OBJ.obj");
+//        enemy.scale(5f);
+//        var enemyRadius = enemy.getWorldScale().getX()/2;
+//        var enemyHeight = enemy.getWorldScale().getY()/2;
+//        CapsuleCollisionShape enemyCapsuleShape = new CapsuleCollisionShape(enemyRadius, enemyHeight, 1);
+//        CharacterControl enemyCharacterControl = new CharacterControl(enemyCapsuleShape, 0.02f);
+//        enemyCharacterControl.setGravity(30f);
+//        enemyCharacterControl.setJumpSpeed(30);
+//        enemy.addControl(enemyCharacterControl);
+//        enemyCharacterControl.setPhysicsLocation(new Vector3f(-150f, 6f, -100f));
+//        bulletAppState.getPhysicsSpace().add(enemyCharacterControl);
 
-        shootables.attachChild(enemy);
+//        shootables.attachChild(enemy);
 
-        Spatial lara = assetManager.loadModel("Models/lara/lara_max_2010_OBJ.obj");
-        lara.setLocalTranslation(-200, 0, -345);
-        lara.scale(0.004f);
-        shootables.attachChild(lara);
+//        Spatial lara = assetManager.loadModel("Models/lara/lara_max_2010_OBJ.obj");
+//        lara.setLocalTranslation(-200, 0, -345);
+//        lara.scale(0.004f);
+//        shootables.attachChild(lara);
 
-        sniperSpatial = assetManager.loadModel("Models/soldier/OBJ.obj");
-        sniperSpatial.scale(4f);
-        var sniperRadius = sniperSpatial.getLocalScale().getX() / 2;
-        var sniperHeight = sniperSpatial.getLocalScale().getY() / 2;
-        CapsuleCollisionShape capsuleShape = new CapsuleCollisionShape(sniperRadius, sniperHeight, 1);
-        player = new CharacterControl(capsuleShape, 0.02f);
-        player.setJumpSpeed(30);
-        player.setFallSpeed(30);
-        player.setGravity(30f);
-        sniperSpatial.addControl(player);
-        player.setPhysicsLocation(new Vector3f(-150f, 0f, -100f));
-        rootNode.attachChild(sniperSpatial);
-        bulletAppState.setDebugEnabled(true);
-        bulletAppState.getPhysicsSpace().add(player);
+//        sniperSpatial = assetManager.loadModel("Models/soldier/OBJ.obj");
+//        sniperSpatial.scale(4f);
+//        var sniperRadius = sniperSpatial.getLocalScale().getX() / 2;
+//        var sniperHeight = sniperSpatial.getLocalScale().getY() / 2;
+//        CapsuleCollisionShape capsuleShape = new CapsuleCollisionShape(sniperRadius, sniperHeight, 1);
+//        player = new CharacterControl(capsuleShape, 0.02f);
+//        player.setJumpSpeed(30);
+//        player.setFallSpeed(30);
+//        player.setGravity(30f);
+//        sniperSpatial.addControl(player);
+//        player.setPhysicsLocation(new Vector3f(-150f, 0f, -100f));
+//        rootNode.attachChild(sniperSpatial);
+//        bulletAppState.setDebugEnabled(true);
+//        bulletAppState.getPhysicsSpace().add(player);
 
 
-        flyCam.setEnabled(false);
-        initCrossHairs();
-        initMark();
+//        flyCam.setEnabled(false);
+//        initCrossHairs();
+//        initMark();
 
-        inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
-        inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
-        inputManager.addMapping("Forward", new KeyTrigger(KeyInput.KEY_W));
-        inputManager.addMapping("Backward", new KeyTrigger(KeyInput.KEY_S));
-        inputManager.addMapping("Jump", new KeyTrigger(KeyInput.KEY_SPACE));
-        inputManager.addMapping("Shoot", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
-        inputManager.addListener(actionListener, "Left", "Right", "Forward", "Backward", "Shoot", "Jump");
-
-        inputManager.addMapping("rotate", new MouseAxisTrigger(MouseInput.AXIS_Y, false)
-               , new KeyTrigger(KeyInput.KEY_R) );
-        inputManager.addListener(analogListener, new String[]{"rotate"});
+//        inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
+//        inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
+//        inputManager.addMapping("Forward", new KeyTrigger(KeyInput.KEY_W));
+//        inputManager.addMapping("Backward", new KeyTrigger(KeyInput.KEY_S));
+//        inputManager.addMapping("Jump", new KeyTrigger(KeyInput.KEY_SPACE));
+//        inputManager.addMapping("Shoot", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+//        inputManager.addListener(actionListener, "Left", "Right", "Forward", "Backward", "Shoot", "Jump");
+//
+//        inputManager.addMapping("rotate", new MouseAxisTrigger(MouseInput.AXIS_Y, false), new KeyTrigger(KeyInput.KEY_R) );
+//        inputManager.addListener(analogListener, new String[]{"rotate"});
     }
 
     protected void initMark() {
@@ -223,23 +222,23 @@ public class App extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-        tempPlayerWalkDirection.set(sniperSpatial.getWorldRotation().getRotationColumn(2)).multLocal(0.6f);
-        tempPlayerViewDirection.set(sniperSpatial.getWorldRotation().getRotationColumn(0)).multLocal(0.4f);
-        toBeUpdatedWalkDirection.set(0, 0, 0);
-        if (left) {
-            toBeUpdatedWalkDirection.addLocal(tempPlayerViewDirection.negate());
-        }
-        if (right) {
-            toBeUpdatedWalkDirection.addLocal(tempPlayerViewDirection);
-        }
-        if (fowrad) {
-            toBeUpdatedWalkDirection.addLocal(tempPlayerWalkDirection.negate());
-        }
-        if (backward) {
-            toBeUpdatedWalkDirection.addLocal(tempPlayerWalkDirection);
-        }
-        player.setWalkDirection(toBeUpdatedWalkDirection);
-        cam.setLocation(player.getPhysicsLocation().add(new Vector3f(-5, 7f, 30f)));
+//        tempPlayerWalkDirection.set(sniperSpatial.getWorldRotation().getRotationColumn(2)).multLocal(0.6f);
+//        tempPlayerViewDirection.set(sniperSpatial.getWorldRotation().getRotationColumn(0)).multLocal(0.4f);
+//        toBeUpdatedWalkDirection.set(0, 0, 0);
+//        if (left) {
+//            toBeUpdatedWalkDirection.addLocal(tempPlayerViewDirection.negate());
+//        }
+//        if (right) {
+//            toBeUpdatedWalkDirection.addLocal(tempPlayerViewDirection);
+//        }
+//        if (fowrad) {
+//            toBeUpdatedWalkDirection.addLocal(tempPlayerWalkDirection.negate());
+//        }
+//        if (backward) {
+//            toBeUpdatedWalkDirection.addLocal(tempPlayerWalkDirection);
+//        }
+//        player.setWalkDirection(toBeUpdatedWalkDirection);
+//        cam.setLocation(player.getPhysicsLocation().add(new Vector3f(-5, 7f, 30f)));
     }
 
     record Rocket(int x, int y) {
