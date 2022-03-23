@@ -1,10 +1,8 @@
 package wonderland.authentication.event.internal;
 
-import wonderland.authentication.domain.AuthenticationChallenge;
-
-public record ChallengeCapturedEvent(AuthenticationChallenge authenticationChallenge) implements Event {
+public record ChallengeCapturedEvent(String signingNonce) implements Event {
     @Override
     public String getKey() {
-        return authenticationChallenge.getSigningNonce();
+        return signingNonce;
     }
 }

@@ -4,7 +4,10 @@ import org.bouncycastle.asn1.cmp.Challenge;
 import org.springframework.http.HttpStatus;
 import wonderland.authentication.domain.AuthenticationChallenge;
 import wonderland.authentication.dto.SignRequestDto;
+import wonderland.authentication.event.internal.ChallengeCapturedEvent;
 import wonderland.authentication.event.internal.ChallengeCreatedEvent;
+import wonderland.authentication.event.internal.ChallengeSignedEvent;
+import wonderland.authentication.event.internal.ChallengeUsedForLoginEvent;
 import wonderland.authentication.exception.NotFoundException;
 import wonderland.authentication.event.internal.EventLogger;
 import wonderland.authentication.service.MessageCounterViewService;
@@ -46,12 +49,12 @@ public class AuthenticationResource {
     @PostMapping("/{signingNonce}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void signChallenge(@PathVariable String signingNonce, SignRequestDto body) {
-        var event = new ChallengeCapturedEvent(signingNonce, body.jwt());
+        var event = new ChallengeSignedEvent(signingNonce, body.jwt());
         eventLogger.log(event);
     }
 
     @PostMapping("/{signingNonce}/{loginNonce}")
-    public void login(@PathVariable String signingNonce,@PathVariable String loginNonce) {
+    public void login(@PathVariable String signingNonce, @PathVariable String loginNonce) {
         //todo get the challenge and check it's state
         var event = new ChallengeUsedForLoginEvent(signingNonce);
         eventLogger.log(event);
