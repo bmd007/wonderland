@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.6.3'
+    id 'org.springframework.boot' version '2.6.4'
     id "io.spring.dependency-management" version "1.0.11.RELEASE"
     id 'java'
     id 'idea'
@@ -50,7 +50,7 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-data-neo4j'
     implementation 'org.springframework.kafka:spring-kafka'
-    implementation group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
+    implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
     implementation 'org.projectlombok:lombok:1.18.22'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
 
@@ -61,7 +61,7 @@ dependencies {
     testImplementation 'org.mockito:mockito-junit-jupiter'
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-    testImplementation 'com.playtika.testcontainers:embedded-kafka:2.0.20'
+    testImplementation 'com.playtika.testcontainers:embedded-kafka:2.1.2'
 }
 
 dependencyManagement {
