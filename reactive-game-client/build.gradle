@@ -21,7 +21,7 @@ repositories {
 
 dependencies {
     implementation 'org.projectlombok:lombok:1.18.22'
-    implementation 'org.webjars.bower:github-com-happyworm-jPlayer:2.9.2'
+    
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
     implementation 'com.google.guava:guava:30.1.1-jre'
     testImplementation 'org.slf4j:slf4j-log4j12:2.0.0-alpha6'

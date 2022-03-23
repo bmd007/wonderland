@@ -3,12 +3,6 @@ plugins {
 	id "idea"
 	id "org.springframework.boot" version "2.6.4"
 	id "io.spring.dependency-management" version "1.0.11.RELEASE"
-	id "com.gorylenko.gradle-git-properties" version "2.4.0"
-	id "jacoco" //code coverage
-}
-
-jacoco {
-	toolVersion = "0.8.7"
 }
 
 group = 'wonderland'
@@ -45,7 +39,6 @@ dependencies {
 
 	implementation 'org.apache.kafka:kafka-streams'
 	implementation 'org.springframework.kafka:spring-kafka'
-
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	implementation 'com.google.guava:guava:31.1-jre'
 

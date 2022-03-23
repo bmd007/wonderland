@@ -29,7 +29,7 @@ repositories {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.jakewharton:butterknife:10.2.3'
-    implementation 'org.webjars.bower:github-com-happyworm-jPlayer:2.9.2'
+    
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.3'
 
     implementation 'com.github.naiksoftware:stompprotocolandroid:1.6.6'
