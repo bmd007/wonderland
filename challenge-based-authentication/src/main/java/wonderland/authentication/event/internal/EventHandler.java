@@ -12,12 +12,12 @@ public class EventHandler implements Aggregator<String, Event, Integer> {
 
     @Override
     public Integer apply(String key, Event event, Integer currentValue) {
-        if (event instanceof CounterRestartedEvent) {
-            return currentValue == null ? 0 : currentValue;
-        } else if (event instanceof CounterIncreasedEvent) {
-            return currentValue != null ? currentValue + 1 : null; //check to avoid increasing a not already created counter
-        }
+//        if (event instanceof CounterRestartedEvent) {
+//            return currentValue == null ? 0 : currentValue;
+//        } else if (event instanceof CounterIncreasedEvent) {
+//            return currentValue != null ? currentValue + 1 : null; //check to avoid increasing a not already created counter
+//        }
         LOGGER.error("an event with a not supported yet type received : {} ", event);
-        return null; //I think null is just fine here. Saving null in topic should result in anything at the end of the day. Specially
+        return null; //todo
     }
 }

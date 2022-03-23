@@ -60,7 +60,6 @@ kafka:
     config:
       event: '3:2'
       changelog: '3:2'
-      messageEvents: '3:2'
 
 ---
 spring:

@@ -1,6 +1,5 @@
 package wonderland.authentication;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.AfterEach;
@@ -19,12 +18,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import wonderland.authentication.config.Topics;
-import wonderland.authentication.dto.MessageCounterDto;
-import wonderland.authentication.event.external.MessageSentEvent;
-import wonderland.authentication.event.internal.CounterIncreasedEvent;
-import wonderland.authentication.event.internal.CounterRestartedEvent;
+
 import wonderland.authentication.event.internal.Event;
 import wonderland.authentication.serialization.JsonDeserializer;
+import wonderland.authentication.util.EmbeddedKafkaHelper;
+import wonderland.authentication.util.KafkaStreamsAwait;
 
 import java.time.Instant;
 import java.util.concurrent.ExecutionException;
@@ -57,9 +55,6 @@ public class AcceptanceTest {
     EmbeddedKafkaBroker embeddedKafka;
     EmbeddedKafkaHelper<String, Event> kafkaHelper;
 
-    @Autowired
-    @Qualifier("messageSentEventKafkaProducer")
-    KafkaProducer<String, MessageSentEvent> messageSentEventProducer;
 
     @BeforeEach
     void setupKafka() throws Exception {

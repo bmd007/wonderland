@@ -19,18 +19,17 @@ import static org.apache.kafka.common.config.TopicConfig.CLEANUP_POLICY_CONFIG;
 @Profile("!test")
 public class TopicCreator {
 
-    private final PartitionDef messageEventsTopicDefinition;
+    private final PartitionDef eventsTopicDefinition;
     private final PartitionDef changeLogTopicDefinition;
     private final String applicationName;
 
     public TopicCreator(
             @Value("${spring.application.name}") String applicationName,
-            @Value("${kafka.topic.config.messageEvents}") String messageEventsTopicDefinition,
+            @Value("${kafka.topic.config.events}") String eventsTopicDefinition,
             @Value("${kafka.topic.config.changelog}") String changeLogTopicDefinition) {
         this.applicationName = applicationName;
-        this.messageEventsTopicDefinition = PartitionDef.parse(messageEventsTopicDefinition);
+        this.eventsTopicDefinition = PartitionDef.parse(eventsTopicDefinition);
         this.changeLogTopicDefinition = PartitionDef.parse(changeLogTopicDefinition);
-
     }
 
     @Bean
