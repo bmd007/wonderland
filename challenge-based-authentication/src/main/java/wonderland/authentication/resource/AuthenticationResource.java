@@ -8,7 +8,6 @@ import wonderland.authentication.event.internal.ChallengeCapturedEvent;
 import wonderland.authentication.event.internal.ChallengeCreatedEvent;
 import wonderland.authentication.event.internal.ChallengeSignedEvent;
 import wonderland.authentication.event.internal.ChallengeUsedForLoginEvent;
-import wonderland.authentication.exception.NotFoundException;
 import wonderland.authentication.event.internal.EventLogger;
 import wonderland.authentication.service.MessageCounterViewService;
 import wonderland.authentication.service.ViewService;
@@ -39,21 +38,21 @@ public class AuthenticationResource {
         eventLogger.log(event);
     }
 
-    @PostMapping("/{signingNonce}")
+    @PutMapping("/{signingNonce}/capture")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void captureChallenge(@PathVariable String signingNonce) {
         var event = new ChallengeCapturedEvent(signingNonce);
         eventLogger.log(event);
     }
 
-    @PostMapping("/{signingNonce}")
+    @PutMapping("/{signingNonce}/sign")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void signChallenge(@PathVariable String signingNonce, SignRequestDto body) {
         var event = new ChallengeSignedEvent(signingNonce, body.jwt());
         eventLogger.log(event);
     }
 
-    @PostMapping("/{signingNonce}/{loginNonce}")
+    @PutMapping("/{signingNonce}/login/{loginNonce}")
     public void login(@PathVariable String signingNonce, @PathVariable String loginNonce) {
         //todo get the challenge and check it's state
         var event = new ChallengeUsedForLoginEvent(signingNonce);
