@@ -1,15 +1,17 @@
 package wonderland.authentication.resource;
 
-import org.bouncycastle.asn1.cmp.Challenge;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import wonderland.authentication.domain.AuthenticationChallenge;
+import wonderland.authentication.dto.AuthenticationChallengeDto;
+import wonderland.authentication.dto.AuthenticationChallengesDto;
 import wonderland.authentication.dto.SignRequestDto;
 import wonderland.authentication.event.internal.ChallengeCapturedEvent;
 import wonderland.authentication.event.internal.ChallengeCreatedEvent;
 import wonderland.authentication.event.internal.ChallengeSignedEvent;
 import wonderland.authentication.event.internal.ChallengeUsedForLoginEvent;
 import wonderland.authentication.event.internal.EventLogger;
-import wonderland.authentication.service.MessageCounterViewService;
+import wonderland.authentication.service.AuthenticationChallengeViewService;
 import wonderland.authentication.service.ViewService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,20 +24,21 @@ public class AuthenticationResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationResource.class);
 
-    private MessageCounterViewService messageCounterViewService;
+    private AuthenticationChallengeViewService authenticationChallengeViewService;
     private EventLogger eventLogger;
 
-    public AuthenticationResource(EventLogger eventLogger, MessageCounterViewService messageCounterViewService) {
+    public AuthenticationResource(EventLogger eventLogger, AuthenticationChallengeViewService authenticationChallengeViewService) {
         this.eventLogger = eventLogger;
-        this.messageCounterViewService = messageCounterViewService;
+        this.authenticationChallengeViewService = authenticationChallengeViewService;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public AuthenticationChallenge create() {
+    public Mono<AuthenticationChallenge> create() {
         AuthenticationChallenge newChallenge = AuthenticationChallenge.createNew();
         var event = new ChallengeCreatedEvent(newChallenge);
         eventLogger.log(event);
+        return Mono.just(newChallenge);
     }
 
     @PutMapping("/{signingNonce}/capture")
@@ -61,21 +64,13 @@ public class AuthenticationResource {
 
     //isHighLevelQuery query param is related to inter instance communication and it should be true in normal operations or not defined
     @GetMapping
-    public Mono<MessageCountersDto> getCounters(@RequestParam(required = false, value = ViewService.HIGH_LEVEL_QUERY_PARAM_NAME, defaultValue = "true") boolean isHighLevelQuery) {
-        return messageCounterViewService.getAll(isHighLevelQuery);
+    public Mono<AuthenticationChallengesDto> getCounters(@RequestParam(required = false, value = ViewService.HIGH_LEVEL_QUERY_PARAM_NAME, defaultValue = "true") boolean isHighLevelQuery) {
+        return authenticationChallengeViewService.getAll(isHighLevelQuery);
     }
 
     @GetMapping("/{signingNonce}")
-    public Mono<Integer> getCountersSum(@RequestParam(required = false, value = ViewService.HIGH_LEVEL_QUERY_PARAM_NAME, defaultValue = "true") boolean isHighLevelQuery) {
-        return messageCounterViewService.getAll(isHighLevelQuery)
-                .flatMapIterable(messageCountersDto -> messageCountersDto.getMessageCounters())
-                .map(messageCounterDto -> messageCounterDto.getNumberOfSentMessages())
-                .reduce((integer, integer2) -> integer + integer2);
+    public Mono<AuthenticationChallengeDto> getChallenge(@PathVariable String signingNonce) {
+        return authenticationChallengeViewService.getById(signingNonce)
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Challenge Not found: "+ signingNonce)));
     }
-
-//    @GetMapping("/sent/from/{sender}")
-//    public Mono<MessageCounterDto> getCounterByName(@PathVariable("sender") String sender) {
-//        return messageCounterViewService.getById(sender)
-//                .switchIfEmpty(Mono.error(new NotFoundException(String.format("%s not found (%s doesn't exist). Maybe has not sent any messages yet", "Sender", sender))));
-//    }
 }

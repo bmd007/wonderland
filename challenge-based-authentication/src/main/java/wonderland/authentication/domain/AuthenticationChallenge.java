@@ -17,12 +17,12 @@ public final class AuthenticationChallenge {
     private final @NotBlank String signingNonce;
     private final @NotBlank String loginNonce;
     private final @NotNull Instant expiresAt;
-    private final @NotNull States state;
+    private final @NotNull AuthenticationChallengeState state;
 
     public AuthenticationChallenge(String signingNonce,
                                    String loginNonce,
                                    Instant expiresAt,
-                                   @NotNull AuthenticationChallenge.States state) {
+                                   @NotNull AuthenticationChallengeState state) {
         this.signingNonce = signingNonce;
         this.loginNonce = loginNonce;
         this.expiresAt = expiresAt;
@@ -33,15 +33,15 @@ public final class AuthenticationChallenge {
         return AuthenticationChallenge.builder()
                 .signingNonce(UUID.randomUUID().toString())
                 .loginNonce(UUID.randomUUID().toString())
-                .state(States.AWAITING_CAPTURE)
+                .state(AuthenticationChallengeState.AWAITING_CAPTURE)
                 .expiresAt(Instant.now().plusSeconds(30))
                 .build();
     }
 
     public AuthenticationChallenge capture() {
-        if (this.getState().equals(States.AWAITING_CAPTURE)) {
+        if (this.getState().equals(AuthenticationChallengeState.AWAITING_CAPTURE)) {
             return toBuilder()
-                    .state(States.CAPTURED)
+                    .state(AuthenticationChallengeState.CAPTURED)
                     .expiresAt(Instant.now().plusSeconds(300))
                     .build();
         }
@@ -49,9 +49,9 @@ public final class AuthenticationChallenge {
     }
 
     public AuthenticationChallenge sign() {
-        if (this.getState().equals(States.CAPTURED) || this.getState().equals(States.AWAITING_CAPTURE)) {
+        if (this.getState().equals(AuthenticationChallengeState.CAPTURED) || this.getState().equals(AuthenticationChallengeState.AWAITING_CAPTURE)) {
             return toBuilder()
-                    .state(States.SIGNED)
+                    .state(AuthenticationChallengeState.SIGNED)
                     .expiresAt(Instant.now().plusSeconds(100))
                     .build();
         }
@@ -59,7 +59,7 @@ public final class AuthenticationChallenge {
     }
 
     public AuthenticationChallenge invalidate() {
-        return toBuilder().state(States.INVALID).expiresAt(Instant.EPOCH).build();
+        return toBuilder().state(AuthenticationChallengeState.INVALID).expiresAt(Instant.EPOCH).build();
     }
 
     public @NotBlank String loginNonce() {
@@ -74,11 +74,7 @@ public final class AuthenticationChallenge {
         return expiresAt;
     }
 
-    public @NotNull States state() {
+    public @NotNull AuthenticationChallengeState state() {
         return state;
-    }
-
-    public enum States {
-        AWAITING_CAPTURE, CAPTURED, SIGNED, INVALID
     }
 }

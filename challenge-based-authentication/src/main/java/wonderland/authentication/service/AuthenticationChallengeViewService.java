@@ -1,0 +1,30 @@
+package wonderland.authentication.service;
+
+import wonderland.authentication.config.Stores;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.config.StreamsBuilderFactoryBean;
+import org.springframework.stereotype.Service;
+import wonderland.authentication.domain.AuthenticationChallenge;
+import wonderland.authentication.dto.AuthenticationChallengeDto;
+import wonderland.authentication.dto.AuthenticationChallengesDto;
+
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+
+
+@Service
+public class AuthenticationChallengeViewService extends ViewService<AuthenticationChallengesDto, AuthenticationChallengeDto, AuthenticationChallenge> {
+
+    final static Function<AuthenticationChallengesDto, List<AuthenticationChallengeDto>> LIST_EXTRACTOR = AuthenticationChallengesDto::authenticationChallenges;
+    final static Function<List<AuthenticationChallengeDto>, AuthenticationChallengesDto> LIST_WRAPPER = AuthenticationChallengesDto::new;
+    final static BiFunction<String, AuthenticationChallenge, AuthenticationChallengeDto> DTO_MAPPER = AuthenticationChallengeDto::new;//todo
+
+    public AuthenticationChallengeViewService(StreamsBuilderFactoryBean streams,
+                                              @Value("${kafka.streams.server.config.app-ip}") String ip,
+                                              @Value("${kafka.streams.server.config.app-port}") int port,
+                                              ViewResourcesClient commonClient) {
+        super(ip, port, streams, Stores.MESSAGE_COUNTER_STATE,
+                AuthenticationChallengesDto.class, AuthenticationChallengeDto.class, DTO_MAPPER, LIST_EXTRACTOR, LIST_WRAPPER, "sent/from", commonClient);
+    }
+}
