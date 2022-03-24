@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class MetricsFacade {
 
+    //todo use the metrics in correct places
+
     public static void increaseHandledEventsCounter(MeterRegistry registry){
         registry.counter("wonderland.authentication.events.handled.counter").increment();
     }
