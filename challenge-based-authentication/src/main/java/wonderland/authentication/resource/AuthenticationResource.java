@@ -50,7 +50,7 @@ public class AuthenticationResource {
 
     @PutMapping("/{signingNonce}/sign")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void signChallenge(@PathVariable String signingNonce, SignRequestDto body) {
+    public void signChallenge(@PathVariable String signingNonce, @RequestBody SignRequestDto body) {
         var event = new ChallengeSignedEvent(signingNonce, body.jwt());
         eventLogger.log(event);
     }
