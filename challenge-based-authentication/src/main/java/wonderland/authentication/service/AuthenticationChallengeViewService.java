@@ -18,13 +18,16 @@ public class AuthenticationChallengeViewService extends ViewService<Authenticati
 
     final static Function<AuthenticationChallengesDto, List<AuthenticationChallengeDto>> LIST_EXTRACTOR = AuthenticationChallengesDto::authenticationChallenges;
     final static Function<List<AuthenticationChallengeDto>, AuthenticationChallengesDto> LIST_WRAPPER = AuthenticationChallengesDto::new;
-    final static BiFunction<String, AuthenticationChallenge, AuthenticationChallengeDto> DTO_MAPPER = AuthenticationChallengeDto::new;//todo
+    final static BiFunction<String, AuthenticationChallenge, AuthenticationChallengeDto> DTO_MAPPER =
+            (key, authenticationChallenge) -> new AuthenticationChallengeDto(key,
+                    authenticationChallenge.expiresAt(),
+                    authenticationChallenge.state());
 
     public AuthenticationChallengeViewService(StreamsBuilderFactoryBean streams,
                                               @Value("${kafka.streams.server.config.app-ip}") String ip,
                                               @Value("${kafka.streams.server.config.app-port}") int port,
                                               ViewResourcesClient commonClient) {
-        super(ip, port, streams, Stores.MESSAGE_COUNTER_STATE,
-                AuthenticationChallengesDto.class, AuthenticationChallengeDto.class, DTO_MAPPER, LIST_EXTRACTOR, LIST_WRAPPER, "sent/from", commonClient);
+        super(ip, port, streams, Stores.CHALLENGE_STATE_STORE,
+                AuthenticationChallengesDto.class, AuthenticationChallengeDto.class, DTO_MAPPER, LIST_EXTRACTOR, LIST_WRAPPER, "api/authentication/challenges", commonClient);
     }
 }

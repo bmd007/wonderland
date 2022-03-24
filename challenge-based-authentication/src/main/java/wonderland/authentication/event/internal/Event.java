@@ -9,7 +9,5 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         property = "event")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public interface Event {
-
     String getKey();
-
 }
