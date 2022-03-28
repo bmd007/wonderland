@@ -28,7 +28,7 @@ dependencies {
 
     implementation 'org.springframework:spring-messaging:5.3.16'
     implementation 'io.rsocket:rsocket-core:1.1.1'
-    implementation 'io.rsocket:rsocket-transport-netty:1.1.1'
+    implementation 'io.rsocket:rsocket-transport-netty:1.1.2'
     implementation 'io.projectreactor.netty:reactor-netty:1.0.17'
 
     implementation 'org.jmonkeyengine:jme3-blender:3.3.2-stable'
