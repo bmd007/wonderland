@@ -50,7 +50,7 @@ public class AuthenticationResource {
 
     @PutMapping("/{signingNonce}/sign")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void signChallenge(@PathVariable String signingNonce, SignRequestDto body) {
+    public void signChallenge(@PathVariable String signingNonce, @RequestBody SignRequestDto body) {
         var event = new ChallengeSignedEvent(signingNonce, body.jwt());
         eventLogger.log(event);
     }
@@ -64,7 +64,7 @@ public class AuthenticationResource {
 
     //isHighLevelQuery query param is related to inter instance communication and it should be true in normal operations or not defined
     @GetMapping
-    public Mono<AuthenticationChallengesDto> getCounters(@RequestParam(required = false, value = ViewService.HIGH_LEVEL_QUERY_PARAM_NAME, defaultValue = "true") boolean isHighLevelQuery) {
+    public Mono<AuthenticationChallengesDto> getChallenges(@RequestParam(required = false, value = ViewService.HIGH_LEVEL_QUERY_PARAM_NAME, defaultValue = "true") boolean isHighLevelQuery) {
         return authenticationChallengeViewService.getAll(isHighLevelQuery);
     }
 
