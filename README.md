@@ -4,9 +4,7 @@ I can say the architecture is event driven and everything is an event inside the
 There is also amqp based comminucation to outside (an Android app) (with help of rabbit mq) as push solution 
 
 ## ToDo:
-    * add renovate bot
     * upgrade elastic search stack to 7 and higher
-    * make health check of services coupled to their connection to their dbs (is it a good idea?)
     * add API gateway for authorization checks (resource server in OAuath2 world) (and connect it to google)
     * complete person_profile and ui apps
     * publish logs into elastic search as application_log index
