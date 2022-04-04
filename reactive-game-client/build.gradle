@@ -27,7 +27,7 @@ dependencies {
     testImplementation 'org.slf4j:slf4j-log4j12:2.0.0-alpha6'
 
     implementation 'org.springframework:spring-messaging:5.3.16'
-    implementation 'io.rsocket:rsocket-core:1.1.1'
+    implementation 'io.rsocket:rsocket-core:1.1.2'
     implementation 'io.rsocket:rsocket-transport-netty:1.1.2'
     implementation 'io.projectreactor.netty:reactor-netty:1.0.17'
 
