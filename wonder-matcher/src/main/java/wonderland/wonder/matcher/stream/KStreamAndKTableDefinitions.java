@@ -14,12 +14,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import wonderland.wonder.matcher.config.StateStores;
 import wonderland.wonder.matcher.config.Topics;
+import wonderland.wonder.matcher.domain.Location;
 import wonderland.wonder.matcher.domain.WonderSeeker;
 import wonderland.wonder.matcher.dto.SeekerWonderingUpdateDto;
 import wonderland.wonder.matcher.repository.WonderSeekerJdbcRepository;
 import wonderland.wonder.matcher.serialization.CustomSerdes;
 
 import javax.annotation.PostConstruct;
+
+import java.time.Instant;
 
 import static wonderland.wonder.matcher.config.StateStores.WONDER_SEEKER_GLOBAL_STATE_STORE;
 import static wonderland.wonder.matcher.config.TopicCreator.stateStoreTopic;
@@ -60,9 +63,8 @@ public class KStreamAndKTableDefinitions {
                 .filter((k, v) -> v.longitude() >= -180 && v.longitude() <= 180)
                 .groupByKey()
                 // Aggregate status into an in-memory KTable as a source for global KTable
-                .aggregate(WonderSeeker::defineEmpty,
-                        (key, value, aggregate) -> {
-                        },
+                .aggregate(WonderSeeker::empty,
+                        (key, value, aggregate) -> WonderSeeker.now(key, value.latitude(), value.longitude()),
                         IN_MEMORY_TEMP_KTABLE);
 
         // register a global store which reads directly from the aggregated in memory table's changelog
