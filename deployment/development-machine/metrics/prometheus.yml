@@ -16,4 +16,4 @@ scrape_configs:
 
 
 
-#graphana query: sum by (job) (rate(geofencing_mover_fence_intersection_counter_total[$__rate_interval]))
+#graphana query: sum by (job) (rate(geofencing_wonderSeeker_fence_intersection_counter_total[$__rate_interval]))

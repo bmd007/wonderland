@@ -1,17 +1,20 @@
 package wonderland.wonder.matcher.streamprocessing;
 
-import org.apache.kafka.streams.processor.AbstractProcessor;
+import io.micrometer.core.instrument.MeterRegistry;
+import org.apache.kafka.streams.processor.api.ContextualProcessor;
+
+import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import statefull.geofencing.faas.common.domain.Mover;
+import wonderland.wonder.matcher.domain.WonderSeeker;
 
 import static java.util.Objects.requireNonNull;
 
 /**
  * A simple processor that stores the state in a key value store.
  */
-public class WonderSeekerProcessor extends AbstractProcessor<String, Mover> {
+public class WonderSeekerProcessor extends ContextualProcessor<String, WonderSeeker, Void, Void> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WonderSeekerProcessor.class);
 
@@ -21,20 +24,21 @@ public class WonderSeekerProcessor extends AbstractProcessor<String, Mover> {
         this.storeName = storeName;
     }
 
-    @Override
-    public void process(String key, Mover value) {
-        LOGGER.info("Processing {}", key);
-        getStore().put(key, value);
-    }
 
     //todo understand how this context works??
     @SuppressWarnings("unchecked")
-    private KeyValueStore<String, Mover> getStore() {
+    private KeyValueStore<String, WonderSeeker> getStore() {
         var store = requireNonNull(this.context().getStateStore(storeName), "Store not found");
         if (store instanceof KeyValueStore) {
-            return (KeyValueStore<String, Mover>) store;
+            return (KeyValueStore<String, WonderSeeker>) store;
         }
         throw new IllegalStateException("Not a key value store");
+    }
+
+    @Override
+    public void process(Record<String, WonderSeeker> record) {
+        LOGGER.info("Processing {}, (saving it in global store)", record);
+        getStore().put(record.key(), record.value());
     }
 
 }

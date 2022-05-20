@@ -40,7 +40,7 @@ public class TopicCreator {
     }
 
 //    @Bean
-//    public NewTopic moverPositionUpdatesTopic() {
+//    public NewTopic wonderSeekerPositionUpdatesTopic() {
 //        return new NewTopic(Topics.MOVER_POSITION_UPDATES_TOPIC, changeLogTopicDefinition.numPartitions, changeLogTopicDefinition.replicationFactor)
 //                .configs(Map.of(CLEANUP_POLICY_CONFIG, CLEANUP_POLICY_COMPACT));
 //    }

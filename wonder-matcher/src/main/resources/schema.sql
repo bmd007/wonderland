@@ -1,4 +1,4 @@
-create table if not exists movers
+create table if not exists wonderSeekers
 (
     id                     varchar                  not null,
     last_location          geometry                 not null default 'point(0 0)',
@@ -6,4 +6,4 @@ create table if not exists movers
     primary key (id)
 );
 
-create spatial index if not exists mover_spatial_index on movers (last_location);
+create spatial index if not exists wonderSeeker_spatial_index on wonderSeekers (last_location);

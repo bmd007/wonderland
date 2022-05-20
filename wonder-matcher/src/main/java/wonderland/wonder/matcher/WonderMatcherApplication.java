@@ -21,10 +21,6 @@ public class WonderMatcherApplication {
         SpringApplication.run(WonderMatcherApplication.class, args);
     }
 
-    @Bean
-    public TimedAspect timedAspect(MeterRegistry registry) {
-        return new TimedAspect(registry);
-    }
 
     @EventListener(org.springframework.context.event.ContextRefreshedEvent.class)
     public void setupH2Console() {

@@ -26,7 +26,7 @@ services:
     environment:
       KAFKA_ADVERTISED_HOST_NAME: localhost
       #      KAFKA_CREATE_TOPICS: >-
-      #        mover-position-updates:1:1,
+      #        wonderSeeker-position-updates:1:1,
       #        event_log:1:1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     volumes:

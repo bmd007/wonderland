@@ -49,7 +49,7 @@ spring:
       key-serializer: org.springframework.kafka.support.serializer.StringOrBytesSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     #      properties:
-    #        - spring.json.type.mapping: MoverLocationUpdate:statefull.geofencing.faas.common.dto.MoverLocationUpdate
+    #        - spring.json.type.mapping: WonderSeekerLocationUpdate:statefull.geofencing.faas.common.dto.WonderSeekerLocationUpdate
     consumer:
       group-id: ${spring.application.name}
       auto-offset-reset: earliest

@@ -7,7 +7,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import statefull.geofencing.faas.common.domain.Mover;
+import wonderland.wonder.matcher.domain.WonderSeeker;
+
+import org.apache.kafka.streams.processor.api.Record;
+
+import java.time.Instant;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -16,25 +20,24 @@ import static org.mockito.Mockito.when;
 class WonderSeekerProcessorTest {
 
     private static final String KEY = "RNO112";
-    private static final Mover VALUE = Mover.newBuilder().withId(KEY).build();
+    private static final WonderSeeker VALUE = WonderSeeker.empty(KEY);
 
     @Mock
     ProcessorContext context;
 
     @Mock
-    KeyValueStore<String, Mover> store;
+    KeyValueStore<String, WonderSeeker> store;
 
     WonderSeekerProcessor processor = new WonderSeekerProcessor("store");
 
     @BeforeEach
     void setUp() throws Exception {
-        processor.init(context);
         when(context.getStateStore("store")).thenReturn(store);
     }
 
     @Test
     void testProcess() {
-        processor.process(KEY, VALUE);
+        processor.process(new Record<String, WonderSeeker>(KEY, VALUE, Instant.now().toEpochMilli()));
         verify(store).put(KEY, VALUE);
     }
 

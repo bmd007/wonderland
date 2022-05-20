@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import statefull.geofencing.faas.common.domain.Mover;
-import statefull.geofencing.faas.common.repository.MoverJdbcRepository;
+import statefull.geofencing.faas.common.domain.WonderSeeker;
+import statefull.geofencing.faas.common.repository.WonderSeekerJdbcRepository;
 
 import java.util.List;
 
@@ -23,10 +23,10 @@ class WonderSeekerStoreTest {
 
     private static final String NAME = "store";
     private static final String KEY = "RNO112";
-    private static final Mover VALUE = Mover.newBuilder().withId(KEY).build();
+    private static final WonderSeeker VALUE = WonderSeeker.newBuilder().withId(KEY).build();
 
     @Mock
-    MoverJdbcRepository repository;
+    WonderSeekerJdbcRepository repository;
 
     @Mock
     ProcessorContext context;

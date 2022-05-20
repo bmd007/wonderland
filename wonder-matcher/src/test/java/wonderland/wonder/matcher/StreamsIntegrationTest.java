@@ -11,7 +11,7 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import statefull.geofencing.faas.common.repository.MoverJdbcRepository;
+import statefull.geofencing.faas.common.repository.WonderSeekerJdbcRepository;
 import wonderland.wonder.matcher.config.StateStores;
 import wonderland.wonder.matcher.util.KafkaStreamsAwait;
 
@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 @ActiveProfiles("test")
 @EmbeddedKafka(partitions = 1, topics = {
-        "mover-wonderSeekerPosition-updates",
+        "wonderSeeker-wonderSeekerPosition-updates",
         StateStores.MOVER_IN_MEMORY_STATE_STORE + "-" + "stateful-geofencing-faas-changelog",
         "event_log"
 })
@@ -38,7 +38,7 @@ class StreamsIntegrationTest {
     KafkaStreamsAwait await;
 
     @Autowired
-    MoverJdbcRepository repository;
+    WonderSeekerJdbcRepository repository;
 
     @Autowired
     UpdateProducer producer;

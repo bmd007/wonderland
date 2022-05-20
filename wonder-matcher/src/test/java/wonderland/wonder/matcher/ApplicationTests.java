@@ -13,7 +13,7 @@ import wonderland.wonder.matcher.config.StateStores;
 @SpringBootTest
 @ActiveProfiles("test")
 @EmbeddedKafka(partitions = 1, topics = {
-        "mover-wonderSeekerPosition-updates",
+        "wonderSeeker-wonderSeekerPosition-updates",
 //todo?!        "${spring.application.name}"+"-changelog-"+Stores.MOVER_IN_MEMORY_STATE_STORE
         StateStores.MOVER_IN_MEMORY_STATE_STORE + "-" + "stateful-geofencing-faas-changelog",
         "event_log"

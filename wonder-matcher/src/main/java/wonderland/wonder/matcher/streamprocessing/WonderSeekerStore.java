@@ -43,7 +43,7 @@ public class WonderSeekerStore implements KeyValueStore<String, WonderSeeker> {
 
     @Override
     public void init(ProcessorContext context, StateStore root) {
-        LOGGER.info("Initializing Mover Global State Store");
+        LOGGER.info("Initializing WonderSeeker Global State Store");
         if (root != null) {
             // register the store (copied from InMemoryKeyValueStore)
             context.register(root, (keyBytes, valueBytes) -> {
@@ -66,7 +66,7 @@ public class WonderSeekerStore implements KeyValueStore<String, WonderSeeker> {
 
     @Override
     public void close() {
-        LOGGER.info("Closing Mover Global State Store");
+        LOGGER.info("Closing WonderSeeker Global State Store");
         try {
             repository.deleteAll();
         } catch (Exception e) {
@@ -102,7 +102,7 @@ public class WonderSeekerStore implements KeyValueStore<String, WonderSeeker> {
 
     @Override
     public KeyValueIterator<String, WonderSeeker> all() {
-        LOGGER.debug("Reading all movers");
+        LOGGER.debug("Reading all wonderSeekers");
         return wrapWithIterator(repository.getAll());
     }
 
