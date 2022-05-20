@@ -11,20 +11,23 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import statefull.geofencing.faas.common.repository.WonderSeekerJdbcRepository;
 import wonderland.wonder.matcher.config.StateStores;
+import wonderland.wonder.matcher.config.Topics;
+import wonderland.wonder.matcher.repository.WonderSeekerJdbcRepository;
 import wonderland.wonder.matcher.util.KafkaStreamsAwait;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ActiveProfiles("test")
 @EmbeddedKafka(partitions = 1, topics = {
-        "wonderSeeker-wonderSeekerPosition-updates",
-        StateStores.MOVER_IN_MEMORY_STATE_STORE + "-" + "stateful-geofencing-faas-changelog",
-        "event_log"
+        Topics.WONDER_SEEK_UPDATES_TOPIC,
+        StateStores.WONDER_SEEKER_STATE_STORE + "_changeLog",
+        StateStores.WONDER_SEEKER_GLOBAL_STATE_STORE + "_changeLog",
 })
 @DirtiesContext
 @Disabled("Test works locally however fails in Jenkins.")
@@ -56,8 +59,8 @@ class StreamsIntegrationTest {
         await().atMost(100, SECONDS).until(() -> repository.count() > 0);
         var all = repository.getAll();
         assertFalse(all.isEmpty());
-        all.forEach(v -> Assertions.assertEquals(10.1, v.getLastLocation().getLatitude()));
-        all.forEach(v -> Assertions.assertEquals(20.2, v.getLastLocation().getLongitude()));
+        all.forEach(v -> Assertions.assertEquals(10.1, v.lastLocation().latitude()));
+        all.forEach(v -> Assertions.assertEquals(20.2, v.lastLocation().longitude()));
     }
 
 }
