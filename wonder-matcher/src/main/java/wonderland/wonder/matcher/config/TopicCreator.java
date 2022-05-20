@@ -33,10 +33,6 @@ public class TopicCreator {
 
     }
 
-    public static String storeTopicName(String storeName, String applicationName) {
-        return String.format("%s-%s-changelog", applicationName, storeName);
-    }
-
 //    @Bean
 //    public NewTopic eventsTopic() {
 //        return new NewTopic(Topics.EVENT_LOG, eventTopicDefinition.numPartitions, eventTopicDefinition.replicationFactor)
@@ -44,8 +40,8 @@ public class TopicCreator {
 //    }
 
     @Bean
-    public NewTopic moverStateStoreTopic() {
-        return new NewTopic(storeTopicName(Stores.MOVER_IN_MEMORY_STATE_STORE, applicationName), changeLogTopicDefinition.numPartitions, changeLogTopicDefinition.replicationFactor)
+    public NewTopic changeLogTopic() {
+        return new NewTopic(Stores.WONDER_SEEKER_STATE_STORE, changeLogTopicDefinition.numPartitions, changeLogTopicDefinition.replicationFactor)
                 .configs(Map.of(CLEANUP_POLICY_CONFIG, CLEANUP_POLICY_COMPACT));
     }
 

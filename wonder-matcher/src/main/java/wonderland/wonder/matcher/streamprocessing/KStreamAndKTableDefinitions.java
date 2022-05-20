@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Configuration;
 import statefull.geofencing.faas.common.domain.Mover;
 import statefull.geofencing.faas.common.dto.MoverLocationUpdate;
 import statefull.geofencing.faas.common.repository.MoverJdbcRepository;
-import wonderland.wonder.matcher.config.MetricsFacade;
 import wonderland.wonder.matcher.config.TopicCreator;
 import wonderland.wonder.matcher.config.Topics;
 import wonderland.wonder.matcher.serialization.CustomSerdes;
@@ -60,7 +59,7 @@ public class KStreamAndKTableDefinitions {
     @PostConstruct
     public void configureStores() {
         builder
-                .stream(Topics.MOVER_POSITION_UPDATES_TOPIC, MOVER_POSITION_UPDATE_CONSUMED)
+                .stream(Topics.WONDER_SEEKER_LOCATION_UPDATE_TOPIC, MOVER_POSITION_UPDATE_CONSUMED)
                 .filterNot((k, v) -> k == null || k.isBlank() || k.isEmpty() || v == null || v.getKey() == null || v.getKey().isEmpty() || v.getKey().isBlank())
                 .filter((k, v) -> k.equals(v.getKey()))
                 .filter((k, v) -> v.getLatitude() >= -90 && v.getLatitude() <= 90)

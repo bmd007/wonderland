@@ -31,7 +31,7 @@ public class KafkaStreamsDefaultConfig {
             @Value("${spring.kafka.streams.replication-factor}") int kafkaStreamsReplicationFactor,
             Environment environment) {
         Map<String, Object> props = new HashMap<>();
-        // equivalent to group-id
+        // equivalent to group-wonderSeekerId
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServers);
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationName);
         props.put(StreamsConfig.NUM_STREAM_THREADS_CONFIG, 1);

@@ -13,7 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class MoverProcessorTest {
+class WonderSeekerProcessorTest {
 
     private static final String KEY = "RNO112";
     private static final Mover VALUE = Mover.newBuilder().withId(KEY).build();

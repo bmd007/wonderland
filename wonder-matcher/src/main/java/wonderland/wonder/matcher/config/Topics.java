@@ -1,5 +1,5 @@
 package wonderland.wonder.matcher.config;
 
 public class Topics {
-    public static final String MOVER_POSITION_UPDATES_TOPIC = "mover-position-updates";
+    public static final String WONDER_SEEKER_LOCATION_UPDATES_TOPIC = "WONDER_SEEKER_LOCATION_UPDATES";
 }

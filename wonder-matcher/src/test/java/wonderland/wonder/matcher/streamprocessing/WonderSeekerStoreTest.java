@@ -19,7 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class MoverStoreTest {
+class WonderSeekerStoreTest {
 
     private static final String NAME = "store";
     private static final String KEY = "RNO112";

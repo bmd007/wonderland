@@ -32,7 +32,7 @@ public class UpdateProducer {
                     .withMoverId(key)
                     .withTimestamp(Instant.now())
                     .build();
-            var record = new ProducerRecord<>(Topics.MOVER_POSITION_UPDATES_TOPIC, key, value);
+            var record = new ProducerRecord<>(Topics.WONDER_SEEKER_LOCATION_UPDATE_TOPIC, key, value);
             positionUpdateProducer.send(record).get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
