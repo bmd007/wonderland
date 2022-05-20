@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.0'
+    id 'org.springframework.boot' version '2.5.5'
     id "io.spring.dependency-management" version "1.0.11.RELEASE"
     id 'java'
     id 'idea'
@@ -34,7 +34,6 @@ ext {
 }
 
 dependencies {
-    
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     implementation 'org.springframework.cloud:spring-cloud-starter'
     implementation 'org.springframework.boot:spring-boot-starter'
@@ -43,18 +42,35 @@ dependencies {
     implementation "org.springframework.cloud:spring-cloud-loadbalancer"
     implementation "org.springframework.cloud:spring-cloud-starter-consul-config"
     implementation "org.springframework.cloud:spring-cloud-starter-consul-discovery"
+    implementation 'org.springframework.cloud:spring-cloud-function-context'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation 'com.jayway.jsonpath:json-path'
     implementation 'org.projectlombok:lombok:1.18.22'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+    // kafka
+    implementation 'org.apache.kafka:kafka-streams'
+    implementation 'org.springframework.kafka:spring-kafka'
+
+    implementation('org.springframework.boot:spring-boot-starter-data-jpa') {
+        exclude group: 'com.zaxxer', module: 'HikariCP'
+    }
+
+    implementation 'com.h2database:h2:1.4.200' //this is the newer version of h2. Hibernate-spatial has no dialect for
+    // it. Also h2gis (one of its geo extensions) doesn't support its latest (1.4.200) version
+    implementation 'org.locationtech.jts:jts-core:1.18.1' // not needed if h2gis got used
+
+    implementation 'com.google.guava:guava:31.1-jre'
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
     testImplementation 'org.mockito:mockito-junit-jupiter'
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testImplementation 'org.awaitility:awaitility:3.1.6'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     implementation 'com.github.javafaker:javafaker:1.0.2'
+
 }
 
 dependencyManagement {
@@ -66,11 +82,9 @@ dependencyManagement {
 test {
     useJUnitPlatform {}
 }
-jacocoTestReport {
-    reports {
-        xml.required = false
-        html.required = true
-    }
+
+bootJar {
+
 }
 
 tasks.named('wrapper') {
@@ -80,5 +94,5 @@ tasks.named('wrapper') {
 bootBuildImage {
 //	imageName = "bmd007/${project.name}:${project.version}"
     imageName = "bmd007/${project.name}"
-    environment = ["BP_JVM_VERSION": "17"]
+    environment = ["BP_JVM_VERSION" : "17"]
 }

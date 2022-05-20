@@ -1,0 +1,111 @@
+server.port: 9585
+
+management:
+  server.port: 9586
+  health:
+    defaults.enabled: true
+    diskspace.enabled: false
+  endpoints:
+    web:
+      base-path: /
+      exposure.include: "*"
+  endpoint:
+    prometheus:
+      enabled: true
+    health:
+      enabled: true
+      show-details: never
+    auditevents.enabled: false
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    enable.jvm: true
+    enable.jvm.gc.pause: true
+    enable.jvm.memory: true
+    enable.jvm.threads: true
+    enable.process: true
+    enable.process.files: true
+    enable.http: true
+    enable.http.server.requests: true
+    enable.logback: true
+    enable.system: true
+    export:
+      prometheus:
+        enabled: true
+
+
+spring:
+  config:
+    import: optional:consul:localhost:8500
+  application:
+    name: wonder-matcher
+  kafka:
+    streams:
+      replication-factor: 3
+      properties:
+        num.stream.threads: 1
+    bootstrap-servers: "localhost:9092"
+
+  sleuth:
+    sampler.probability: 1.0
+    scheduled.skip-pattern: .*ConfigWatch|.*ConsulCatalogWatch|.*/api/v1/spans
+  zipkin.base-url: http://system-zipkin/
+  cloud:
+    consul:
+      discovery:
+        prefer-ip-address: true
+        health-check-path: /health
+
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+  sql:
+    init:
+      mode: always
+
+
+kafka:
+  topic:
+    config:
+      event: '3:2'
+      changelog: '3:2'
+  streams:
+    server:
+      config:
+        app-ip: localhost
+        app-port: ${server.port}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  kafka:
+    streams:
+      replication-factor: 1
+
+kafka:
+  topic:
+    config:
+      event: '1:1'
+      changelog: '1:1'
+
+---
+spring:
+  config:
+    activate:
+      on-profile: no-consul
+  application:
+    name: wonder-matcher
+  kafka:
+    streams:
+      replication-factor: 1
+
+kafka:
+  topic:
+    config:
+      event: '1:1'
+      changelog: '1:1'
+
