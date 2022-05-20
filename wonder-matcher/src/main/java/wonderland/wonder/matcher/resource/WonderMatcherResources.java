@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import wonderland.wonder.matcher.domain.Location;
 import wonderland.wonder.matcher.domain.WonderSeeker;
-import wonderland.wonder.matcher.dto.SeekerWonderingUpdateDto;
 import wonderland.wonder.matcher.dto.WonderSeekerDto;
 import wonderland.wonder.matcher.dto.WonderSeekersDto;
 import wonderland.wonder.matcher.repository.WonderSeekerJdbcRepository;
