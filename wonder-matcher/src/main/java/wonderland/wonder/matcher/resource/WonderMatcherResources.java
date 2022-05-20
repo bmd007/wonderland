@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.*;
 import wonderland.wonder.matcher.domain.Location;
 import wonderland.wonder.matcher.domain.WonderSeeker;
 import wonderland.wonder.matcher.dto.SeekerWonderingUpdateDto;
+import wonderland.wonder.matcher.dto.WonderSeekerDto;
 import wonderland.wonder.matcher.dto.WonderSeekersDto;
 import wonderland.wonder.matcher.repository.WonderSeekerJdbcRepository;
 
 import java.util.stream.Collectors;
 
+//todo expose RSocket as well
 @RestController
 @RequestMapping("/api/wonder")
 public class WonderMatcherResources {
@@ -29,7 +31,7 @@ public class WonderMatcherResources {
     }
 
     @GetMapping("/{id}")
-    public SeekerWonderingUpdateDto get(@PathVariable("id") String id) {
+    public WonderSeekerDto get(@PathVariable("id") String id) {
         return map(repository.get(id));
     }
 
@@ -67,8 +69,8 @@ public class WonderMatcherResources {
         }
     }
 
-    private SeekerWonderingUpdateDto map(WonderSeeker wonderSeeker) {
-        return new SeekerWonderingUpdateDto(wonderSeeker.id(), new Location(wonderSeeker.lastLocation().latitude(), wonderSeeker.lastLocation().longitude()));
+    private WonderSeekerDto map(WonderSeeker wonderSeeker) {
+        return new WonderSeekerDto(wonderSeeker.id(), new Location(wonderSeeker.lastLocation().latitude(), wonderSeeker.lastLocation().longitude()));
     }
 
     @DeleteMapping
