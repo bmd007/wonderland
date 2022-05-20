@@ -39,18 +39,12 @@ public class KStreamAndKTableDefinitions {
             .withKeySerde(Serdes.String())
             .withValueSerde(CustomSerdes.WONDER_SEEKER_JSON_SERDE);
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KStreamAndKTableDefinitions.class);
-
     private final StreamsBuilder builder;
     private final WonderSeekerJdbcRepository repository;
-    private final String applicationName;
 
-    public KStreamAndKTableDefinitions(StreamsBuilder builder,
-                                       WonderSeekerJdbcRepository repository,
-                                       @Value("${spring.application.name}") String applicationName) {
+    public KStreamAndKTableDefinitions(StreamsBuilder builder, WonderSeekerJdbcRepository repository) {
         this.builder = builder;
         this.repository = repository;
-        this.applicationName = applicationName;
     }
 
     @PostConstruct
