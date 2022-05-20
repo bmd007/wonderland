@@ -11,8 +11,9 @@ import org.apache.kafka.streams.state.internals.AbstractStoreBuilder;
 import org.apache.kafka.streams.state.internals.DelegatingPeekingKeyValueIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import statefull.geofencing.faas.common.domain.Mover;
-import statefull.geofencing.faas.common.repository.MoverJdbcRepository;
+
+import wonderland.wonder.matcher.domain.WonderSeeker;
+import wonderland.wonder.matcher.repository.WonderSeekerJdbcRepository;
 import wonderland.wonder.matcher.serialization.CustomSerdes;
 
 import java.util.Iterator;
@@ -22,15 +23,15 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class MoverStore implements KeyValueStore<String, Mover> {
+public class WonderSeekerStore implements KeyValueStore<String, WonderSeeker> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MoverStore.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WonderSeekerStore.class);
 
     private final String name;
-    private final MoverJdbcRepository repository;
+    private final WonderSeekerJdbcRepository repository;
     private boolean open = false;
 
-    public MoverStore(String name, MoverJdbcRepository repository) {
+    public WonderSeekerStore(String name, WonderSeekerJdbcRepository repository) {
         this.name = name;
         this.repository = repository;
     }
@@ -51,7 +52,7 @@ public class MoverStore implements KeyValueStore<String, Mover> {
                 if (valueBytes == null) {
                     delete(key);
                 } else {
-                    Mover value = CustomSerdes.MOVER_JSON_SERDE.deserializer().deserialize(null, valueBytes);
+                    WonderSeeker value = CustomSerdes.WONDER_SEEKER_JSON_SERDE.deserializer().deserialize(null, valueBytes);
                     put(key, value);
                 }
             });
@@ -85,13 +86,13 @@ public class MoverStore implements KeyValueStore<String, Mover> {
     }
 
     @Override
-    public Mover get(String key) {
+    public WonderSeeker get(String key) {
         LOGGER.debug("Reading by key {}", key);
         return repository.get(key);
     }
 
     @Override
-    public KeyValueIterator<String, Mover> range(String from, String to) {
+    public KeyValueIterator<String, WonderSeeker> range(String from, String to) {
         LOGGER.debug("Reading rage {}-{}", from, to);
         if (from.compareTo(to) > 0) {
             return new EmptyKeyValueIterator<>();
@@ -100,7 +101,7 @@ public class MoverStore implements KeyValueStore<String, Mover> {
     }
 
     @Override
-    public KeyValueIterator<String, Mover> all() {
+    public KeyValueIterator<String, WonderSeeker> all() {
         LOGGER.debug("Reading all movers");
         return wrapWithIterator(repository.getAll());
     }
@@ -111,14 +112,14 @@ public class MoverStore implements KeyValueStore<String, Mover> {
     }
 
     @Override
-    public void put(String key, Mover value) {
+    public void put(String key, WonderSeeker value) {
         LOGGER.debug("Updating {}", key);
         if (key == null) {
             return;
         }
         if (value == null) {
             repository.delete(key);
-        } else if (value.getId() == null || value.getId().isBlank() || value.getId().isEmpty()) {
+        } else if (value.id() == null || value.id().isBlank() || value.id().isEmpty()) {
             return;
         } else {
             errorSuppressedSave(value);
@@ -126,7 +127,7 @@ public class MoverStore implements KeyValueStore<String, Mover> {
     }
 
     @Override
-    public Mover putIfAbsent(String key, Mover value) {
+    public WonderSeeker putIfAbsent(String key, WonderSeeker value) {
         LOGGER.info("Updating {} if absent", key);
         var original = get(key);
         if (original == null) {
@@ -135,7 +136,7 @@ public class MoverStore implements KeyValueStore<String, Mover> {
         return original;
     }
 
-    private void errorSuppressedSave(Mover value) {
+    private void errorSuppressedSave(WonderSeeker value) {
        try {
            repository.save(value);
        }catch (Exception e){
@@ -144,7 +145,7 @@ public class MoverStore implements KeyValueStore<String, Mover> {
     }
 
     @Override
-    public void putAll(List<KeyValue<String, Mover>> entries) {
+    public void putAll(List<KeyValue<String, WonderSeeker>> entries) {
         LOGGER.debug("Updating multiple ({}) entries", entries.size());
         for (var entry : entries) {
             put(entry.key, entry.value);
@@ -152,30 +153,30 @@ public class MoverStore implements KeyValueStore<String, Mover> {
     }
 
     @Override
-    public Mover delete(String key) {
+    public WonderSeeker delete(String key) {
         LOGGER.debug("Removing {}", key);
         var original = repository.get(key);
         repository.delete(key);
         return original;
     }
 
-    private KeyValueIterator<String, Mover> wrapWithIterator(List<Mover> all) {
-        var map = all.stream().collect(Collectors.toMap(Mover::getId, Function.identity()));
+    private KeyValueIterator<String, WonderSeeker> wrapWithIterator(List<WonderSeeker> all) {
+        var map = all.stream().collect(Collectors.toMap(WonderSeeker::id, Function.identity()));
         return new DelegatingPeekingKeyValueIterator<>(name, new InMemoryKeyValueIterator<>(map.entrySet().iterator()));
     }
 
-    public static class Builder extends AbstractStoreBuilder<String, Mover, MoverStore> {
+    public static class Builder extends AbstractStoreBuilder<String, WonderSeeker, WonderSeekerStore> {
 
-        private final MoverJdbcRepository repository;
+        private final WonderSeekerJdbcRepository repository;
 
-        public Builder(String name, Time time, MoverJdbcRepository repository) {
-            super(name, Serdes.String(), CustomSerdes.MOVER_JSON_SERDE, time);
+        public Builder(String name, Time time, WonderSeekerJdbcRepository repository) {
+            super(name, Serdes.String(), CustomSerdes.WONDER_SEEKER_JSON_SERDE, time);
             this.repository = repository;
         }
 
         @Override
-        public MoverStore build() {
-            return new MoverStore(name, repository);
+        public WonderSeekerStore build() {
+            return new WonderSeekerStore(name, repository);
         }
     }
 

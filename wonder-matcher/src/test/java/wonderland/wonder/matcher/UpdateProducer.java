@@ -21,7 +21,7 @@ public class UpdateProducer {
     public UpdateProducer(@Value("${spring.kafka.bootstrap-servers}") String bootstrapServers) {
         var providerConfig = new Properties();
         providerConfig.put("bootstrap.servers", bootstrapServers);
-        positionUpdateProducer = new KafkaProducer<>(providerConfig, new StringSerializer(), CustomSerdes.MOVER_POSITION_UPDATE_JSON_SERDE.serializer());
+        positionUpdateProducer = new KafkaProducer<>(providerConfig, new StringSerializer(), CustomSerdes.WONDER_SEEKER_DTO_JSON_SERDE.serializer());
     }
 
     public void producePositionUpdate(String key, double latitude, double longitude) {

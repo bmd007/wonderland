@@ -11,13 +11,13 @@ import static java.util.Objects.requireNonNull;
 /**
  * A simple processor that stores the state in a key value store.
  */
-public class MoverProcessor extends AbstractProcessor<String, Mover> {
+public class WonderSeekerProcessor extends AbstractProcessor<String, Mover> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MoverProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WonderSeekerProcessor.class);
 
     private final String storeName;
 
-    public MoverProcessor(String storeName) {
+    public WonderSeekerProcessor(String storeName) {
         this.storeName = storeName;
     }
 

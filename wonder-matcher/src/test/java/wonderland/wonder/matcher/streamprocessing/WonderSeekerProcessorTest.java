@@ -24,7 +24,7 @@ class WonderSeekerProcessorTest {
     @Mock
     KeyValueStore<String, Mover> store;
 
-    MoverProcessor processor = new MoverProcessor("store");
+    WonderSeekerProcessor processor = new WonderSeekerProcessor("store");
 
     @BeforeEach
     void setUp() throws Exception {

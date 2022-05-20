@@ -12,7 +12,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import statefull.geofencing.faas.common.repository.MoverJdbcRepository;
-import wonderland.wonder.matcher.config.Stores;
+import wonderland.wonder.matcher.config.StateStores;
 import wonderland.wonder.matcher.util.KafkaStreamsAwait;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("test")
 @EmbeddedKafka(partitions = 1, topics = {
         "mover-wonderSeekerPosition-updates",
-        Stores.MOVER_IN_MEMORY_STATE_STORE + "-" + "stateful-geofencing-faas-changelog",
+        StateStores.MOVER_IN_MEMORY_STATE_STORE + "-" + "stateful-geofencing-faas-changelog",
         "event_log"
 })
 @DirtiesContext

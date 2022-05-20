@@ -34,11 +34,11 @@ class WonderSeekerStoreTest {
     @Mock
     StateStore rootStateStore;
 
-    MoverStore store;
+    WonderSeekerStore store;
 
     @BeforeEach
     void setUp() throws Exception {
-        store = new MoverStore(NAME, repository);
+        store = new WonderSeekerStore(NAME, repository);
     }
 
     @Test

@@ -15,72 +15,66 @@ import org.springframework.context.annotation.Configuration;
 import statefull.geofencing.faas.common.domain.Mover;
 import statefull.geofencing.faas.common.dto.MoverLocationUpdate;
 import statefull.geofencing.faas.common.repository.MoverJdbcRepository;
-import wonderland.wonder.matcher.config.TopicCreator;
+import wonderland.wonder.matcher.config.StateStores;
 import wonderland.wonder.matcher.config.Topics;
+import wonderland.wonder.matcher.domain.WonderSeeker;
+import wonderland.wonder.matcher.dto.WonderSeekerDto;
+import wonderland.wonder.matcher.repository.WonderSeekerJdbcRepository;
 import wonderland.wonder.matcher.serialization.CustomSerdes;
 
 import javax.annotation.PostConstruct;
-import java.util.function.BiFunction;
-import java.util.function.Predicate;
+
+import static wonderland.wonder.matcher.config.StateStores.WONDER_SEEKER_GLOBAL_STATE_STORE;
+import static wonderland.wonder.matcher.config.TopicCreator.stateStoreTopic;
 
 @Configuration
 public class KStreamAndKTableDefinitions {
 
-    private static final Consumed<String, MoverLocationUpdate> MOVER_POSITION_UPDATE_CONSUMED = Consumed.with(Serdes.String(), CustomSerdes.MOVER_POSITION_UPDATE_JSON_SERDE);
-    private static final Consumed<String, Mover> MOVER_CONSUMED = Consumed.with(Serdes.String(), CustomSerdes.MOVER_JSON_SERDE);
+    private static final Consumed<String, WonderSeekerDto> WONDER_SEEK_UPDATES_CONSUMED = Consumed.with(Serdes.String(), CustomSerdes.WONDER_SEEKER_DTO_JSON_SERDE);
+    private static final Consumed<String, WonderSeeker> WONDER_SEEKER_CONSUMED = Consumed.with(Serdes.String(), CustomSerdes.WONDER_SEEKER_JSON_SERDE);
 
     // Use an in-memory store for intermediate state storage.
-    private static final Materialized<String, Mover, KeyValueStore<Bytes, byte[]>> IN_MEMORY_TEMP_KTABLE = Materialized
-            .<String, Mover>as(Stores.inMemoryKeyValueStore(wonderland.wonder.matcher.config.Stores.MOVER_IN_MEMORY_STATE_STORE))
+    private static final Materialized<String, WonderSeeker, KeyValueStore<Bytes, byte[]>> IN_MEMORY_TEMP_KTABLE = Materialized
+            .<String, WonderSeeker>as(Stores.inMemoryKeyValueStore(StateStores.WONDER_SEEKER_STATE_STORE))
             .withKeySerde(Serdes.String())
-            .withValueSerde(CustomSerdes.MOVER_JSON_SERDE);
+            .withValueSerde(CustomSerdes.WONDER_SEEKER_JSON_SERDE);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KStreamAndKTableDefinitions.class);
 
-    private final Predicate<MoverLocationUpdate> moverLocationUpdateFilterFunction;
-    private final BiFunction<Mover, MoverLocationUpdate, Mover> moverAggregateFunction;
     private final StreamsBuilder builder;
-    private final MoverJdbcRepository repository;
+    private final WonderSeekerJdbcRepository repository;
     private final String applicationName;
-    private final MetricsFacade metrics;
 
-    public KStreamAndKTableDefinitions(Predicate<MoverLocationUpdate> moverLocationUpdateFilterFunction,
-                                       BiFunction<Mover, MoverLocationUpdate, Mover> moverAggregateFunction,
-                                       StreamsBuilder builder, MoverJdbcRepository repository,
-                                       @Value("${spring.application.name}") String applicationName, MetricsFacade metrics) {
-        this.moverLocationUpdateFilterFunction = moverLocationUpdateFilterFunction;
-        this.moverAggregateFunction = moverAggregateFunction;
+    public KStreamAndKTableDefinitions(StreamsBuilder builder,
+                                       WonderSeekerJdbcRepository repository,
+                                       @Value("${spring.application.name}") String applicationName) {
         this.builder = builder;
         this.repository = repository;
         this.applicationName = applicationName;
-        this.metrics = metrics;
     }
 
     @PostConstruct
     public void configureStores() {
         builder
-                .stream(Topics.WONDER_SEEKER_LOCATION_UPDATE_TOPIC, MOVER_POSITION_UPDATE_CONSUMED)
+                .stream(Topics.WONDER_SEEK_UPDATES_TOPIC, WONDER_SEEK_UPDATES_CONSUMED)
                 .filterNot((k, v) -> k == null || k.isBlank() || k.isEmpty() || v == null || v.getKey() == null || v.getKey().isEmpty() || v.getKey().isBlank())
                 .filter((k, v) -> k.equals(v.getKey()))
-                .filter((k, v) -> v.getLatitude() >= -90 && v.getLatitude() <= 90)
-                .filter((k, v) -> v.getLongitude() >= -180 && v.getLongitude() <= 180)
-                .filter((key, value) -> moverLocationUpdateFilterFunction.test(value))
+                .filter((k, v) -> v.wonderSeekerPosition().latitude() >= -90 && v.wonderSeekerPosition().latitude() <= 90)
+                .filter((k, v) -> v.wonderSeekerPosition().longitude() >= -180 && v.wonderSeekerPosition().longitude() <= 180)
                 .groupByKey()
                 // Aggregate status into a in-memory KTable as a source for global KTable
-                .aggregate(Mover::defineEmpty,
-                        (key, value, aggregate) -> moverAggregateFunction
-                                .andThen(mover -> {
-                                    metrics.incrementAggregationCounter();
-                                    return mover;
-                                })
-                                .apply(aggregate, value),
+                .aggregate(WonderSeeker::defineEmpty,
+                        (key, value, aggregate) -> {
+                        },
                         IN_MEMORY_TEMP_KTABLE);
 
         // register a global store which reads directly from the aggregated in memory table's changelog
-        var storeBuilder = new MoverStore.Builder(wonderland.wonder.matcher.config.Stores.MOVER_GLOBAL_STATE_STORE, Time.SYSTEM, repository);
+        var storeBuilder = new WonderSeekerStore.Builder(WONDER_SEEKER_GLOBAL_STATE_STORE, Time.SYSTEM, repository);
         builder.addGlobalStore(storeBuilder,
-                TopicCreator.storeTopicName(wonderland.wonder.matcher.config.Stores.MOVER_IN_MEMORY_STATE_STORE, applicationName),
-                MOVER_CONSUMED, () -> new MoverProcessor(wonderland.wonder.matcher.config.Stores.MOVER_GLOBAL_STATE_STORE));
+                stateStoreTopic(WONDER_SEEKER_GLOBAL_STATE_STORE),
+                WONDER_SEEKER_CONSUMED,
+                () -> new WonderSeekerProcessor(WONDER_SEEKER_GLOBAL_STATE_STORE)
+        );
     }
 
 }

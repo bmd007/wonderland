@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import wonderland.wonder.matcher.config.Stores;
+import wonderland.wonder.matcher.config.StateStores;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -15,7 +15,7 @@ import wonderland.wonder.matcher.config.Stores;
 @EmbeddedKafka(partitions = 1, topics = {
         "mover-wonderSeekerPosition-updates",
 //todo?!        "${spring.application.name}"+"-changelog-"+Stores.MOVER_IN_MEMORY_STATE_STORE
-        Stores.MOVER_IN_MEMORY_STATE_STORE + "-" + "stateful-geofencing-faas-changelog",
+        StateStores.MOVER_IN_MEMORY_STATE_STORE + "-" + "stateful-geofencing-faas-changelog",
         "event_log"
 })
 public class ApplicationTests {

@@ -39,9 +39,13 @@ public class TopicCreator {
 //                .configs(Map.of(RETENTION_MS_CONFIG, "-1", RETENTION_BYTES_CONFIG, "-1"));
 //    }
 
+    public static String stateStoreTopic(String storeName){
+        return storeName+"_changeLog";
+    }
+
     @Bean
     public NewTopic changeLogTopic() {
-        return new NewTopic(Stores.WONDER_SEEKER_STATE_STORE, changeLogTopicDefinition.numPartitions, changeLogTopicDefinition.replicationFactor)
+        return new NewTopic(stateStoreTopic(StateStores.WONDER_SEEKER_STATE_STORE), changeLogTopicDefinition.numPartitions, changeLogTopicDefinition.replicationFactor)
                 .configs(Map.of(CLEANUP_POLICY_CONFIG, CLEANUP_POLICY_COMPACT));
     }
 
