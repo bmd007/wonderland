@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import wonderland.wonder.matcher.config.Topics;
 import wonderland.wonder.matcher.domain.Location;
-import wonderland.wonder.matcher.dto.WonderSeekerDto;
+import wonderland.wonder.matcher.dto.SeekerWonderingUpdateDto;
 import wonderland.wonder.matcher.serialization.CustomSerdes;
 
 import java.util.Properties;
@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutionException;
 @Component
 public class UpdateProducer {
 
-    private final KafkaProducer<String, WonderSeekerDto> positionUpdateProducer;
+    private final KafkaProducer<String, SeekerWonderingUpdateDto> positionUpdateProducer;
 
     public UpdateProducer(@Value("${spring.kafka.bootstrap-servers}") String bootstrapServers) {
         var providerConfig = new Properties();
@@ -27,7 +27,7 @@ public class UpdateProducer {
     public void producePositionUpdate(String key, double latitude, double longitude) {
         try {
             var location = new Location(latitude, longitude);
-            var value = new WonderSeekerDto(key, location);
+            var value = new SeekerWonderingUpdateDto(key, location);
             var record = new ProducerRecord<>(Topics.WONDER_SEEK_UPDATES_TOPIC, key, value);
             positionUpdateProducer.send(record).get();
         } catch (InterruptedException | ExecutionException e) {

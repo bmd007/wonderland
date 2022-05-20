@@ -1,4 +1,4 @@
-package wonderland.wonder.matcher.streamprocessing;
+package wonderland.wonder.matcher.stream;
 
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Time;

@@ -1,4 +1,4 @@
-package wonderland.wonder.matcher.streamprocessing;
+package wonderland.wonder.matcher.stream;
 
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import wonderland.wonder.matcher.config.StateStores;
 import wonderland.wonder.matcher.config.Topics;
 import wonderland.wonder.matcher.domain.WonderSeeker;
-import wonderland.wonder.matcher.dto.WonderSeekerDto;
+import wonderland.wonder.matcher.dto.SeekerWonderingUpdateDto;
 import wonderland.wonder.matcher.repository.WonderSeekerJdbcRepository;
 import wonderland.wonder.matcher.serialization.CustomSerdes;
 
@@ -27,7 +27,7 @@ import static wonderland.wonder.matcher.config.TopicCreator.stateStoreTopic;
 @Configuration
 public class KStreamAndKTableDefinitions {
 
-    private static final Consumed<String, WonderSeekerDto> WONDER_SEEK_UPDATES_CONSUMED = Consumed.with(Serdes.String(), CustomSerdes.WONDER_SEEKER_DTO_JSON_SERDE);
+    private static final Consumed<String, SeekerWonderingUpdateDto> SEEKER_WONDERING_UPDATES_CONSUMED = Consumed.with(Serdes.String(), CustomSerdes.WONDER_SEEKER_DTO_JSON_SERDE);
     private static final Consumed<String, WonderSeeker> WONDER_SEEKER_CONSUMED = Consumed.with(Serdes.String(), CustomSerdes.WONDER_SEEKER_JSON_SERDE);
 
     // Use an in-memory store for intermediate state storage.
@@ -53,13 +53,13 @@ public class KStreamAndKTableDefinitions {
     @PostConstruct
     public void configureStores() {
         builder
-                .stream(Topics.WONDER_SEEK_UPDATES_TOPIC, WONDER_SEEK_UPDATES_CONSUMED)
+                .stream(Topics.WONDER_SEEK_UPDATES_TOPIC, SEEKER_WONDERING_UPDATES_CONSUMED)
                 .filterNot((k, v) -> k == null || k.isBlank() || k.isEmpty() || v == null || v.getKey() == null || v.getKey().isEmpty() || v.getKey().isBlank())
                 .filter((k, v) -> k.equals(v.getKey()))
-                .filter((k, v) -> v.wonderSeekerPosition().latitude() >= -90 && v.wonderSeekerPosition().latitude() <= 90)
-                .filter((k, v) -> v.wonderSeekerPosition().longitude() >= -180 && v.wonderSeekerPosition().longitude() <= 180)
+                .filter((k, v) -> v.latitude() >= -90 && v.latitude() <= 90)
+                .filter((k, v) -> v.longitude() >= -180 && v.longitude() <= 180)
                 .groupByKey()
-                // Aggregate status into a in-memory KTable as a source for global KTable
+                // Aggregate status into an in-memory KTable as a source for global KTable
                 .aggregate(WonderSeeker::defineEmpty,
                         (key, value, aggregate) -> {
                         },

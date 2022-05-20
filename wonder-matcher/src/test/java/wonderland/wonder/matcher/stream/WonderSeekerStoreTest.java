@@ -1,4 +1,4 @@
-package wonderland.wonder.matcher.streamprocessing;
+package wonderland.wonder.matcher.stream;
 
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.processor.ProcessorContext;
