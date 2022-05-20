@@ -1,10 +1,12 @@
 plugins {
-    id 'org.springframework.boot' version '2.5.5'
+    id "java"
+    id "idea"
+    id "org.springframework.boot" version "2.7.0"
     id "io.spring.dependency-management" version "1.0.11.RELEASE"
-    id 'java'
-    id 'idea'
+    id "com.gorylenko.gradle-git-properties" version "2.4.0"
     id "jacoco" //code coverage
 }
+
 
 jacoco {
     toolVersion = "0.8.7"
@@ -69,8 +71,6 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testImplementation 'org.awaitility:awaitility:3.1.6'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-    implementation 'com.github.javafaker:javafaker:1.0.2'
-
 }
 
 dependencyManagement {
