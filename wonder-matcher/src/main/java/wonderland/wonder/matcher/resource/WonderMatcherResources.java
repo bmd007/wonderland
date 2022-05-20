@@ -14,16 +14,14 @@ import wonderland.wonder.matcher.dto.WonderSeekerDto;
 import wonderland.wonder.matcher.dto.WonderSeekersDto;
 import wonderland.wonder.matcher.repository.WonderSeekerJdbcRepository;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/wonder")
 public class WonderMatcherResources {
 
-    private final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.maximumPreciseValue), 4326);
-
     private static final Logger LOGGER = LoggerFactory.getLogger(WonderMatcherResources.class);
+    private final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.maximumPreciseValue), 4326);
     private final WonderSeekerJdbcRepository repository;
 
     public WonderMatcherResources(WonderSeekerJdbcRepository repository) {
@@ -37,15 +35,15 @@ public class WonderMatcherResources {
 
     @GetMapping("/box/by/coordinate")
     public WonderSeekersDto queryBox(@RequestParam double latitude,
-                              @RequestParam double longitude,
-                              @RequestParam(required = false) Long maxAge) {
+                                     @RequestParam double longitude,
+                                     @RequestParam(required = false) Long maxAge) {
         var point = geometryFactory.createPoint(new Coordinate(latitude, longitude));
         var polygon = (Polygon) point.buffer(0.0005);
         try {
             var results = repository.query(polygon)
-                            .stream()
-                            .map(this::map)
-                            .collect(Collectors.toList());
+                    .stream()
+                    .map(this::map)
+                    .collect(Collectors.toList());
             return new WonderSeekersDto(results);
         } catch (Exception e) {
             LOGGER.error("error while querying by coordinate", e);
@@ -59,9 +57,9 @@ public class WonderMatcherResources {
         var polygon = (Polygon) repository.getWktReader().read(wktString);
         try {
             var results = repository.query(polygon)
-                            .stream()
-                            .map(this::map)
-                            .collect(Collectors.toList());
+                    .stream()
+                    .map(this::map)
+                    .collect(Collectors.toList());
             return new WonderSeekersDto(results);
         } catch (Exception e) {
             LOGGER.error("error while querying by wkt", e);

@@ -1,6 +1,7 @@
 package wonderland.wonder.matcher.streamprocessing;
 
 import org.apache.kafka.streams.processor.ProcessorContext;
+import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,8 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import wonderland.wonder.matcher.domain.WonderSeeker;
-
-import org.apache.kafka.streams.processor.api.Record;
 
 import java.time.Instant;
 

@@ -10,7 +10,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
-import org.apache.kafka.streams.StreamsConfig;
 
 import java.util.Arrays;
 import java.util.HashMap;

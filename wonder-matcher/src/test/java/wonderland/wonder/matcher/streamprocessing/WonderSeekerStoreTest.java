@@ -8,11 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import statefull.geofencing.faas.common.domain.WonderSeeker;
-import statefull.geofencing.faas.common.repository.WonderSeekerJdbcRepository;
+import wonderland.wonder.matcher.domain.WonderSeeker;
+import wonderland.wonder.matcher.repository.WonderSeekerJdbcRepository;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -23,7 +24,7 @@ class WonderSeekerStoreTest {
 
     private static final String NAME = "store";
     private static final String KEY = "RNO112";
-    private static final WonderSeeker VALUE = WonderSeeker.newBuilder().withId(KEY).build();
+    private static final WonderSeeker VALUE = WonderSeeker.empty(KEY);
 
     @Mock
     WonderSeekerJdbcRepository repository;
@@ -37,7 +38,7 @@ class WonderSeekerStoreTest {
     WonderSeekerStore store;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         store = new WonderSeekerStore(NAME, repository);
     }
 
@@ -55,7 +56,7 @@ class WonderSeekerStoreTest {
 
     @Test
     void testClose() {
-        store.init(null, null);
+        store.init((ProcessorContext) null, null);
         store.close();
         assertFalse(store.isOpen());
         verify(repository).deleteAll();

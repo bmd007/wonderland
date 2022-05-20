@@ -11,7 +11,6 @@ import org.apache.kafka.streams.state.internals.AbstractStoreBuilder;
 import org.apache.kafka.streams.state.internals.DelegatingPeekingKeyValueIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import wonderland.wonder.matcher.domain.WonderSeeker;
 import wonderland.wonder.matcher.repository.WonderSeekerJdbcRepository;
 import wonderland.wonder.matcher.serialization.CustomSerdes;
@@ -137,11 +136,11 @@ public class WonderSeekerStore implements KeyValueStore<String, WonderSeeker> {
     }
 
     private void errorSuppressedSave(WonderSeeker value) {
-       try {
-           repository.save(value);
-       }catch (Exception e){
-           LOGGER.error("Problem while saving {}", value, e);
-       }
+        try {
+            repository.save(value);
+        } catch (Exception e) {
+            LOGGER.error("Problem while saving {}", value, e);
+        }
     }
 
     @Override

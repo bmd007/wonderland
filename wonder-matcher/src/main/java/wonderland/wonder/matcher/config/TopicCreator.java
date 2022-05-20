@@ -39,8 +39,8 @@ public class TopicCreator {
 //                .configs(Map.of(RETENTION_MS_CONFIG, "-1", RETENTION_BYTES_CONFIG, "-1"));
 //    }
 
-    public static String stateStoreTopic(String storeName){
-        return storeName+"_changeLog";
+    public static String stateStoreTopic(String storeName) {
+        return storeName + "_changeLog";
     }
 
     @Bean

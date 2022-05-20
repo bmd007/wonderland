@@ -1,8 +1,6 @@
 package wonderland.wonder.matcher.streamprocessing;
 
-import io.micrometer.core.instrument.MeterRegistry;
 import org.apache.kafka.streams.processor.api.ContextualProcessor;
-
 import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
