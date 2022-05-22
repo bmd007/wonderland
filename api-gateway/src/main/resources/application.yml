@@ -33,8 +33,13 @@ management:
       prometheus:
         enabled: true
 
-
 spring:
+  rsocket:
+    server:
+      port: 7000
+      transport: websocket
+#      mapping-path: /rsocket
+
   config:
     import: optional:consul:localhost:8500
   application:
