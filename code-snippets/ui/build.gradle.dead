@@ -27,6 +27,12 @@ ext.buildNumber = {
     return buildNumber
 }
 
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
 group = 'wonderland'
 
 dependencies {

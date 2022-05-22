@@ -6,8 +6,15 @@ plugins {
     id "jacoco" //code coverage
 }
 
-jacoco {
-    toolVersion = "0.8.7"
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 group = 'wonderland'
@@ -51,8 +58,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-neo4j'
     implementation 'org.springframework.kafka:spring-kafka'
     implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
-    implementation 'org.projectlombok:lombok:1.18.22'
-    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    compileOnly 'org.projectlombok:lombok'
+
+    annotationProcessor 'org.projectlombok:lombok'
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

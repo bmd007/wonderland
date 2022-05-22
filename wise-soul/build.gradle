@@ -10,6 +10,12 @@ jacoco {
     toolVersion = "0.8.7"
 }
 
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
 group = 'wonderland'
 
 ext.buildNumber = {
@@ -34,7 +40,6 @@ ext {
 }
 
 dependencies {
-    
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     implementation 'org.springframework.cloud:spring-cloud-starter'
     implementation 'org.springframework.boot:spring-boot-starter'
@@ -45,8 +50,9 @@ dependencies {
     implementation "org.springframework.cloud:spring-cloud-starter-consul-discovery"
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'com.jayway.jsonpath:json-path'
-    implementation 'org.projectlombok:lombok:1.18.22'
-    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    compileOnly 'org.projectlombok:lombok'
+
+    annotationProcessor 'org.projectlombok:lombok'
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

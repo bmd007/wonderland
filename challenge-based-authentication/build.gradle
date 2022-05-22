@@ -5,6 +5,12 @@ plugins {
 	id "io.spring.dependency-management" version "1.0.11.RELEASE"
 }
 
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
 group = 'wonderland'
 
 ext.buildNumber = {
@@ -42,7 +48,7 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	implementation 'com.google.guava:guava:31.1-jre'
 
-	compileOnly 'org.projectlombok:lombok'
+	compileOnly 'org.projectlombok:lombok''
 	annotationProcessor 'org.projectlombok:lombok'
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {

@@ -11,6 +11,12 @@ jacoco {
 	toolVersion = "0.8.7"
 }
 
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
 group = 'wonderland'
 
 ext.buildNumber = {

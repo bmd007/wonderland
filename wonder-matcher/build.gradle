@@ -12,6 +12,13 @@ jacoco {
     toolVersion = "0.8.7"
 }
 
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
 group = 'wonderland'
 
 ext.buildNumber = {
@@ -44,10 +51,9 @@ dependencies {
     implementation "org.springframework.cloud:spring-cloud-loadbalancer"
     implementation "org.springframework.cloud:spring-cloud-starter-consul-config"
     implementation "org.springframework.cloud:spring-cloud-starter-consul-discovery"
-    implementation 'org.springframework.cloud:spring-cloud-function-context'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation 'org.projectlombok:lombok:1.18.22'
-    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
     // kafka
     implementation 'org.apache.kafka:kafka-streams'
@@ -69,7 +75,7 @@ dependencies {
     testImplementation 'org.springframework.kafka:spring-kafka-test'
     testImplementation 'org.mockito:mockito-junit-jupiter'
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
-    testImplementation 'org.awaitility:awaitility:3.1.6'
+    testImplementation 'org.awaitility:awaitility:4.2.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 
@@ -83,9 +89,6 @@ test {
     useJUnitPlatform {}
 }
 
-bootJar {
-
-}
 
 tasks.named('wrapper') {
     distributionType = Wrapper.DistributionType.ALL
