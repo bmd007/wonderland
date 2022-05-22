@@ -19,7 +19,7 @@ public class ApiGatewayApplication {
 
 	@MessageMapping("stream")
 	Flux<Long> numbers(){
-		return Flux.interval(Duration.ofSeconds(1));
+		return Flux.interval(Duration.ofSeconds(1)).log();
 	}
 
 	@MessageMapping("echo")
