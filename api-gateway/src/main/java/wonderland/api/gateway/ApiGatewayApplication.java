@@ -8,23 +8,31 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @SpringBootApplication
 public class ApiGatewayApplication {
+
+	private static ArrayList<String> names = new ArrayList<>();
 
 	public static void main(String[] args) {
 		SpringApplication.run(ApiGatewayApplication.class, args);
 	}
 
 	@MessageMapping("stream")
-	Flux<Long> numbers(){
-		return Flux.interval(Duration.ofSeconds(1)).log();
+	public Flux<String> numbers(){
+		return Flux.fromIterable(names);
 	}
 
-	@MessageMapping("echo")
-	Mono<String> echo(String text){
-		return Mono.just(text);
+	@MessageMapping("addName")
+	public Mono<Void> addName(String name){
+		return Mono.just(name)
+				.doOnNext(names::add)
+				.then();
 	}
+
+
 
 }
