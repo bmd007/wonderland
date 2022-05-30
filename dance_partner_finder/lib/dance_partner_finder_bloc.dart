@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
@@ -10,7 +8,13 @@ class DancePartnerBloc extends Bloc<DancePartnerEvent, DancePartnerState> {
   DancePartnerBloc() : super(const DancePartnerLoading()) {
     add(const DancersLoadedEvent(['tom']));
     on<DancersLoadedEvent>((event, emit) {
-      emit(Da)
+      emit(DancePartnerLoaded(event.loadedDancerNames));
+    });
+    on<DancerLikedEvent>((event, emit) {
+
+    });
+    on<DancerDislikedEvent>((event, emit) {
+
     });
   }
 }
