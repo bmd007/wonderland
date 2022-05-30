@@ -8,8 +8,9 @@ part 'dance_partner_finder_state.dart';
 
 class DancePartnerBloc extends Bloc<DancePartnerEvent, DancePartnerState> {
   DancePartnerBloc() : super(const DancePartnerLoading()) {
-    on<DancePartnerEvent>((event, emit) {
-      // TODO: implement event handler
+    add(const DancersLoadedEvent(['tom']));
+    on<DancersLoadedEvent>((event, emit) {
+      emit(Da)
     });
   }
 }
