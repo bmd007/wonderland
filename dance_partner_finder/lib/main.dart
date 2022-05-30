@@ -34,7 +34,6 @@ class DancePartnerSelectWidget extends StatelessWidget {
           buildWhen: (prev, state) => prev.runtimeType != state.runtimeType,
           builder: (context, state) {
             var danceBloc = context.read<DancePartnerBloc>();
-            danceBloc.add(const DancersLoadedEvent(['tom']));
             return Stack(
               fit: StackFit.expand,
               children: [
