@@ -13,8 +13,8 @@ class DancePartnerBloc extends Bloc<DancePartnerEvent, DancePartnerState> {
 
     });
     on<DancerDislikedEvent>((event, emit) {
-
+      //todo
     });
-    add(const DancersLoadedEvent(['tom']));
+    add(const DancersLoadedEvent(['tom', 'like']));
   }
 }
