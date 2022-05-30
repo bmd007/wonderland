@@ -23,12 +23,33 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 class DancePartnerSelectWidget extends StatelessWidget {
   const DancePartnerSelectWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset('images/tom.jpg');
+    return Stack(
+     fit: StackFit.expand,
+      children: [
+        Image.asset('images/tom.jpg', fit: BoxFit.fitHeight),
+        Column(
+          verticalDirection: VerticalDirection.down,
+          children: [
+            Text(
+              "Tom",
+              textAlign: TextAlign.center,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.stop, textDirection: TextDirection.ltr, color: Colors.red),
+                const Icon(Icons.one_k, textDirection: TextDirection.rtl, color: Colors.green),
+              ],
+            )
+          ],
+        )
+      ],
+    );
   }
 }
-
