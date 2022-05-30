@@ -6,7 +6,6 @@ part 'dance_partner_finder_state.dart';
 
 class DancePartnerBloc extends Bloc<DancePartnerEvent, DancePartnerState> {
   DancePartnerBloc() : super(const DancePartnerLoading()) {
-    add(const DancersLoadedEvent(['tom']));
     on<DancersLoadedEvent>((event, emit) {
       emit(DancePartnerLoaded(event.loadedDancerNames));
     });
