@@ -6,9 +6,9 @@ import 'package:equatable/equatable.dart';
 part 'dance_partner_finder_event.dart';
 part 'dance_partner_finder_state.dart';
 
-class DancePartnerFinderBloc extends Bloc<DancePartnerFinderEvent, DancePartnerFinderState> {
-  DancePartnerFinderBloc() : super(DancePartnerFinderInitial()) {
-    on<DancePartnerFinderEvent>((event, emit) {
+class DancePartnerBloc extends Bloc<DancePartnerEvent, DancePartnerState> {
+  DancePartnerBloc() : super(const DancePartnerLoading()) {
+    on<DancePartnerEvent>((event, emit) {
       // TODO: implement event handler
     });
   }

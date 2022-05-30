@@ -1,20 +1,20 @@
 part of 'dance_partner_finder_bloc.dart';
 
-abstract class DancePartnerFinderEvent extends Equatable {
+abstract class DancePartnerEvent extends Equatable {
   final String dancerName;
 
-  DancePartnerFinderEvent(this.dancerName);
+  const DancePartnerEvent(this.dancerName);
 
   @override
   List<Object?> get props => [dancerName];
 
 }
 
-class DancerLikedEvent extends DancePartnerFinderEvent{
-  DancerLikedEvent(super.dancerName);
+class DancerLikedEvent extends DancePartnerEvent{
+  const DancerLikedEvent(super.dancerName);
 }
 
-class DancerDissLikedEvent extends DancePartnerFinderEvent{
-  DancerDissLikedEvent(super.dancerName);
+class DancerDislikedEvent extends DancePartnerEvent{
+  const DancerDislikedEvent(super.dancerName);
 }
 

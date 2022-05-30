@@ -29,51 +29,50 @@ class DancePartnerSelectWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocProvider(
-        create: (context) => DancePartnerFinderBloc(),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            BlocBuilder<DancePartnerFinderBloc, DancePartnerFinderState>(
-              buildWhen: (prev, state) => prev.runtimeType != state.runtimeType,
-              builder: (context, state) {
-                return Image.asset('images/tom.jpg', fit: BoxFit.fitHeight);
-              },
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+        create: (context) => DancePartnerBloc(),
+        child: BlocBuilder<DancePartnerBloc, DancePartnerState>(
+          buildWhen: (prev, state) => prev.runtimeType != state.runtimeType,
+          builder: (context, state) {
+            var danceBloc = context.read<DancePartnerBloc>();
+            return Stack(
+              fit: StackFit.expand,
               children: [
-                const Text(
-                  "Tom",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 30,
-                  ),
-                ),
-                BlocBuilder<DancePartnerFinderBloc, DancePartnerFinderState>(
-                  builder: (context, state) {
-                    var danceBloc = context.read<DancePartnerFinderBloc>();
-                    return Row(
+                Image.asset('images/'+state.currentDancerName+'.jpg', fit: BoxFit.fitHeight),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      state.currentDancerName,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 50,
+                      ),
+                    ),
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         IconButton(
-                          onPressed: () => danceBloc.add(DancerLikedEvent(state.currentDancerName)),
+                          onPressed: () => danceBloc
+                              .add(DancerLikedEvent(state.currentDancerName)),
                           iconSize: 100,
                           icon: Image.asset('images/tom.jpg'),
                         ),
                         IconButton(
-                          onPressed: () => danceBloc.add(DancerDissLikedEvent(state.currentDancerName)),
+                          onPressed: () => danceBloc.add(
+                              DancerDislikedEvent(state.currentDancerName)),
                           iconSize: 150,
                           icon: Image.asset('images/dancer.png'),
                         ),
                       ],
-                    );
-                  },
+                    )
+                  ],
                 )
               ],
-            )
-          ],
+            );
+          },
         ),
       ),
     );
