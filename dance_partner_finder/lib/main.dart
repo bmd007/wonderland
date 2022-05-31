@@ -35,30 +35,34 @@ class DancePartnerSelectWidget extends StatelessWidget {
         builder: (context, state) {
           var danceBloc = context.read<DancePartnerBloc>();
           return Scaffold(
-            appBar: AppBar(
-                title: TextField(
-                  controller: _thisDancerNamTextController,
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => danceBloc.add(ThisDancerChoseNameEvent(
-                        _thisDancerNamTextController.text)),
-                    child: const Text("touch after naming",
-                        style: TextStyle(color: Colors.black)),
-                  )
-                ]),
-            body: Stack(
-              fit: StackFit.expand,
-              children: [
-                Image.asset('images/${state.getCurrentDancerName()}.png',
-                    fit: BoxFit.fitHeight),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      state.getCurrentDancerName(),
-                      textAlign: TextAlign.center,
+            appBar: state.thisDancerName.isEmpty
+                ? AppBar(
+                    title: TextField(
+                      controller: _thisDancerNamTextController,
+                    ),
+                    actions: [
+                        TextButton(
+                          onPressed: () => danceBloc.add(
+                              ThisDancerChoseNameEvent(
+                                  _thisDancerNamTextController.text)),
+                          child: const Text("touch after naming",
+                              style: TextStyle(color: Colors.black)),
+                        )
+                      ])
+                : null,
+            body: state.thisDancerName.isNotEmpty && !state.isLoading
+                ? Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Image.asset('images/${state.getCurrentDancerName()}.png',
+                          fit: BoxFit.fitHeight),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            state.getCurrentDancerName(),
+                            textAlign: TextAlign.center,
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -75,17 +79,21 @@ class DancePartnerSelectWidget extends StatelessWidget {
                           icon: Image.asset('images/tom.png'),
                         ),
                         IconButton(
-                          onPressed: () => danceBloc.add(
-                              DancerLikedEvent(state.getCurrentDancerName())),
-                          iconSize: 150,
-                          icon: Image.asset('images/dancer.png'),
-                        ),
-                      ],
-                    )
-                  ],
-                )
-              ],
-            ),
+                                onPressed: () => danceBloc.add(DancerLikedEvent(
+                                    state.getCurrentDancerName())),
+                                iconSize: 150,
+                                icon: Image.asset('images/dancer.png'),
+                              ),
+                            ],
+                          )
+                        ],
+                      )
+                    ],
+                  )
+                : Text(
+                    "loading",
+                    style: TextStyle(color: Colors.redAccent),
+                  ),
           );
         },
       ),
