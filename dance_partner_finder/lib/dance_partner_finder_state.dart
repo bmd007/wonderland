@@ -30,7 +30,6 @@ class DancePartnerState extends Equatable {
     return dancerNames.elementAt(currentDancerIndex);
   }
 
-
   @override
   List<Object> get props => [currentDancerIndex, isLoading, dancerNames];
 }

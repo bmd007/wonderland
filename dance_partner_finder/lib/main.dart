@@ -17,27 +17,41 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const DancePartnerSelectWidget(),
+      home: DancePartnerSelectWidget(),
     );
   }
 }
 
 class DancePartnerSelectWidget extends StatelessWidget {
-  const DancePartnerSelectWidget({Key? key}) : super(key: key);
+  DancePartnerSelectWidget({Key? key}) : super(key: key);
+
+  final _thisDancerNamTextController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocProvider(
-        create: (context) => DancePartnerBloc(),
-        child: BlocBuilder<DancePartnerBloc, DancePartnerState>(
-          // buildWhen: (prev, state) => prev.runtimeType != state.runtimeType,
-          builder: (context, state) {
-            var danceBloc = context.read<DancePartnerBloc>();
-            return Stack(
+    return BlocProvider(
+      create: (context) => DancePartnerBloc(),
+      child: BlocBuilder<DancePartnerBloc, DancePartnerState>(
+        builder: (context, state) {
+          var danceBloc = context.read<DancePartnerBloc>();
+          return Scaffold(
+            appBar: AppBar(
+                title: TextField(
+                  controller: _thisDancerNamTextController,
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => danceBloc.add(ThisDancerChoseNameEvent(
+                        _thisDancerNamTextController.text)),
+                    child: const Text("touch after naming",
+                        style: TextStyle(color: Colors.black)),
+                  )
+                ]),
+            body: Stack(
               fit: StackFit.expand,
               children: [
-                Image.asset('images/${state.getCurrentDancerName()}.png', fit: BoxFit.fitHeight),
+                Image.asset('images/${state.getCurrentDancerName()}.png',
+                    fit: BoxFit.fitHeight),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -55,8 +69,8 @@ class DancePartnerSelectWidget extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         IconButton(
-                          onPressed: () => danceBloc
-                              .add(DancerDislikedEvent(state.getCurrentDancerName())),
+                          onPressed: () => danceBloc.add(DancerDislikedEvent(
+                              state.getCurrentDancerName())),
                           iconSize: 100,
                           icon: Image.asset('images/tom.png'),
                         ),
@@ -71,9 +85,9 @@ class DancePartnerSelectWidget extends StatelessWidget {
                   ],
                 )
               ],
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }

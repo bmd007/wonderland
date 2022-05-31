@@ -10,12 +10,13 @@ class DancePartnerBloc extends Bloc<DancePartnerEvent, DancePartnerState> {
       emit(DancePartnerState.loaded(event.loadedDancerNames));
     });
     on<DancerLikedEvent>((event, emit) {
-      //todo liked event to back end
       emit(state.moveToNextDancer());
     });
     on<DancerDislikedEvent>((event, emit) {
-      //todo
     });
-    add(const DancersLoadedEvent(['tom', 'like', 'match', 'dancer']));
+    on<ThisDancerChoseNameEvent>((event, emit) {
+      emit(const DancePartnerState(true, 0, []));
+      add(const DancersLoadedEvent(['tom', 'like', 'match', 'dancer']));
+    });
   }
 }

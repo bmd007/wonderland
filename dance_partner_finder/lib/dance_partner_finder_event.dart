@@ -18,6 +18,13 @@ class DancerDislikedEvent extends DancePartnerEvent{
   List<Object?> get props => [dancerName];
 }
 
+class ThisDancerChoseNameEvent extends DancePartnerEvent{
+  final String thisDancerName;
+  const ThisDancerChoseNameEvent(this.thisDancerName);
+  @override
+  List<Object?> get props => [thisDancerName];
+}
+
 class DancersLoadedEvent extends DancePartnerEvent{
   final List<String> loadedDancerNames;
   const DancersLoadedEvent(this.loadedDancerNames);
