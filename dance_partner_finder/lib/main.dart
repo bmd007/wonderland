@@ -91,7 +91,7 @@ class DancePartnerSelectWidget extends StatelessWidget {
                     ],
                   )
                 : Text(
-                    "loading",
+                    "loading or waiting for this dancer's name",
                     style: TextStyle(color: Colors.redAccent),
                   ),
           );
