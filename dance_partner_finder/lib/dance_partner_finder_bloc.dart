@@ -5,9 +5,9 @@ part 'dance_partner_finder_event.dart';
 part 'dance_partner_finder_state.dart';
 
 class DancePartnerBloc extends Bloc<DancePartnerEvent, DancePartnerState> {
-  DancePartnerBloc() : super(const DancePartnerLoading()) {
+  DancePartnerBloc() : super(DancePartnerState.loading()) {
     on<DancersLoadedEvent>((event, emit) {
-      emit(DancePartnerLoaded(event.loadedDancerNames));
+      emit(DancePartnerState.loaded(event.loadedDancerNames));
     });
     on<DancerLikedEvent>((event, emit) {
 
@@ -15,6 +15,6 @@ class DancePartnerBloc extends Bloc<DancePartnerEvent, DancePartnerState> {
     on<DancerDislikedEvent>((event, emit) {
       //todo
     });
-    add(const DancersLoadedEvent(['tom', 'like']));
+    add(const DancersLoadedEvent(['tom', 'like', 'match', 'dancer']));
   }
 }

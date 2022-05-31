@@ -37,13 +37,13 @@ class DancePartnerSelectWidget extends StatelessWidget {
             return Stack(
               fit: StackFit.expand,
               children: [
-                Image.asset('images/'+state.currentDancerName+'.jpg', fit: BoxFit.fitHeight),
+                Image.asset('images/${state.getCurrentDancerName()}.jpg', fit: BoxFit.fitHeight),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      state.currentDancerName,
+                      state.getCurrentDancerName(),
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         color: Colors.white,
@@ -56,13 +56,13 @@ class DancePartnerSelectWidget extends StatelessWidget {
                       children: [
                         IconButton(
                           onPressed: () => danceBloc
-                              .add(DancerLikedEvent(state.currentDancerName)),
+                              .add(DancerLikedEvent(state.getCurrentDancerName())),
                           iconSize: 100,
                           icon: Image.asset('images/tom.jpg'),
                         ),
                         IconButton(
                           onPressed: () => danceBloc.add(
-                              DancerDislikedEvent(state.currentDancerName)),
+                              DancerDislikedEvent(state.getCurrentDancerName())),
                           iconSize: 150,
                           icon: Image.asset('images/dancer.png'),
                         ),

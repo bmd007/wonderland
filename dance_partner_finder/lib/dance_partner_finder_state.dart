@@ -1,21 +1,33 @@
 part of 'dance_partner_finder_bloc.dart';
 
-abstract class DancePartnerState extends Equatable {
+class DancePartnerState extends Equatable {
   final List<String> dancerNames;
-  final String currentDancerName;
+  final int currentDancerIndex;
   final bool isLoading;
 
   @override
-  const DancePartnerState(this.currentDancerName, this.isLoading, this.dancerNames);
+  const DancePartnerState(this.isLoading, this.currentDancerIndex, this.dancerNames);
+
+  static DancePartnerState loading(){
+    return const DancePartnerState(true, 0, []);
+  }
+
+  static DancePartnerState loaded(List<String> loadedDancerNames){
+    return DancePartnerState(false, 0, loadedDancerNames);
+  }
+
+  DancePartnerState moveToNextDancer(){
+    if(currentDancerIndex + 1 >= dancerNames.length){
+      return this;
+    }
+    return DancePartnerState(false, currentDancerIndex + 1, dancerNames);
+  }
+
+  String getCurrentDancerName(){
+    return dancerNames.elementAt(currentDancerIndex);
+  }
+
 
   @override
-  List<Object> get props => [currentDancerName, isLoading, dancerNames];
-}
-
-class DancePartnerLoading extends DancePartnerState {
-  const DancePartnerLoading() : super('', true, const []);
-}
-
-class DancePartnerLoaded extends DancePartnerState {
-  DancePartnerLoaded(List<String> dancerNames) : super(dancerNames.first, false, dancerNames);
+  List<Object> get props => [currentDancerIndex, isLoading, dancerNames];
 }
