@@ -31,13 +31,13 @@ class DancePartnerSelectWidget extends StatelessWidget {
       body: BlocProvider(
         create: (context) => DancePartnerBloc(),
         child: BlocBuilder<DancePartnerBloc, DancePartnerState>(
-          buildWhen: (prev, state) => prev.runtimeType != state.runtimeType,
+          // buildWhen: (prev, state) => prev.runtimeType != state.runtimeType,
           builder: (context, state) {
             var danceBloc = context.read<DancePartnerBloc>();
             return Stack(
               fit: StackFit.expand,
               children: [
-                Image.asset('images/${state.getCurrentDancerName()}.jpg', fit: BoxFit.fitHeight),
+                Image.asset('images/${state.getCurrentDancerName()}.png', fit: BoxFit.fitHeight),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -56,13 +56,13 @@ class DancePartnerSelectWidget extends StatelessWidget {
                       children: [
                         IconButton(
                           onPressed: () => danceBloc
-                              .add(DancerLikedEvent(state.getCurrentDancerName())),
+                              .add(DancerDislikedEvent(state.getCurrentDancerName())),
                           iconSize: 100,
-                          icon: Image.asset('images/tom.jpg'),
+                          icon: Image.asset('images/tom.png'),
                         ),
                         IconButton(
                           onPressed: () => danceBloc.add(
-                              DancerDislikedEvent(state.getCurrentDancerName())),
+                              DancerLikedEvent(state.getCurrentDancerName())),
                           iconSize: 150,
                           icon: Image.asset('images/dancer.png'),
                         ),

@@ -10,7 +10,8 @@ class DancePartnerBloc extends Bloc<DancePartnerEvent, DancePartnerState> {
       emit(DancePartnerState.loaded(event.loadedDancerNames));
     });
     on<DancerLikedEvent>((event, emit) {
-
+      //todo liked event to back end
+      emit(state.moveToNextDancer());
     });
     on<DancerDislikedEvent>((event, emit) {
       //todo

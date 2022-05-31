@@ -24,6 +24,9 @@ class DancePartnerState extends Equatable {
   }
 
   String getCurrentDancerName(){
+    if(dancerNames.isEmpty){
+      return "tom";
+    }
     return dancerNames.elementAt(currentDancerIndex);
   }
 
