@@ -29,14 +29,43 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Build api-gateway
-      uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
-      with:
-        working-directory: ./api-gateway
-        arguments: build
+    - name: Build api-gateway 
+      working-directory: ./api-gateway
+      run: ./gradlew clean build
 
-    - name: Build message-publisher
-      uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
-      with:
-        working-directory: ./message-publisher
-        arguments: build
+#    - name: Build challenge-based-authentication
+#      working-directory: ./challenge-based-authentication
+#      run: ./gradlew clean build
+#
+#    - name: Build communication-graph
+#      working-directory: ./communication-graph
+#      run: ./gradlew clean build
+#
+#    - name: Build game-server
+#      working-directory: ./game-server
+#      run: ./gradlew clean build
+#
+#    - name: Build message-counter
+#      working-directory: ./message-counter
+#      run: ./gradlew clean build
+#
+#    - name: Build message-publisher
+#      working-directory: ./message-publisher
+#      run: ./gradlew clean build
+#
+#    - name: Build message-search
+#      working-directory: ./message-search
+#      run: ./gradlew clean build
+#
+#    - name: Build reactive-game-client
+#      working-directory: ./reactive-game-client
+#      run: ./gradlew clean build
+#
+#    - name: Build wise-soul
+#      working-directory: ./wise-soul
+#      run: ./gradlew clean build
+#
+#    - name: Build wonder-matcher
+#      working-directory: ./wonder-matcher
+#      run: ./gradlew clean build
+#
