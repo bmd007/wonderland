@@ -63,7 +63,7 @@ dependencies {
         exclude group: 'com.zaxxer', module: 'HikariCP'
     }
 
-    implementation 'com.h2database:h2:1.4.200' //this is the newer version of h2. Hibernate-spatial has no dialect for
+    implementation 'com.h2database:h2:2.1.212' //this is the newer version of h2. Hibernate-spatial has no dialect for
     // it. Also h2gis (one of its geo extensions) doesn't support its latest (1.4.200) version
     implementation 'org.locationtech.jts:jts-core:1.18.2' // not needed if h2gis got used
 
