@@ -48,4 +48,5 @@ class DancePartnerBloc extends Bloc<DancePartnerEvent, DancePartnerState> {
     });
     getLocation().then((value) => print("BMD::$value"));
   }
+
 }
