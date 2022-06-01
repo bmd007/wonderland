@@ -32,9 +32,7 @@ class DancePartnerBloc extends Bloc<DancePartnerEvent, DancePartnerState> {
   DancePartnerBloc() : super(DancePartnerState.empty()) {
     on<ThisDancerChoseNameEvent>((event, emit) {
       emit(state.withThisDancerName(event.thisDancerName));
-      sleep(const Duration(milliseconds: 5));
       emit(state.loading());
-      sleep(const Duration(milliseconds: 15));
       add(const DancersLoadedEvent(['tom', 'like', 'match', 'dancer']));
     });
     on<DancersLoadedEvent>((event, emit) {
