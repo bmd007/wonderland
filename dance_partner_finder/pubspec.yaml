@@ -39,6 +39,7 @@ dependencies:
   flutter_bloc: ^8.0.1
   rx_bloc: ^3.3.0
   rxdart: ^0.27.3
+  location: ^4.2.0
 
 dev_dependencies:
   flutter_test:
