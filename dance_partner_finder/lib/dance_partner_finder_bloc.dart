@@ -24,9 +24,9 @@ Future<LocationData> getLocation() async {
 class DancePartnerBloc extends Bloc<DancePartnerEvent, DancePartnerState> {
   DancePartnerBloc() : super(DancePartnerState.empty()) {
     on<ThisDancerChoseNameEvent>((event, emit) {
-      Future
-         .microtask(() => emit(state.withThisDancerName(event.thisDancerName)))
-        .then((value) => getLocation())
+      emit(state.withThisDancerName(event.thisDancerName));
+
+      getLocation()
         .then((value) => print("BMD:location:$value"))
         .then((value) => addName(state.thisDancerName))
         .then((value) => addName("match"))
