@@ -21,7 +21,7 @@ public class ApiGatewayApplication {
 		SpringApplication.run(ApiGatewayApplication.class, args);
 	}
 
-	@MessageMapping("stream")
+	@MessageMapping("names")
 	public Flux<String> numbers(){
 		return Flux.fromIterable(names);
 	}
@@ -30,6 +30,7 @@ public class ApiGatewayApplication {
 	public Mono<Void> addName(String name){
 		return Mono.just(name)
 				.doOnNext(names::add)
+				.log()
 				.then();
 	}
 

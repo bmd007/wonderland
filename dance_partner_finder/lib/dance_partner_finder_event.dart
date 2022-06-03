@@ -31,3 +31,10 @@ class DancersLoadedEvent extends DancePartnerEvent{
   @override
   List<Object?> get props => [loadedDancerNames];
 }
+
+class PotentialDancerPartnerFoundEvent extends DancePartnerEvent{
+  final String potentialDancePartnerName;
+  const PotentialDancerPartnerFoundEvent(this.potentialDancePartnerName);
+  @override
+  List<Object?> get props => [potentialDancePartnerName];
+}

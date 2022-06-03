@@ -42,4 +42,10 @@ class DancePartnerState extends Equatable {
 
   @override
   List<Object> get props => [currentDancerIndex, isLoading, dancerNames];
+
+  DancePartnerState addPotentialDancer(String potentialDancePartnerName) {
+    List<String> newDancerNames = dancerNames.toList(growable: true);
+    newDancerNames.add(potentialDancePartnerName);
+    return DancePartnerState(false, currentDancerIndex, newDancerNames, thisDancerName);
+  }
 }
