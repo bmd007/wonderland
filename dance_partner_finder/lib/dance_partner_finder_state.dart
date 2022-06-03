@@ -21,7 +21,6 @@ class DancePartnerState extends Equatable {
     return DancePartnerState(false, 0, loadedDancerNames, thisDancerName);
   }
 
-
   static DancePartnerState empty(){
     return const DancePartnerState(false, 0, [], "");
   }
