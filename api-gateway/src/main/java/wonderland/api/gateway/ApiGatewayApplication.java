@@ -28,20 +28,17 @@ public class ApiGatewayApplication {
         SpringApplication.run(ApiGatewayApplication.class, args);
     }
 
-    @MessageMapping("names")
+    @MessageMapping("names")//todo support time in the searchs
     public Flux<String> names(String dancerPartnerSeekerName) {
         var likedDancersByPartnerSeeker = Optional.ofNullable(likedDancers.get(dancerPartnerSeekerName))
                 .map(Map::entrySet)
-                .map(Set::stream)
-                .orElseGet(() -> Stream.empty());
+                .orElseGet(() -> Set.of());
         var disLikedDancersByPartnerSeeker = Optional.ofNullable(disLikedDancers.get(dancerPartnerSeekerName))
                 .map(Map::entrySet)
-                .map(Set::stream)
-                .orElseGet(() -> Stream.empty());
-        var alreadySeenDancersBySeeker = Stream.concat(likedDancersByPartnerSeeker, disLikedDancersByPartnerSeeker).collect(Collectors.toSet());
-
+                .orElseGet(() -> Set.of());
         return Flux.fromIterable(potentialDancePartners)
-                .filter(dancerName -> );
+                .filter(dancerName -> !likedDancersByPartnerSeeker.contains(dancerName))
+                .filter(dancerName -> !disLikedDancersByPartnerSeeker.contains(dancerName));
     }
 
     @MessageMapping("addName")
