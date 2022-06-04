@@ -1,5 +1,6 @@
 package wonderland.api.gateway;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -18,6 +19,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 @Controller
 @SpringBootApplication
 public class ApiGatewayApplication {
@@ -42,14 +44,18 @@ public class ApiGatewayApplication {
         var disLikedDancersByPartnerSeeker = Optional.ofNullable(disLikedDancers.get(dancerPartnerSeekerName))
                 .map(Map::entrySet)
                 .orElseGet(() -> Set.of());
+        log.info("likees {}", likedDancers);
+        log.info("desLikees {}", disLikedDancers);
         return Flux.fromIterable(potentialDancePartners)
                 .filter(dancerName -> !likedDancersByPartnerSeeker.contains(dancerName))
-                .filter(dancerName -> !disLikedDancersByPartnerSeeker.contains(dancerName));
+                .filter(dancerName -> !disLikedDancersByPartnerSeeker.contains(dancerName))
+                .log();
     }
 
     @MessageMapping("addName")
     public Mono<Void> addName(String name) {
         potentialDancePartners.add(name);
+        log.info("current dancers,{}",  potentialDancePartners);
         return Mono.empty();
     }
 
