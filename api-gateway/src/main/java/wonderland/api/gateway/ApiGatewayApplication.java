@@ -10,6 +10,8 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -20,7 +22,11 @@ import java.util.stream.Stream;
 @SpringBootApplication
 public class ApiGatewayApplication {
 
-    private static ArrayList<String> potentialDancePartners = new ArrayList<>();
+    private static Set<String> potentialDancePartners = new HashSet<>();
+
+    static{
+        potentialDancePartners.addAll(Set.of("brucee", "camila", "dancer", "jlo", "johnny", "like", "match", "michel", "taylor"));
+    }
     private static Map<String, Map<String, LocalDateTime>> likedDancers = new HashMap<>();
     private static Map<String, Map<String, LocalDateTime>> disLikedDancers = new HashMap<>();
 
@@ -43,10 +49,8 @@ public class ApiGatewayApplication {
 
     @MessageMapping("addName")
     public Mono<Void> addName(String name) {
-        return Mono.just(name)
-                .doOnNext(potentialDancePartners::add)
-                .log()
-                .then();
+        potentialDancePartners.add(name);
+        return Mono.empty();
     }
 
     @MessageMapping("like")

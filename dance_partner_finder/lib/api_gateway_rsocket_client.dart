@@ -13,11 +13,11 @@ Payload routeAndDataPayload(String route, String data) {
   return Payload.from(metadataBytes, dataBytes);
 }
 
-Stream<String?> fetchNames() {
+Stream<String?> fetchNames(String thisDancerName) {
   return RSocketConnector.create()
       .connect('tcp://192.168.1.188:7022')
       .asStream()
-      .asyncExpand((rSocket) => rSocket.requestStream!(routeAndDataPayload("names", "")))
+      .asyncExpand((rSocket) => rSocket.requestStream!(routeAndDataPayload("names", thisDancerName)))
       .map((element) => element!.getDataUtf8());
 }
 
