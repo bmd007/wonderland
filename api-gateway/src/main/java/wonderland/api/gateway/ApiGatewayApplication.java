@@ -28,7 +28,7 @@ public class ApiGatewayApplication {
         SpringApplication.run(ApiGatewayApplication.class, args);
     }
 
-    @MessageMapping("names")//todo support time in the searchs
+    @MessageMapping("names")//todo support time in the searches
     public Flux<String> names(String dancerPartnerSeekerName) {
         var likedDancersByPartnerSeeker = Optional.ofNullable(likedDancers.get(dancerPartnerSeekerName))
                 .map(Map::entrySet)
@@ -62,7 +62,7 @@ public class ApiGatewayApplication {
 
     @MessageMapping("disLike")
     public Mono<Void> disLikeADancer(String whoHasDisLiked, String whomIsDisLiked) {
-        var newDisLikee = Stream.of(Map.entry(whoHasDisLiked, LocalDateTime.now());
+        var newDisLikee = Stream.of(Map.entry(whoHasDisLiked, LocalDateTime.now()));
         var alreadyLikeLikeesStream = Optional.ofNullable(disLikedDancers.get(whomIsDisLiked))
                 .orElseGet(() -> Map.of()).entrySet().stream();
         var newLikeesMap = Stream.concat(newDisLikee, alreadyLikeLikeesStream)
