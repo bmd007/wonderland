@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -91,5 +92,10 @@ public class ApiGatewayApplication {
                 .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
         disLikedDancers.put(requestBody.whoHasDisLiked, newLikeesMap);
         return Mono.empty();
+    }
+
+    @MessageMapping("matches")
+    public Flux<String> matchStream(){
+        return Flux.just("dance", "match").delaySubscription(Duration.ofSeconds(2L));
     }
 }
