@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:location/location.dart';
 
-import 'api_gateway_rsocket_client.dart';
+import '../../client/api_gateway_rsocket_client.dart';
 
 part 'dance_partner_finder_event.dart';
 part 'dance_partner_finder_state.dart';
@@ -40,11 +40,11 @@ class DancePartnerBloc extends Bloc<DancePartnerEvent, DancePartnerState> {
       emit(state.addPotentialDancer(event.potentialDancePartnerName));
     });
     on<DancerLikedEvent>((event, emit) {
-      //todo notify backend
+      likeADancer(state.thisDancerName, event.dancerName);
       emit(state.moveToNextDancer());
     });
     on<DancerDislikedEvent>((event, emit) {
-      //todo notify backend
+      disLikeADancer(state.thisDancerName, event.dancerName);
       emit(state.moveToNextDancer());
     });
   }
