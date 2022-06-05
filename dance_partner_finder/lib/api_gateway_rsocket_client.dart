@@ -42,8 +42,8 @@ Future<void> likeADancer(String whoHasLiked, String whomIsLiked) {
 Future<void> disLikeADancer(String whoHasDisLiked, String whomIsDisLiked) {
   var body = """
     {
-      "whoHasLiked": "$whoHasDisLiked",
-      "whomIsLiked": "$whomIsDisLiked"
+      "whoHasDisLiked": "$whoHasDisLiked",
+      "whomIsDisLiked": "$whomIsDisLiked"
     }
   """;
   return RSocketConnector.create()

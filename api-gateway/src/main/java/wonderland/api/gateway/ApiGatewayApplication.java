@@ -27,7 +27,15 @@ public class ApiGatewayApplication {
     private static Set<String> potentialDancePartners = new HashSet<>();
 
     static{
-        potentialDancePartners.addAll(Set.of("brucee", "camila", "dancer", "jlo", "johnny", "like", "match", "michel", "taylor"));
+        potentialDancePartners.add("brucee");
+        potentialDancePartners.add("camila");
+        potentialDancePartners.add("dancer");
+        potentialDancePartners.add("jlo");
+        potentialDancePartners.add("johnny");
+        potentialDancePartners.add("like");
+        potentialDancePartners.add("match");
+        potentialDancePartners.add("michel");
+        potentialDancePartners.add("taylor");
     }
     private static Map<String, Map<String, LocalDateTime>> likedDancers = new HashMap<>();
     private static Map<String, Map<String, LocalDateTime>> disLikedDancers = new HashMap<>();
@@ -39,13 +47,13 @@ public class ApiGatewayApplication {
     @MessageMapping("names")//todo support time in the searches
     public Flux<String> names(String dancerPartnerSeekerName) {
         var likedDancersByPartnerSeeker = Optional.ofNullable(likedDancers.get(dancerPartnerSeekerName))
-                .map(Map::entrySet)
-                .orElseGet(() -> Set.of());
+                .map(Map::keySet)
+                .orElseGet(Set::of);
         var disLikedDancersByPartnerSeeker = Optional.ofNullable(disLikedDancers.get(dancerPartnerSeekerName))
-                .map(Map::entrySet)
-                .orElseGet(() -> Set.of());
-        log.info("likees {}", likedDancers);
-        log.info("desLikees {}", disLikedDancers);
+                .map(Map::keySet)
+                .orElseGet(Set::of);
+        log.info("likees {}", likedDancersByPartnerSeeker);
+        log.info("disLikees {}", disLikedDancersByPartnerSeeker);
         return Flux.fromIterable(potentialDancePartners)
                 .filter(dancerName -> !likedDancersByPartnerSeeker.contains(dancerName))
                 .filter(dancerName -> !disLikedDancersByPartnerSeeker.contains(dancerName))
@@ -65,7 +73,7 @@ public class ApiGatewayApplication {
     public Mono<Void> likeADancer(LikeRequestBody requestBody) {
         var newLikee = Stream.of(Map.entry(requestBody.whomIsLiked, LocalDateTime.now()));
         var alreadyLikeLikeesStream = Optional.ofNullable(likedDancers.get(requestBody.whoHasLiked))
-                .orElseGet(() -> Map.of()).entrySet().stream();
+                .orElseGet(Map::of).entrySet().stream();
         Map<String, LocalDateTime> newLikeesMap = Stream.concat(newLikee, alreadyLikeLikeesStream)
                 .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
         likedDancers.put(requestBody.whoHasLiked, newLikeesMap);
@@ -78,7 +86,7 @@ public class ApiGatewayApplication {
     public Mono<Void> disLikeADancer(DisLikeRequestBody requestBody) {
         var newDisLikee = Stream.of(Map.entry(requestBody.whoHasDisLiked, LocalDateTime.now()));
         var alreadyLikeLikeesStream = Optional.ofNullable(disLikedDancers.get(requestBody.whomIsDisLiked))
-                .orElseGet(() -> Map.of()).entrySet().stream();
+                .orElseGet(Map::of).entrySet().stream();
         var newLikeesMap = Stream.concat(newDisLikee, alreadyLikeLikeesStream)
                 .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
         disLikedDancers.put(requestBody.whoHasDisLiked, newLikeesMap);

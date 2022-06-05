@@ -44,7 +44,7 @@ class DancePartnerBloc extends Bloc<DancePartnerEvent, DancePartnerState> {
       emit(state.moveToNextDancer());
     });
     on<DancerDislikedEvent>((event, emit) {
-      likeADancer(state.thisDancerName, event.dancerName);
+      disLikeADancer(state.thisDancerName, event.dancerName);
       emit(state.moveToNextDancer());
     });
   }
