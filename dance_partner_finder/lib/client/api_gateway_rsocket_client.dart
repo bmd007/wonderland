@@ -50,3 +50,12 @@ Future<void> disLikeADancer(String whoHasDisLiked, String whomIsDisLiked) {
       .connect('tcp://192.168.1.188:7022')
       .then((rSocket) => rSocket.fireAndForget!(routeAndDataPayload("disLike", body)));
 }
+
+Stream<String?> matchStreams() {
+  return RSocketConnector.create()
+      .connect('tcp://192.168.1.188:7022')
+      .asStream()
+      .asyncExpand((rSocket) => rSocket.requestStream!(routeAndDataPayload("matches", "")))
+      .map((element) => element!.getDataUtf8());
+}
+

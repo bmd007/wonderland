@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'dance_partner_finder_bloc.dart';
+import 'bloc/dance_partner_finder/dance_partner_finder_bloc.dart';
 
 void main() {
   runApp(const MyApp());
@@ -50,6 +50,9 @@ class DancePartnerSelectWidget extends StatelessWidget {
                         )
                       ])
                 : null,
+            
+            bottomNavigationBar: NavigationBar(destinations: [],),
+
             body: state.thisDancerName.isNotEmpty && !state.isLoading
                 ? Stack(
                     fit: StackFit.expand,
