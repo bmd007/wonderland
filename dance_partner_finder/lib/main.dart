@@ -112,10 +112,7 @@ class DancePartnerSelectWidget extends StatelessWidget {
               )
             ],
           )
-        : const Text(
-            "loading or waiting for this dancer's name",
-            style: TextStyle(color: Colors.redAccent),
-          );
+        : Image.asset('images/wait.png');
   }
 
   AppBar? appBar(DancePartnerBloc dancerBloc) {
