@@ -59,26 +59,29 @@ public class ApiGatewayApplication {
         return Mono.empty();
     }
 
+    record LikeRequestBody(String whoHasLiked, String whomIsLiked){}
+
     @MessageMapping("like")
-    public Mono<Void> likeADancer(String whoHasLiked, String whomIsLiked) {
-        var newLikee = Stream.of(Map.entry(whomIsLiked, LocalDateTime.now()));
-        var alreadyLikeLikeesStream = Optional.ofNullable(likedDancers.get(whoHasLiked))
+    public Mono<Void> likeADancer(LikeRequestBody requestBody) {
+        var newLikee = Stream.of(Map.entry(requestBody.whomIsLiked, LocalDateTime.now()));
+        var alreadyLikeLikeesStream = Optional.ofNullable(likedDancers.get(requestBody.whoHasLiked))
                 .orElseGet(() -> Map.of()).entrySet().stream();
         Map<String, LocalDateTime> newLikeesMap = Stream.concat(newLikee, alreadyLikeLikeesStream)
                 .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
-        likedDancers.put(whoHasLiked, newLikeesMap);
+        likedDancers.put(requestBody.whoHasLiked, newLikeesMap);
         return Mono.empty();
     }
 
+    record DisLikeRequestBody(String whoHasDisLiked, String whomIsDisLiked){}
+
     @MessageMapping("disLike")
-    public Mono<Void> disLikeADancer(String whoHasDisLiked, String whomIsDisLiked) {
-        var newDisLikee = Stream.of(Map.entry(whoHasDisLiked, LocalDateTime.now()));
-        var alreadyLikeLikeesStream = Optional.ofNullable(disLikedDancers.get(whomIsDisLiked))
+    public Mono<Void> disLikeADancer(DisLikeRequestBody requestBody) {
+        var newDisLikee = Stream.of(Map.entry(requestBody.whoHasDisLiked, LocalDateTime.now()));
+        var alreadyLikeLikeesStream = Optional.ofNullable(disLikedDancers.get(requestBody.whomIsDisLiked))
                 .orElseGet(() -> Map.of()).entrySet().stream();
         var newLikeesMap = Stream.concat(newDisLikee, alreadyLikeLikeesStream)
                 .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
-        disLikedDancers.put(whoHasDisLiked, newLikeesMap);
+        disLikedDancers.put(requestBody.whoHasDisLiked, newLikeesMap);
         return Mono.empty();
     }
-
 }

@@ -40,11 +40,11 @@ class DancePartnerBloc extends Bloc<DancePartnerEvent, DancePartnerState> {
       emit(state.addPotentialDancer(event.potentialDancePartnerName));
     });
     on<DancerLikedEvent>((event, emit) {
-      //todo notify backend
+      likeADancer(state.thisDancerName, event.dancerName);
       emit(state.moveToNextDancer());
     });
     on<DancerDislikedEvent>((event, emit) {
-      //todo notify backend
+      likeADancer(state.thisDancerName, event.dancerName);
       emit(state.moveToNextDancer());
     });
   }

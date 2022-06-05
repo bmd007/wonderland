@@ -26,3 +26,27 @@ Future<void> addName(String name) {
       .connect('tcp://192.168.1.188:7022')
       .then((rSocket) => rSocket.fireAndForget!(routeAndDataPayload("addName", name)));
 }
+
+Future<void> likeADancer(String whoHasLiked, String whomIsLiked) {
+  var body = """
+    {
+      "whoHasLiked": "$whoHasLiked",
+      "whomIsLiked": "$whomIsLiked"
+    }
+  """;
+  return RSocketConnector.create()
+      .connect('tcp://192.168.1.188:7022')
+      .then((rSocket) => rSocket.fireAndForget!(routeAndDataPayload("like", body)));
+}
+
+Future<void> disLikeADancer(String whoHasDisLiked, String whomIsDisLiked) {
+  var body = """
+    {
+      "whoHasLiked": "$whoHasDisLiked",
+      "whomIsLiked": "$whomIsDisLiked"
+    }
+  """;
+  return RSocketConnector.create()
+      .connect('tcp://192.168.1.188:7022')
+      .then((rSocket) => rSocket.fireAndForget!(routeAndDataPayload("disLike", body)));
+}
