@@ -1,3 +1,4 @@
+import 'package:dance_partner_finder/bloc/match/match_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,7 +18,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: DancePartnerSelectWidget(),
+      home: MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (context) => DancePartnerBloc()),
+          BlocProvider(create: (context) => MatchBloc())
+        ],
+        child: DancePartnerSelectWidget(),
+      ),
     );
   }
 }
@@ -29,75 +36,66 @@ class DancePartnerSelectWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => DancePartnerBloc(),
-      child: BlocBuilder<DancePartnerBloc, DancePartnerState>(
-        builder: (context, state) {
-          var danceBloc = context.read<DancePartnerBloc>();
-          return Scaffold(
-            appBar: state.thisDancerName.isEmpty
-                ? AppBar(
-                    title: TextField(
-                      controller: _thisDancerNamTextController,
-                    ),
-                    actions: [
-                        TextButton(
-                          onPressed: () => danceBloc.add(
-                              ThisDancerChoseNameEvent(
-                                  _thisDancerNamTextController.text)),
-                          child: const Text("touch after naming",
-                              style: TextStyle(color: Colors.black)),
-                        )
-                      ])
-                : null,
-            body: state.thisDancerName.isNotEmpty && !state.isLoading
-                ? Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Image.asset('images/${state.getCurrentDancerName()}.png',
-                          fit: BoxFit.fitHeight),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(
-                            state.getCurrentDancerName(),
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 50,
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              IconButton(
-                                onPressed: () => danceBloc.add(
-                                    DancerDislikedEvent(
-                                        state.getCurrentDancerName())),
-                                iconSize: 100,
-                                icon: Image.asset('images/panda.gif'),
-                              ),
-                              IconButton(
-                                onPressed: () => danceBloc.add(DancerLikedEvent(
-                                    state.getCurrentDancerName())),
-                                iconSize: 150,
-                                icon: Image.asset('images/dancer.png'),
-                              ),
-                            ],
-                          )
-                        ],
-                      )
-                    ],
+    var dancerBloc = context.watch<DancePartnerBloc>();
+    return Scaffold(
+      appBar: dancerBloc.state.thisDancerName.isEmpty
+          ? AppBar(
+              title: TextField(
+                controller: _thisDancerNamTextController,
+              ),
+              actions: [
+                  TextButton(
+                    onPressed: () => dancerBloc.add(ThisDancerChoseNameEvent(
+                        _thisDancerNamTextController.text)),
+                    child: const Text("touch after naming",
+                        style: TextStyle(color: Colors.black)),
                   )
-                : Text(
-                    "loading or waiting for this dancer's name",
-                    style: TextStyle(color: Colors.redAccent),
-                  ),
-          );
-        },
-      ),
+                ])
+          : null,
+      body: dancerBloc.state.thisDancerName.isNotEmpty && !dancerBloc.state.isLoading
+          ? Stack(
+              fit: StackFit.expand,
+              children: [
+                Image.asset('images/${dancerBloc.state.getCurrentDancerName()}.png',
+                    fit: BoxFit.fitHeight),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      dancerBloc.state.getCurrentDancerName(),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 50,
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        IconButton(
+                          onPressed: () => dancerBloc.add(DancerDislikedEvent(
+                              dancerBloc.state.getCurrentDancerName())),
+                          iconSize: 100,
+                          icon: Image.asset('images/panda.gif'),
+                        ),
+                        IconButton(
+                          onPressed: () => dancerBloc.add(
+                              DancerLikedEvent(dancerBloc.state.getCurrentDancerName())),
+                          iconSize: 150,
+                          icon: Image.asset('images/dancer.png'),
+                        ),
+                      ],
+                    )
+                  ],
+                )
+              ],
+            )
+          : Text(
+              "loading or waiting for this dancer's name",
+              style: TextStyle(color: Colors.redAccent),
+            ),
     );
   }
 }
