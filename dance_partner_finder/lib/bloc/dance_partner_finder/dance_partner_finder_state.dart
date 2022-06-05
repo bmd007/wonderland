@@ -27,14 +27,14 @@ class DancePartnerState extends Equatable {
 
   DancePartnerState moveToNextDancer(){
     if(currentDancerIndex + 1 >= dancerNames.length){
-      return this;
+      return loading();
     }
     return DancePartnerState(false, currentDancerIndex + 1, dancerNames, thisDancerName);
   }
 
   String getCurrentDancerName(){
-    if(dancerNames.isEmpty){
-      return "tom";
+    if(dancerNames.isEmpty || isLoading){
+      return "wait";
     }
     return dancerNames.elementAt(currentDancerIndex);
   }

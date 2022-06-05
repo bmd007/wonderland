@@ -29,57 +29,59 @@ class DancePartnerSelectWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var danceBloc = context.watch()<DancePartnerBloc>();
-    var danceState = danceBloc.state;
-    return Scaffold(
-      appBar: danceState.thisDancerName.isEmpty
-          ? AppBar(
-              title: TextField(
-                controller: _thisDancerNamTextController,
-              ),
-              actions: [
-                  TextButton(
-                    onPressed: () => danceBloc.add(ThisDancerChoseNameEvent(
+    return BlocProvider(
+      create: (context) => DancePartnerBloc(),
+      child: BlocBuilder<DancePartnerBloc, DancePartnerState>(
+        builder: (context, state) {
+          var danceBloc = context.read<DancePartnerBloc>();
+          return Scaffold(
+            appBar: state.thisDancerName.isEmpty
+                ? AppBar(
+                    title: TextField(
+                      controller: _thisDancerNamTextController,
+                    ),
+                    actions: [
+                        TextButton(
+                          onPressed: () => danceBloc.add(
+                              ThisDancerChoseNameEvent(
                                   _thisDancerNamTextController.text)),
                           child: const Text("touch after naming",
                               style: TextStyle(color: Colors.black)),
                         )
                       ])
                 : null,
-
-            bottomNavigationBar: NavigationBar(destinations: [],),
-
-            body: danceState.thisDancerName.isNotEmpty && !danceState.isLoading
+            body: state.thisDancerName.isNotEmpty && !state.isLoading
                 ? Stack(
                     fit: StackFit.expand,
                     children: [
-                      Image.asset('images/${danceState.getCurrentDancerName()}.png',
+                      Image.asset('images/${state.getCurrentDancerName()}.png',
                           fit: BoxFit.fitHeight),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            danceState.getCurrentDancerName(),
+                            state.getCurrentDancerName(),
                             textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 50,
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        IconButton(
-                          onPressed: () => danceBloc.add(DancerDislikedEvent(
-                              danceState.getCurrentDancerName())),
-                          iconSize: 100,
-                          icon: Image.asset('images/tom.png'),
-                        ),
-                        IconButton(
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 50,
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              IconButton(
+                                onPressed: () => danceBloc.add(
+                                    DancerDislikedEvent(
+                                        state.getCurrentDancerName())),
+                                iconSize: 100,
+                                icon: Image.asset('images/panda.gif'),
+                              ),
+                              IconButton(
                                 onPressed: () => danceBloc.add(DancerLikedEvent(
-                                    danceState.getCurrentDancerName())),
+                                    state.getCurrentDancerName())),
                                 iconSize: 150,
                                 icon: Image.asset('images/dancer.png'),
                               ),
@@ -94,5 +96,8 @@ class DancePartnerSelectWidget extends StatelessWidget {
                     style: TextStyle(color: Colors.redAccent),
                   ),
           );
+        },
+      ),
+    );
   }
 }

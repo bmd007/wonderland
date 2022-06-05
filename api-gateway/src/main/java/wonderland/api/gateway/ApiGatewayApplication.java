@@ -30,11 +30,8 @@ public class ApiGatewayApplication {
     static{
         potentialDancePartners.add("brucee");
         potentialDancePartners.add("camila");
-        potentialDancePartners.add("dancer");
         potentialDancePartners.add("jlo");
         potentialDancePartners.add("johnny");
-        potentialDancePartners.add("like");
-        potentialDancePartners.add("match");
         potentialDancePartners.add("michel");
         potentialDancePartners.add("taylor");
     }
@@ -58,7 +55,8 @@ public class ApiGatewayApplication {
         return Flux.fromIterable(potentialDancePartners)
                 .filter(dancerName -> !likedDancersByPartnerSeeker.contains(dancerName))
                 .filter(dancerName -> !disLikedDancersByPartnerSeeker.contains(dancerName))
-                .log();
+                .filter(dancerName -> !dancerName.equals(dancerPartnerSeekerName))
+                .doOnNext(System.out::println);
     }
 
     @MessageMapping("addName")
@@ -72,12 +70,14 @@ public class ApiGatewayApplication {
 
     @MessageMapping("like")
     public Mono<Void> likeADancer(LikeRequestBody requestBody) {
+        log.info("{}  liked  {}", requestBody.whoHasLiked, requestBody.whomIsLiked);
         var newLikee = Stream.of(Map.entry(requestBody.whomIsLiked, LocalDateTime.now()));
         var alreadyLikeLikeesStream = Optional.ofNullable(likedDancers.get(requestBody.whoHasLiked))
                 .orElseGet(Map::of).entrySet().stream();
         Map<String, LocalDateTime> newLikeesMap = Stream.concat(newLikee, alreadyLikeLikeesStream)
                 .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
         likedDancers.put(requestBody.whoHasLiked, newLikeesMap);
+        log.info("likedDancers {}", likedDancers);
         return Mono.empty();
     }
 
@@ -85,12 +85,14 @@ public class ApiGatewayApplication {
 
     @MessageMapping("disLike")
     public Mono<Void> disLikeADancer(DisLikeRequestBody requestBody) {
-        var newDisLikee = Stream.of(Map.entry(requestBody.whoHasDisLiked, LocalDateTime.now()));
-        var alreadyLikeLikeesStream = Optional.ofNullable(disLikedDancers.get(requestBody.whomIsDisLiked))
+        log.info("{} dis liked  {}", requestBody.whoHasDisLiked, requestBody.whomIsDisLiked);
+        var newDisLikee = Stream.of(Map.entry(requestBody.whomIsDisLiked, LocalDateTime.now()));
+        var alreadyLikeLikeesStream = Optional.ofNullable(disLikedDancers.get(requestBody.whoHasDisLiked))
                 .orElseGet(Map::of).entrySet().stream();
         var newLikeesMap = Stream.concat(newDisLikee, alreadyLikeLikeesStream)
                 .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
         disLikedDancers.put(requestBody.whoHasDisLiked, newLikeesMap);
+        log.info("disLikedDancers {}", disLikedDancers);
         return Mono.empty();
     }
 
