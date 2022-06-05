@@ -1,8 +1,7 @@
 import 'package:bloc/bloc.dart';
+import 'package:dance_partner_finder/client/api_gateway_rsocket_client.dart';
 import 'package:equatable/equatable.dart';
 import 'package:location/location.dart';
-
-import '../../client/api_gateway_rsocket_client.dart';
 
 part 'dance_partner_finder_event.dart';
 part 'dance_partner_finder_state.dart';
