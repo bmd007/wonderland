@@ -14,6 +14,7 @@ import wonderland.wonder.matcher.dto.WonderSeekerDto;
 import wonderland.wonder.matcher.dto.WonderSeekersDto;
 import wonderland.wonder.matcher.repository.WonderSeekerJdbcRepository;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 
 //todo expose RSocket as well
@@ -27,6 +28,14 @@ public class WonderMatcherResources {
 
     public WonderMatcherResources(WonderSeekerJdbcRepository repository) {
         this.repository = repository;
+    }
+
+    @GetMapping
+    public Set<WonderSeekerDto> getAll() {
+        return repository.getAll()
+                .stream()
+                .map(this::map)
+                .collect(Collectors.toSet());
     }
 
     @GetMapping("/{id}")

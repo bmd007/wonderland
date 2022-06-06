@@ -42,8 +42,8 @@ public class TopicCreator {
     }
 
     @Bean
-    public NewTopic dancerSeekungPartnerUpdates() {
-        return new NewTopic(Topics.DANCE_PARTNER_EVENTS, updateTopicDefinition.numPartitions, updateTopicDefinition.replicationFactor)
+    public NewTopic dancePartnerSeekingUpdates() {
+        return new NewTopic(Topics.DANCER_SEEKING_PARTNER_UPDATES, updateTopicDefinition.numPartitions, updateTopicDefinition.replicationFactor)
                 .configs(Map.of(CLEANUP_POLICY_CONFIG, CLEANUP_POLICY_COMPACT));
     }
 

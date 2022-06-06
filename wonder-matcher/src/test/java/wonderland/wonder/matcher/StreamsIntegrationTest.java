@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("test")
 @EmbeddedKafka(partitions = 1, topics = {
         Topics.WONDER_SEEK_UPDATES_TOPIC,
-        StateStores.WONDER_SEEKER_STATE_STORE + "_changeLog",
+        StateStores.WONDER_SEEKER_IN_MEMORY_STATE_STORE + "_changeLog",
         StateStores.WONDER_SEEKER_GLOBAL_STATE_STORE + "_changeLog",
 })
 @DirtiesContext

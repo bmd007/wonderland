@@ -39,13 +39,13 @@ public class TopicCreator {
 //                .configs(Map.of(RETENTION_MS_CONFIG, "-1", RETENTION_BYTES_CONFIG, "-1"));
 //    }
 
-    public static String stateStoreTopic(String storeName) {
-        return storeName + "_changeLog";
+    public static String stateStoreTopicName(String storeName, String applicationName) {
+        return String.format("%s-%s-changelog", applicationName, storeName);
     }
-
     @Bean
     public NewTopic changeLogTopic() {
-        return new NewTopic(stateStoreTopic(StateStores.WONDER_SEEKER_STATE_STORE), changeLogTopicDefinition.numPartitions, changeLogTopicDefinition.replicationFactor)
+        return new NewTopic(stateStoreTopicName(StateStores.WONDER_SEEKER_IN_MEMORY_STATE_STORE, applicationName),
+                changeLogTopicDefinition.numPartitions, changeLogTopicDefinition.replicationFactor)
                 .configs(Map.of(CLEANUP_POLICY_CONFIG, CLEANUP_POLICY_COMPACT));
     }
 

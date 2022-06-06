@@ -8,8 +8,8 @@ import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.Stores;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import wonderland.wonder.matcher.config.StateStores;
 import wonderland.wonder.matcher.config.Topics;
 import wonderland.wonder.matcher.domain.WonderSeeker;
 import wonderland.wonder.matcher.dto.DancerIsLookingForPartnerUpdate;
@@ -21,7 +21,8 @@ import javax.annotation.PostConstruct;
 import java.time.ZoneOffset;
 
 import static wonderland.wonder.matcher.config.StateStores.WONDER_SEEKER_GLOBAL_STATE_STORE;
-import static wonderland.wonder.matcher.config.TopicCreator.stateStoreTopic;
+import static wonderland.wonder.matcher.config.StateStores.WONDER_SEEKER_IN_MEMORY_STATE_STORE;
+import static wonderland.wonder.matcher.config.TopicCreator.stateStoreTopicName;
 
 @Configuration
 public class KStreamAndKTableDefinitions {
@@ -32,16 +33,20 @@ public class KStreamAndKTableDefinitions {
 
     // Use an in-memory store for intermediate state storage.
     private static final Materialized<String, WonderSeeker, KeyValueStore<Bytes, byte[]>> IN_MEMORY_TEMP_KTABLE = Materialized
-            .<String, WonderSeeker>as(Stores.inMemoryKeyValueStore(StateStores.WONDER_SEEKER_STATE_STORE))
+            .<String, WonderSeeker>as(Stores.inMemoryKeyValueStore(WONDER_SEEKER_IN_MEMORY_STATE_STORE))
             .withKeySerde(Serdes.String())
             .withValueSerde(CustomSerdes.WONDER_SEEKER_JSON_SERDE);
 
     private final StreamsBuilder builder;
     private final WonderSeekerJdbcRepository repository;
+    private String applicationName;
 
-    public KStreamAndKTableDefinitions(StreamsBuilder builder, WonderSeekerJdbcRepository repository) {
+    public KStreamAndKTableDefinitions(StreamsBuilder builder,
+                                       WonderSeekerJdbcRepository repository,
+                                       @Value("${spring.application.name}") String applicationName) {
         this.builder = builder;
         this.repository = repository;
+        this.applicationName = applicationName;
     }
 
     @PostConstruct
@@ -61,10 +66,8 @@ public class KStreamAndKTableDefinitions {
         // register a global store which reads directly from the aggregated in memory table's changelog
         var storeBuilder = new WonderSeekerStore.Builder(WONDER_SEEKER_GLOBAL_STATE_STORE, Time.SYSTEM, repository);
         builder.addGlobalStore(storeBuilder,
-                stateStoreTopic(WONDER_SEEKER_GLOBAL_STATE_STORE),
+                stateStoreTopicName(WONDER_SEEKER_IN_MEMORY_STATE_STORE, applicationName),
                 WONDER_SEEKER_CONSUMED,
-                () -> new WonderSeekerProcessor(WONDER_SEEKER_GLOBAL_STATE_STORE)
-        );
+                () -> new WonderSeekerProcessor(WONDER_SEEKER_GLOBAL_STATE_STORE));
     }
-
 }
