@@ -8,6 +8,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import wonderland.api.gateway.config.Topics;
 import wonderland.api.gateway.dto.DancePartnerEvent;
+import wonderland.api.gateway.dto.DancePartnerSeekerIsDisLikedEvent;
+import wonderland.api.gateway.dto.DancePartnerSeekerIsLikedEvent;
 import wonderland.api.gateway.dto.DancerIsLookingForPartnerEvent;
 import wonderland.api.gateway.dto.Location;
 
@@ -69,7 +71,7 @@ public class DancePartnerFinderResource {
         potentialDancePartners.add(requestBody.name);
         log.info("current dancers,{}", potentialDancePartners);
         var event = new DancerIsLookingForPartnerEvent(requestBody.name, requestBody.location);
-        return Mono.fromFuture(kafkaTemplate.send(Topics.DANCER_SEEKING_PARTNER_UPDATES, requestBody.name, event).completable())
+        return Mono.fromFuture(kafkaTemplate.send(Topics.DANCER_SEEKING_PARTNER_UPDATES, event.key(), event).completable())
                 .doOnError(throwable -> log.error("error while publishing {}", event))
                 .log()
                 .then();
@@ -88,7 +90,11 @@ public class DancePartnerFinderResource {
                 .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
         likedDancers.put(requestBody.whoHasLiked, newLikeesMap);
         log.info("likedDancers {}", likedDancers);
-        return Mono.empty();
+        var event = new DancePartnerSeekerIsLikedEvent(requestBody.whoHasLiked, requestBody.whomIsLiked);
+        return Mono.fromFuture(kafkaTemplate.send(Topics.DANCE_PARTNER_EVENTS, event.key(), event).completable())
+                .doOnError(throwable -> log.error("error while publishing {}", event))
+                .log()
+                .then();
     }
 
     record DisLikeRequestBody(String whoHasDisLiked, String whomIsDisLiked) {
@@ -104,7 +110,11 @@ public class DancePartnerFinderResource {
                 .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
         disLikedDancers.put(requestBody.whoHasDisLiked, newLikeesMap);
         log.info("disLikedDancers {}", disLikedDancers);
-        return Mono.empty();
+        var event = new DancePartnerSeekerIsDisLikedEvent(requestBody.whoHasDisLiked, requestBody.whomIsDisLiked);
+        return Mono.fromFuture(kafkaTemplate.send(Topics.DANCE_PARTNER_EVENTS, event.key(), event).completable())
+                .doOnError(throwable -> log.error("error while publishing {}", event))
+                .log()
+                .then();
     }
 
     @MessageMapping("/api/dance/partner/finder/matches")
