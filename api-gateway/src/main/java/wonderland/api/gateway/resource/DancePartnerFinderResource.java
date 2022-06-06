@@ -68,10 +68,9 @@ public class DancePartnerFinderResource {
     public Mono<Void> addName(SeekingPartnerRequestBody requestBody) {
         potentialDancePartners.add(requestBody.name);
         log.info("current dancers,{}", potentialDancePartners);
-        return Mono.fromFuture(kafkaTemplate.send(Topics.DANCER_SEEKING_PARTNER_UPDATES,
-                                requestBody.name,
-                                new DancerIsLookingForPartnerEvent(requestBody.name, requestBody.location))
-                        .completable())
+        var event = new DancerIsLookingForPartnerEvent(requestBody.name, requestBody.location);
+        return Mono.fromFuture(kafkaTemplate.send(Topics.DANCER_SEEKING_PARTNER_UPDATES, requestBody.name, event).completable())
+                .doOnError(throwable -> log.error("error while publishing {}", event))
                 .log()
                 .then();
     }

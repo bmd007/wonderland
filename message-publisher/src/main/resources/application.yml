@@ -55,9 +55,6 @@ spring:
       auto-offset-reset: earliest
     retries: 3
     acks: all
-  rsocket.server.port: 4789
-#  spring.rsocket.server.transport=websocket
-#  spring.rsocket.server.mapping-path=/rsocket
 
 kafka:
   topic:
