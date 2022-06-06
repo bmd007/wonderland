@@ -14,11 +14,11 @@ logging:
 spring:
   zipkin.enabled: false
   sleuth.enabled: false
-  # Kafka enable for tests
-#  kafka:
-#    enabled: false
-#    bootstrap-servers: ${spring.embedded.kafka.brokers}
+  kafka:
+    enabled: false
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
 
 kafka:
   topic-partitions:
-    eventTopic: '1:1'
+    event: '1:1'
+    update: '1:1'

@@ -26,8 +26,7 @@ class DancePartnerBloc extends Bloc<DancePartnerEvent, DancePartnerState> {
       emit(state.withThisDancerName(event.thisDancerName));
 
       getLocation()
-        .then((value) => print("BMD:location:$value"))
-        .then((value) => addName(state.thisDancerName))
+        .then((location) => addName(state.thisDancerName, location.latitude!, location.longitude! ))
         .asStream()
         .asyncExpand((event) => fetchNames(state.thisDancerName))
         .forEach((potentialDancePartner) => add(PotentialDancerPartnerFoundEvent(potentialDancePartner!)));

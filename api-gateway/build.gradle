@@ -1,11 +1,8 @@
-import org.gradle.api.tasks.wrapper.Wrapper
-
 plugins {
 	id 'org.springframework.boot' version '2.7.0'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 }
-
 
 group = 'wonderland'
 
@@ -48,6 +45,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
 	implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+	implementation 'org.springframework.kafka:spring-kafka'
 	compileOnly 'org.projectlombok:lombok'
 	implementation 'com.google.guava:guava:31.1-jre'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
@@ -57,6 +55,7 @@ dependencies {
 	testImplementation 'org.mockito:mockito-junit-jupiter'
 	testImplementation 'org.junit.jupiter:junit-jupiter-api'
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
 }
 
 dependencyManagement {

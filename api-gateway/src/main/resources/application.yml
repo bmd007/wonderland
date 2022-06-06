@@ -61,6 +61,7 @@ kafka:
   topic:
     config:
       event: '3:2'
+      update: '3:2'
 
 ---
 spring:
@@ -72,6 +73,7 @@ kafka:
   topic:
     config:
       event: '1:1'
+      update: '1:1'
 
 ---
 spring:
@@ -85,3 +87,4 @@ kafka:
   topic:
     config:
       event: '1:1'
+      update: '1:1'
