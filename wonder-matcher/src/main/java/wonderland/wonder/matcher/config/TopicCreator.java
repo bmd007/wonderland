@@ -49,17 +49,9 @@ public class TopicCreator {
                 .configs(Map.of(CLEANUP_POLICY_CONFIG, CLEANUP_POLICY_COMPACT));
     }
 
-    private static class PartitionDef {
+    private record PartitionDef(int numPartitions, short replicationFactor) {
 
         private final static Pattern PATTERN = Pattern.compile("(\\d+):(\\d+)");
-
-        private final int numPartitions;
-        private final short replicationFactor;
-
-        private PartitionDef(int numPartitions, short replicationFactor) {
-            this.numPartitions = numPartitions;
-            this.replicationFactor = replicationFactor;
-        }
 
         public static PartitionDef parse(String value) {
             var matcher = PATTERN.matcher(value);

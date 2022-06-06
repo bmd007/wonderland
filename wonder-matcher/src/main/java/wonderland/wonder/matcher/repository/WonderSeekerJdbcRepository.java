@@ -41,7 +41,7 @@ public class WonderSeekerJdbcRepository {
      */
     public void save(WonderSeeker wonderSeeker) {
         jdbc.execute(String.format(
-                "merge into WONDER_SEEKERS (id, last_location, updated_at)"
+                "merge into wonder_seekers (id, last_location, updated_at)"
                         + " key (id)"
                         + " values ('%s', '%s', '%s');",
                 wonderSeeker.id(),
@@ -57,7 +57,7 @@ public class WonderSeekerJdbcRepository {
     @Nullable
     public WonderSeeker get(String key) {
         try {
-            var sql = String.format("select * from WONDER_SEEKERS where id = '%s'", key);
+            var sql = String.format("select * from wonder_seekers where id = '%s'", key);
             return jdbc.queryForObject(sql, this::mapRow);
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -68,7 +68,7 @@ public class WonderSeekerJdbcRepository {
      * @return all wonderSeekers.
      */
     public List<WonderSeeker> getAll() {
-        return jdbc.query("select * from WONDER_SEEKERS;", this::mapRow);
+        return jdbc.query("select * from wonder_seekers;", this::mapRow);
     }
 
     /**
@@ -77,21 +77,21 @@ public class WonderSeekerJdbcRepository {
      * @return a list of wonderSeekers where the keys are in range.
      */
     public List<WonderSeeker> getInRange(String from, String to) {
-        return jdbc.query("select * from WONDER_SEEKERS where (id between ? and ?);", this::mapRow, from, to);
+        return jdbc.query("select * from wonder_seekers where (id between ? and ?);", this::mapRow, from, to);
     }
 
     /**
      * Delete wonderSeeker by key.
      */
     public void delete(String key) {
-        jdbc.execute(String.format("delete from WONDER_SEEKERS where id = '%s';", key));
+        jdbc.execute(String.format("delete from wonder_seekers where id = '%s';", key));
     }
 
     /**
      * Delete all wonderSeekers.
      */
     public void deleteAll() {
-        jdbc.execute("delete from WONDER_SEEKERS;");
+        jdbc.execute("delete from wonder_seekers;");
     }
 
     //todo add support for maxAge
@@ -111,7 +111,7 @@ public class WonderSeekerJdbcRepository {
      */
     //todo add support for maxAge
     public List<WonderSeeker> query(Polygon polygon) {
-        var sql = String.format("select * from WONDER_SEEKERS where last_location && '%s' ;", polygon.toText());
+        var sql = String.format("select * from wonder_seekers where last_location && '%s' ;", polygon.toText());
         return jdbc.query(sql, this::mapRow);
     }
 

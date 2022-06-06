@@ -1,8 +1,10 @@
-package wonderland.api.gateway.dto;
+package wonderland.wonder.matcher.dto;
+
+import wonderland.wonder.matcher.domain.Location;
 
 import javax.validation.constraints.NotBlank;
 
-public record DancerIsLookingForPartnerEvent(
+public record DancerIsLookingForPartnerUpdate(
         @NotBlank String dancerName,
         Location location
 

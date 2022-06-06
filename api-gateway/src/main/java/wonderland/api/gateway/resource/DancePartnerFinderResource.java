@@ -10,7 +10,7 @@ import wonderland.api.gateway.config.Topics;
 import wonderland.api.gateway.dto.DancePartnerEvent;
 import wonderland.api.gateway.dto.DancePartnerSeekerIsDisLikedEvent;
 import wonderland.api.gateway.dto.DancePartnerSeekerIsLikedEvent;
-import wonderland.api.gateway.dto.DancerIsLookingForPartnerEvent;
+import wonderland.api.gateway.dto.DancerIsLookingForPartnerUpdate;
 import wonderland.api.gateway.dto.Location;
 
 import java.time.Duration;
@@ -70,7 +70,7 @@ public class DancePartnerFinderResource {
     public Mono<Void> addName(SeekingPartnerRequestBody requestBody) {
         potentialDancePartners.add(requestBody.name);
         log.info("current dancers,{}", potentialDancePartners);
-        var event = new DancerIsLookingForPartnerEvent(requestBody.name, requestBody.location);
+        var event = new DancerIsLookingForPartnerUpdate(requestBody.name, requestBody.location);
         return Mono.fromFuture(kafkaTemplate.send(Topics.DANCER_SEEKING_PARTNER_UPDATES, event.key(), event).completable())
                 .doOnError(throwable -> log.error("error while publishing {}", event))
                 .log()

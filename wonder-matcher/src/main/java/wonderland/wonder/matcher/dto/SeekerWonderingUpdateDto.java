@@ -1,8 +1,9 @@
 package wonderland.wonder.matcher.dto;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
-public record SeekerWonderingUpdateDto(String wonderSeekerId, Instant timestamp, double latitude, double longitude) {
+public record SeekerWonderingUpdateDto(String wonderSeekerId, LocalDateTime eventTime, double latitude,
+                                       double longitude) {
     public String activity() {
         return "bowling";
     }
@@ -10,6 +11,7 @@ public record SeekerWonderingUpdateDto(String wonderSeekerId, Instant timestamp,
     public String seekedWonder() {
         return "bowling";
     }
+
     public String getKey() {
         return wonderSeekerId;
     }

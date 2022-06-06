@@ -8,21 +8,17 @@ import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.Stores;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import wonderland.wonder.matcher.config.StateStores;
 import wonderland.wonder.matcher.config.Topics;
-import wonderland.wonder.matcher.domain.Location;
 import wonderland.wonder.matcher.domain.WonderSeeker;
-import wonderland.wonder.matcher.dto.SeekerWonderingUpdateDto;
+import wonderland.wonder.matcher.dto.DancerIsLookingForPartnerUpdate;
 import wonderland.wonder.matcher.repository.WonderSeekerJdbcRepository;
 import wonderland.wonder.matcher.serialization.CustomSerdes;
 
 import javax.annotation.PostConstruct;
 
-import java.time.Instant;
+import java.time.ZoneOffset;
 
 import static wonderland.wonder.matcher.config.StateStores.WONDER_SEEKER_GLOBAL_STATE_STORE;
 import static wonderland.wonder.matcher.config.TopicCreator.stateStoreTopic;
@@ -30,7 +26,8 @@ import static wonderland.wonder.matcher.config.TopicCreator.stateStoreTopic;
 @Configuration
 public class KStreamAndKTableDefinitions {
 
-    private static final Consumed<String, SeekerWonderingUpdateDto> SEEKER_WONDERING_UPDATES_CONSUMED = Consumed.with(Serdes.String(), CustomSerdes.WONDER_SEEKER_DTO_JSON_SERDE);
+    private static final Consumed<String, DancerIsLookingForPartnerUpdate> DANCE_PARTNER_SEEKER_UPDATES_CONSUMED =
+            Consumed.with(Serdes.String(), CustomSerdes.DANCER_SEEKING_PARTNER_JSON_SERDE);
     private static final Consumed<String, WonderSeeker> WONDER_SEEKER_CONSUMED = Consumed.with(Serdes.String(), CustomSerdes.WONDER_SEEKER_JSON_SERDE);
 
     // Use an in-memory store for intermediate state storage.
@@ -50,15 +47,15 @@ public class KStreamAndKTableDefinitions {
     @PostConstruct
     public void configureStores() {
         builder
-                .stream(Topics.WONDER_SEEK_UPDATES_TOPIC, SEEKER_WONDERING_UPDATES_CONSUMED)
-                .filterNot((k, v) -> k == null || k.isBlank() || k.isEmpty() || v == null || v.getKey() == null || v.getKey().isEmpty() || v.getKey().isBlank())
-                .filter((k, v) -> k.equals(v.getKey()))
-                .filter((k, v) -> v.latitude() >= -90 && v.latitude() <= 90)
-                .filter((k, v) -> v.longitude() >= -180 && v.longitude() <= 180)
+                .stream(Topics.DANCER_SEEKING_PARTNER_UPDATES, DANCE_PARTNER_SEEKER_UPDATES_CONSUMED)
+                .filterNot((k, v) -> k == null || k.isBlank() || k.isEmpty() || v == null || v.key() == null || v.key().isEmpty() || v.key().isBlank())
+                .filter((k, v) -> k.equals(v.key()))
+                .filter((k, v) -> v.location().latitude() >= -90 && v.location().latitude() <= 90)
+                .filter((k, v) -> v.location().longitude() >= -180 && v.location().longitude() <= 180)
                 .groupByKey()
                 // Aggregate status into an in-memory KTable as a source for global KTable
                 .aggregate(WonderSeeker::empty,
-                        (key, value, aggregate) -> WonderSeeker.now(key, value.latitude(), value.longitude()),
+                        (key, value, aggregate) -> new WonderSeeker(key, value.location(), value.eventTime().toInstant(ZoneOffset.UTC)),
                         IN_MEMORY_TEMP_KTABLE);
 
         // register a global store which reads directly from the aggregated in memory table's changelog
