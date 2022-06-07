@@ -13,11 +13,20 @@ Payload routeAndDataPayload(String route, String data) {
   return Payload.from(metadataBytes, dataBytes);
 }
 
-Stream<String?> fetchNames(String thisDancerName) {
+Stream<String?> fetchNames(String name, double latitude, double longitude) {
+  var body = """
+    {
+      "location": {
+          "latitude": "$latitude",
+          "longitude": "$longitude"
+        },
+        "dancerPartnerSeekerName": "${name}"
+    }
+  """;
   return RSocketConnector.create()
       .connect('tcp://192.168.1.188:7022')
       .asStream()
-      .asyncExpand((rSocket) => rSocket.requestStream!(routeAndDataPayload("/api/dance/partner/finder/names", thisDancerName)))
+      .asyncExpand((rSocket) => rSocket.requestStream!(routeAndDataPayload("/api/dance/partner/finder/names", body)))
       .map((element) => element!.getDataUtf8());
 }
 

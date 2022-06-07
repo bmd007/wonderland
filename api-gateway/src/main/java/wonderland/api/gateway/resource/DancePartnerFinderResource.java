@@ -1,9 +1,11 @@
 package wonderland.api.gateway.resource;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import wonderland.api.gateway.config.Topics;
@@ -12,11 +14,12 @@ import wonderland.api.gateway.dto.DancePartnerSeekerIsDisLikedEvent;
 import wonderland.api.gateway.dto.DancePartnerSeekerIsLikedEvent;
 import wonderland.api.gateway.dto.DancerIsLookingForPartnerUpdate;
 import wonderland.api.gateway.dto.Location;
+import wonderland.api.gateway.dto.WonderSeekerDto;
+import wonderland.api.gateway.dto.WonderSeekersDto;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -28,38 +31,56 @@ import java.util.stream.Stream;
 public class DancePartnerFinderResource {
 
     private final KafkaTemplate<String, DancePartnerEvent> kafkaTemplate;
-    private static Set<String> potentialDancePartners = new HashSet<>();
+    private static Map<String, DancerIsLookingForPartnerUpdate> potentialDancePartners = new HashMap<>();
+    private final WebClient wonderMatcherClient;
 
     static {
-        potentialDancePartners.add("brucee");
-        potentialDancePartners.add("camila");
-        potentialDancePartners.add("jlo");
-        potentialDancePartners.add("johnny");
-        potentialDancePartners.add("michel");
-        potentialDancePartners.add("taylor");
+        potentialDancePartners.put("brucee", new DancerIsLookingForPartnerUpdate("brucee", new Location(59.854216, 17.643421)));
+        potentialDancePartners.put("camila", new DancerIsLookingForPartnerUpdate("camila", new Location(59.854253, 17.638438)));
+        potentialDancePartners.put("jlo", new DancerIsLookingForPartnerUpdate("jlo", new Location(59.857912, 17.646473)));
+        potentialDancePartners.put("johnny", new DancerIsLookingForPartnerUpdate("johnny", new Location(59.857064, 17.627195)));
+        potentialDancePartners.put("michel", new DancerIsLookingForPartnerUpdate("michel", new Location(59.874289, 17.627295)));
+        potentialDancePartners.put("taylor", new DancerIsLookingForPartnerUpdate("taylor", new Location(59.834210, 17.614565)));
     }
 
     private static Map<String, Map<String, LocalDateTime>> likedDancers = new HashMap<>();
     private static Map<String, Map<String, LocalDateTime>> disLikedDancers = new HashMap<>();
 
-    public DancePartnerFinderResource(KafkaTemplate<String, DancePartnerEvent> kafkaTemplate) {
+    public DancePartnerFinderResource(KafkaTemplate<String, DancePartnerEvent> kafkaTemplate,
+                                      @Qualifier("loadBalancedClient") WebClient.Builder loadBalancedWebClientBuilder) {
         this.kafkaTemplate = kafkaTemplate;
+        this.wonderMatcherClient = loadBalancedWebClientBuilder.baseUrl("http://wonder-matcher").build();
+
+        Flux.fromIterable(potentialDancePartners.values())
+                .flatMap(event -> Mono.fromFuture(kafkaTemplate.send(Topics.DANCER_SEEKING_PARTNER_UPDATES, event.key(), event).completable()))
+                .doOnError(throwable -> log.error("error while publishing"))
+                .log()
+                .subscribe();
     }
 
+    record GetOtherDancerPartnerSeekersRequestBody(String dancerPartnerSeekerName, Location location){}
     @MessageMapping("/api/dance/partner/finder/names")//todo support time in the searches
-    public Flux<String> names(String dancerPartnerSeekerName) {
-        var likedDancersByPartnerSeeker = Optional.ofNullable(likedDancers.get(dancerPartnerSeekerName))
+    public Flux<String> getOtherDancerPartnerSeekers(GetOtherDancerPartnerSeekersRequestBody requestBody) {
+        var likedDancersByPartnerSeeker = Optional.ofNullable(likedDancers.get(requestBody.dancerPartnerSeekerName))
                 .map(Map::keySet)
                 .orElseGet(Set::of);
-        var disLikedDancersByPartnerSeeker = Optional.ofNullable(disLikedDancers.get(dancerPartnerSeekerName))
+        var disLikedDancersByPartnerSeeker = Optional.ofNullable(disLikedDancers.get(requestBody.dancerPartnerSeekerName))
                 .map(Map::keySet)
                 .orElseGet(Set::of);
         log.info("likees {}", likedDancersByPartnerSeeker);
         log.info("disLikees {}", disLikedDancersByPartnerSeeker);
-        return Flux.fromIterable(potentialDancePartners)
+        return wonderMatcherClient.get()
+                .uri(uriBuilder -> uriBuilder.path("api/wonder/box/by/coordinate")
+                        .queryParam("latitude", requestBody.location.latitude())
+                        .queryParam("longitude", requestBody.location.longitude())
+                        .build())
+                .retrieve()
+                .bodyToMono(WonderSeekersDto.class)
+                .flatMapIterable(WonderSeekersDto::results)
+                .map(WonderSeekerDto::wonderSeekerId)
                 .filter(dancerName -> !likedDancersByPartnerSeeker.contains(dancerName))
                 .filter(dancerName -> !disLikedDancersByPartnerSeeker.contains(dancerName))
-                .filter(dancerName -> !dancerName.equals(dancerPartnerSeekerName))
+                .filter(dancerName -> !dancerName.equals(requestBody.dancerPartnerSeekerName))
                 .doOnNext(System.out::println);
     }
 
@@ -68,8 +89,8 @@ public class DancePartnerFinderResource {
 
     @MessageMapping("/api/dance/partner/finder/addName")
     public Mono<Void> addName(SeekingPartnerRequestBody requestBody) {
-        potentialDancePartners.add(requestBody.name);
-        log.info("current dancers,{}", potentialDancePartners);
+//        potentialDancePartners.put(requestBody.name, event);
+        log.info("current dancers,{}", potentialDancePartners.keySet());
         var event = new DancerIsLookingForPartnerUpdate(requestBody.name, requestBody.location);
         return Mono.fromFuture(kafkaTemplate.send(Topics.DANCER_SEEKING_PARTNER_UPDATES, event.key(), event).completable())
                 .doOnError(throwable -> log.error("error while publishing {}", event))

@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:dance_partner_finder/client/api_gateway_rsocket_client.dart';
 import 'package:equatable/equatable.dart';
 import 'package:location/location.dart';
+import 'package:rxdart/rxdart.dart';
 
 part 'dance_partner_finder_event.dart';
 part 'dance_partner_finder_state.dart';
@@ -26,10 +27,10 @@ class DancePartnerBloc extends Bloc<DancePartnerEvent, DancePartnerState> {
       emit(state.withThisDancerName(event.thisDancerName));
 
       getLocation()
-        .then((location) => addName(state.thisDancerName, location.latitude!, location.longitude! ))
-        .asStream()
-        .asyncExpand((event) => fetchNames(state.thisDancerName))
-        .forEach((potentialDancePartner) => add(PotentialDancerPartnerFoundEvent(potentialDancePartner!)));
+      .asStream()
+      .doOnData((location) => addName(state.thisDancerName, location.latitude!, location.longitude! ))
+      .asyncExpand((location) => fetchNames(state.thisDancerName, location.latitude!, location.longitude!))
+      .forEach((potentialDancePartner) => add(PotentialDancerPartnerFoundEvent(potentialDancePartner!)));
     });
     on<DancersLoadedEvent>((event, emit) {
       emit(state.loaded(event.loadedDancerNames));

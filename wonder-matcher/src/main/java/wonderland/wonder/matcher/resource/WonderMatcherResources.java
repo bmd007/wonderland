@@ -43,12 +43,12 @@ public class WonderMatcherResources {
         return map(repository.get(id));
     }
 
-    @GetMapping("/box/by/coordinate")
+    @GetMapping("/box/by/coordinate")//todo support instant max age, in hours
     public WonderSeekersDto queryBox(@RequestParam double latitude,
                                      @RequestParam double longitude,
                                      @RequestParam(required = false) Long maxAge) {
         var point = geometryFactory.createPoint(new Coordinate(latitude, longitude));
-        var polygon = (Polygon) point.buffer(0.0005);
+        var polygon = (Polygon) point.buffer(0.0025);
         try {
             var results = repository.query(polygon)
                     .stream()
