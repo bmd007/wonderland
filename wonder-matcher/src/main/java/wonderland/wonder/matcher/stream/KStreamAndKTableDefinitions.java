@@ -14,7 +14,6 @@ import wonderland.wonder.matcher.config.Topics;
 import wonderland.wonder.matcher.domain.WonderSeeker;
 import wonderland.wonder.matcher.dto.DancerIsLookingForPartnerUpdate;
 import wonderland.wonder.matcher.repository.WonderSeekerJdbcRepository;
-import wonderland.wonder.matcher.serialization.CustomSerdes;
 
 import javax.annotation.PostConstruct;
 
@@ -23,19 +22,21 @@ import java.time.ZoneOffset;
 import static wonderland.wonder.matcher.config.StateStores.WONDER_SEEKER_GLOBAL_STATE_STORE;
 import static wonderland.wonder.matcher.config.StateStores.WONDER_SEEKER_IN_MEMORY_STATE_STORE;
 import static wonderland.wonder.matcher.config.TopicCreator.stateStoreTopicName;
+import static wonderland.wonder.matcher.serialization.CustomSerdes.DANCER_SEEKING_PARTNER_JSON_SERDE;
+import static wonderland.wonder.matcher.serialization.CustomSerdes.WONDER_SEEKER_JSON_SERDE;
 
 @Configuration
 public class KStreamAndKTableDefinitions {
 
     private static final Consumed<String, DancerIsLookingForPartnerUpdate> DANCE_PARTNER_SEEKER_UPDATES_CONSUMED =
-            Consumed.with(Serdes.String(), CustomSerdes.DANCER_SEEKING_PARTNER_JSON_SERDE);
-    private static final Consumed<String, WonderSeeker> WONDER_SEEKER_CONSUMED = Consumed.with(Serdes.String(), CustomSerdes.WONDER_SEEKER_JSON_SERDE);
+            Consumed.with(Serdes.String(), DANCER_SEEKING_PARTNER_JSON_SERDE);
+    private static final Consumed<String, WonderSeeker> WONDER_SEEKER_CONSUMED = Consumed.with(Serdes.String(), WONDER_SEEKER_JSON_SERDE);
 
     // Use an in-memory store for intermediate state storage.
-    private static final Materialized<String, WonderSeeker, KeyValueStore<Bytes, byte[]>> IN_MEMORY_TEMP_KTABLE = Materialized
+    private static final Materialized<String, WonderSeeker, KeyValueStore<Bytes, byte[]>> WONDER_SEEKER_LOCAL_STATE_KTABLE = Materialized
             .<String, WonderSeeker>as(Stores.inMemoryKeyValueStore(WONDER_SEEKER_IN_MEMORY_STATE_STORE))
             .withKeySerde(Serdes.String())
-            .withValueSerde(CustomSerdes.WONDER_SEEKER_JSON_SERDE);
+            .withValueSerde(WONDER_SEEKER_JSON_SERDE);
 
     private final StreamsBuilder builder;
     private final WonderSeekerJdbcRepository repository;
@@ -61,7 +62,7 @@ public class KStreamAndKTableDefinitions {
                 // Aggregate status into an in-memory KTable as a source for global KTable
                 .aggregate(WonderSeeker::empty,
                         (key, value, aggregate) -> new WonderSeeker(key, value.location(), value.eventTime().toInstant(ZoneOffset.UTC)),
-                        IN_MEMORY_TEMP_KTABLE);
+                        WONDER_SEEKER_LOCAL_STATE_KTABLE);
 
         // register a global store which reads directly from the aggregated in memory table's changelog
         var storeBuilder = new WonderSeekerStore.Builder(WONDER_SEEKER_GLOBAL_STATE_STORE, Time.SYSTEM, repository);
@@ -69,5 +70,7 @@ public class KStreamAndKTableDefinitions {
                 stateStoreTopicName(WONDER_SEEKER_IN_MEMORY_STATE_STORE, applicationName),
                 WONDER_SEEKER_CONSUMED,
                 () -> new WonderSeekerProcessor(WONDER_SEEKER_GLOBAL_STATE_STORE));
+        
+        
     }
 }

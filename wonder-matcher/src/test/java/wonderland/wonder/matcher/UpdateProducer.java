@@ -8,10 +8,11 @@ import org.springframework.stereotype.Component;
 import wonderland.wonder.matcher.config.Topics;
 import wonderland.wonder.matcher.domain.Location;
 import wonderland.wonder.matcher.dto.DancerIsLookingForPartnerUpdate;
-import wonderland.wonder.matcher.serialization.CustomSerdes;
 
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
+
+import static wonderland.wonder.matcher.serialization.CustomSerdes.DANCER_SEEKING_PARTNER_JSON_SERDE;
 
 @Component
 public class UpdateProducer {
@@ -21,7 +22,7 @@ public class UpdateProducer {
     public UpdateProducer(@Value("${spring.kafka.bootstrap-servers}") String bootstrapServers) {
         var providerConfig = new Properties();
         providerConfig.put("bootstrap.servers", bootstrapServers);
-        positionUpdateProducer = new KafkaProducer<>(providerConfig, new StringSerializer(), CustomSerdes.DANCER_SEEKING_PARTNER_JSON_SERDE.serializer());
+        positionUpdateProducer = new KafkaProducer<>(providerConfig, new StringSerializer(), DANCER_SEEKING_PARTNER_JSON_SERDE.serializer());
     }
 
     public void producePositionUpdate(String key, double latitude, double longitude) {

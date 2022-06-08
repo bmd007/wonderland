@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wonderland.wonder.matcher.domain.WonderSeeker;
 import wonderland.wonder.matcher.repository.WonderSeekerJdbcRepository;
-import wonderland.wonder.matcher.serialization.CustomSerdes;
 
 import java.util.Iterator;
 import java.util.List;
@@ -21,6 +20,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static wonderland.wonder.matcher.serialization.CustomSerdes.WONDER_SEEKER_JSON_SERDE;
 
 public class WonderSeekerStore implements KeyValueStore<String, WonderSeeker> {
 
@@ -51,7 +52,7 @@ public class WonderSeekerStore implements KeyValueStore<String, WonderSeeker> {
                 if (valueBytes == null) {
                     delete(key);
                 } else {
-                    WonderSeeker value = CustomSerdes.WONDER_SEEKER_JSON_SERDE.deserializer().deserialize(null, valueBytes);
+                    WonderSeeker value = WONDER_SEEKER_JSON_SERDE.deserializer().deserialize(null, valueBytes);
                     put(key, value);
                 }
             });
@@ -169,7 +170,7 @@ public class WonderSeekerStore implements KeyValueStore<String, WonderSeeker> {
         private final WonderSeekerJdbcRepository repository;
 
         public Builder(String name, Time time, WonderSeekerJdbcRepository repository) {
-            super(name, Serdes.String(), CustomSerdes.WONDER_SEEKER_JSON_SERDE, time);
+            super(name, Serdes.String(), WONDER_SEEKER_JSON_SERDE, time);
             this.repository = repository;
         }
 
