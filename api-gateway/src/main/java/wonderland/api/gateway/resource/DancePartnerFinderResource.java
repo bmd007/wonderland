@@ -81,8 +81,8 @@ public class DancePartnerFinderResource {
                 .bodyToMono(WonderSeekersDto.class)
                 .flatMapIterable(WonderSeekersDto::results)
                 .map(WonderSeekerDto::wonderSeekerId)
-                .filter(dancerName -> !likedDancersByPartnerSeeker.contains(dancerName))
-                .filter(dancerName -> !disLikedDancersByPartnerSeeker.contains(dancerName))
+//                .filter(dancerName -> !likedDancersByPartnerSeeker.contains(dancerName))
+//                .filter(dancerName -> !disLikedDancersByPartnerSeeker.contains(dancerName))
                 .filter(dancerName -> !dancerName.equals(requestBody.dancerPartnerSeekerName))
                 .doOnNext(System.out::println);
     }

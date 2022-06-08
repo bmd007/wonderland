@@ -137,10 +137,16 @@ public class KStreamAndKTableDefinitions {
                 .filterNot((k, v) -> k == null || k.isBlank() || k.isEmpty() || v == null || v.key() == null || v.key().isEmpty() || v.key().isBlank())
                 .filter((k, v) -> k.equals(v.key()))
                 .join(wonderSeekerLikeHistoryKTable, (readOnlyKey, passiveFormLikeEvent, wonderSeekerLikeHistory) -> {
-                    log.info("{}, {}, {}", readOnlyKey, passiveFormLikeEvent, wonderSeekerLikeHistory);
-                    if (passiveFormLikeEvent.liker().equals(wonderSeekerLikeHistory.wonderSeekerName())) {
+                    log.info("before join {}, {}, {}", readOnlyKey, passiveFormLikeEvent, wonderSeekerLikeHistory);
+                    /***
+                     jlo liked [tom]
+                     tom liked [jlo] => jio is liked by tom
+                     join => jlo (likee:key), jlo(likee) is liked by tom (liker), jlo(wonderSeekerName) [tom]
+                     => match
+                     ***/
+                    if (passiveFormLikeEvent.likee().equals(wonderSeekerLikeHistory.wonderSeekerName())) {
                         return wonderSeekerLikeHistory.likeHistory().entrySet().stream()
-                                .filter(likeEntry -> likeEntry.getKey().equals(passiveFormLikeEvent.likee()))//todo check time ? time needed at all?
+                                .filter(likeEntry -> likeEntry.getKey().equals(passiveFormLikeEvent.liker()))//todo check time ? time needed at all?
                                 .findFirst()//todo needed?
                                 .map(likedEntryOfMatch -> new WonderSeekersMatchedEvent(passiveFormLikeEvent.liker(), passiveFormLikeEvent.likee()))
                                 .orElseGet(() -> null);
