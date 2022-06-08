@@ -8,7 +8,6 @@ import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Materialized;
-import org.apache.kafka.streams.kstream.Printed;
 import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.kstream.Repartitioned;
 import org.apache.kafka.streams.state.KeyValueStore;
@@ -21,8 +20,8 @@ import wonderland.wonder.matcher.domain.WonderSeekerLikeHistory;
 import wonderland.wonder.matcher.domain.WonderSeekerMatchHistory;
 import wonderland.wonder.matcher.event.DancePartnerSeekerHasLikedAnotherDancerEvent;
 import wonderland.wonder.matcher.event.DancePartnerSeekerIsLikedByAnotherDancerEvent;
-import wonderland.wonder.matcher.event.WonderSeekersMatchedEvent;
 import wonderland.wonder.matcher.event.DancerIsLookingForPartnerUpdate;
+import wonderland.wonder.matcher.event.WonderSeekersMatchedEvent;
 import wonderland.wonder.matcher.repository.WonderSeekerJdbcRepository;
 
 import javax.annotation.PostConstruct;
@@ -133,12 +132,12 @@ public class KStreamAndKTableDefinitions {
                 .filterNot((k, v) -> k == null || k.isBlank() || k.isEmpty() || v == null || v.key() == null || v.key().isEmpty() || v.key().isBlank())
                 .filter((k, v) -> k.equals(v.key()))
                 .map((key, value) -> KeyValue.pair(value.likee(), new DancePartnerSeekerIsLikedByAnotherDancerEvent(value.liker(), value.likee())))
-                .repartition(Repartitioned.with(Serdes.String(), LIKEES_EVENT_JSON_SERDE).withName(WONDER_SEEKER_PASSIVE_LIKE_EVENTS));
+                .repartition(Repartitioned.with(Serdes.String(), LIKEES_EVENT_JSON_SERDE).withName(WONDER_SEEKER_PASSIVE_LIKE_EVENTS))
 
-        builder.stream(Topics.WONDER_SEEKER_PASSIVE_LIKE_EVENTS, LIKEES_EVENT_CONSUMED)
                 .filterNot((k, v) -> k == null || k.isBlank() || k.isEmpty() || v == null || v.key() == null || v.key().isEmpty() || v.key().isBlank())
                 .filter((k, v) -> k.equals(v.key()))
                 .join(wonderSeekerLikeHistoryKTable, (readOnlyKey, passiveFormLikeEvent, wonderSeekerLikeHistory) -> {
+                    log.info("{}, {}, {}", readOnlyKey, passiveFormLikeEvent, wonderSeekerLikeHistory);
                     if (passiveFormLikeEvent.liker().equals(wonderSeekerLikeHistory.wonderSeekerName())) {
                         return wonderSeekerLikeHistory.likeHistory().entrySet().stream()
                                 .filter(likeEntry -> likeEntry.getKey().equals(passiveFormLikeEvent.likee()))//todo check time ? time needed at all?
@@ -155,9 +154,9 @@ public class KStreamAndKTableDefinitions {
                     return Set.<KeyValue<String, WonderSeekersMatchedEvent>>of(KeyValue.pair(value.key(), value), KeyValue.pair(reversedKeyMatchEvent.key(), reversedKeyMatchEvent));
                 })
                 .peek((key, value) -> log.info("Match Event {}", value))
-                .repartition(Repartitioned.with(Serdes.String(), WONDER_SEEKERS_MATCHED_EVENT_JSON_SERDE).withName(WONDER_SEEKER_MATCH_EVENTS));
-
-        builder.stream(Topics.WONDER_SEEKER_MATCH_EVENTS, MATCHED_EVENT_CONSUMED)
+                .repartition(Repartitioned.with(Serdes.String(), WONDER_SEEKERS_MATCHED_EVENT_JSON_SERDE).withName(WONDER_SEEKER_MATCH_EVENTS))
+//        ;
+//        builder.stream(Topics.WONDER_SEEKER_MATCH_EVENTS, MATCHED_EVENT_CONSUMED)
                 .filterNot((k, v) -> k == null || k.isBlank() || k.isEmpty() || v == null || v.key() == null || v.key().isEmpty() || v.key().isBlank())
                 .filter((k, v) -> k.equals(v.key()))
                 .groupByKey()
