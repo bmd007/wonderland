@@ -1,4 +1,4 @@
-package wonderland.wonder.matcher.dto;
+package wonderland.wonder.matcher.event;
 
 import wonderland.wonder.matcher.domain.Location;
 

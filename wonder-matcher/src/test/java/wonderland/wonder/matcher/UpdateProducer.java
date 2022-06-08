@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import wonderland.wonder.matcher.config.Topics;
 import wonderland.wonder.matcher.domain.Location;
-import wonderland.wonder.matcher.dto.DancerIsLookingForPartnerUpdate;
+import wonderland.wonder.matcher.event.DancerIsLookingForPartnerUpdate;
 
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;

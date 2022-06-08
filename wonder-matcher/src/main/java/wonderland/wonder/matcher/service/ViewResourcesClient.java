@@ -1,4 +1,4 @@
-package wonderland.message.counter.service;
+package wonderland.wonder.matcher.service;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;

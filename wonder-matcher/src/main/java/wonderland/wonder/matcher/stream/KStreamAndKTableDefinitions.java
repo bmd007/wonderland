@@ -15,10 +15,11 @@ import org.springframework.context.annotation.Configuration;
 import wonderland.wonder.matcher.config.Topics;
 import wonderland.wonder.matcher.domain.WonderSeeker;
 import wonderland.wonder.matcher.domain.WonderSeekerLikeHistory;
-import wonderland.wonder.matcher.dto.DancePartnerSeekerHasLikedAnotherDancerEvent;
-import wonderland.wonder.matcher.dto.DancePartnerSeekerIsLikedByAnotherDancerEvent;
-import wonderland.wonder.matcher.dto.DancePartnerSeekersMatchedEvent;
-import wonderland.wonder.matcher.dto.DancerIsLookingForPartnerUpdate;
+import wonderland.wonder.matcher.domain.WonderSeekerMatchHistory;
+import wonderland.wonder.matcher.event.DancePartnerSeekerHasLikedAnotherDancerEvent;
+import wonderland.wonder.matcher.event.DancePartnerSeekerIsLikedByAnotherDancerEvent;
+import wonderland.wonder.matcher.event.WonderSeekersMatchedEvent;
+import wonderland.wonder.matcher.event.DancerIsLookingForPartnerUpdate;
 import wonderland.wonder.matcher.repository.WonderSeekerJdbcRepository;
 
 import javax.annotation.PostConstruct;
@@ -28,12 +29,14 @@ import java.util.Set;
 import static wonderland.wonder.matcher.config.StateStores.WONDER_SEEKER_GLOBAL_STATE_STORE;
 import static wonderland.wonder.matcher.config.StateStores.WONDER_SEEKER_IN_MEMORY_STATE_STORE;
 import static wonderland.wonder.matcher.config.StateStores.WONDER_SEEKER_LIKE_HISTORY_STATE_STORE;
+import static wonderland.wonder.matcher.config.StateStores.WONDER_SEEKER_MATCH_HISTORY_STATE_STORE;
 import static wonderland.wonder.matcher.config.TopicCreator.stateStoreTopicName;
 import static wonderland.wonder.matcher.serialization.CustomSerdes.DANCER_SEEKING_PARTNER_JSON_SERDE;
 import static wonderland.wonder.matcher.serialization.CustomSerdes.LIKEES_EVENT_JSON_SERDE;
 import static wonderland.wonder.matcher.serialization.CustomSerdes.LIKERS_EVENT_JSON_SERDE;
 import static wonderland.wonder.matcher.serialization.CustomSerdes.WONDER_SEEKER_JSON_SERDE;
 import static wonderland.wonder.matcher.serialization.CustomSerdes.WONDER_SEEKER_LIKE_HISTORY_JSON_SERDE;
+import static wonderland.wonder.matcher.serialization.CustomSerdes.WONDER_SEEKER_MATCH_HISTORY_JSON_SERDE;
 
 @Configuration
 public class KStreamAndKTableDefinitions {
@@ -55,6 +58,11 @@ public class KStreamAndKTableDefinitions {
             .<String, WonderSeekerLikeHistory>as(Stores.inMemoryKeyValueStore(WONDER_SEEKER_LIKE_HISTORY_STATE_STORE))
             .withKeySerde(Serdes.String())
             .withValueSerde(WONDER_SEEKER_LIKE_HISTORY_JSON_SERDE);
+
+    private static final Materialized<String, WonderSeekerMatchHistory, KeyValueStore<Bytes, byte[]>> WONDER_SEEKER_MATCH_HISTORY_KTABLE = Materialized
+            .<String, WonderSeekerMatchHistory>as(Stores.inMemoryKeyValueStore(WONDER_SEEKER_MATCH_HISTORY_STATE_STORE))
+            .withKeySerde(Serdes.String())
+            .withValueSerde(WONDER_SEEKER_MATCH_HISTORY_JSON_SERDE);
 
     private final StreamsBuilder builder;
     private final WonderSeekerJdbcRepository repository;
@@ -116,7 +124,7 @@ public class KStreamAndKTableDefinitions {
                         return wonderSeekerLikeHistory.likeHistory().entrySet().stream()
                                 .filter(likeEntry -> likeEntry.getKey().equals(passiveFormLikeEvent.likee()))//todo check time ? time needed at all?
                                 .findFirst()//todo needed?
-                                .map(likedEntryOfMatch -> new DancePartnerSeekersMatchedEvent(passiveFormLikeEvent.liker(), passiveFormLikeEvent.likee()))
+                                .map(likedEntryOfMatch -> new WonderSeekersMatchedEvent(passiveFormLikeEvent.liker(), passiveFormLikeEvent.likee()))
                                 .orElseGet(() -> null);
                     }
                     return null;
@@ -125,9 +133,17 @@ public class KStreamAndKTableDefinitions {
                 .filter((k, v) -> k.equals(v.key()))
                 .flatMap((key, value) -> {
                     var reversedKeyMatchEvent = value.reverse();
-                    return Set.of(KeyValue.pair(value.key(), value), KeyValue.pair(reversedKeyMatchEvent.key(), reversedKeyMatchEvent));
+                    return Set.<KeyValue<String, WonderSeekersMatchedEvent>>of(KeyValue.pair(value.key(), value), KeyValue.pair(reversedKeyMatchEvent.key(), reversedKeyMatchEvent));
                 })
-                .
-
+//                .repartition(Repartitioned.as())//todo intorduce a new formal topic here so that other people can listen to match events
+                .groupByKey()
+                .aggregate(WonderSeekerMatchHistory::empty,
+                        (key, value, aggregate) -> {
+                            if (aggregate.isEmpty()) {
+                                return WonderSeekerMatchHistory.initialize(value.matchee1()).addLikeToHistory(value.matchee2(), value.eventTime());
+                            }
+                            return aggregate.addLikeToHistory(value.matchee2(), value.eventTime());
+                        },
+                        WONDER_SEEKER_MATCH_HISTORY_KTABLE);
     }
 }
