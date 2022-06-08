@@ -25,7 +25,8 @@ public record WonderSeekerMatchHistory(
 
     public WonderSeekerMatchHistory addLikeToHistory(String likeeName, LocalDateTime likedAt){
         Map<String, LocalDateTime> updatedLikeHistory = Stream.concat(matchHistory.entrySet().stream(), Stream.of(Map.entry(likeeName, likedAt)))
-                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (localDateTime, localDateTime2) -> localDateTime2));
         return new WonderSeekerMatchHistory(wonderSeekerName, updatedLikeHistory);
     }
 
