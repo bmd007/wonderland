@@ -1,0 +1,4 @@
+GET http://localhost:9585/api/wonder
+
+###
+GET http://localhost:9585/api/matches

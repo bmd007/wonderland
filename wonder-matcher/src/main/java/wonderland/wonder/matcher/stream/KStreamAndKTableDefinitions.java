@@ -144,6 +144,7 @@ public class KStreamAndKTableDefinitions {
                      join => jlo (likee:key), jlo(likee) is liked by tom (liker), jlo(wonderSeekerName) [tom]
                      => match
                      ***/
+                    //TODO this logic here is wrong apparently
                     if (passiveFormLikeEvent.likee().equals(wonderSeekerLikeHistory.wonderSeekerName())) {
                         return wonderSeekerLikeHistory.likeHistory().entrySet().stream()
                                 .filter(likeEntry -> likeEntry.getKey().equals(passiveFormLikeEvent.liker()))//todo check time ? time needed at all?
@@ -154,15 +155,13 @@ public class KStreamAndKTableDefinitions {
                     return null;
                 })
                 .filterNot((k, v) -> k == null || k.isBlank() || k.isEmpty() || v == null || v.key() == null || v.key().isEmpty() || v.key().isBlank())
-                .filter((k, v) -> k.equals(v.key()))
                 .flatMap((key, value) -> {
                     var reversedKeyMatchEvent = value.reverse();
                     return Set.<KeyValue<String, WonderSeekersMatchedEvent>>of(KeyValue.pair(value.key(), value), KeyValue.pair(reversedKeyMatchEvent.key(), reversedKeyMatchEvent));
                 })
                 .peek((key, value) -> log.info("Match Event {}", value))
                 .repartition(Repartitioned.with(Serdes.String(), WONDER_SEEKERS_MATCHED_EVENT_JSON_SERDE).withName(WONDER_SEEKER_MATCH_EVENTS))
-//        ;
-//        builder.stream(Topics.WONDER_SEEKER_MATCH_EVENTS, MATCHED_EVENT_CONSUMED)
+
                 .filterNot((k, v) -> k == null || k.isBlank() || k.isEmpty() || v == null || v.key() == null || v.key().isEmpty() || v.key().isBlank())
                 .filter((k, v) -> k.equals(v.key()))
                 .groupByKey()

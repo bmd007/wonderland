@@ -111,7 +111,7 @@ public class DancePartnerFinderResource {
         var alreadyLikeLikeesStream = Optional.ofNullable(likedDancers.get(requestBody.whoHasLiked))
                 .orElseGet(Map::of).entrySet().stream();
         Map<String, LocalDateTime> newLikeesMap = Stream.concat(newLikee, alreadyLikeLikeesStream)
-                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue, (localDateTime, localDateTime2) ->  localDateTime2));
         likedDancers.put(requestBody.whoHasLiked, newLikeesMap);
         log.info("likedDancers {}", likedDancers);
         var event = new DancePartnerSeekerHasLikedAnotherDancerEvent(requestBody.whoHasLiked, requestBody.whomIsLiked);
@@ -131,7 +131,7 @@ public class DancePartnerFinderResource {
         var alreadyLikeLikeesStream = Optional.ofNullable(disLikedDancers.get(requestBody.whoHasDisLiked))
                 .orElseGet(Map::of).entrySet().stream();
         var newLikeesMap = Stream.concat(newDisLikee, alreadyLikeLikeesStream)
-                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue, (localDateTime, localDateTime2) -> localDateTime2));
         disLikedDancers.put(requestBody.whoHasDisLiked, newLikeesMap);
         log.info("disLikedDancers {}", disLikedDancers);
         var event = new DancePartnerSeekerIsDisLikedEvent(requestBody.whoHasDisLiked, requestBody.whomIsDisLiked);
