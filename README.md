@@ -1,18 +1,22 @@
 # MicroservicesPlayGround
-The architecture is microservices and the applied pattern is CQRS. No event sourcing as overal architecture (maybe in one of the services if needed) 
-I can say the architecture is event driven and everything is an event inside the applications. From outside the appliction will recieve httpRequests. And requests lead to commands (events with a needed side effect)
-There is also amqp based comminucation to outside (an Android app) (with help of rabbit mq) as push solution 
+The architecture is microservices and the applied pattern is CQRS. 
+No event sourcing as overall architecture (maybe in one of the services if needed).
+A new concept somewhat similar to event sourcing is being experimented with here: 
+    
+    Every user interaction that goes through api-gateway results in an event (if possible) instead of an HTTP call. 
+    So in terms of CRUD, only R (reads) are potential HTTP requests going out of API-gateway to core services.
+    Anything else is an event like: dancer1HasLikedDancer2, ... . 
+    This idea relies on the fact that Kafka topics can act as a durable, avaialbe, scalable, distrubted and ... database.
+
+Toward outside:
+ - There is AMQP based communication to outside (an Android app) (with help of rabbit mq) as push solution
+ - RSocket communication from API-gateway to the flutter app.
 
 ## ToDo:
+    * rename wonder-matcher to dance-partner-finder or dance-partner-matcher .... names in the match making stack are not mature enough!
+    * add websocket to the flutter app for chatting. Matched users wants to be able to chat with each other`
     * upgrade elastic search stack to 7 and higher
-    * add API gateway for authorization checks (resource server in OAuath2 world) (and connect it to google)
-    * complete person_profile and ui apps
+    * add authorization/authentication checks (resource server in OAuath2 world) (and connect it to google) in API gateway 
     * publish logs into elastic search as application_log index
-    * add an application that is based on DDD or try to apply DDDs concepts to the whole system (game-engine, match-making)
+    * complete person_profile and ui apps
 	* integrate nomad (use information from master thesis)
-## Bounded contexts and Teams > ? <
-
-### services and their relation to kafka topics
-#### generally, a command listener specifies where to send commands to. An event producer specifies where it will send events. (Events=notification (something happenede, delta of domain, record updates, notification change), Commands=requests for something to be done)
-    * messenger owns these topics: message_events,
-    * message_counter owns thses topics: event_log (internally used for event sourcing)
