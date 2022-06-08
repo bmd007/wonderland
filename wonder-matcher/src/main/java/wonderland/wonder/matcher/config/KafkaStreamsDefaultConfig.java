@@ -46,7 +46,7 @@ public class KafkaStreamsDefaultConfig {
         props.put(StreamsConfig.APPLICATION_SERVER_CONFIG, ip + ":" + port);
         props.put(StreamsConfig.REPLICATION_FACTOR_CONFIG, kafkaStreamsReplicationFactor);
 
-        props.put(StreamsConfig.STATE_DIR_CONFIG, "/Users/mohami/workspace/repositories/Wonderland/.kafkastreams");
+        props.put(StreamsConfig.STATE_DIR_CONFIG, "/tmp");
 
         var activeProfiles = Arrays.stream(environment.getActiveProfiles()).collect(Collectors.toSet());
         //The properties below, should not be applied when active profile is test or mock
