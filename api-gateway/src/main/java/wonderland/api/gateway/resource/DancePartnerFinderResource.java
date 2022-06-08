@@ -59,7 +59,10 @@ public class DancePartnerFinderResource {
     }
 
     record GetOtherDancerPartnerSeekersRequestBody(String dancerPartnerSeekerName, Location location){}
-    @MessageMapping("/api/dance/partner/finder/names")//todo support time in the searches
+    @MessageMapping("/api/dance/partner/finder/names")
+    //todo support time and search circle radius as input params
+    //todo create a circle around seeker using radius and convert to wkt
+    //todo use wkt end point on wonder matched
     public Flux<String> getOtherDancerPartnerSeekers(GetOtherDancerPartnerSeekersRequestBody requestBody) {
         var likedDancersByPartnerSeeker = Optional.ofNullable(likedDancers.get(requestBody.dancerPartnerSeekerName))
                 .map(Map::keySet)
