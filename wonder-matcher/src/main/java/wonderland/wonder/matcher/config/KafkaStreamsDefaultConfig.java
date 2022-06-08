@@ -46,11 +46,13 @@ public class KafkaStreamsDefaultConfig {
         props.put(StreamsConfig.APPLICATION_SERVER_CONFIG, ip + ":" + port);
         props.put(StreamsConfig.REPLICATION_FACTOR_CONFIG, kafkaStreamsReplicationFactor);
 
+        props.put(StreamsConfig.STATE_DIR_CONFIG, "/Users/mohami/workspace/repositories/Wonderland/.kafkastreams");
+
         var activeProfiles = Arrays.stream(environment.getActiveProfiles()).collect(Collectors.toSet());
         //The properties below, should not be applied when active profile is test or mock
         //But if the active profiles include docker-compose-all, they should be applied regardless of other active profiles.
         if (!activeProfiles.contains("test")) {
-            props.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE);
+            props.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE_V2);
         } else {
             props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 100); //to slow down commits so that tests can catch up with the eventual consistency ?>!
         }

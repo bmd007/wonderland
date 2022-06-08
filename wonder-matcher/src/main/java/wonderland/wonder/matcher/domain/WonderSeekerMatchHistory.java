@@ -1,5 +1,7 @@
 package wonderland.wonder.matcher.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,6 +29,7 @@ public record WonderSeekerMatchHistory(
         return new WonderSeekerMatchHistory(wonderSeekerName, updatedLikeHistory);
     }
 
+    @JsonIgnore
     public boolean isEmpty(){
         return wonderSeekerName==null || wonderSeekerName.isEmpty() || wonderSeekerName.isBlank();
     }

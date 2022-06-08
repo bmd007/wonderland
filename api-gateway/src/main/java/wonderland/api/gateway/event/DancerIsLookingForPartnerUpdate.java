@@ -1,4 +1,6 @@
-package wonderland.api.gateway.dto;
+package wonderland.api.gateway.event;
+
+import wonderland.api.gateway.dto.Location;
 
 import javax.validation.constraints.NotBlank;
 

@@ -9,10 +9,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import wonderland.api.gateway.config.Topics;
-import wonderland.api.gateway.dto.DancePartnerSeekerIsDisLikedEvent;
-import wonderland.api.gateway.dto.DancePartnerSeekerHasLikedAnotherDancerEvent;
-import wonderland.api.gateway.dto.DancerIsLookingForPartnerUpdate;
-import wonderland.api.gateway.dto.Event;
+import wonderland.api.gateway.event.DancePartnerSeekerIsDisLikedEvent;
+import wonderland.api.gateway.event.DancePartnerSeekerHasLikedAnotherDancerEvent;
+import wonderland.api.gateway.event.DancerIsLookingForPartnerUpdate;
+import wonderland.api.gateway.event.Event;
 import wonderland.api.gateway.dto.Location;
 import wonderland.api.gateway.dto.WonderSeekerDto;
 import wonderland.api.gateway.dto.WonderSeekersDto;
@@ -135,10 +135,11 @@ public class DancePartnerFinderResource {
         disLikedDancers.put(requestBody.whoHasDisLiked, newLikeesMap);
         log.info("disLikedDancers {}", disLikedDancers);
         var event = new DancePartnerSeekerIsDisLikedEvent(requestBody.whoHasDisLiked, requestBody.whomIsDisLiked);
-        return Mono.fromFuture(kafkaTemplate.send(Topics.DANCE_PARTNER_EVENTS, event.key(), event).completable())
-                .doOnError(throwable -> log.error("error while publishing {}", event))
-                .log()
-                .then();
+        return Mono.empty();
+//        return Mono.fromFuture(kafkaTemplate.send(Topics.DANCE_PARTNER_EVENTS, event.key(), event).completable())
+//                .doOnError(throwable -> log.error("error while publishing {}", event))
+//                .log()
+//                .then();
     }
 
     @MessageMapping("/api/dance/partner/finder/matches")
