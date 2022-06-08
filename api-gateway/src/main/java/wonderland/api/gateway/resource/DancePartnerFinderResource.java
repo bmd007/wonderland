@@ -9,13 +9,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import wonderland.api.gateway.config.Topics;
+import wonderland.api.gateway.dto.*;
 import wonderland.api.gateway.event.DancePartnerSeekerIsDisLikedEvent;
 import wonderland.api.gateway.event.DancePartnerSeekerHasLikedAnotherDancerEvent;
 import wonderland.api.gateway.event.DancerIsLookingForPartnerUpdate;
 import wonderland.api.gateway.event.Event;
-import wonderland.api.gateway.dto.Location;
-import wonderland.api.gateway.dto.WonderSeekerDto;
-import wonderland.api.gateway.dto.WonderSeekersDto;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -63,6 +61,7 @@ public class DancePartnerFinderResource {
     //todo support time and search circle radius as input params
     //todo create a circle around seeker using radius and convert to wkt
     //todo use wkt end point on wonder matched
+    //todo read likes and dislikes from wonder-matcher and zip/filterOut here
     public Flux<String> getOtherDancerPartnerSeekers(GetOtherDancerPartnerSeekersRequestBody requestBody) {
         var likedDancersByPartnerSeeker = Optional.ofNullable(likedDancers.get(requestBody.dancerPartnerSeekerName))
                 .map(Map::keySet)
@@ -121,6 +120,22 @@ public class DancePartnerFinderResource {
                 .then();
     }
 
+    @MessageMapping("/api/dance/partner/finder/like/all")
+    public Flux<WonderSeekerLikesDto> dancersLikedBy(String wonderSeekerName) {
+        return wonderMatcherClient.get()
+                .uri("api/like/%s".formatted(wonderSeekerName))
+                .retrieve()
+                .bodyToFlux(WonderSeekerLikesDto.class);
+    }
+
+    @MessageMapping("/api/dance/partner/finder/match/all")
+    public Flux<WonderSeekerMatchesDto> dancersMatchedWith(String wonderSeekerName) {
+        return wonderMatcherClient.get()
+                .uri("api/match/%s".formatted(wonderSeekerName))
+                .retrieve()
+                .bodyToFlux(WonderSeekerMatchesDto.class);
+    }
+
     record DisLikeRequestBody(String whoHasDisLiked, String whomIsDisLiked) {
     }
 
@@ -139,7 +154,7 @@ public class DancePartnerFinderResource {
 //        return Mono.fromFuture(kafkaTemplate.send(Topics.DANCE_PARTNER_EVENTS, event.key(), event).completable())
 //                .doOnError(throwable -> log.error("error while publishing {}", event))
 //                .log()
-//                .then();
+//                .then();//todo use another topic for dislikes
     }
 
     @MessageMapping("/api/dance/partner/finder/matches")

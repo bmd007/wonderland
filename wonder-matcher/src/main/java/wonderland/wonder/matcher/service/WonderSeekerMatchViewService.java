@@ -13,7 +13,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @Service
-public class MessageCounterViewService extends ViewService<WonderSeekersMatchesDto, WonderSeekerMatchesDto, WonderSeekerMatchHistory> {
+public class WonderSeekerMatchViewService extends ViewService<WonderSeekersMatchesDto, WonderSeekerMatchesDto, WonderSeekerMatchHistory> {
 
     final static Function<WonderSeekersMatchesDto, List<WonderSeekerMatchesDto>> LIST_EXTRACTOR = WonderSeekersMatchesDto::wonderSeekerMatches;
     final static Function<List<WonderSeekerMatchesDto>, WonderSeekersMatchesDto> LIST_WRAPPER = WonderSeekersMatchesDto::new;
@@ -21,12 +21,12 @@ public class MessageCounterViewService extends ViewService<WonderSeekersMatchesD
             (wonderSeekerName, wonderSeekerMatchHistory) ->
                     new WonderSeekerMatchesDto(wonderSeekerMatchHistory.wonderSeekerName(), wonderSeekerMatchHistory.matchHistory());
 
-    public MessageCounterViewService(StreamsBuilderFactoryBean streams,
-                                     @Value("${kafka.streams.server.config.app-ip}") String ip,
-                                     @Value("${kafka.streams.server.config.app-port}") int port,
-                                     ViewResourcesClient commonClient) {
+    public WonderSeekerMatchViewService(StreamsBuilderFactoryBean streams,
+                                        @Value("${kafka.streams.server.config.app-ip}") String ip,
+                                        @Value("${kafka.streams.server.config.app-port}") int port,
+                                        ViewResourcesClient commonClient) {
         super(ip, port, streams, StateStores.WONDER_SEEKER_MATCH_HISTORY_STATE_STORE,
                 WonderSeekersMatchesDto.class, WonderSeekerMatchesDto.class,
-                DTO_MAPPER, LIST_EXTRACTOR, LIST_WRAPPER, "/api/matches", commonClient);
+                DTO_MAPPER, LIST_EXTRACTOR, LIST_WRAPPER, "/api/match", commonClient);
     }
 }

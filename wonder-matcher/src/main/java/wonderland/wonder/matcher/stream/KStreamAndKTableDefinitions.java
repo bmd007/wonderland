@@ -28,20 +28,11 @@ import javax.annotation.PostConstruct;
 import java.time.ZoneOffset;
 import java.util.Set;
 
-import static wonderland.wonder.matcher.config.StateStores.WONDER_SEEKER_GLOBAL_STATE_STORE;
-import static wonderland.wonder.matcher.config.StateStores.WONDER_SEEKER_IN_MEMORY_STATE_STORE;
-import static wonderland.wonder.matcher.config.StateStores.WONDER_SEEKER_LIKE_HISTORY_STATE_STORE;
-import static wonderland.wonder.matcher.config.StateStores.WONDER_SEEKER_MATCH_HISTORY_STATE_STORE;
+import static wonderland.wonder.matcher.config.StateStores.*;
 import static wonderland.wonder.matcher.config.TopicCreator.stateStoreTopicName;
 import static wonderland.wonder.matcher.config.Topics.WONDER_SEEKER_MATCH_EVENTS;
 import static wonderland.wonder.matcher.config.Topics.WONDER_SEEKER_PASSIVE_LIKE_EVENTS;
-import static wonderland.wonder.matcher.serialization.CustomSerdes.DANCER_SEEKING_PARTNER_JSON_SERDE;
-import static wonderland.wonder.matcher.serialization.CustomSerdes.LIKEES_EVENT_JSON_SERDE;
-import static wonderland.wonder.matcher.serialization.CustomSerdes.LIKERS_EVENT_JSON_SERDE;
-import static wonderland.wonder.matcher.serialization.CustomSerdes.WONDER_SEEKERS_MATCHED_EVENT_JSON_SERDE;
-import static wonderland.wonder.matcher.serialization.CustomSerdes.WONDER_SEEKER_JSON_SERDE;
-import static wonderland.wonder.matcher.serialization.CustomSerdes.WONDER_SEEKER_LIKE_HISTORY_JSON_SERDE;
-import static wonderland.wonder.matcher.serialization.CustomSerdes.WONDER_SEEKER_MATCH_HISTORY_JSON_SERDE;
+import static wonderland.wonder.matcher.serialization.CustomSerdes.*;
 
 @Slf4j
 @Configuration
@@ -133,18 +124,10 @@ public class KStreamAndKTableDefinitions {
                 .filter((k, v) -> k.equals(v.key()))
                 .map((key, value) -> KeyValue.pair(value.likee(), new DancePartnerSeekerIsLikedByAnotherDancerEvent(value.liker(), value.likee())))
                 .repartition(Repartitioned.with(Serdes.String(), LIKEES_EVENT_JSON_SERDE).withName(WONDER_SEEKER_PASSIVE_LIKE_EVENTS))
-
                 .filterNot((k, v) -> k == null || k.isBlank() || k.isEmpty() || v == null || v.key() == null || v.key().isEmpty() || v.key().isBlank())
                 .filter((k, v) -> k.equals(v.key()))
                 .join(wonderSeekerLikeHistoryKTable, (readOnlyKey, passiveFormLikeEvent, wonderSeekerLikeHistory) -> {
                     log.info("before join {}, {}, {}", readOnlyKey, passiveFormLikeEvent, wonderSeekerLikeHistory);
-                    /***
-                     jlo liked [tom]
-                     tom liked [jlo] => jio is liked by tom
-                     join => jlo (likee:key), jlo(likee) is liked by tom (liker), jlo(wonderSeekerName) [tom]
-                     => match
-                     ***/
-                    //TODO this logic here is wrong apparently
                     if (passiveFormLikeEvent.likee().equals(wonderSeekerLikeHistory.wonderSeekerName())) {
                         return wonderSeekerLikeHistory.likeHistory().entrySet().stream()
                                 .filter(likeEntry -> likeEntry.getKey().equals(passiveFormLikeEvent.liker()))//todo check time ? time needed at all?
@@ -161,7 +144,6 @@ public class KStreamAndKTableDefinitions {
                 })
                 .peek((key, value) -> log.info("Match Event {}", value))
                 .repartition(Repartitioned.with(Serdes.String(), WONDER_SEEKERS_MATCHED_EVENT_JSON_SERDE).withName(WONDER_SEEKER_MATCH_EVENTS))
-
                 .filterNot((k, v) -> k == null || k.isBlank() || k.isEmpty() || v == null || v.key() == null || v.key().isEmpty() || v.key().isBlank())
                 .filter((k, v) -> k.equals(v.key()))
                 .groupByKey()

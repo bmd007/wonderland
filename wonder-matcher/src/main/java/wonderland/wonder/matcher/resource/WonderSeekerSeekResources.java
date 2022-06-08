@@ -20,13 +20,13 @@ import java.util.stream.Collectors;
 //todo expose RSocket as well
 @RestController
 @RequestMapping("/api/wonder")
-public class WonderMatcherResources {
+public class WonderSeekerSeekResources {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WonderMatcherResources.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WonderSeekerSeekResources.class);
     private final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.maximumPreciseValue), 4326);
     private final WonderSeekerJdbcRepository repository;
 
-    public WonderMatcherResources(WonderSeekerJdbcRepository repository) {
+    public WonderSeekerSeekResources(WonderSeekerJdbcRepository repository) {
         this.repository = repository;
     }
 
