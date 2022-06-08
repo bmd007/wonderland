@@ -1,5 +1,6 @@
 package wonderland.wonder.matcher.stream;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.common.utils.Time;
@@ -7,6 +8,7 @@ import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.Printed;
 import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.kstream.Repartitioned;
 import org.apache.kafka.streams.state.KeyValueStore;
@@ -41,6 +43,7 @@ import static wonderland.wonder.matcher.serialization.CustomSerdes.WONDER_SEEKER
 import static wonderland.wonder.matcher.serialization.CustomSerdes.WONDER_SEEKER_LIKE_HISTORY_JSON_SERDE;
 import static wonderland.wonder.matcher.serialization.CustomSerdes.WONDER_SEEKER_MATCH_HISTORY_JSON_SERDE;
 
+@Slf4j
 @Configuration
 public class KStreamAndKTableDefinitions {
 
@@ -104,14 +107,19 @@ public class KStreamAndKTableDefinitions {
                 .stream(Topics.DANCE_PARTNER_EVENTS, LIKERS_EVENT_CONSUMED)
                 .filterNot((k, v) -> k == null || k.isBlank() || k.isEmpty() || v == null || v.key() == null || v.key().isEmpty() || v.key().isBlank())
                 .filter((k, v) -> k.equals(v.key()))
+                .peek((key, value) -> log.info("Like Event {}", value))
                 .groupByKey()
                 // Aggregate status into an in-memory KTable as a source for global KTable
                 .aggregate(WonderSeekerLikeHistory::empty,
                         (key, value, aggregate) -> {
                             if (aggregate.isEmpty()) {
-                                return WonderSeekerLikeHistory.initialize(value.liker()).addLikeToHistory(value.likee(), value.eventTime());
+                                var wonderSeekerLikeHistory = WonderSeekerLikeHistory.initialize(value.liker()).addLikeToHistory(value.likee(), value.eventTime());
+                                log.info("creating new like history {}", wonderSeekerLikeHistory);
+                                return wonderSeekerLikeHistory;
                             }
-                            return aggregate.addLikeToHistory(value.likee(), value.eventTime());
+                            var wonderSeekerLikeHistory = aggregate.addLikeToHistory(value.likee(), value.eventTime());
+                            log.info("updating a like history to {}", wonderSeekerLikeHistory);
+                            return wonderSeekerLikeHistory;
                         },
                         WONDER_SEEKER_LIKE_HISTORY_KTABLE);
 
@@ -138,14 +146,19 @@ public class KStreamAndKTableDefinitions {
                     var reversedKeyMatchEvent = value.reverse();
                     return Set.<KeyValue<String, WonderSeekersMatchedEvent>>of(KeyValue.pair(value.key(), value), KeyValue.pair(reversedKeyMatchEvent.key(), reversedKeyMatchEvent));
                 })
+                .peek((key, value) -> log.info("Match Event {}", value))
                 .repartition(Repartitioned.with(Serdes.String(), WONDER_SEEKERS_MATCHED_EVENT_JSON_SERDE).withName(WONDER_SEEKER_MATCH_EVENTS))
                 .groupByKey()
                 .aggregate(WonderSeekerMatchHistory::empty,
                         (key, value, aggregate) -> {
                             if (aggregate.isEmpty()) {
-                                return WonderSeekerMatchHistory.initialize(value.matchee1()).addLikeToHistory(value.matchee2(), value.eventTime());
+                                var wonderSeekerMatchHistory = WonderSeekerMatchHistory.initialize(value.matchee1()).addLikeToHistory(value.matchee2(), value.eventTime());
+                                log.info("creating a match history {}", wonderSeekerMatchHistory);
+                                return wonderSeekerMatchHistory;
                             }
-                            return aggregate.addLikeToHistory(value.matchee2(), value.eventTime());
+                            var wonderSeekerMatchHistory = aggregate.addLikeToHistory(value.matchee2(), value.eventTime());
+                            log.info("updating a match history {}", wonderSeekerMatchHistory);
+                            return wonderSeekerMatchHistory;
                         },
                         WONDER_SEEKER_MATCH_HISTORY_KTABLE);
     }

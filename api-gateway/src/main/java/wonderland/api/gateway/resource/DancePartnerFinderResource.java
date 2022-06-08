@@ -91,7 +91,7 @@ public class DancePartnerFinderResource {
     }
 
     @MessageMapping("/api/dance/partner/finder/addName")
-    public Mono<Void> addName(SeekingPartnerRequestBody requestBody) {
+    public Mono<Void> reportSeekingPartner(SeekingPartnerRequestBody requestBody) {
 //        potentialDancePartners.put(requestBody.name, event);
         log.info("current dancers,{}", potentialDancePartners.keySet());
         var event = new DancerIsLookingForPartnerUpdate(requestBody.name, requestBody.location);

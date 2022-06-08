@@ -48,7 +48,7 @@ public class WonderMatcherResources {
                                      @RequestParam double longitude,
                                      @RequestParam(required = false) Long maxAge) {
         var point = geometryFactory.createPoint(new Coordinate(latitude, longitude));
-        var polygon = (Polygon) point.buffer(0.0025);
+        var polygon = (Polygon) point.buffer(0.0925);
         try {
             var results = repository.query(polygon)
                     .stream()
