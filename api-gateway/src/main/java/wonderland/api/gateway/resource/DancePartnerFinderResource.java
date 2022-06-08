@@ -9,10 +9,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import wonderland.api.gateway.config.Topics;
-import wonderland.api.gateway.dto.DancePartnerEvent;
 import wonderland.api.gateway.dto.DancePartnerSeekerIsDisLikedEvent;
-import wonderland.api.gateway.dto.DancePartnerSeekerIsLikedEvent;
+import wonderland.api.gateway.dto.DancePartnerSeekerHasLikedAnotherDancerEvent;
 import wonderland.api.gateway.dto.DancerIsLookingForPartnerUpdate;
+import wonderland.api.gateway.dto.Event;
 import wonderland.api.gateway.dto.Location;
 import wonderland.api.gateway.dto.WonderSeekerDto;
 import wonderland.api.gateway.dto.WonderSeekersDto;
@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 @Controller
 public class DancePartnerFinderResource {
 
-    private final KafkaTemplate<String, DancePartnerEvent> kafkaTemplate;
+    private final KafkaTemplate<String, Event> kafkaTemplate;
     private static Map<String, DancerIsLookingForPartnerUpdate> potentialDancePartners = new HashMap<>();
     private final WebClient wonderMatcherClient;
 
@@ -46,7 +46,7 @@ public class DancePartnerFinderResource {
     private static Map<String, Map<String, LocalDateTime>> likedDancers = new HashMap<>();
     private static Map<String, Map<String, LocalDateTime>> disLikedDancers = new HashMap<>();
 
-    public DancePartnerFinderResource(KafkaTemplate<String, DancePartnerEvent> kafkaTemplate,
+    public DancePartnerFinderResource(KafkaTemplate<String, Event> kafkaTemplate,
                                       @Qualifier("loadBalancedClient") WebClient.Builder loadBalancedWebClientBuilder) {
         this.kafkaTemplate = kafkaTemplate;
         this.wonderMatcherClient = loadBalancedWebClientBuilder.baseUrl("http://wonder-matcher").build();
@@ -114,7 +114,7 @@ public class DancePartnerFinderResource {
                 .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
         likedDancers.put(requestBody.whoHasLiked, newLikeesMap);
         log.info("likedDancers {}", likedDancers);
-        var event = new DancePartnerSeekerIsLikedEvent(requestBody.whoHasLiked, requestBody.whomIsLiked);
+        var event = new DancePartnerSeekerHasLikedAnotherDancerEvent(requestBody.whoHasLiked, requestBody.whomIsLiked);
         return Mono.fromFuture(kafkaTemplate.send(Topics.DANCE_PARTNER_EVENTS, event.key(), event).completable())
                 .doOnError(throwable -> log.error("error while publishing {}", event))
                 .log()

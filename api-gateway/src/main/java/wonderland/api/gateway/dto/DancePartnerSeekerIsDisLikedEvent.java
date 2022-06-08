@@ -2,14 +2,9 @@ package wonderland.api.gateway.dto;
 
 import javax.validation.constraints.NotBlank;
 
-public record DancePartnerSeekerIsDisLikedEvent(@NotBlank String whoHasDisLiked, @NotBlank String whomIsDisLiked) implements DancePartnerEvent {
-    @Override
-    public String dancerName() {
-        return whoHasDisLiked;
-    }
-
+public record DancePartnerSeekerIsDisLikedEvent(@NotBlank String disLiker, @NotBlank String disLikee) implements Event {
     @Override
     public String key() {
-        return dancerName();
+        return disLiker;
     }
 }

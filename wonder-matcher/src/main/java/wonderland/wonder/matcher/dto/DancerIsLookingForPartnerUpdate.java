@@ -8,14 +8,10 @@ public record DancerIsLookingForPartnerUpdate(
         @NotBlank String dancerName,
         Location location
 
-) implements DancePartnerEvent {
-    @Override
-    public String dancerName() {
-        return dancerName;
-    }
+) implements Event {
 
     @Override
     public String key() {
-        return dancerName();
+        return dancerName;
     }
 }
