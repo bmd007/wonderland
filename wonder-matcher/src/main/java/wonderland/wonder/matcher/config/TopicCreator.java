@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
 
 import static org.apache.kafka.common.config.TopicConfig.CLEANUP_POLICY_COMPACT;
 import static org.apache.kafka.common.config.TopicConfig.CLEANUP_POLICY_CONFIG;
+import static org.apache.kafka.common.config.TopicConfig.RETENTION_BYTES_CONFIG;
+import static org.apache.kafka.common.config.TopicConfig.RETENTION_MS_CONFIG;
 
 /**
  * Configuration class to automatically create the topics with the configured partitions and replication factor.
@@ -33,11 +35,17 @@ public class TopicCreator {
 
     }
 
-//    @Bean
-//    public NewTopic eventsTopic() {
-//        return new NewTopic(Topics.EVENT_LOG, eventTopicDefinition.numPartitions, eventTopicDefinition.replicationFactor)
-//                .configs(Map.of(RETENTION_MS_CONFIG, "-1", RETENTION_BYTES_CONFIG, "-1"));
-//    }
+    @Bean
+    public NewTopic wonderSeekerPassiveLikeEventsTopic() {
+        return new NewTopic(Topics.WONDER_SEEKER_PASSIVE_LIKE_EVENTS, eventTopicDefinition.numPartitions, eventTopicDefinition.replicationFactor)
+                .configs(Map.of(RETENTION_MS_CONFIG, "-1", RETENTION_BYTES_CONFIG, "-1"));
+    }
+
+    @Bean
+    public NewTopic wonderSeekerMatchEventsTopic() {
+        return new NewTopic(Topics.WONDER_SEEKER_MATCH_EVENTS, eventTopicDefinition.numPartitions, eventTopicDefinition.replicationFactor)
+                .configs(Map.of(RETENTION_MS_CONFIG, "-1", RETENTION_BYTES_CONFIG, "-1"));
+    }
 
     public static String stateStoreTopicName(String storeName, String applicationName) {
         return String.format("%s-%s-changelog", applicationName, storeName);

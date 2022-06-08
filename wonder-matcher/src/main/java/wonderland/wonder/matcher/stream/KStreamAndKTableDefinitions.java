@@ -35,6 +35,7 @@ import static wonderland.wonder.matcher.config.StateStores.WONDER_SEEKER_LIKE_HI
 import static wonderland.wonder.matcher.config.StateStores.WONDER_SEEKER_MATCH_HISTORY_STATE_STORE;
 import static wonderland.wonder.matcher.config.TopicCreator.stateStoreTopicName;
 import static wonderland.wonder.matcher.config.Topics.WONDER_SEEKER_MATCH_EVENTS;
+import static wonderland.wonder.matcher.config.Topics.WONDER_SEEKER_PASSIVE_LIKE_EVENTS;
 import static wonderland.wonder.matcher.serialization.CustomSerdes.DANCER_SEEKING_PARTNER_JSON_SERDE;
 import static wonderland.wonder.matcher.serialization.CustomSerdes.LIKEES_EVENT_JSON_SERDE;
 import static wonderland.wonder.matcher.serialization.CustomSerdes.LIKERS_EVENT_JSON_SERDE;
@@ -51,6 +52,11 @@ public class KStreamAndKTableDefinitions {
             Consumed.with(Serdes.String(), DANCER_SEEKING_PARTNER_JSON_SERDE);
     private static final Consumed<String, DancePartnerSeekerHasLikedAnotherDancerEvent> LIKERS_EVENT_CONSUMED =
             Consumed.with(Serdes.String(), LIKERS_EVENT_JSON_SERDE);
+    private static final Consumed<String, DancePartnerSeekerIsLikedByAnotherDancerEvent> LIKEES_EVENT_CONSUMED =
+            Consumed.with(Serdes.String(), LIKEES_EVENT_JSON_SERDE);
+    private static final Consumed<String, WonderSeekersMatchedEvent> MATCHED_EVENT_CONSUMED =
+            Consumed.with(Serdes.String(), WONDER_SEEKERS_MATCHED_EVENT_JSON_SERDE);
+
     private static final Produced<String, DancePartnerSeekerIsLikedByAnotherDancerEvent> LIKEES_EVENT_PRODUCED =
             Produced.with(Serdes.String(), LIKEES_EVENT_JSON_SERDE);
     private static final Consumed<String, WonderSeeker> WONDER_SEEKER_CONSUMED = Consumed.with(Serdes.String(), WONDER_SEEKER_JSON_SERDE);
@@ -127,7 +133,9 @@ public class KStreamAndKTableDefinitions {
                 .filterNot((k, v) -> k == null || k.isBlank() || k.isEmpty() || v == null || v.key() == null || v.key().isEmpty() || v.key().isBlank())
                 .filter((k, v) -> k.equals(v.key()))
                 .map((key, value) -> KeyValue.pair(value.likee(), new DancePartnerSeekerIsLikedByAnotherDancerEvent(value.liker(), value.likee())))
-                .repartition(Repartitioned.with(Serdes.String(), LIKEES_EVENT_JSON_SERDE))
+                .repartition(Repartitioned.with(Serdes.String(), LIKEES_EVENT_JSON_SERDE).withName(WONDER_SEEKER_PASSIVE_LIKE_EVENTS));
+
+        builder.stream(Topics.WONDER_SEEKER_PASSIVE_LIKE_EVENTS, LIKEES_EVENT_CONSUMED)
                 .filterNot((k, v) -> k == null || k.isBlank() || k.isEmpty() || v == null || v.key() == null || v.key().isEmpty() || v.key().isBlank())
                 .filter((k, v) -> k.equals(v.key()))
                 .join(wonderSeekerLikeHistoryKTable, (readOnlyKey, passiveFormLikeEvent, wonderSeekerLikeHistory) -> {
@@ -147,7 +155,11 @@ public class KStreamAndKTableDefinitions {
                     return Set.<KeyValue<String, WonderSeekersMatchedEvent>>of(KeyValue.pair(value.key(), value), KeyValue.pair(reversedKeyMatchEvent.key(), reversedKeyMatchEvent));
                 })
                 .peek((key, value) -> log.info("Match Event {}", value))
-                .repartition(Repartitioned.with(Serdes.String(), WONDER_SEEKERS_MATCHED_EVENT_JSON_SERDE).withName(WONDER_SEEKER_MATCH_EVENTS))
+                .repartition(Repartitioned.with(Serdes.String(), WONDER_SEEKERS_MATCHED_EVENT_JSON_SERDE).withName(WONDER_SEEKER_MATCH_EVENTS));
+
+        builder.stream(Topics.WONDER_SEEKER_MATCH_EVENTS, MATCHED_EVENT_CONSUMED)
+                .filterNot((k, v) -> k == null || k.isBlank() || k.isEmpty() || v == null || v.key() == null || v.key().isEmpty() || v.key().isBlank())
+                .filter((k, v) -> k.equals(v.key()))
                 .groupByKey()
                 .aggregate(WonderSeekerMatchHistory::empty,
                         (key, value, aggregate) -> {
