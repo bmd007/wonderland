@@ -75,7 +75,7 @@ public class KStreamAndKTableDefinitions {
 
     private final StreamsBuilder builder;
     private final WonderSeekerJdbcRepository repository;
-    private String applicationName;
+    private final String applicationName;
 
     public KStreamAndKTableDefinitions(StreamsBuilder builder,
                                        WonderSeekerJdbcRepository repository,
