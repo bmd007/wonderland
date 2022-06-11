@@ -28,7 +28,11 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>location permission</string>
-</dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+    <string>This app needs access to location in the background.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+    <string>This app needs access to location in the background.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>This app needs access to location in the background.</string>
+    </dict>
 </plist>

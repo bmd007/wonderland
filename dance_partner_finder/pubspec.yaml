@@ -35,11 +35,15 @@ dependencies:
   bloc: ^8.0.2
   equatable: ^2.0.3
   bloc_test: ^9.0.2
-  rsocket: ^1.0.0
   flutter_bloc: ^8.0.1
   rx_bloc: ^3.3.0
   rxdart: ^0.27.3
   location: ^4.2.0
+  http: ^0.13.4
+  web_socket_channel: ^2.2.0
+  universal_io: ^2.0.4
+  rsocket:
+    git: git@github.com:rsocket/rsocket-dart.git
 
 dev_dependencies:
   flutter_test:

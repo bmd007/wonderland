@@ -22,14 +22,17 @@ Future<LocationData> getLocation() async {
 }
 
 class DancePartnerBloc extends Bloc<DancePartnerEvent, DancePartnerState> {
+
+  final ApiGatewayRSocketClient client = ApiGatewayRSocketClient();
+
   DancePartnerBloc() : super(DancePartnerState.empty()) {
     on<ThisDancerChoseNameEvent>((event, emit) {
       emit(state.withThisDancerName(event.thisDancerName));
 
       getLocation()
       .asStream()
-      .doOnData((location) => addName(state.thisDancerName, location.latitude!, location.longitude! ))
-      .asyncExpand((location) => fetchNames(state.thisDancerName, location.latitude!, location.longitude!))
+      .doOnData((location) => client.addName(state.thisDancerName, location.latitude!, location.longitude! ))
+      .asyncExpand((location) => client.fetchNames(state.thisDancerName, location.latitude!, location.longitude!))
       .forEach((potentialDancePartner) => add(PotentialDancerPartnerFoundEvent(potentialDancePartner!)));
     });
     on<DancersLoadedEvent>((event, emit) {
@@ -39,11 +42,11 @@ class DancePartnerBloc extends Bloc<DancePartnerEvent, DancePartnerState> {
       emit(state.addPotentialDancer(event.potentialDancePartnerName));
     });
     on<DancerLikedEvent>((event, emit) {
-      likeADancer(state.thisDancerName, event.dancerName);
+      client.likeADancer(state.thisDancerName, event.dancerName);
       emit(state.moveToNextDancer());
     });
     on<DancerDislikedEvent>((event, emit) {
-      disLikeADancer(state.thisDancerName, event.dancerName);
+      client.disLikeADancer(state.thisDancerName, event.dancerName);
       emit(state.moveToNextDancer());
     });
   }

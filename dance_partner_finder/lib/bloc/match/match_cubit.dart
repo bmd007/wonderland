@@ -5,11 +5,13 @@ import 'package:equatable/equatable.dart';
 part 'match_state.dart';
 
 class HasMatchCubit extends Cubit<MatchState> {
+  final ApiGatewayRSocketClient client = ApiGatewayRSocketClient();
+
   HasMatchCubit() : super(MatchState.initial());
 
   setName(String thisDancerName) {
     emit(state.setThisDancerName(thisDancerName));
-    matchStreams().forEach((element) => {
+    client.matchStreams().forEach((element) => {
           print("Matched with ${element}"),
           emit(state.setMatchFound()),
         });
