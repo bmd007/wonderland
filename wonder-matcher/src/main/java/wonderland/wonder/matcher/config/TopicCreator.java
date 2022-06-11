@@ -41,11 +41,11 @@ public class TopicCreator {
                 .configs(Map.of(RETENTION_MS_CONFIG, "-1", RETENTION_BYTES_CONFIG, "-1"));
     }
 
-    @Bean
-    public NewTopic wonderSeekerMatchEventsTopic() {
-        return new NewTopic(Topics.WONDER_SEEKER_MATCH_EVENTS, eventTopicDefinition.numPartitions, eventTopicDefinition.replicationFactor)
-                .configs(Map.of(RETENTION_MS_CONFIG, "-1", RETENTION_BYTES_CONFIG, "-1"));
-    }
+//    @Bean
+//    public NewTopic wonderSeekerMatchEventsTopic() {
+//        return new NewTopic(Topics.WONDER_SEEKER_MATCH_EVENTS, eventTopicDefinition.numPartitions, eventTopicDefinition.replicationFactor)
+//                .configs(Map.of(RETENTION_MS_CONFIG, "-1", RETENTION_BYTES_CONFIG, "-1"));
+//    }
 
     public static String stateStoreTopicName(String storeName, String applicationName) {
         return String.format("%s-%s-changelog", applicationName, storeName);

@@ -45,6 +45,7 @@ public class KStreamAndKTableDefinitions {
             Consumed.with(Serdes.String(), LIKERS_EVENT_JSON_SERDE);
     private static final Consumed<String, DancePartnerSeekerIsLikedByAnotherDancerEvent> LIKEES_EVENT_CONSUMED =
             Consumed.with(Serdes.String(), LIKEES_EVENT_JSON_SERDE);
+
     private static final Consumed<String, WonderSeekersMatchedEvent> MATCHED_EVENT_CONSUMED =
             Consumed.with(Serdes.String(), WONDER_SEEKERS_MATCHED_EVENT_JSON_SERDE);
 
@@ -111,7 +112,6 @@ public class KStreamAndKTableDefinitions {
                 .filter((k, v) -> k.equals(v.key()))
                 .peek((key, value) -> log.info("Like Event {}", value))
                 .groupByKey()
-                // Aggregate status into an in-memory KTable as a source for global KTable
                 .aggregate(WonderSeekerLikeHistory::empty,
                         (key, value, aggregate) -> {
                             if (aggregate.isEmpty()) {
@@ -129,7 +129,27 @@ public class KStreamAndKTableDefinitions {
                 .filterNot((k, v) -> k == null || k.isBlank() || k.isEmpty() || v == null || v.key() == null || v.key().isEmpty() || v.key().isBlank())
                 .filter((k, v) -> k.equals(v.key()))
                 .map((key, value) -> KeyValue.pair(value.likee(), new DancePartnerSeekerIsLikedByAnotherDancerEvent(value.liker(), value.likee())))
-                .repartition(Repartitioned.with(Serdes.String(), LIKEES_EVENT_JSON_SERDE).withName(WONDER_SEEKER_PASSIVE_LIKE_EVENTS))
+                .to(WONDER_SEEKER_PASSIVE_LIKE_EVENTS, LIKEES_EVENT_PRODUCED);
+
+        builder.stream(Topics.WONDER_SEEKER_PASSIVE_LIKE_EVENTS, LIKEES_EVENT_CONSUMED)
+                .filterNot((k, v) -> k == null || k.isBlank() || k.isEmpty() || v == null || v.key() == null || v.key().isEmpty() || v.key().isBlank())
+                .filter((k, v) -> k.equals(v.key()))
+                .peek((key, value) -> log.info("Liked By Event {}", value))
+                .groupByKey()
+                .aggregate(WonderSeekerLikedByHistory::empty,
+                        (key, value, aggregate) -> {
+                            if (aggregate.isEmpty()) {
+                                var wonderSeekerLikedByHistory = WonderSeekerLikedByHistory.initialize(value.liker()).addLikedByToHistory(value.likee(), value.eventTime());
+                                log.info("creating new liked by history {}", wonderSeekerLikedByHistory);
+                                return wonderSeekerLikedByHistory;
+                            }
+                            var wonderSeekerLikedByHistory = aggregate.addLikedByToHistory(value.likee(), value.eventTime());
+                            log.info("updating a liked by history to {}", wonderSeekerLikedByHistory);
+                            return wonderSeekerLikedByHistory;
+                        },
+                        WONDER_SEEKER_LIKED_BY_HISTORY_KTABLE);
+
+        builder.stream(Topics.WONDER_SEEKER_PASSIVE_LIKE_EVENTS, LIKEES_EVENT_CONSUMED)
                 .filterNot((k, v) -> k == null || k.isBlank() || k.isEmpty() || v == null || v.key() == null || v.key().isEmpty() || v.key().isBlank())
                 .filter((k, v) -> k.equals(v.key()))
                 .join(wonderSeekerLikeHistoryKTable, (readOnlyKey, passiveFormLikeEvent, wonderSeekerLikeHistory) -> {
@@ -146,7 +166,7 @@ public class KStreamAndKTableDefinitions {
                 .filterNot((k, v) -> k == null || k.isBlank() || k.isEmpty() || v == null || v.key() == null || v.key().isEmpty() || v.key().isBlank())
                 .flatMap((key, value) -> {
                     var reversedKeyMatchEvent = value.reverse();
-                    return Set.<KeyValue<String, WonderSeekersMatchedEvent>>of(KeyValue.pair(value.key(), value), KeyValue.pair(reversedKeyMatchEvent.key(), reversedKeyMatchEvent));
+                    return Set.of(KeyValue.pair(value.key(), value), KeyValue.pair(reversedKeyMatchEvent.key(), reversedKeyMatchEvent));
                 })
                 .peek((key, value) -> log.info("Match Event {}", value))
                 .repartition(Repartitioned.with(Serdes.String(), WONDER_SEEKERS_MATCHED_EVENT_JSON_SERDE).withName(WONDER_SEEKER_MATCH_EVENTS))
@@ -165,24 +185,5 @@ public class KStreamAndKTableDefinitions {
                             return wonderSeekerMatchHistory;
                         },
                         WONDER_SEEKER_MATCH_HISTORY_KTABLE);
-
-        builder.stream(Topics.WONDER_SEEKER_PASSIVE_LIKE_EVENTS, LIKEES_EVENT_CONSUMED)
-                .filterNot((k, v) -> k == null || k.isBlank() || k.isEmpty() || v == null || v.key() == null || v.key().isEmpty() || v.key().isBlank())
-                .filter((k, v) -> k.equals(v.key()))
-                .peek((key, value) -> log.info("Liked By Event {}", value))
-                .groupByKey()
-                // Aggregate status into an in-memory KTable as a source for global KTable
-                .aggregate(WonderSeekerLikedByHistory::empty,
-                        (key, value, aggregate) -> {
-                            if (aggregate.isEmpty()) {
-                                var wonderSeekerLikedByHistory = WonderSeekerLikedByHistory.initialize(value.liker()).addLikedByToHistory(value.likee(), value.eventTime());
-                                log.info("creating new liked by history {}", wonderSeekerLikedByHistory);
-                                return wonderSeekerLikedByHistory;
-                            }
-                            var wonderSeekerLikedByHistory = aggregate.addLikedByToHistory(value.likee(), value.eventTime());
-                            log.info("updating a liked by history to {}", wonderSeekerLikedByHistory);
-                            return wonderSeekerLikedByHistory;
-                        },
-                        WONDER_SEEKER_LIKED_BY_HISTORY_KTABLE);
     }
 }
