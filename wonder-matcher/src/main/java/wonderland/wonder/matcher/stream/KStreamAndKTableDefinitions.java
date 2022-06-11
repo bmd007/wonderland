@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
 import wonderland.wonder.matcher.config.Topics;
 import wonderland.wonder.matcher.domain.WonderSeeker;
 import wonderland.wonder.matcher.domain.WonderSeekerLikeHistory;
+import wonderland.wonder.matcher.domain.WonderSeekerLikedByHistory;
 import wonderland.wonder.matcher.domain.WonderSeekerMatchHistory;
 import wonderland.wonder.matcher.event.DancePartnerSeekerHasLikedAnotherDancerEvent;
 import wonderland.wonder.matcher.event.DancePartnerSeekerIsLikedByAnotherDancerEvent;
@@ -60,6 +61,11 @@ public class KStreamAndKTableDefinitions {
             .<String, WonderSeekerLikeHistory>as(Stores.inMemoryKeyValueStore(WONDER_SEEKER_LIKE_HISTORY_STATE_STORE))
             .withKeySerde(Serdes.String())
             .withValueSerde(WONDER_SEEKER_LIKE_HISTORY_JSON_SERDE);
+
+    private static final Materialized<String, WonderSeekerLikedByHistory, KeyValueStore<Bytes, byte[]>> WONDER_SEEKER_LIKED_BY_HISTORY_KTABLE = Materialized
+            .<String, WonderSeekerLikedByHistory>as(Stores.inMemoryKeyValueStore(WONDER_SEEKER_LIKED_BY_HISTORY_STATE_STORE))
+            .withKeySerde(Serdes.String())
+            .withValueSerde(WONDER_SEEKER_LIKED_BY_HISTORY_JSON_SERDE);
 
     private static final Materialized<String, WonderSeekerMatchHistory, KeyValueStore<Bytes, byte[]>> WONDER_SEEKER_MATCH_HISTORY_KTABLE = Materialized
             .<String, WonderSeekerMatchHistory>as(Stores.inMemoryKeyValueStore(WONDER_SEEKER_MATCH_HISTORY_STATE_STORE))
@@ -159,5 +165,24 @@ public class KStreamAndKTableDefinitions {
                             return wonderSeekerMatchHistory;
                         },
                         WONDER_SEEKER_MATCH_HISTORY_KTABLE);
+
+        builder.stream(Topics.WONDER_SEEKER_PASSIVE_LIKE_EVENTS, LIKEES_EVENT_CONSUMED)
+                .filterNot((k, v) -> k == null || k.isBlank() || k.isEmpty() || v == null || v.key() == null || v.key().isEmpty() || v.key().isBlank())
+                .filter((k, v) -> k.equals(v.key()))
+                .peek((key, value) -> log.info("Liked By Event {}", value))
+                .groupByKey()
+                // Aggregate status into an in-memory KTable as a source for global KTable
+                .aggregate(WonderSeekerLikedByHistory::empty,
+                        (key, value, aggregate) -> {
+                            if (aggregate.isEmpty()) {
+                                var wonderSeekerLikedByHistory = WonderSeekerLikedByHistory.initialize(value.liker()).addLikedByToHistory(value.likee(), value.eventTime());
+                                log.info("creating new liked by history {}", wonderSeekerLikedByHistory);
+                                return wonderSeekerLikedByHistory;
+                            }
+                            var wonderSeekerLikedByHistory = aggregate.addLikedByToHistory(value.likee(), value.eventTime());
+                            log.info("updating a liked by history to {}", wonderSeekerLikedByHistory);
+                            return wonderSeekerLikedByHistory;
+                        },
+                        WONDER_SEEKER_LIKED_BY_HISTORY_KTABLE);
     }
 }

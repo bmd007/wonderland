@@ -51,8 +51,21 @@ public class TopicCreator {
         return String.format("%s-%s-changelog", applicationName, storeName);
     }
     @Bean
-    public NewTopic changeLogTopic() {
+    public NewTopic wonderSeekerSeekChangeLogTopic() {
         return new NewTopic(stateStoreTopicName(StateStores.WONDER_SEEKER_IN_MEMORY_STATE_STORE, applicationName),
+                changeLogTopicDefinition.numPartitions, changeLogTopicDefinition.replicationFactor)
+                .configs(Map.of(CLEANUP_POLICY_CONFIG, CLEANUP_POLICY_COMPACT));
+    }
+
+    @Bean
+    public NewTopic wonderSeekerLikeChangeLogTopic() {
+        return new NewTopic(stateStoreTopicName(StateStores.WONDER_SEEKER_LIKE_HISTORY_STATE_STORE, applicationName),
+                changeLogTopicDefinition.numPartitions, changeLogTopicDefinition.replicationFactor)
+                .configs(Map.of(CLEANUP_POLICY_CONFIG, CLEANUP_POLICY_COMPACT));
+    }
+    @Bean
+    public NewTopic wonderSeekerLikedByChangeLogTopic() {
+        return new NewTopic(stateStoreTopicName(StateStores.WONDER_SEEKER_LIKED_BY_HISTORY_STATE_STORE, applicationName),
                 changeLogTopicDefinition.numPartitions, changeLogTopicDefinition.replicationFactor)
                 .configs(Map.of(CLEANUP_POLICY_CONFIG, CLEANUP_POLICY_COMPACT));
     }
