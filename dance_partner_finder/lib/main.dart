@@ -20,8 +20,8 @@ class MyApp extends StatelessWidget {
       ),
       home: MultiBlocProvider(
         providers: [
-          BlocProvider(create: (context) => DancePartnerBloc()),
-          BlocProvider(create: (context) => HasMatchCubit())
+          BlocProvider(create: (context1) => DancePartnerBloc()),
+          BlocProvider(create: (context1) => HasMatchCubit())
         ],
         child: DancePartnerSelectWidget(),
       ),

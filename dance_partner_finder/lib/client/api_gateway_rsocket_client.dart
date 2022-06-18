@@ -8,10 +8,9 @@ import 'package:rsocket/rsocket_connector.dart';
 import 'package:rxdart/rxdart.dart';
 
 class ApiGatewayRSocketClient {
-
-  Future<RSocket> rsocketConnectionStream() => RSocketConnector.create()
+  Future<RSocket> rsocketConnectionStream = RSocketConnector.create()
+      .keepAlive(2000, 999999999)
       .connect('ws://192.168.1.188:7022')
-      .whenComplete(() => "creation of rsocket connection completed")
       .catchError((error) => print(error));
 
   Payload routeAndDataPayload(String route, String data) {
@@ -32,7 +31,7 @@ class ApiGatewayRSocketClient {
         "dancerPartnerSeekerName": "${name}"
     }
   """;
-    return rsocketConnectionStream()
+    return rsocketConnectionStream
         .asStream()
         .asyncExpand((rSocket) => rSocket.requestStream!(
             routeAndDataPayload("/api/dance/partner/finder/names", body)))
@@ -40,7 +39,7 @@ class ApiGatewayRSocketClient {
         .doOnError((p0, p1) => print(p1));
   }
 
-  Future<void> addName(String name, double latitude, double longitude) {
+  Stream<void> addName(String name, double latitude, double longitude) {
     var body = """
     {
       "location": {
@@ -50,39 +49,47 @@ class ApiGatewayRSocketClient {
         "name": "${name}"
     }
   """;
-    return rsocketConnectionStream()
-        .then((rSocket) => rSocket.fireAndForget!(
+    return rsocketConnectionStream
+        .asStream()
+        .asyncMap((rSocket) => rSocket.fireAndForget!(
             routeAndDataPayload("/api/dance/partner/finder/addName", body)))
-        .onError((error, stackTrace) => print(stackTrace));
+        .doOnError((error, stackTrace) => print(stackTrace));
   }
 
-  Future<void> likeADancer(String whoHasLiked, String whomIsLiked) {
+  Stream<void> likeADancer(String whoHasLiked, String whomIsLiked) {
     var body = """
     {
       "whoHasLiked": "$whoHasLiked",
       "whomIsLiked": "$whomIsLiked"
     }
   """;
-    return rsocketConnectionStream().then((rSocket) => rSocket.fireAndForget!(
-        routeAndDataPayload("/api/dance/partner/finder/like", body)));
+    return rsocketConnectionStream
+        .asStream()
+        .asyncMap((rSocket) => rSocket.fireAndForget!(
+            routeAndDataPayload("/api/dance/partner/finder/like", body)))
+        .doOnError((error, stackTrace) => print(stackTrace));
   }
 
-  Future<void> disLikeADancer(String whoHasDisLiked, String whomIsDisLiked) {
+  Stream<void> disLikeADancer(String whoHasDisLiked, String whomIsDisLiked) {
     var body = """
     {
       "whoHasDisLiked": "$whoHasDisLiked",
       "whomIsDisLiked": "$whomIsDisLiked"
     }
   """;
-    return rsocketConnectionStream().then((rSocket) => rSocket.fireAndForget!(
-        routeAndDataPayload("/api/dance/partner/finder/disLike", body)));
+    return rsocketConnectionStream
+        .asStream()
+        .asyncMap((rSocket) => rSocket.fireAndForget!(
+            routeAndDataPayload("/api/dance/partner/finder/disLike", body)))
+        .doOnError((error, stackTrace) => print(stackTrace));
   }
 
   Stream<String?> matchStreams() {
-    return rsocketConnectionStream()
+    return rsocketConnectionStream
         .asStream()
         .asyncExpand((rSocket) => rSocket.requestStream!(
             routeAndDataPayload("/api/dance/partner/finder/matches", "")))
-        .map((element) => element!.getDataUtf8());
+        .map((element) => element!.getDataUtf8())
+        .doOnError((error, stackTrace) => print(stackTrace));
   }
 }
