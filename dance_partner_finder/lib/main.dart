@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bloc/dance_partner_finder/dance_partner_finder_bloc.dart';
-import 'bloc/match/match_cubit.dart';
+import 'dance_partner_matches_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
       home: MultiBlocProvider(
         providers: [
           BlocProvider(create: (context1) => DancePartnerBloc()),
-          BlocProvider(create: (context1) => HasMatchCubit())
+          // BlocProvider(create: (context1) => HasMatchCubit())
         ],
         child: DancePartnerSelectWidget(),
       ),
@@ -37,36 +37,35 @@ class DancePartnerSelectWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var dancerBloc = context.watch<DancePartnerBloc>();
-    var matchCubit = context.watch<HasMatchCubit>();
     return Scaffold(
       appBar: appBar(dancerBloc),
-      bottomNavigationBar: bottomNavigationBar(matchCubit, dancerBloc),
+      bottomNavigationBar: bottomNavigationBar(dancerBloc, context),
       body: body(dancerBloc),
     );
   }
 
-  NavigationBar? bottomNavigationBar(
-      HasMatchCubit matchCubit, DancePartnerBloc dancerBloc) {
-    if (matchCubit.state.thisDancerName.isEmpty &&
-        dancerBloc.state.thisDancerName.isNotEmpty) {
-      matchCubit.setName(dancerBloc.state.thisDancerName);
+  NavigationBar? bottomNavigationBar(DancePartnerBloc dancerBloc, BuildContext context) {
+    if (dancerBloc.state.thisDancerName.isNotEmpty) {
     }
-    return matchCubit.state.matchFound && !matchCubit.state.loading
-        ? NavigationBar(
+    return NavigationBar(
             destinations: [
-              const Center(
-                  child: Text("NEW MATCH",
-                      style: TextStyle(
-                          color: Colors.red, fontWeight: FontWeight.bold))),
+              IconButton(
+                onPressed: () =>   Navigator.push(context, MaterialPageRoute(builder: (context) => DancePartnerMatchesWidget())),
+                icon: Image.asset(
+                  'images/match.gif',
+                  height: 40,
+                  width: 40,
+                ),
+              ),
               Image.asset(
-                'images/match.gif',
+                'images/match.png',
                 height: 40,
                 width: 40,
-              )
+              ),
+
             ],
             height: 40,
-          )
-        : null;
+          );
   }
 
   Widget body(DancePartnerBloc dancerBloc) {
