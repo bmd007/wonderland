@@ -28,7 +28,7 @@ dependencies {
     implementation 'org.springframework:spring-messaging:5.3.20'
     implementation 'io.rsocket:rsocket-core:1.1.2'
     implementation 'io.rsocket:rsocket-transport-netty:1.1.2'
-    implementation 'io.projectreactor.netty:reactor-netty:1.0.19'
+    implementation 'io.projectreactor.netty:reactor-netty:1.0.20'
 
     implementation 'org.jmonkeyengine:jme3-blender:3.3.2-stable'
     implementation 'org.jmonkeyengine:jme3-jbullet:3.5.2-stable'
@@ -45,7 +45,7 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-    testImplementation 'io.projectreactor:reactor-test:3.4.18'
+    testImplementation 'io.projectreactor:reactor-test:3.4.19'
 }
 
 testing {
