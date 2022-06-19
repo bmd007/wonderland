@@ -3,12 +3,12 @@ import 'package:equatable/equatable.dart';
 class DancePartnerMatchState extends Equatable {
   final List<String> matchedDancerNames;
   final bool isLoading;
-  final String thisDancerName; //todo rename
+  final String thisDancerName; //todo might not be needed as a state here
 
   const DancePartnerMatchState(
       this.isLoading, this.matchedDancerNames, this.thisDancerName);
 
-  DancePartnerMatchState withThisDancerName(thisDancerName) {
+  static DancePartnerMatchState withThisDancerName(thisDancerName) {
     return DancePartnerMatchState(true, const [], thisDancerName);
   }
 
@@ -18,10 +18,6 @@ class DancePartnerMatchState extends Equatable {
 
   DancePartnerMatchState loaded(List<String> loadedMatchedNames) {
     return DancePartnerMatchState(false, loadedMatchedNames, thisDancerName);
-  }
-
-  static DancePartnerMatchState empty() {
-    return const DancePartnerMatchState(false, [], "");
   }
 
   @override

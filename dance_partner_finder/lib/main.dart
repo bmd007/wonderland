@@ -46,14 +46,13 @@ class DancePartnerSelectWidget extends StatelessWidget {
 
   NavigationBar? bottomNavigationBar(
       DancePartnerFinderBloc dancerBloc, BuildContext context) {
-    if (dancerBloc.state.thisDancerName.isNotEmpty) {}
-    return NavigationBar(
+    return dancerBloc.state.thisDancerName.isNotEmpty ? NavigationBar(
       destinations: [
         IconButton(
           onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => DancePartnerMatchesWidget())),
+                  builder: (context) => DancePartnerMatchesWidget(thisDancerName: dancerBloc.state.thisDancerName))),
           icon: Image.asset(
             'images/match.gif',
             height: 40,
@@ -68,7 +67,7 @@ class DancePartnerSelectWidget extends StatelessWidget {
 
             ],
             height: 40,
-          );
+          ) : null;
   }
 
   Widget body(DancePartnerFinderBloc dancerBloc) {

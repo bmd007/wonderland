@@ -5,12 +5,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'bloc/dance_partner_match/dance_partner_match_state.dart';
 
 class DancePartnerMatchesWidget extends StatelessWidget {
-  const DancePartnerMatchesWidget({Key? key}) : super(key: key);
+  final String thisDancerName;
+
+  const DancePartnerMatchesWidget({super.key, required this.thisDancerName});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => DancePartnerMatchBloc(),
+      create: (context) => DancePartnerMatchBloc(thisDancerName),
       child: BlocBuilder<DancePartnerMatchBloc, DancePartnerMatchState>(
         builder: (context, state) {
           return state.isLoading

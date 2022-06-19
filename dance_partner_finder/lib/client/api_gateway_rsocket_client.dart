@@ -84,11 +84,11 @@ class ApiGatewayRSocketClient {
         .doOnError((error, stackTrace) => print(stackTrace));
   }
 
-  Stream<String?> matchStreams() {
+  Stream<String?> matchStreams(String thisDancerName) {
     return _rsocketConnectionStream
         .asStream()
         .asyncExpand((rSocket) => rSocket.requestStream!(
-            routeAndDataPayload("/api/dance/partner/finder/matches", "")))
+            routeAndDataPayload("/api/dance/partner/finder/matches", thisDancerName)))
         .map((element) => element!.getDataUtf8())
         .doOnError((error, stackTrace) => print(stackTrace));
   }
