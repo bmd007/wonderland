@@ -15,7 +15,6 @@ import wonderland.api.gateway.event.DancePartnerSeekerHasLikedAnotherDancerEvent
 import wonderland.api.gateway.event.DancerIsLookingForPartnerUpdate;
 import wonderland.api.gateway.event.Event;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -128,12 +127,13 @@ public class DancePartnerFinderResource {
                 .bodyToFlux(WonderSeekerLikesDto.class);
     }
 
-    @MessageMapping("/api/dance/partner/finder/match/all")
-    public Flux<WonderSeekerMatchesDto> dancersMatchedWith(String wonderSeekerName) {
+    @MessageMapping("/api/dance/partner/finder/matches")
+    public Flux<String> dancersMatchedWith(String wonderSeekerName) {
         return wonderMatcherClient.get()
                 .uri("api/match/%s".formatted(wonderSeekerName))
                 .retrieve()
-                .bodyToFlux(WonderSeekerMatchesDto.class);
+                .bodyToFlux(WonderSeekerMatchesDto.class)
+                .flatMapIterable(matchesDto -> matchesDto.matchHistory().keySet());
     }
 
     record DisLikeRequestBody(String whoHasDisLiked, String whomIsDisLiked) {
@@ -156,10 +156,4 @@ public class DancePartnerFinderResource {
 //                .log()
 //                .then();//todo use another topic for dislikes
     }
-
-    @MessageMapping("/api/dance/partner/finder/matches")
-    public Flux<String> matchStream() {
-        return Flux.just("dance", "match").delaySubscription(Duration.ofSeconds(2L));
-    }
-
 }

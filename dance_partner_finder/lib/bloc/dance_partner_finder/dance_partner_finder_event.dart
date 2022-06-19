@@ -1,10 +1,10 @@
 part of 'dance_partner_finder_bloc.dart';
 
-abstract class DancePartnerEvent extends Equatable {
-  const DancePartnerEvent();
+abstract class DancePartnerFinderEvent extends Equatable {
+  const DancePartnerFinderEvent();
 }
 
-class DancerLikedEvent extends DancePartnerEvent {
+class DancerLikedEvent extends DancePartnerFinderEvent {
   final String dancerName;
 
   const DancerLikedEvent(this.dancerName);
@@ -13,7 +13,7 @@ class DancerLikedEvent extends DancePartnerEvent {
   List<Object?> get props => [dancerName];
 }
 
-class DancerDislikedEvent extends DancePartnerEvent {
+class DancerDislikedEvent extends DancePartnerFinderEvent {
   final String dancerName;
 
   const DancerDislikedEvent(this.dancerName);
@@ -22,7 +22,7 @@ class DancerDislikedEvent extends DancePartnerEvent {
   List<Object?> get props => [dancerName];
 }
 
-class ThisDancerChoseNameEvent extends DancePartnerEvent {
+class ThisDancerChoseNameEvent extends DancePartnerFinderEvent {
   final String thisDancerName;
 
   const ThisDancerChoseNameEvent(this.thisDancerName);
@@ -31,7 +31,7 @@ class ThisDancerChoseNameEvent extends DancePartnerEvent {
   List<Object?> get props => [thisDancerName];
 }
 
-class DancersLoadedEvent extends DancePartnerEvent {
+class DancersLoadedEvent extends DancePartnerFinderEvent {
   final List<String> loadedDancerNames;
 
   const DancersLoadedEvent(this.loadedDancerNames);
@@ -40,7 +40,7 @@ class DancersLoadedEvent extends DancePartnerEvent {
   List<Object?> get props => [loadedDancerNames];
 }
 
-class PotentialDancerPartnerFoundEvent extends DancePartnerEvent {
+class PotentialDancerPartnerFoundEvent extends DancePartnerFinderEvent {
   final String potentialDancePartnerName;
 
   const PotentialDancerPartnerFoundEvent(this.potentialDancePartnerName);

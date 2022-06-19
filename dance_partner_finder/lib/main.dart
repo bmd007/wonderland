@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       ),
       home: MultiBlocProvider(
         providers: [
-          BlocProvider(create: (context1) => DancePartnerBloc()),
+          BlocProvider(create: (context1) => DancePartnerFinderBloc()),
           // BlocProvider(create: (context1) => HasMatchCubit())
         ],
         child: DancePartnerSelectWidget(),
@@ -36,7 +36,7 @@ class DancePartnerSelectWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var dancerBloc = context.watch<DancePartnerBloc>();
+    var dancerBloc = context.watch<DancePartnerFinderBloc>();
     return Scaffold(
       appBar: appBar(dancerBloc),
       bottomNavigationBar: bottomNavigationBar(dancerBloc, context),
@@ -44,18 +44,21 @@ class DancePartnerSelectWidget extends StatelessWidget {
     );
   }
 
-  NavigationBar? bottomNavigationBar(DancePartnerBloc dancerBloc, BuildContext context) {
-    if (dancerBloc.state.thisDancerName.isNotEmpty) {
-    }
+  NavigationBar? bottomNavigationBar(
+      DancePartnerFinderBloc dancerBloc, BuildContext context) {
+    if (dancerBloc.state.thisDancerName.isNotEmpty) {}
     return NavigationBar(
-            destinations: [
-              IconButton(
-                onPressed: () =>   Navigator.push(context, MaterialPageRoute(builder: (context) => DancePartnerMatchesWidget())),
-                icon: Image.asset(
-                  'images/match.gif',
-                  height: 40,
-                  width: 40,
-                ),
+      destinations: [
+        IconButton(
+          onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => DancePartnerMatchesWidget())),
+          icon: Image.asset(
+            'images/match.gif',
+            height: 40,
+            width: 40,
+          ),
               ),
               Image.asset(
                 'images/match.png',
@@ -68,7 +71,7 @@ class DancePartnerSelectWidget extends StatelessWidget {
           );
   }
 
-  Widget body(DancePartnerBloc dancerBloc) {
+  Widget body(DancePartnerFinderBloc dancerBloc) {
     return dancerBloc.state.thisDancerName.isNotEmpty &&
             !dancerBloc.state.isLoading
         ? Stack(
@@ -114,7 +117,7 @@ class DancePartnerSelectWidget extends StatelessWidget {
         : Image.asset('images/wait.png');
   }
 
-  AppBar? appBar(DancePartnerBloc dancerBloc) {
+  AppBar? appBar(DancePartnerFinderBloc dancerBloc) {
     return dancerBloc.state.thisDancerName.isEmpty
         ? AppBar(
             title: TextField(

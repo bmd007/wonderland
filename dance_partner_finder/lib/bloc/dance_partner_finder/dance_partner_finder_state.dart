@@ -1,35 +1,35 @@
 part of 'dance_partner_finder_bloc.dart';
 
-class DancePartnerState extends Equatable {
+class DancePartnerFinderState extends Equatable {
   final List<String> dancerNames;
   final int currentDancerIndex;
   final bool isLoading;
   final String thisDancerName; //todo rename
 
-  const DancePartnerState(this.isLoading, this.currentDancerIndex,
+  const DancePartnerFinderState(this.isLoading, this.currentDancerIndex,
       this.dancerNames, this.thisDancerName);
 
-  DancePartnerState withThisDancerName(thisDancerName) {
-    return DancePartnerState(true, 0, const [], thisDancerName);
+  DancePartnerFinderState withThisDancerName(thisDancerName) {
+    return DancePartnerFinderState(true, 0, const [], thisDancerName);
   }
 
-  DancePartnerState loading() {
-    return DancePartnerState(true, 0, const [], thisDancerName);
+  DancePartnerFinderState loading() {
+    return DancePartnerFinderState(true, 0, const [], thisDancerName);
   }
 
-  DancePartnerState loaded(List<String> loadedDancerNames) {
-    return DancePartnerState(false, 0, loadedDancerNames, thisDancerName);
+  DancePartnerFinderState loaded(List<String> loadedDancerNames) {
+    return DancePartnerFinderState(false, 0, loadedDancerNames, thisDancerName);
   }
 
-  static DancePartnerState empty() {
-    return const DancePartnerState(false, 0, [], "");
+  static DancePartnerFinderState empty() {
+    return const DancePartnerFinderState(false, 0, [], "");
   }
 
-  DancePartnerState moveToNextDancer() {
+  DancePartnerFinderState moveToNextDancer() {
     if (currentDancerIndex + 1 >= dancerNames.length) {
       return loading();
     }
-    return DancePartnerState(
+    return DancePartnerFinderState(
         false, currentDancerIndex + 1, dancerNames, thisDancerName);
   }
 
@@ -43,9 +43,9 @@ class DancePartnerState extends Equatable {
   @override
   List<Object> get props => [currentDancerIndex, isLoading, dancerNames];
 
-  DancePartnerState addPotentialDancer(String potentialDancePartnerName) {
+  DancePartnerFinderState addPotentialDancer(String potentialDancePartnerName) {
     List<String> newDancerNames = dancerNames.toList(growable: true);
     newDancerNames.add(potentialDancePartnerName);
-    return DancePartnerState(false, currentDancerIndex, newDancerNames, thisDancerName);
+    return DancePartnerFinderState(false, currentDancerIndex, newDancerNames, thisDancerName);
   }
 }

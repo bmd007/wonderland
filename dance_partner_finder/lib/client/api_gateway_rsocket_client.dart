@@ -8,11 +8,11 @@ import 'package:rsocket/rsocket_connector.dart';
 import 'package:rxdart/rxdart.dart';
 
 class ApiGatewayRSocketClient {
-  Future<RSocket> rsocketConnectionStream = RSocketConnector.create()
+  Future<RSocket> _rsocketConnectionStream = RSocketConnector.create()
       .keepAlive(2000, 999999999)
       .connect('ws://192.168.1.188:7022')
       .catchError((error) => print(error));
-
+  
   Payload routeAndDataPayload(String route, String data) {
     var compositeMetadata =
         CompositeMetadata.fromEntries([RoutingMetadata(route, List.empty())]);
@@ -21,7 +21,7 @@ class ApiGatewayRSocketClient {
     return Payload.from(metadataBytes, dataBytes);
   }
 
-  Stream<String?> fetchNames(String name, double latitude, double longitude) {
+  Stream<String?> fetchDancePartnerSeekersNames(String name, double latitude, double longitude) {
     var body = """
     {
       "location": {
@@ -31,7 +31,7 @@ class ApiGatewayRSocketClient {
         "dancerPartnerSeekerName": "${name}"
     }
   """;
-    return rsocketConnectionStream
+    return _rsocketConnectionStream
         .asStream()
         .asyncExpand((rSocket) => rSocket.requestStream!(
             routeAndDataPayload("/api/dance/partner/finder/names", body)))
@@ -39,7 +39,7 @@ class ApiGatewayRSocketClient {
         .doOnError((p0, p1) => print(p1));
   }
 
-  Stream<void> addName(String name, double latitude, double longitude) {
+  Stream<void> introduceAsDancePartnerSeeker(String name, double latitude, double longitude) {
     var body = """
     {
       "location": {
@@ -49,7 +49,7 @@ class ApiGatewayRSocketClient {
         "name": "${name}"
     }
   """;
-    return rsocketConnectionStream
+    return _rsocketConnectionStream
         .asStream()
         .asyncMap((rSocket) => rSocket.fireAndForget!(
             routeAndDataPayload("/api/dance/partner/finder/addName", body)))
@@ -63,7 +63,7 @@ class ApiGatewayRSocketClient {
       "whomIsLiked": "$whomIsLiked"
     }
   """;
-    return rsocketConnectionStream
+    return _rsocketConnectionStream
         .asStream()
         .asyncMap((rSocket) => rSocket.fireAndForget!(
             routeAndDataPayload("/api/dance/partner/finder/like", body)))
@@ -77,7 +77,7 @@ class ApiGatewayRSocketClient {
       "whomIsDisLiked": "$whomIsDisLiked"
     }
   """;
-    return rsocketConnectionStream
+    return _rsocketConnectionStream
         .asStream()
         .asyncMap((rSocket) => rSocket.fireAndForget!(
             routeAndDataPayload("/api/dance/partner/finder/disLike", body)))
@@ -85,7 +85,7 @@ class ApiGatewayRSocketClient {
   }
 
   Stream<String?> matchStreams() {
-    return rsocketConnectionStream
+    return _rsocketConnectionStream
         .asStream()
         .asyncExpand((rSocket) => rSocket.requestStream!(
             routeAndDataPayload("/api/dance/partner/finder/matches", "")))

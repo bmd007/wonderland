@@ -1,16 +1,28 @@
+import 'package:dance_partner_finder/bloc/dance_partner_match/dance_partner_match_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'bloc/dance_partner_match/dance_partner_match_state.dart';
 
 class DancePartnerMatchesWidget extends StatelessWidget {
-  DancePartnerMatchesWidget({Key? key}) : super(key: key);
-  final List<String> _matchedDancerPartnerNames = ["taylor", "jlo"];
+  const DancePartnerMatchesWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        children: _matchedDancerPartnerNames
-            .map((name) => DancePartnerMatchWidget(dancerName: name))
-            .toList());
+    return BlocProvider(
+      create: (context) => DancePartnerMatchBloc(),
+      child: BlocBuilder<DancePartnerMatchBloc, DancePartnerMatchState>(
+        builder: (context, state) {
+          return state.isLoading
+              ? Image.asset('images/wait.png')
+              : ListView(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  children: state.matchedDancerNames
+                      .map((name) => DancePartnerMatchWidget(dancerName: name))
+                      .toList());
+        },
+      ),
+    );
   }
 }
 
@@ -36,12 +48,13 @@ class DancePartnerMatchWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-          onLongPress: () {},
-          onTap: () {},
-          leading: CircleAvatar(
-          backgroundImage: AssetImage('images/${dancerName}.png')),
-      title: Text(dancerName, style: _getTextStyle(true)),
-    ),);
+        onLongPress: () {},
+        onTap: () {},
+        leading: CircleAvatar(
+            backgroundImage: AssetImage('images/${dancerName}.png')),
+        title: Text(dancerName, style: _getTextStyle(true)),
+      ),
+    );
   }
 }
 

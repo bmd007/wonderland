@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:dance_partner_finder/client/api_gateway_client_holder.dart';
 import 'package:dance_partner_finder/client/api_gateway_rsocket_client.dart';
 import 'package:equatable/equatable.dart';
 import 'package:location/location.dart';
@@ -8,7 +9,7 @@ part 'dance_partner_finder_event.dart';
 part 'dance_partner_finder_state.dart';
 
 
-Stream<LocationData> getLocation() {
+Stream<LocationData> getCurrentLocation() {
   Location location = Location();
 
   return location.requestService()
@@ -30,17 +31,15 @@ Stream<LocationData> getLocation() {
   // return await location.getLocation();
 }
 
-class DancePartnerBloc extends Bloc<DancePartnerEvent, DancePartnerState> {
-
-  final ApiGatewayRSocketClient client = ApiGatewayRSocketClient();
-
-  DancePartnerBloc() : super(DancePartnerState.empty()) {
+class DancePartnerFinderBloc extends Bloc<DancePartnerFinderEvent, DancePartnerFinderState> {
+  
+  DancePartnerFinderBloc() : super(DancePartnerFinderState.empty()) {
     on<ThisDancerChoseNameEvent>((event, emit) {
       emit(state.withThisDancerName(event.thisDancerName));
 
-      getLocation()
-      .doOnData((location) => client.addName(state.thisDancerName, location.latitude!, location.longitude! ))
-      .asyncExpand((location) => client.fetchNames(state.thisDancerName, location.latitude!, location.longitude!))
+      getCurrentLocation()
+      .doOnData((location) => ApiGatewayClientHolder.client.introduceAsDancePartnerSeeker(state.thisDancerName, location.latitude!, location.longitude! ))
+      .asyncExpand((location) => ApiGatewayClientHolder.client.fetchDancePartnerSeekersNames(state.thisDancerName, location.latitude!, location.longitude!))
       .forEach((potentialDancePartner) => add(PotentialDancerPartnerFoundEvent(potentialDancePartner!)));
     });
     on<DancersLoadedEvent>((event, emit) {
@@ -50,14 +49,12 @@ class DancePartnerBloc extends Bloc<DancePartnerEvent, DancePartnerState> {
       emit(state.addPotentialDancer(event.potentialDancePartnerName));
     });
     on<DancerLikedEvent>((event, emit) {
-      client
-          .likeADancer(state.thisDancerName, event.dancerName)
+      ApiGatewayClientHolder.client.likeADancer(state.thisDancerName, event.dancerName)
           .forEach((element) {});
       emit(state.moveToNextDancer());
     });
     on<DancerDislikedEvent>((event, emit) {
-      client
-          .disLikeADancer(state.thisDancerName, event.dancerName)
+      ApiGatewayClientHolder.client.disLikeADancer(state.thisDancerName, event.dancerName)
           .forEach((element) {});
       emit(state.moveToNextDancer());
     });
