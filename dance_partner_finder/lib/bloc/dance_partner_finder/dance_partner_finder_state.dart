@@ -1,4 +1,4 @@
-part of 'dance_partner_finder_bloc.dart';
+import 'package:equatable/equatable.dart';
 
 class DancePartnerFinderState extends Equatable {
   final List<String> dancerNames;

@@ -1,4 +1,4 @@
-part of 'dance_partner_finder_bloc.dart';
+import 'package:equatable/equatable.dart';
 
 abstract class DancePartnerFinderEvent extends Equatable {
   const DancePartnerFinderEvent();

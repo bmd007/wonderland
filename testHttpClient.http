@@ -13,7 +13,7 @@ Accept: application/json
 POST http://192.168.1.188:9531/v1/chat/tom/queues
 
 ###
-POST http://localhost:9566/prepare/then/send/message/tom/taylor
+POST http://localhost:9566/prepare/then/send/message/jlo/taylor
 Content-Type: application/text
 
 tom's message to taylor

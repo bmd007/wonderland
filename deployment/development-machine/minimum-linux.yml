@@ -36,8 +36,8 @@ services:
     container_name: rabbitmq
     hostname: rabbitmq
     build:
-      context: .
-      dockerfile: RabbitMQwithStompDockerfile
+      context: ./rabbitmq/.
+      dockerfile: Dockerfile
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -45,6 +45,7 @@ services:
       - "25672:25672"
       - "61613:61613"
       - "61614:61614"
+      - "55674:55674"
     environment:
       SERVICE_IGNORE: any_value
 

@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:dance_partner_finder/client/api_gateway_client_holder.dart';
@@ -31,18 +30,23 @@ class DancePartnerMatchBloc
         .matchStreams(state.thisDancerName)
         .forEach((match) => add(MatchFoundEvent(match!)));
 
-    var auth = 'Basic ${base64Encode(utf8.encode('guest:guest'))}';
+
+    var loginCode = {'login': 'guest', 'passcode': 'guest'};
     var config = StompConfig(
-        url: 'ws://192.168.1.18:5672',
-        onStompError: (error) => print("stomp error $error"),
+        url: 'ws://192.168.1.188:61613',
         onConnect: (connection) => client.subscribe(
-            destination: thisDancerName,
-            callback: (frame) {
-              print("BMD $frame ${frame.body}");
-            }),
-        useSockJS: true,
-        stompConnectHeaders: {'login': 'guest', 'passcode': 'guest'});
+            destination: state.thisDancerName,
+            callback: (frame) => print("BMD $frame ${frame.body}")),
+        useSockJS: false,
+        stompConnectHeaders: loginCode,
+        webSocketConnectHeaders: loginCode,
+        onStompError: (error) => print("stomp error $error"),
+        onWebSocketError: (error) => print('webSocket error $error'),
+        onDebugMessage: (message) => print('debug message $message'),
+        onWebSocketDone: () => print('web socket done'),
+        onDisconnect: (stopFrame) => print('disconnected $stopFrame'));
     client = StompClient(config: config);
     client.activate();
   }
+
 }
