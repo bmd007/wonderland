@@ -1,0 +1,13 @@
+GET http://localhost:9585/api/wonder
+Accept: application/json
+
+###
+GET http://localhost:9585/api/like
+Accept: application/json
+
+###
+GET http://localhost:9585/api/match
+Accept: application/json
+
+###
+POST http://192.168.1.188:9531/create/queue/for/camila

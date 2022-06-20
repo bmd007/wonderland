@@ -10,6 +10,7 @@ import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,7 +58,7 @@ public class MessageResource {
         }
     }
 
-    @PostMapping("/create/queue/for/{email}")
+    @PostMapping(path= "/create/queue/for/{email}", produces = MediaType.TEXT_PLAIN_VALUE)
     public String createQueue(@PathVariable String email) {
         var queue = new Queue(email, true, false, false);
         var binding = new Binding(email, Binding.DestinationType.QUEUE, messagesExchange.getName(), email, null);

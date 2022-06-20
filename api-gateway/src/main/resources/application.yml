@@ -1,5 +1,6 @@
 server.port: 9531
 
+
 management:
   server.port: 9532
   health:
@@ -55,6 +56,10 @@ spring:
     scheduled.skip-pattern: .*ConfigWatch|.*ConsulCatalogWatch|.*/api/v1/spans
   zipkin.base-url: http://system-zipkin/
   cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
     consul:
       discovery:
         prefer-ip-address: true
