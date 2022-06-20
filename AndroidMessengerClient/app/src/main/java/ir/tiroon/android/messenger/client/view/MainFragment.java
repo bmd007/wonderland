@@ -21,6 +21,7 @@ import ir.tiroon.android.messenger.client.service.SimpleWebSocketEchoService;
 import ir.tiroon.android.messenger.client.R;
 import ir.tiroon.android.messenger.client.modelview.MainActivityUserViewModel;
 import ir.tiroon.android.messenger.client.service.RabbitMQService;
+import ir.tiroon.android.messenger.client.service.StompService;
 
 public class MainFragment extends Fragment {
 
@@ -42,7 +43,7 @@ public class MainFragment extends Fragment {
     Button simpleWebSocketConnectButton;
 
     SimpleWebSocketEchoService simpleWebSocketEchoService;
-    RabbitMQService rabbitMQService;
+    StompService rabbitMQService;
 
     public static MainFragment newInstance() {
         return new MainFragment();
@@ -68,7 +69,7 @@ public class MainFragment extends Fragment {
             String password = passwordEditText.getText().toString();
             String ip = serverIdEditText.getText().toString();
             String queueName = "mm7amini@gmail.com";
-            rabbitMQService = new RabbitMQService(ip, userName, password, queueName, amqpConnectButton::setText);
+            rabbitMQService = new StompService(ip, userName, password, queueName, amqpConnectButton::setText);
             amqpConnectButton.setClickable(false);
         });
 

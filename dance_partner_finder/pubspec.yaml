@@ -42,6 +42,7 @@ dependencies:
   http: ^0.13.4
   web_socket_channel: ^2.2.0
   universal_io: ^2.0.4
+  stomp_dart_client: ^0.4.4
   rsocket:
     git: git@github.com:rsocket/rsocket-dart.git
 

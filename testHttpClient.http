@@ -10,4 +10,10 @@ GET http://localhost:9585/api/match
 Accept: application/json
 
 ###
-POST http://192.168.1.188:9531/create/queue/for/camila
+POST http://192.168.1.188:9531/v1/chat/tom/queues
+
+###
+POST http://localhost:9566/prepare/then/send/message/tom/taylor
+Content-Type: application/text
+
+tom's message to taylor

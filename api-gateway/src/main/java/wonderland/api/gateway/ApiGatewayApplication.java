@@ -16,23 +16,12 @@ public class ApiGatewayApplication {
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
         return builder.routes()
-//                .route(r -> r.host("**.abc.org").and().path("/image/png")
-//                        .filters(f ->
-//                                f.addResponseHeader("X-TestHeader", "foobar"))
-//                        .uri("http://httpbin.org:80")
-//                )
-                .route(r -> r.path("/create/queue/for/*")
+                .route(r -> r.path("/v1/chat/*/queues")
+                        .filters(gatewayFilterSpec ->
+                                gatewayFilterSpec.rewritePath("/v1/chat/(?<username>\\w+)/queues",
+                                        "/create/queue/for/${username}"))
                         .uri("lb://message-publisher")
                 )
-//                .route(r -> r.order(-1)
-//                        .host("**.throttle.org").and().path("/get")
-//                        .filters(f -> f.filter(throttle.apply(1,
-//                                1,
-//                                10,
-//                                TimeUnit.SECONDS)))
-//                        .uri("http://httpbin.org:80")
-//                        .metadata("key", "value")
-//                )
                 .build();
     }
 }

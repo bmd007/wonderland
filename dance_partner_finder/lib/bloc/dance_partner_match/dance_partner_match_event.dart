@@ -30,3 +30,10 @@ class MatchFoundEvent extends DancePartnerMatchEvent {
   @override
   List<Object?> get props => [dancePartnerMatchName];
 }
+
+class StompConnectionReadyEvent extends DancePartnerMatchEvent {
+  const StompConnectionReadyEvent();
+
+  @override
+  List<Object?> get props => ['ignore'];
+}

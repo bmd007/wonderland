@@ -6,7 +6,7 @@ my message
 
 
 ###
-POST http://192.168.10.179:9566/prepare/then/send/message/bmd579@gmail.com/mm7amini@gmail.com
+POST http://localhost:9566/prepare/then/send/message/tom/taylor
 Content-Type: application/text
 
-my message
+tom's message to taylor
