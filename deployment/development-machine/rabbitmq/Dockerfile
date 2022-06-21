@@ -13,7 +13,7 @@ RUN rabbitmq-plugins enable rabbitmq_mqtt
 RUN rabbitmq-plugins enable rabbitmq_web_mqtt
 
 COPY rabbitMqUserCreation.sh /etc/rabbitmq/rabbitMqUserCreation.sh
-#CMD /etc/rabbitmq/rabbitMqUserCreation.sh
+#CMD /etc/rabbitmq/rabbitMqUserCreation.sh todo: remember to (for now) manully execute this on new containers!
 
 EXPOSE 5672
 EXPOSE 15672
