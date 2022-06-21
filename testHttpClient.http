@@ -17,10 +17,3 @@ POST http://localhost:9566/prepare/then/send/message/jlo/taylor?topic=messages
 Content-Type: application/text
 
 tom's message to taylor through messages
-
-
-###
-POST http://localhost:9566/prepare/then/send/message/jlo/taylor?topic="amp.topic"
-Content-Type: application/text
-
-tom's message to taylor through amq.topic

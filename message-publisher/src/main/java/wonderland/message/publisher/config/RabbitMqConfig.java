@@ -8,6 +8,6 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMqConfig {
     @Bean
     TopicExchange messagesExchange() {
-        return new TopicExchange("messages");
+        return new TopicExchange("messages", true, false);
     }
 }

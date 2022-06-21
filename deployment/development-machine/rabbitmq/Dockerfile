@@ -12,6 +12,9 @@ RUN rabbitmq-plugins enable rabbitmq_web_stomp_examples
 RUN rabbitmq-plugins enable rabbitmq_mqtt
 RUN rabbitmq-plugins enable rabbitmq_web_mqtt
 
+COPY rabbitMqUserCreation.sh /etc/rabbitmq/rabbitMqUserCreation.sh
+#CMD /etc/rabbitmq/rabbitMqUserCreation.sh
+
 EXPOSE 5672
 EXPOSE 15672
 EXPOSE 4369
