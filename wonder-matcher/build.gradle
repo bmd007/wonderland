@@ -59,7 +59,7 @@ dependencies {
     }
 
     implementation 'com.h2database:h2:1.4.200'//2.1.212'
-    implementation 'org.locationtech.jts:jts-core:1.18.1' // not needed if h2gis got used
+    implementation 'org.locationtech.jts:jts-core:1.19.0' // not needed if h2gis got used
 
     implementation 'com.google.guava:guava:31.1-jre'
 
