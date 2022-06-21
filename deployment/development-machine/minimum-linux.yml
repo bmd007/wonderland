@@ -46,6 +46,9 @@ services:
       - "61613:61613"
       - "61614:61614"
       - "55674:55674"
+      - "15674:15674"
+      - "1883:1883"
+      - "15675:15675"
     environment:
       SERVICE_IGNORE: any_value
 
@@ -57,7 +60,6 @@ services:
     command: "-internal consul://consul:8500"
     depends_on:
       - consul
-
 
   kafka-manager:
     container_name: kafka-manager

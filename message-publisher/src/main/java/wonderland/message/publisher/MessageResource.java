@@ -15,6 +15,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wonderland.message.publisher.config.Topics;
 
@@ -25,22 +26,21 @@ public class MessageResource {
 
     private final AmqpTemplate rabbitTemplate;
     private final AmqpAdmin rabbitAdmin;
-    private final DirectExchange messagesExchange;
     private final KafkaTemplate<String, MessageSentEvent> kafkaTemplate;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageResource.class);
 
-    public MessageResource(AmqpTemplate rabbitTemplate, AmqpAdmin rabbitAdmin, DirectExchange messagesExchange, KafkaTemplate<String, MessageSentEvent> kafkaTemplate) {
+    public MessageResource(AmqpTemplate rabbitTemplate, AmqpAdmin rabbitAdmin, KafkaTemplate<String, MessageSentEvent> kafkaTemplate) {
         this.rabbitTemplate = rabbitTemplate;
         this.rabbitAdmin = rabbitAdmin;
-        this.messagesExchange = messagesExchange;
         this.kafkaTemplate = kafkaTemplate;
     }
 
     @PostMapping("/send/message/{from}/{to}")
-    public String sendMessage(@PathVariable String from, @PathVariable String to, @RequestBody String body) {
+    public String sendMessage(@RequestParam(required = false, defaultValue = "messages") String topic,
+                              @PathVariable String from, @PathVariable String to, @RequestBody String body) {
         try {
-            rabbitTemplate.convertAndSend(messagesExchange.getName(), to, body);
+            rabbitTemplate.convertAndSend(topic, to, body);
             var sendTime = Instant.now();
             var messageSentEvent = MessageSentEvent.builder()
                     .body(body)
@@ -58,19 +58,20 @@ public class MessageResource {
         }
     }
 
-    @PostMapping(path= "/create/queue/for/{email}", produces = MediaType.TEXT_PLAIN_VALUE)
+    @PostMapping(path = "/create/queue/for/{email}", produces = MediaType.TEXT_PLAIN_VALUE)
     public String createQueue(@PathVariable String email) {
         var queue = new Queue(email, true, false, false);
-        var binding = new Binding(email, Binding.DestinationType.QUEUE, messagesExchange.getName(), email, null);
+        var binding = new Binding(email, Binding.DestinationType.QUEUE, "messages", email, null);
         rabbitAdmin.declareQueue(queue);
         rabbitAdmin.declareBinding(binding);
         LOGGER.info("queue {} created", queue);
-        return queue.getName() + ":" + queue.getActualName() + " is created and bind to " + messagesExchange.getName() + " exchange";
+        return queue.getName() + ":" + queue.getActualName() + " is created and bind to " + "messages" + " exchange";
     }
 
     @PostMapping("/prepare/then/send/message/{from}/{to}")
-    public String prepareThenSendMessage(@PathVariable String from, @PathVariable String to, @RequestBody String body) {
+    public String prepareThenSendMessage(@RequestParam(required = false, defaultValue = "messages") String topic,
+                                         @PathVariable String from, @PathVariable String to, @RequestBody String body) {
         createQueue(to);
-        return sendMessage(from, to, body);
+        return sendMessage(topic, from, to, body);
     }
 }
