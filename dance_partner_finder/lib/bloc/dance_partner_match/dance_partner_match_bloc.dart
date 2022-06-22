@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:bloc/bloc.dart';
 import 'package:dance_partner_finder/client/api_gateway_client_holder.dart';
 import 'package:http/http.dart' as http;
@@ -40,7 +38,8 @@ class DancePartnerMatchBloc extends Bloc<DancePartnerMatchEvent, DancePartnerMat
             print('onUnhandledMessage $onUnhandledMessage'),
         onUnhandledReceipt: (dynamic onUnhandledReceipt) =>
             print('onUnhandledReceipt $onUnhandledReceipt'),
-        onConnect: _onConnect,
+        onConnect: (connection) => stompClient.subscribe(
+            destination: '/queue/taylor', callback: stompMessageHandler),
         stompConnectHeaders: loginCode,
         webSocketConnectHeaders: loginCode,
         onStompError: (dynamic error) =>
@@ -53,14 +52,16 @@ class DancePartnerMatchBloc extends Bloc<DancePartnerMatchEvent, DancePartnerMat
     stompClient.activate();
   }
 
+  void stompMessageHandler(frame) {
+    print("/queue/taylor BMD $frame ${frame.body}");
+  }
+
   void _onConnect(connection) {
     print("websocket connected $connection");
     // stompClient.send(
     //   destination: '/queue/taylor',
     //   body: '/amq/taylor tp taylor',
     // );
-    stompClient.subscribe(
-        destination: '/queue/taylor',
-        callback: (frame) => print("/queue/taylor BMD $frame ${frame.body}"));
+    ;
   }
 }

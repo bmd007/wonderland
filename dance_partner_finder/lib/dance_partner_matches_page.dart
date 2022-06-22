@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bloc/dance_partner_match/dance_partner_match_state.dart';
+import 'chat_with_matched_dancer.dart';
 
 class DancePartnerMatchesWidget extends StatelessWidget {
   final String thisDancerName;
@@ -20,7 +21,8 @@ class DancePartnerMatchesWidget extends StatelessWidget {
               : ListView(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   children: state.matchedDancerNames
-                      .map((name) => DancePartnerMatchWidget(dancerName: name))
+                      .map((name) =>
+                          DancePartnerMatchWidget(matchedDancerName: name))
                       .toList());
         },
       ),
@@ -29,9 +31,9 @@ class DancePartnerMatchesWidget extends StatelessWidget {
 }
 
 class DancePartnerMatchWidget extends StatelessWidget {
-  final String dancerName;
+  final String matchedDancerName;
 
-  const DancePartnerMatchWidget({super.key, required this.dancerName});
+  const DancePartnerMatchWidget({super.key, required this.matchedDancerName});
 
   TextStyle? _getTextStyle(bool newMessageAvailable) {
     if (newMessageAvailable) {
@@ -51,10 +53,14 @@ class DancePartnerMatchWidget extends StatelessWidget {
     return Card(
       child: ListTile(
         onLongPress: () {},
-        onTap: () {},
+        onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ChatWithMatchedDancerWidget(
+                    matchedDancerName: matchedDancerName))),
         leading: CircleAvatar(
-            backgroundImage: AssetImage('images/${dancerName}.png')),
-        title: Text(dancerName, style: _getTextStyle(true)),
+            backgroundImage: AssetImage('images/$matchedDancerName.png')),
+        title: Text(matchedDancerName, style: _getTextStyle(true)),
       ),
     );
   }
