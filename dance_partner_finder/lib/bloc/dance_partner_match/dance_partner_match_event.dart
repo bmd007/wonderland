@@ -4,15 +4,6 @@ abstract class DancePartnerMatchEvent extends Equatable {
   const DancePartnerMatchEvent();
 }
 
-class ThisDancerChoseNameEvent extends DancePartnerMatchEvent {
-  final String thisDancerName;
-
-  const ThisDancerChoseNameEvent(this.thisDancerName);
-
-  @override
-  List<Object?> get props => [thisDancerName];
-}
-
 class DancerMatchesLoadedEvent extends DancePartnerMatchEvent {
   final List<String> loadedDancerNames;
 
@@ -29,11 +20,4 @@ class MatchFoundEvent extends DancePartnerMatchEvent {
 
   @override
   List<Object?> get props => [dancePartnerMatchName];
-}
-
-class StompConnectionReadyEvent extends DancePartnerMatchEvent {
-  const StompConnectionReadyEvent();
-
-  @override
-  List<Object?> get props => ['ignore'];
 }

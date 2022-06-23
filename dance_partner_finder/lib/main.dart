@@ -14,17 +14,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Dance Partner Finder',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MultiBlocProvider(
-        providers: [
-          BlocProvider(create: (context1) => DancePartnerFinderBloc()),
-          // BlocProvider(create: (context1) => HasMatchCubit())
-        ],
-        child: DancePartnerSelectWidget(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context1) => DancePartnerFinderBloc()),
+      ],
+      child: MaterialApp(
+        title: 'Dance Partner Finder',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: DancePartnerSelectWidget(),
       ),
     );
   }

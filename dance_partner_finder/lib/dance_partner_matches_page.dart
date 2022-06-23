@@ -57,7 +57,8 @@ class DancePartnerMatchWidget extends StatelessWidget {
             context,
             MaterialPageRoute(
                 builder: (context) => ChatWithMatchedDancerWidget(
-                    matchedDancerName: matchedDancerName))),
+                      matchedDancerName: matchedDancerName,
+                    ))),
         leading: CircleAvatar(
             backgroundImage: AssetImage('images/$matchedDancerName.png')),
         title: Text(matchedDancerName, style: _getTextStyle(true)),

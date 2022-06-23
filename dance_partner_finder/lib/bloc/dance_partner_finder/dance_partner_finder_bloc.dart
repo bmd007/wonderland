@@ -37,10 +37,10 @@ class DancePartnerFinderBloc extends Bloc<DancePartnerFinderEvent, DancePartnerF
       emit(state.withThisDancerName(event.thisDancerName));
 
       getCurrentLocation()
-          .doOnData((location) => ApiGatewayClientHolder.client
+          .doOnData((location) => ClientHolder.client
               .introduceAsDancePartnerSeeker(state.thisDancerName,
                   location.latitude!, location.longitude!))
-          .asyncExpand((location) => ApiGatewayClientHolder.client
+          .asyncExpand((location) => ClientHolder.client
               .fetchDancePartnerSeekersNames(state.thisDancerName,
                   location.latitude!, location.longitude!))
           .forEach((potentialDancePartner) =>
@@ -53,12 +53,12 @@ class DancePartnerFinderBloc extends Bloc<DancePartnerFinderEvent, DancePartnerF
       emit(state.addPotentialDancer(event.potentialDancePartnerName));
     });
     on<DancerLikedEvent>((event, emit) {
-      ApiGatewayClientHolder.client.likeADancer(state.thisDancerName, event.dancerName)
+      ClientHolder.client.likeADancer(state.thisDancerName, event.dancerName)
           .forEach((element) {});
       emit(state.moveToNextDancer());
     });
     on<DancerDislikedEvent>((event, emit) {
-      ApiGatewayClientHolder.client.disLikeADancer(state.thisDancerName, event.dancerName)
+      ClientHolder.client.disLikeADancer(state.thisDancerName, event.dancerName)
           .forEach((element) {});
       emit(state.moveToNextDancer());
     });

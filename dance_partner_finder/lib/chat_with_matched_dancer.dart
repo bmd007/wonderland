@@ -10,7 +10,7 @@ class ChatWithMatchedDancerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var dancerBloc = context.watch<DancePartnerFinderBloc>();
+    var dancerBloc = context.watch<DancePartnerFinderBloc>();//todo create a user account/authentication bloc for holding this dance name
     return Card(child: Text(dancerBloc.state.thisDancerName),);
   }
 }

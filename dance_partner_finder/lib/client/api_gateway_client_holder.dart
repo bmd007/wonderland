@@ -1,5 +1,6 @@
 import 'api_gateway_rsocket_client.dart';
 
-class ApiGatewayClientHolder {
+//todo is this really a right pattern? or singleton is better?!
+class ClientHolder {
   static final ApiGatewayRSocketClient client = ApiGatewayRSocketClient();
 }
