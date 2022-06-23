@@ -8,7 +8,9 @@ import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageDeliveryMode;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.core.Queue;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -19,7 +21,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wonderland.message.publisher.config.Topics;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.UUID;
 
 @RestController
 public class MessageResource {
@@ -40,7 +44,22 @@ public class MessageResource {
     public String sendMessage(@RequestParam(required = false, defaultValue = "messages") String topic,
                               @PathVariable String from, @PathVariable String to, @RequestBody String body) {
         try {
-            rabbitTemplate.convertAndSend(topic, to, body);
+            var messageProperties = new MessageProperties();
+            messageProperties.setMessageId(UUID.randomUUID().toString());
+            messageProperties.setAppId("wonderland.message-publisher");
+            messageProperties.setContentType(MessageProperties.CONTENT_TYPE_JSON);
+            messageProperties.setCorrelationId(UUID.randomUUID().toString());
+            messageProperties.setReceivedExchange(topic);
+            messageProperties.setReceivedRoutingKey(to);
+            messageProperties.setDeliveryMode(MessageDeliveryMode.PERSISTENT);
+            messageProperties.setReceivedDeliveryMode(MessageDeliveryMode.PERSISTENT);
+            messageProperties.setHeader("class-path", "yo.yo");
+            var message = new Message("""
+                    {
+                        "text": "%s"
+                    }
+                    """.formatted(body).getBytes(StandardCharsets.UTF_8), messageProperties);
+            rabbitTemplate.send(topic, to, message);
             var sendTime = Instant.now();
             var messageSentEvent = MessageSentEvent.builder()
                     .body(body)

@@ -6,12 +6,10 @@ import 'package:stomp_dart_client/stomp_frame.dart';
 import 'dancer_chat_event.dart';
 import 'dancer_chat_state.dart';
 
-class DancePartnerMatchBloc
-    extends Bloc<MatchedDancerChatEvent, DancerChatState> {
-
+class DancerChatBloc extends Bloc<DancerChatEvent, DancerChatState> {
   late final RabbitMqWebSocketStompChatClient chatClient;
 
-  DancePartnerMatchBloc(String thisDancerName)
+  DancerChatBloc(String thisDancerName)
       : super(DancerChatState.withThisDancerName(thisDancerName)) {
     on<MessagesLoadedEvent>((event, emit) {
       emit(state.loaded(event.chatParticipant, event.loadedMassages));
@@ -28,6 +26,6 @@ class DancePartnerMatchBloc
   }
 
   void handleMessages(StompFrame stompFrame) {
-    print("bmd message received is: $stompFrame");
+    print("bmd message received is: ${stompFrame.body} ${stompFrame.headers}");
   }
 }

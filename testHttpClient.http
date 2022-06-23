@@ -16,4 +16,4 @@ POST http://192.168.1.188:9531/v1/chat/tom/queues
 POST http://localhost:9566/prepare/then/send/message/jlo/taylor?topic=messages
 Content-Type: application/text
 
-tom's message to taylor through messages yes
+yo yo

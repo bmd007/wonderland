@@ -11,7 +11,7 @@ class RabbitMqWebSocketStompChatClient {
 
     var config = StompConfig(
         url: 'ws://192.168.1.188:15674/ws',
-        beforeConnect: () async => print("before connect"),
+        // beforeConnect: () async => print("before connect"),
         onUnhandledFrame: (dynamic onUnhandledFrame) =>
             print('onUnhandledFrame $onUnhandledFrame'),
         onUnhandledMessage: (dynamic onUnhandledMessage) =>
@@ -26,7 +26,7 @@ class RabbitMqWebSocketStompChatClient {
         onStompError: (dynamic error) =>
             print("stomp error ${error.toString()}"),
         onWebSocketError: (dynamic error) => print(error.toString()),
-        onDebugMessage: (dynamic message) => print('debug message $message'),
+        // onDebugMessage: (dynamic message) => print('debug message $message'),
         onWebSocketDone: () => print('web socket done'),
         onDisconnect: (dynamic stopFrame) => print('disconnected $stopFrame'));
     stompClient = StompClient(config: config);

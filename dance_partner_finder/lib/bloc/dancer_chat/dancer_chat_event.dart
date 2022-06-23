@@ -2,11 +2,11 @@ import 'package:equatable/equatable.dart';
 
 import 'chat_message.dart';
 
-abstract class MatchedDancerChatEvent extends Equatable {
-  const MatchedDancerChatEvent();
+abstract class DancerChatEvent extends Equatable {
+  const DancerChatEvent();
 }
 
-class MessagesLoadedEvent extends MatchedDancerChatEvent {
+class MessagesLoadedEvent extends DancerChatEvent {
   final String chatParticipant;
   final List<ChatMessage> loadedMassages;
   const MessagesLoadedEvent(this.chatParticipant, this.loadedMassages);
@@ -15,7 +15,7 @@ class MessagesLoadedEvent extends MatchedDancerChatEvent {
   List<Object?> get props => [chatParticipant, loadedMassages];
 }
 
-class MessageLoadedEvent extends MatchedDancerChatEvent {
+class MessageLoadedEvent extends DancerChatEvent {
   final String chatParticipant;
   final ChatMessage loadedMassage;
 
@@ -25,7 +25,7 @@ class MessageLoadedEvent extends MatchedDancerChatEvent {
   List<Object?> get props => [chatParticipant, loadedMassage];
 }
 
-class StompConnectionReadyEvent extends MatchedDancerChatEvent {
+class StompConnectionReadyEvent extends DancerChatEvent {
   const StompConnectionReadyEvent();
 
   @override
