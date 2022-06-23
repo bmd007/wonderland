@@ -14,9 +14,21 @@ class DancerChatWidget extends StatelessWidget {
       builder: (context, state) {
         var bloc = context.watch<DancerMatchAndChatBloc>();
         return Card(
-            child: TextButton(
-                onPressed: () => bloc.add(BackToMatchesEvent()),
-                child: Text(state.toString())));
+          child: Column(
+            children: [
+              ListTile(
+                onLongPress: () {},
+                onTap: () => bloc.add(BackToMatchesEvent()),
+                leading: CircleAvatar(
+                    backgroundImage: AssetImage(
+                        'images/${bloc.state.currentlyChattingWith}.png')),
+                title: Text(bloc.state.currentlyChattingWith),
+              ),
+              Image(image: AssetImage(
+                  'images/${bloc.state.currentlyChattingWith}.png'))
+            ],
+          ),
+        );
       },
     );
   }
