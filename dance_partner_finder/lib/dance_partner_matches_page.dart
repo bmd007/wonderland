@@ -1,7 +1,9 @@
+import 'package:dance_partner_finder/dancer_chat_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bloc/dancer_match_and_chat/dancer_chat_bloc.dart';
+import 'bloc/dancer_match_and_chat/dancer_chat_event.dart';
 import 'bloc/dancer_match_and_chat/dancer_chat_state.dart';
 
 class DancePartnerMatchesWidget extends StatelessWidget {
@@ -18,15 +20,20 @@ class DancePartnerMatchesWidget extends StatelessWidget {
       ],
       child: BlocBuilder<DancerMatchAndChatBloc, DancerMatchAndChatState>(
         builder: (context, state) {
-          return state.isLoading
-              ? Image.asset('images/wait.png')
-              : ListView(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  children: state.chatHistory.keys
-                      .map((matchedDancerName) => DancePartnerMatchWidget(
-                          matchedDancerName: matchedDancerName,
-                          lastMessage: state.lastMessage(matchedDancerName)))
-                      .toList());
+          if (state.isLoading) {
+            return Image.asset('images/wait.png');
+          } else if (state.isChattingWithSomeOne()) {
+            return const DancerChatWidget();
+          }
+          return ListView(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              children: state.chatHistory.keys
+                  .map(
+                    (matchedDancerName) => DancePartnerMatchWidget(
+                        matchedDancerName: matchedDancerName,
+                        lastMessage: state.lastMessage(matchedDancerName)),
+                  )
+                  .toList());
         },
       ),
     );
@@ -37,8 +44,7 @@ class DancePartnerMatchWidget extends StatelessWidget {
   final String matchedDancerName;
   final String lastMessage;
 
-  const DancePartnerMatchWidget(
-      {super.key, required this.matchedDancerName, required this.lastMessage});
+  const DancePartnerMatchWidget({super.key, required this.matchedDancerName, required this.lastMessage});
 
   TextStyle? _getTextStyle(bool newMessageAvailable) {
     if (newMessageAvailable) {
@@ -55,10 +61,11 @@ class DancePartnerMatchWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var bloc = context.watch<DancerMatchAndChatBloc>();
     return Card(
       child: ListTile(
         onLongPress: () {},
-        onTap: () {},
+        onTap: () => bloc.add(WantedToChatEvent(matchedDancerName)),
         leading: CircleAvatar(
             backgroundImage: AssetImage('images/$matchedDancerName.png')),
         title: Column(children: [

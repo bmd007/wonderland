@@ -64,7 +64,6 @@ class DancePartnerSelectWidget extends StatelessWidget {
                 height: 40,
                 width: 40,
               ),
-
             ],
             height: 40,
           ) : null;

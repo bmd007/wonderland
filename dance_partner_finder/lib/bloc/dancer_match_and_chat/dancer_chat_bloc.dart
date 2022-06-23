@@ -22,6 +22,12 @@ class DancerMatchAndChatBloc
     on<MatchFoundEvent>((event, emit) {
       emit(state.addMatch(event.matchName));
     });
+    on<WantedToChatEvent>((event, emit) {
+      emit(state.chattingWith(event.chatParticipant));
+    });
+    on<BackToMatchesEvent>((event, emit) {
+      emit(state.noMoreChatting());
+    });
 
     http.post(Uri.parse(
         'http://192.168.1.188:9531/v1/chat/$thisDancerName/queues')); //todo this call doesn't really belong here
@@ -37,6 +43,5 @@ class DancerMatchAndChatBloc
   void handleMessages(StompFrame stompFrame) {
     print("bmd message received is: ${stompFrame.body} ${stompFrame.headers}");
   }
-
 
 }

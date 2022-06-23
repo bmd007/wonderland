@@ -35,9 +35,21 @@ class MatchFoundEvent extends DancerChatAndMatchEvent {
   List<Object?> get props => [matchName];
 }
 
-class StompConnectionReadyEvent extends DancerChatAndMatchEvent {
-  const StompConnectionReadyEvent();
+class WantedToChatEvent extends DancerChatAndMatchEvent {
+  final String chatParticipant;
 
+  const WantedToChatEvent(this.chatParticipant);
+
+  @override
+  List<Object?> get props => [chatParticipant];
+}
+
+class BackToMatchesEvent extends DancerChatAndMatchEvent {
+  @override
+  List<Object?> get props => ["ignore"];
+}
+
+class StompConnectionReadyEvent extends DancerChatAndMatchEvent {
   @override
   List<Object?> get props => ['ignore'];
 }
