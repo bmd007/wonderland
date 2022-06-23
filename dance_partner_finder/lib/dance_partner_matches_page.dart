@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'bloc/dancer_chat/dancer_chat_bloc.dart';
-import 'bloc/dancer_chat/dancer_chat_state.dart';
+import 'bloc/dancer_match_and_chat/dancer_chat_bloc.dart';
+import 'bloc/dancer_match_and_chat/dancer_chat_state.dart';
 
 class DancePartnerMatchesWidget extends StatelessWidget {
   final String thisDancerName;
