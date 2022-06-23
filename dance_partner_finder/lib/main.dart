@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context1) => DancePartnerFinderBloc()),
+        BlocProvider(create: (context) => DancePartnerFinderBloc()),
       ],
       child: MaterialApp(
         title: 'Dance Partner Finder',

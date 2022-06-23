@@ -134,6 +134,7 @@ public class DancePartnerFinderResource {
                 .uri("api/match/%s".formatted(wonderSeekerName))
                 .retrieve()
                 .bodyToFlux(WonderSeekerMatchesDto.class)
+                .log()
                 .flatMapIterable(matchesDto -> matchesDto.matchHistory().keySet());
     }
 

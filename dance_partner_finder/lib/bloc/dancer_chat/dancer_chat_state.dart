@@ -2,40 +2,59 @@ import 'package:equatable/equatable.dart';
 
 import 'chat_message.dart';
 
-class DancerChatState extends Equatable {
+class DancerMatchAndChatState extends Equatable {
   final Map<String, List<ChatMessage>> chatHistory;
   final bool isLoading;
   final String thisDancerName; //todo might not be needed as a state here
 
-  const DancerChatState(
+  const DancerMatchAndChatState(
       this.isLoading, this.chatHistory, this.thisDancerName);
 
-  static DancerChatState withThisDancerName(thisDancerName) {
-    return DancerChatState(
+  static DancerMatchAndChatState withThisDancerName(thisDancerName) {
+    return DancerMatchAndChatState(
         true, const <String, List<ChatMessage>>{}, thisDancerName);
   }
 
-  DancerChatState loading() {
-    return DancerChatState(true, chatHistory, thisDancerName);
+  DancerMatchAndChatState loading() {
+    return DancerMatchAndChatState(true, chatHistory, thisDancerName);
   }
 
-  DancerChatState loaded(
+  DancerMatchAndChatState loaded(
       String chatParticipant, List<ChatMessage> loadedMassages) {
-    chatHistory.update(chatParticipant,
-        (value) => value.followedBy(loadedMassages).toList(growable: false),
-        ifAbsent: () => loadedMassages);
-    return DancerChatState(false, chatHistory, thisDancerName);
+    var newEntry = MapEntry(
+        chatParticipant,
+        loadedMassages
+            .followedBy(chatHistory[chatParticipant] ?? [])
+            .toList(growable: false));
+    var newChatHistoryEntries = chatHistory.entries
+        .where((element) => element.key != chatParticipant)
+        .followedBy([newEntry]);
+    var state = DancerMatchAndChatState(
+        false, Map.fromEntries(newChatHistoryEntries), thisDancerName);
+    return state;
   }
 
   @override
   List<Object> get props => [isLoading, chatHistory, thisDancerName];
 
-  DancerChatState addMessage(
+  DancerMatchAndChatState addMessage(
       String chatParticipant, ChatMessage loadedMassage) {
-    chatHistory.update(chatParticipant,
-        (value) => value.followedBy([loadedMassage]).toList(growable: false),
-        ifAbsent: () => [loadedMassage].toList(growable: false));
-    return DancerChatState(false, chatHistory, thisDancerName);
+    return loaded(chatParticipant, [loadedMassage]);
+  }
+
+  DancerMatchAndChatState addMatch(String chatParticipant) {
+    return loaded(chatParticipant, []);
+  }
+
+  String lastMessage(String matchedDancerName) {
+    if (!chatHistory.containsKey(matchedDancerName)) {
+      return "no such a match";
+    }
+    var chats = chatHistory[matchedDancerName] ?? [];
+    if(chats.isEmpty){
+      return "no text yet";
+    }
+    return chats.last.text;
   }
 
   //todo implement removing messages related to a specific person
