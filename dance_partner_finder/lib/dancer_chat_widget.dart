@@ -90,7 +90,7 @@ class DancerChatWidget extends StatelessWidget {
         Align(
           alignment: Alignment.bottomLeft,
           child: Container(
-            padding: const EdgeInsets.only(left: 10, bottom: 10, top: 30),
+            padding: const EdgeInsets.only(left: 10, bottom: 10, top: 10),
             height: 60,
             width: double.infinity,
             color: Colors.white,
