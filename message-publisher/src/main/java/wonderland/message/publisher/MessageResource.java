@@ -53,12 +53,14 @@ public class MessageResource {
             messageProperties.setReceivedRoutingKey(to);
             messageProperties.setDeliveryMode(MessageDeliveryMode.PERSISTENT);
             messageProperties.setReceivedDeliveryMode(MessageDeliveryMode.PERSISTENT);
-            messageProperties.setHeader("class-path", "yo.yo");
+            messageProperties.setHeader("type", "MessageIsSentToYouEvent");
+            messageProperties.setHeader("version", "1");
             var message = new Message("""
                     {
-                        "text": "%s"
+                        "content": "%s",
+                        "sender": "%s"
                     }
-                    """.formatted(body).getBytes(StandardCharsets.UTF_8), messageProperties);
+                    """.formatted(body, from).getBytes(StandardCharsets.UTF_8), messageProperties);
             rabbitTemplate.send(topic, to, message);
             var sendTime = Instant.now();
             var messageSentEvent = MessageSentEvent.builder()

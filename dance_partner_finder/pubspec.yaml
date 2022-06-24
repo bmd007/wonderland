@@ -40,6 +40,7 @@ dependencies:
   rxdart: ^0.27.3
   location: ^4.4.0
   http: ^0.13.4
+  dio: ^4.0.6
   web_socket_channel: ^2.2.0
   universal_io: ^2.0.4
   stomp_dart_client: ^0.4.4

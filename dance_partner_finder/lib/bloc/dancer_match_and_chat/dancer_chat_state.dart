@@ -29,7 +29,7 @@ class DancerMatchAndChatState extends Equatable {
     if (!chatHistory.containsKey(chatParticipant) ||
         (chatHistory.containsKey(chatParticipant) && chatHistory[chatParticipant]!.isEmpty)) {
       newMessageListForParticipant
-          .add(ChatMessage("star of your conversation with $chatParticipant", MessageType.systemic, _NO_ONE));
+          .add(ChatMessage("start of your conversation with $chatParticipant", MessageType.systemic, _NO_ONE));
     } else {
       newMessageListForParticipant.addAll(chatHistory[chatParticipant]!);
     }

@@ -76,6 +76,16 @@ spring:
   config:
     activate:
       on-profile: local
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:60665"
+            allowedHeaders: "*"
+            allowedMethods:
+              - GET
+              - POST
 
 kafka:
   topic:

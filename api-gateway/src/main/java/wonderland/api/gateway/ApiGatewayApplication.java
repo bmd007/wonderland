@@ -22,6 +22,12 @@ public class ApiGatewayApplication {
                                         "/create/queue/for/${username}"))
                         .uri("lb://message-publisher")
                 )
+                .route(r -> r.path("/v1/chat/message/send/**")
+                        .filters(gatewayFilterSpec ->
+                                gatewayFilterSpec.rewritePath("/v1/chat/message/send/(?<from>\\w+)/(?<to>\\w+)",
+                                        "/send/message/${from}/${to}"))
+                        .uri("lb://message-publisher")
+                )
                 .build();
     }
 }

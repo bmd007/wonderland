@@ -1,6 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:dance_partner_finder/client/api_gateway_client_holder.dart';
+import 'package:dance_partner_finder/client/api_gateway_rsocket_client.dart';
+import 'package:dance_partner_finder/client/message_is_sent_to_you_event.dart';
 import 'package:dance_partner_finder/client/rabbitmq_websocket_stomp_chat_client.dart';
+import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:stomp_dart_client/stomp_frame.dart';
 
@@ -32,9 +35,16 @@ class DancerMatchAndChatBloc
     on<MessageReceivedEvent>((event, emit) {
       emit(state.addMessage(event.massage));
     });
-    on<DancerSendMessageEvent>((event, emit) {
-      //todo send to backend as request and emit upon 200
-      emit(state.addMessage(event.massage));
+    on<DancerSendMessageEvent>((event, emit) async {
+      Response response = await ClientHolder.apiGatewayHttpClient.post(
+          '/v1/chat/message/send/${state.thisDancerName}/${event.massage.participantName}');
+      // http.Response response = await http.post(Uri.parse(
+      //     'http://192.168.1.188:9531/v1/chat/message/send/${state.thisDancerName}/${event.massage.participantName}'));
+      if (response.statusCode == 200) {
+        emit(state.addMessage(event.massage));
+      } else {
+        print(response.toString());
+      }
     });
 
     http.post(Uri.parse(
@@ -42,16 +52,13 @@ class DancerMatchAndChatBloc
 
     ClientHolder.client.matchStreams(state.thisDancerName).forEach((match) => add(MatchFoundEvent(match!)));
 
-    chatClient = RabbitMqWebSocketStompChatClient(thisDancerName, handleMessages);
-
-    add(const DancerSendMessageEvent(ChatMessage("text to taylor", MessageType.sent, "taylor")));
-    add(const DancerSendMessageEvent(ChatMessage("text to taylor2", MessageType.sent, "taylor")));
-    add(const DancerSendMessageEvent(ChatMessage("text to taylor3", MessageType.sent, "taylor")));
-    add(const MessageReceivedEvent(ChatMessage("text from taylor", MessageType.received, "taylor")));
+    chatClient = RabbitMqWebSocketStompChatClient(thisDancerName, (StompFrame stompFrame) {
+      print("bmd message received is: ${stompFrame.body} ${stompFrame.headers}");
+      if (stompFrame.headers.containsKey("type") && stompFrame.headers["type"] == "MessageIsSentToYouEvent") {
+        var messageIsSentToYouEvent = MessageIsSentToYouEvent.fromJson(stompFrame.body!);
+        add(MessageReceivedEvent(
+            ChatMessage(messageIsSentToYouEvent.content, MessageType.received, messageIsSentToYouEvent.sender)));
+      }
+    });
   }
-
-  void handleMessages(StompFrame stompFrame) {
-    print("bmd message received is: ${stompFrame.body} ${stompFrame.headers}");
-  }
-
 }
