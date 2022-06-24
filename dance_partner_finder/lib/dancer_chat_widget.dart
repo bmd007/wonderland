@@ -83,14 +83,14 @@ class DancerChatWidget extends StatelessWidget {
         ListView.builder(
           itemCount: chatBloc.state.chatHistory[chatBloc.state.currentlyChattingWith]?.length ?? 0,
           shrinkWrap: true,
-          padding: const EdgeInsets.only(top: 10, bottom: 10),
+          padding: const EdgeInsets.only(top: 10, bottom: 60),
           physics: const BouncingScrollPhysics(),
           itemBuilder: (context, index) => _messageWidgetBuilder(chatBloc, index),
         ),
         Align(
           alignment: Alignment.bottomLeft,
           child: Container(
-            padding: const EdgeInsets.only(left: 10, bottom: 10, top: 10),
+            padding: const EdgeInsets.only(left: 10, bottom: 10, top: 30),
             height: 60,
             width: double.infinity,
             color: Colors.white,
