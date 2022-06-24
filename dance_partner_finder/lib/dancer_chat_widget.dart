@@ -7,13 +7,15 @@ import 'bloc/dancer_match_and_chat/dancer_chat_bloc.dart';
 import 'bloc/dancer_match_and_chat/dancer_chat_state.dart';
 
 class DancerChatWidget extends StatelessWidget {
-  const DancerChatWidget({Key? key}) : super(key: key);
+  final _messageTypingController = TextEditingController();
+
+  DancerChatWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<DancerMatchAndChatBloc, DancerMatchAndChatState>(
       builder: (context, state) {
-        var bloc = context.watch<DancerMatchAndChatBloc>();
+        var matchAndChatBloc = context.watch<DancerMatchAndChatBloc>();
         return Scaffold(
           appBar: AppBar(
             elevation: 0,
@@ -25,7 +27,7 @@ class DancerChatWidget extends StatelessWidget {
                 child: Row(
                   children: <Widget>[
                     IconButton(
-                      onPressed: () => bloc.add(BackToMatchesEvent()),
+                      onPressed: () => matchAndChatBloc.add(BackToMatchesEvent()),
                       icon: const Icon(
                         Icons.arrow_back,
                         color: Colors.black,
@@ -35,7 +37,7 @@ class DancerChatWidget extends StatelessWidget {
                       width: 2,
                     ),
                     CircleAvatar(
-                      backgroundImage: AssetImage('images/${bloc.state.currentlyChattingWith}.png'),
+                      backgroundImage: AssetImage('images/${matchAndChatBloc.state.currentlyChattingWith}.png'),
                       maxRadius: 20,
                     ),
                     const SizedBox(
@@ -47,7 +49,7 @@ class DancerChatWidget extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Text(
-                            bloc.state.currentlyChattingWith,
+                            matchAndChatBloc.state.currentlyChattingWith,
                             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                           ),
                           const SizedBox(
@@ -69,7 +71,7 @@ class DancerChatWidget extends StatelessWidget {
               ),
             ),
           ),
-          body: chatBox(bloc),
+          body: chatBox(matchAndChatBloc),
         );
       },
     );
@@ -113,9 +115,10 @@ class DancerChatWidget extends StatelessWidget {
                 const SizedBox(
                   width: 15,
                 ),
-                const Expanded(
+                Expanded(
                   child: TextField(
-                    decoration: InputDecoration(
+                    controller: _messageTypingController,
+                    decoration: const InputDecoration(
                         hintText: "Write message...",
                         hintStyle: TextStyle(color: Colors.black54),
                         border: InputBorder.none),
@@ -125,7 +128,8 @@ class DancerChatWidget extends StatelessWidget {
                   width: 15,
                 ),
                 FloatingActionButton(
-                  onPressed: () {},
+                  onPressed: () => chatBloc.add(DancerSendMessageEvent(ChatMessage(
+                      _messageTypingController.text, MessageType.sent, chatBloc.state.currentlyChattingWith))),
                   backgroundColor: Colors.blue,
                   elevation: 0,
                   child: const Icon(

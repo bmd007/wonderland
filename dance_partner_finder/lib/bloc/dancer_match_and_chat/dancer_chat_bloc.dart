@@ -18,7 +18,7 @@ class DancerMatchAndChatBloc
       emit(state.loaded(event.chatParticipant, event.loadedMassages));
     });
     on<MessageLoadedEvent>((event, emit) {
-      emit(state.addMessage(event.chatParticipant, event.loadedMassage));
+      emit(state.addMessage(event.loadedMassage));
     });
     on<MatchFoundEvent>((event, emit) {
       emit(state.addMatch(event.matchName));
@@ -30,26 +30,24 @@ class DancerMatchAndChatBloc
       emit(state.noMoreChatting());
     });
     on<MessageReceivedEvent>((event, emit) {
-      emit(state.addMessage(event.senderName, event.massage));
+      emit(state.addMessage(event.massage));
     });
     on<DancerSendMessageEvent>((event, emit) {
-      emit(state.addMessage(event.receiverName, event.massage));
+      //todo send to backend as request and emit upon 200
+      emit(state.addMessage(event.massage));
     });
 
     http.post(Uri.parse(
         'http://192.168.1.188:9531/v1/chat/$thisDancerName/queues')); //todo this call doesn't really belong here
 
-    ClientHolder.client
-        .matchStreams(state.thisDancerName)
-        .forEach((match) => add(MatchFoundEvent(match!)));
+    ClientHolder.client.matchStreams(state.thisDancerName).forEach((match) => add(MatchFoundEvent(match!)));
 
-    chatClient =
-        RabbitMqWebSocketStompChatClient(thisDancerName, handleMessages);
+    chatClient = RabbitMqWebSocketStompChatClient(thisDancerName, handleMessages);
 
-    add(const DancerSendMessageEvent("taylor", ChatMessage("text to taylor", MessageType.sent, "taylor")));
-    add(const DancerSendMessageEvent("taylor", ChatMessage("text to taylor2", MessageType.sent, "taylor")));
-    add(const DancerSendMessageEvent("taylor", ChatMessage("text to taylor3", MessageType.sent, "taylor")));
-    add(const MessageReceivedEvent("taylor", ChatMessage("text from taylor", MessageType.received, "taylor")));
+    add(const DancerSendMessageEvent(ChatMessage("text to taylor", MessageType.sent, "taylor")));
+    add(const DancerSendMessageEvent(ChatMessage("text to taylor2", MessageType.sent, "taylor")));
+    add(const DancerSendMessageEvent(ChatMessage("text to taylor3", MessageType.sent, "taylor")));
+    add(const MessageReceivedEvent(ChatMessage("text from taylor", MessageType.received, "taylor")));
   }
 
   void handleMessages(StompFrame stompFrame) {

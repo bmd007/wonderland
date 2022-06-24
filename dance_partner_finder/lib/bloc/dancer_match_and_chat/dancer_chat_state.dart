@@ -56,9 +56,8 @@ class DancerMatchAndChatState extends Equatable {
   @override
   List<Object> get props => [isLoading, chatHistory, thisDancerName, currentlyChattingWith];
 
-  DancerMatchAndChatState addMessage(
-      String chatParticipant, ChatMessage loadedMassage) {
-    return loaded(chatParticipant, [loadedMassage]);
+  DancerMatchAndChatState addMessage(ChatMessage loadedMassage) {
+    return loaded(loadedMassage.participantName, [loadedMassage]);
   }
 
   DancerMatchAndChatState addMatch(String chatParticipant) {
@@ -75,6 +74,5 @@ class DancerMatchAndChatState extends Equatable {
     }
     return chats.last.text;
   }
-
   //todo implement removing messages related to a specific person
 }

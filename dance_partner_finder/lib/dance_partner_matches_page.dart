@@ -23,7 +23,7 @@ class DancePartnerMatchesWidget extends StatelessWidget {
           if (state.isLoading) {
             return Image.asset('images/wait.png');
           } else if (state.isChattingWithSomeOne()) {
-            return const DancerChatWidget();
+            return DancerChatWidget();
           }
           return ListView(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
