@@ -25,20 +25,20 @@ class DancerMatchAndChatState extends Equatable {
 
   DancerMatchAndChatState loaded(
       String chatParticipant, List<ChatMessage> loadedMassages) {
-    var newEntry = MapEntry(
-        chatParticipant,
-        loadedMassages
-            .followedBy(chatHistory[chatParticipant] ?? [])
-            .toList(growable: false));
-    var newChatHistoryEntries = chatHistory.entries
-        .where((element) => element.key != chatParticipant)
-        .followedBy([newEntry]);
-    var state = DancerMatchAndChatState(
-        false,
-        Map.fromEntries(newChatHistoryEntries),
-        thisDancerName,
-        currentlyChattingWith);
-    return state;
+    List<ChatMessage> newMessageListForParticipant = List.empty(growable: true);
+    if (!chatHistory.containsKey(chatParticipant) ||
+        (chatHistory.containsKey(chatParticipant) && chatHistory[chatParticipant]!.isEmpty)) {
+      newMessageListForParticipant
+          .add(ChatMessage("star of your conversation with $chatParticipant", MessageType.systemic, _NO_ONE));
+    } else {
+      newMessageListForParticipant.addAll(chatHistory[chatParticipant]!);
+    }
+    newMessageListForParticipant.addAll(loadedMassages);
+    var newEntry = MapEntry(chatParticipant, newMessageListForParticipant.toList(growable: false));
+    var newChatHistoryEntries =
+        chatHistory.entries.where((element) => element.key != chatParticipant).followedBy([newEntry]);
+    return DancerMatchAndChatState(
+        false, Map.fromEntries(newChatHistoryEntries), thisDancerName, currentlyChattingWith);
   }
 
   bool isChattingWithSomeOne() {
@@ -46,8 +46,7 @@ class DancerMatchAndChatState extends Equatable {
   }
 
   DancerMatchAndChatState chattingWith(String chatParticipant) {
-    return DancerMatchAndChatState(
-        false, chatHistory, thisDancerName, chatParticipant);
+    return DancerMatchAndChatState(false, chatHistory, thisDancerName, chatParticipant);
   }
 
   DancerMatchAndChatState noMoreChatting() {

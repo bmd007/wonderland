@@ -26,6 +26,26 @@ class MessageLoadedEvent extends DancerChatAndMatchEvent {
   List<Object?> get props => [chatParticipant, loadedMassage];
 }
 
+class MessageReceivedEvent extends DancerChatAndMatchEvent {
+  final String senderName;
+  final ChatMessage massage;
+
+  const MessageReceivedEvent(this.senderName, this.massage);
+
+  @override
+  List<Object?> get props => [senderName, massage];
+}
+
+class DancerSendMessageEvent extends DancerChatAndMatchEvent {
+  final String receiverName;
+  final ChatMessage massage;
+
+  const DancerSendMessageEvent(this.receiverName, this.massage);
+
+  @override
+  List<Object?> get props => [receiverName, massage];
+}
+
 class MatchFoundEvent extends DancerChatAndMatchEvent {
   final String matchName;
 

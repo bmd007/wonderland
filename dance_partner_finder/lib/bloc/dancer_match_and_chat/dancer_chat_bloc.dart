@@ -4,6 +4,7 @@ import 'package:dance_partner_finder/client/rabbitmq_websocket_stomp_chat_client
 import 'package:http/http.dart' as http;
 import 'package:stomp_dart_client/stomp_frame.dart';
 
+import 'chat_message.dart';
 import 'dancer_chat_event.dart';
 import 'dancer_chat_state.dart';
 
@@ -28,6 +29,12 @@ class DancerMatchAndChatBloc
     on<BackToMatchesEvent>((event, emit) {
       emit(state.noMoreChatting());
     });
+    on<MessageReceivedEvent>((event, emit) {
+      emit(state.addMessage(event.senderName, event.massage));
+    });
+    on<DancerSendMessageEvent>((event, emit) {
+      emit(state.addMessage(event.receiverName, event.massage));
+    });
 
     http.post(Uri.parse(
         'http://192.168.1.188:9531/v1/chat/$thisDancerName/queues')); //todo this call doesn't really belong here
@@ -38,6 +45,11 @@ class DancerMatchAndChatBloc
 
     chatClient =
         RabbitMqWebSocketStompChatClient(thisDancerName, handleMessages);
+
+    add(const DancerSendMessageEvent("taylor", ChatMessage("text to taylor", MessageType.sent, "taylor")));
+    add(const DancerSendMessageEvent("taylor", ChatMessage("text to taylor2", MessageType.sent, "taylor")));
+    add(const DancerSendMessageEvent("taylor", ChatMessage("text to taylor3", MessageType.sent, "taylor")));
+    add(const MessageReceivedEvent("taylor", ChatMessage("text from taylor", MessageType.received, "taylor")));
   }
 
   void handleMessages(StompFrame stompFrame) {
