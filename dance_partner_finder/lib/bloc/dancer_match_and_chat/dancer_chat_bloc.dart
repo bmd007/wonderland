@@ -34,6 +34,7 @@ class DancerMatchAndChatBloc
       emit(state.addMessage(event.massage));
     });
     on<DancerSendMessageEvent>((event, emit) async {
+      //todo some sort of refactoring here if possible!?
       Response response = await ClientHolder.apiGatewayHttpClient
           .post('/v1/chat/messages', data: {
             "sender": state.thisDancerName,
@@ -55,7 +56,6 @@ class DancerMatchAndChatBloc
     ClientHolder.client.matchStreams(state.thisDancerName).forEach((match) => add(MatchFoundEvent(match!)));
 
     chatClient = RabbitMqWebSocketStompChatClient(thisDancerName, (StompFrame stompFrame) {
-      print("bmd message received is: ${stompFrame.body} ${stompFrame.headers}");
       if (stompFrame.headers.containsKey("type") && stompFrame.headers["type"] == "MessageIsSentToYouEvent") {
         var messageIsSentToYouEvent = MessageIsSentToYouEvent.fromJson(stompFrame.body!);
         add(MessageReceivedEvent(
