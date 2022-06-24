@@ -5,6 +5,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 @SpringBootApplication
 public class ApiGatewayApplication {
@@ -13,21 +18,33 @@ public class ApiGatewayApplication {
         SpringApplication.run(ApiGatewayApplication.class, args);
     }
 
+
+    @Profile("local")
+    @Bean
+    public CorsWebFilter corsWebFilter() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowCredentials(false);
+        corsConfiguration.addAllowedHeader("*");
+        //corsConfiguration.setAllowedOriginPatterns(List.of("http://localhost:[0-9]+"));
+        corsConfiguration.addAllowedMethod("*");
+        corsConfiguration.addAllowedOrigin("*");
+        corsConfiguration.addExposedHeader(HttpHeaders.SET_COOKIE);
+        UrlBasedCorsConfigurationSource corsConfigurationSource = new UrlBasedCorsConfigurationSource();
+        corsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+        return new CorsWebFilter(corsConfigurationSource);
+    }
+
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route(r -> r.path("/v1/chat/*/queues")
                         .filters(gatewayFilterSpec ->
                                 gatewayFilterSpec.rewritePath("/v1/chat/(?<username>\\w+)/queues",
-                                        "/create/queue/for/${username}"))
+                                        "/create/queue/for/${username}")
+                        )
                         .uri("lb://message-publisher")
                 )
-                .route(r -> r.path("/v1/chat/message/send/**")
-                        .filters(gatewayFilterSpec ->
-                                gatewayFilterSpec.rewritePath("/v1/chat/message/send/(?<from>\\w+)/(?<to>\\w+)",
-                                        "/send/message/${from}/${to}"))
-                        .uri("lb://message-publisher")
-                )
+                .route(r -> r.path("/v1/chat/messages").uri("lb://message-publisher"))
                 .build();
     }
 }

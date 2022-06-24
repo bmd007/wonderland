@@ -40,9 +40,16 @@ public class MessageResource {
         this.kafkaTemplate = kafkaTemplate;
     }
 
+    @PostMapping("/v1/chat/messages")
+    public String sendMessage(@RequestBody SendMessageRequestBody requestBody){
+        return  sendMessage("messages", requestBody.sender(), requestBody.receiver(), requestBody.content());
+    }
+
     @PostMapping("/send/message/{from}/{to}")
     public String sendMessage(@RequestParam(required = false, defaultValue = "messages") String topic,
                               @PathVariable String from, @PathVariable String to, @RequestBody String body) {
+        LOGGER.info("sending {}, from {} to {}", body, from, to);
+
         try {
             var messageProperties = new MessageProperties();
             messageProperties.setMessageId(UUID.randomUUID().toString());

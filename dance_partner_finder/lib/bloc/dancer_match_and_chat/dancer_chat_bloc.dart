@@ -1,10 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:dance_partner_finder/client/api_gateway_client_holder.dart';
-import 'package:dance_partner_finder/client/api_gateway_rsocket_client.dart';
 import 'package:dance_partner_finder/client/message_is_sent_to_you_event.dart';
 import 'package:dance_partner_finder/client/rabbitmq_websocket_stomp_chat_client.dart';
 import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
 import 'package:stomp_dart_client/stomp_frame.dart';
 
 import 'chat_message.dart';
@@ -36,10 +34,12 @@ class DancerMatchAndChatBloc
       emit(state.addMessage(event.massage));
     });
     on<DancerSendMessageEvent>((event, emit) async {
-      Response response = await ClientHolder.apiGatewayHttpClient.post(
-          '/v1/chat/message/send/${state.thisDancerName}/${event.massage.participantName}');
-      // http.Response response = await http.post(Uri.parse(
-      //     'http://192.168.1.188:9531/v1/chat/message/send/${state.thisDancerName}/${event.massage.participantName}'));
+      Response response = await ClientHolder.apiGatewayHttpClient
+          .post('/v1/chat/messages', data: {
+            "sender": state.thisDancerName,
+            "receiver": event.massage.participantName,
+            "content": event.massage.text
+      });
       if (response.statusCode == 200) {
         emit(state.addMessage(event.massage));
       } else {
@@ -47,8 +47,10 @@ class DancerMatchAndChatBloc
       }
     });
 
-    http.post(Uri.parse(
-        'http://192.168.1.188:9531/v1/chat/$thisDancerName/queues')); //todo this call doesn't really belong here
+    ClientHolder.apiGatewayHttpClient
+        .post('/v1/chat/$thisDancerName/queues')
+        .asStream()
+        .forEach((element) => print(element)); //todo this call doesn't really belong here
 
     ClientHolder.client.matchStreams(state.thisDancerName).forEach((match) => add(MatchFoundEvent(match!)));
 

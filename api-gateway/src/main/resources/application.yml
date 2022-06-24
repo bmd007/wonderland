@@ -39,7 +39,7 @@ spring:
     server:
       port: 7022
       transport: websocket
-#      mapping-path: /rsocket
+  #      mapping-path: /rsocket
 
   config:
     import: optional:consul:localhost:8500
@@ -76,16 +76,6 @@ spring:
   config:
     activate:
       on-profile: local
-  cloud:
-    gateway:
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins: "http://localhost:60665"
-            allowedHeaders: "*"
-            allowedMethods:
-              - GET
-              - POST
 
 kafka:
   topic:
