@@ -84,7 +84,7 @@ class DancerChatWidget extends StatelessWidget {
           itemCount: chatBloc.state.chatHistory[chatBloc.state.currentlyChattingWith]?.length ?? 0,
           shrinkWrap: true,
           padding: const EdgeInsets.only(top: 10, bottom: 10),
-          physics: const NeverScrollableScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           itemBuilder: (context, index) => _messageWidgetBuilder(chatBloc, index),
         ),
         Align(
