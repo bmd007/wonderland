@@ -36,7 +36,7 @@ class DancerMatchAndChatBloc
       //todo some sort of refactoring here if possible!?
       await ClientHolder.apiGatewayHttpClient
           .post('/v1/chat/messages', data: {
-            "sender": state.thisDancerName,
+            "sender": thisDancerName,
             "receiver": event.massage.participantName,
             "content": event.massage.text
           })
@@ -48,12 +48,7 @@ class DancerMatchAndChatBloc
           });
     });
 
-    ClientHolder.apiGatewayHttpClient
-        .post('/v1/chat/$thisDancerName/queues')
-        .asStream()
-        .forEach((element) => print(element)); //todo this call doesn't really belong here
-
-    ClientHolder.client.matchStreams(state.thisDancerName).forEach((match) => add(MatchFoundEvent(match!)));
+    ClientHolder.client.matchStreams(thisDancerName).forEach((match) => add(MatchFoundEvent(match!)));
 
     chatClient = RabbitMqWebSocketStompChatClient(thisDancerName, (StompFrame stompFrame) {
       if (stompFrame.headers.containsKey("type") && stompFrame.headers["type"] == "MessageIsSentToYouEvent") {

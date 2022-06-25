@@ -5,19 +5,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'bloc/dancer_match_and_chat/dancer_chat_bloc.dart';
 import 'bloc/dancer_match_and_chat/dancer_chat_event.dart';
 import 'bloc/dancer_match_and_chat/dancer_chat_state.dart';
+import 'bloc/login/login_cubit.dart';
 
 class DancePartnerMatchesWidget extends StatelessWidget {
-  final String thisDancerName;
 
-  const DancePartnerMatchesWidget({super.key, required this.thisDancerName});
+  const DancePartnerMatchesWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-            create: (context) => DancerMatchAndChatBloc(thisDancerName))
-      ],
+    var loginCubit = context.watch<LoginCubit>();
+    return BlocProvider(
+      create: (context) => DancerMatchAndChatBloc(loginCubit.state.email),
       child: BlocBuilder<DancerMatchAndChatBloc, DancerMatchAndChatState>(
         builder: (context, state) {
           if (state.isLoading) {

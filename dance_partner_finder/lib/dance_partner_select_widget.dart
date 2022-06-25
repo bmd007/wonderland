@@ -1,42 +1,49 @@
+import 'package:dance_partner_finder/bloc/login/login_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bloc/dance_partner_finder/dance_partner_finder_bloc.dart';
 import 'bloc/dance_partner_finder/dance_partner_finder_event.dart';
+import 'bloc/dance_partner_finder/dance_partner_finder_state.dart';
 import 'dance_partner_matches_page.dart';
 
 class DancePartnerSelectWidget extends StatelessWidget {
   DancePartnerSelectWidget({Key? key}) : super(key: key);
 
-  final _thisDancerNamTextController = TextEditingController();
+  final _searchingRadiusTextController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    var dancerBloc = context.watch<DancePartnerFinderBloc>();
-    return Scaffold(
-      appBar: appBar(dancerBloc),
-      bottomNavigationBar: bottomNavigationBar(dancerBloc, context),
-      body: body(dancerBloc),
+    var loginCubit = context.watch<LoginCubit>();
+    return BlocProvider(
+      create: (context) => DancePartnerFinderBloc(loginCubit.state.email),
+      child: BlocBuilder<DancePartnerFinderBloc, DancePartnerFinderState>(
+        builder: (context, state) {
+          var dancerBloc = context.watch<DancePartnerFinderBloc>();
+          return Scaffold(
+            appBar: appBar(dancerBloc),
+            bottomNavigationBar: bottomNavigationBar(dancerBloc, context, loginCubit.state.email),
+            body: body(dancerBloc, loginCubit.state.email),
+          );
+        },
+      ),
     );
   }
 
-  NavigationBar? bottomNavigationBar(DancePartnerFinderBloc dancerBloc, BuildContext context) {
-    return dancerBloc.state.thisDancerName.isNotEmpty
+  NavigationBar? bottomNavigationBar(DancePartnerFinderBloc dancerBloc, BuildContext context, String thisDancerName) {
+    return thisDancerName.isNotEmpty
         ? NavigationBar(
             destinations: [
               IconButton(
-                onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            DancePartnerMatchesWidget(thisDancerName: dancerBloc.state.thisDancerName))),
+                onPressed: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => DancePartnerMatchesWidget())),
                 icon: Image.asset(
                   'images/match.gif',
                   height: 40,
                   width: 40,
                 ),
               ),
-              Image.asset(
+        Image.asset(
                 'images/match.png',
                 height: 40,
                 width: 40,
@@ -47,8 +54,8 @@ class DancePartnerSelectWidget extends StatelessWidget {
         : null;
   }
 
-  Widget body(DancePartnerFinderBloc dancerBloc) {
-    return dancerBloc.state.thisDancerName.isNotEmpty && !dancerBloc.state.isLoading
+  Widget body(DancePartnerFinderBloc dancerBloc, String thisDancerName) {
+    return thisDancerName.isNotEmpty && !dancerBloc.state.isLoading
         ? Stack(
             fit: StackFit.expand,
             children: [
@@ -60,44 +67,46 @@ class DancePartnerSelectWidget extends StatelessWidget {
                   Text(
                     dancerBloc.state.getCurrentDancerName(),
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 50,
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      IconButton(
-                        onPressed: () => dancerBloc.add(DancerDislikedEvent(dancerBloc.state.getCurrentDancerName())),
-                        iconSize: 100,
-                        icon: Image.asset('images/panda.gif'),
-                      ),
-                      IconButton(
-                        onPressed: () => dancerBloc.add(DancerLikedEvent(dancerBloc.state.getCurrentDancerName())),
-                        iconSize: 150,
-                        icon: Image.asset('images/dancer.png'),
-                      ),
-                    ],
-                  )
-                ],
-              )
-            ],
-          )
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 50,
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                IconButton(
+                  onPressed: () => dancerBloc.add(DancerDislikedEvent(dancerBloc.state.getCurrentDancerName())),
+                  iconSize: 100,
+                  icon: Image.asset('images/panda.gif'),
+                ),
+                IconButton(
+                  onPressed: () => dancerBloc.add(DancerLikedEvent(dancerBloc.state.getCurrentDancerName())),
+                  iconSize: 150,
+                  icon: Image.asset('images/dancer.png'),
+                ),
+              ],
+            )
+          ],
+        )
+      ],
+    )
         : Image.asset('images/wait.png');
   }
 
   AppBar? appBar(DancePartnerFinderBloc dancerBloc) {
-    return dancerBloc.state.thisDancerName.isEmpty
+    //todo change radius selector to another type of input than text
+    return dancerBloc.state.searchingRadius == 0
         ? AppBar(
             title: TextField(
-              controller: _thisDancerNamTextController,
+              controller: _searchingRadiusTextController,
             ),
             actions: [
                 TextButton(
-                  onPressed: () => dancerBloc.add(ThisDancerChoseNameEvent(_thisDancerNamTextController.text)),
-                  child: const Text("touch after naming", style: TextStyle(color: Colors.black)),
+                  onPressed: () => dancerBloc
+                      .add(SearchingRadiusEnteredEvent(int.parse(_searchingRadiusTextController.text.trim()))),
+                  child: const Text("touch after radius entry", style: TextStyle(color: Colors.black)),
                 )
               ])
         : null;

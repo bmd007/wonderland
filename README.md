@@ -13,6 +13,7 @@ Toward outside:
  - RSocket communication from API-gateway to the flutter app.
 
 ## ToDo:
+    * create chat-history kafka streams Map<ThisDancerName, Map<ChateeName, List<Message>> and back chatBoxWidget with it!
     * rename wonder-matcher to dance-partner-finder or dance-partner-matcher .... names in the match making stack are not mature enough!
     * refactor Consumed/Produced management in kafka stream applications. Use Kafka classes rather than yours. 
     * add websocket to the flutter app for chatting. Matched users wants to be able to chat with each other`

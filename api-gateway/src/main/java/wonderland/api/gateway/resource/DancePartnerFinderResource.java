@@ -90,8 +90,6 @@ public class DancePartnerFinderResource {
 
     @MessageMapping("/api/dance/partner/finder/addName")
     public Mono<Void> reportSeekingPartner(SeekingPartnerRequestBody requestBody) {
-
-
         log.info("current dancers,{}", potentialDancePartners.keySet());
         var event = new DancerIsLookingForPartnerUpdate(requestBody.name, requestBody.location);
         return Mono.fromFuture(kafkaTemplate.send(Topics.DANCER_SEEKING_PARTNER_UPDATES, event.key(), event).completable())

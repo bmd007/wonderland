@@ -32,17 +32,15 @@ Stream<LocationData> getCurrentLocation() {
 }
 
 class DancePartnerFinderBloc extends Bloc<DancePartnerFinderEvent, DancePartnerFinderState> {
-  DancePartnerFinderBloc() : super(DancePartnerFinderState.empty()) {
-    on<ThisDancerChoseNameEvent>((event, emit) {
-      emit(state.withThisDancerName(event.thisDancerName));
+  DancePartnerFinderBloc(String thisDancerName) : super(DancePartnerFinderState.empty()) {
+    on<SearchingRadiusEnteredEvent>((event, emit) {
+      emit(state.setSearchingRadius(event.searchingRadius));
 
       getCurrentLocation()
           .doOnData((location) => ClientHolder.client
-              .introduceAsDancePartnerSeeker(state.thisDancerName,
-                  location.latitude!, location.longitude!))
+              .introduceAsDancePartnerSeeker(thisDancerName, location.latitude!, location.longitude!))
           .asyncExpand((location) => ClientHolder.client
-              .fetchDancePartnerSeekersNames(state.thisDancerName,
-                  location.latitude!, location.longitude!))
+              .fetchDancePartnerSeekersNames(thisDancerName, location.latitude!, location.longitude!, event.searchingRadius))
           .forEach((potentialDancePartner) =>
               add(PotentialDancerPartnerFoundEvent(potentialDancePartner!)));
     });
@@ -53,13 +51,11 @@ class DancePartnerFinderBloc extends Bloc<DancePartnerFinderEvent, DancePartnerF
       emit(state.addPotentialDancer(event.potentialDancePartnerName));
     });
     on<DancerLikedEvent>((event, emit) {
-      ClientHolder.client.likeADancer(state.thisDancerName, event.dancerName)
-          .forEach((element) {});
+      ClientHolder.client.likeADancer(thisDancerName, event.dancerName).forEach((element) {});
       emit(state.moveToNextDancer());
     });
     on<DancerDislikedEvent>((event, emit) {
-      ClientHolder.client.disLikeADancer(state.thisDancerName, event.dancerName)
-          .forEach((element) {});
+      ClientHolder.client.disLikeADancer(thisDancerName, event.dancerName).forEach((element) {});
       emit(state.moveToNextDancer());
     });
   }

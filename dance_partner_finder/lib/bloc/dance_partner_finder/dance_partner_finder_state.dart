@@ -3,34 +3,32 @@ import 'package:equatable/equatable.dart';
 class DancePartnerFinderState extends Equatable {
   final List<String> dancerNames;
   final int currentDancerIndex;
+  final int searchingRadius;
   final bool isLoading;
-  final String thisDancerName; //todo rename
 
-  const DancePartnerFinderState(this.isLoading, this.currentDancerIndex,
-      this.dancerNames, this.thisDancerName);
+  const DancePartnerFinderState(this.isLoading, this.currentDancerIndex, this.dancerNames, this.searchingRadius);
 
-  DancePartnerFinderState withThisDancerName(thisDancerName) {
-    return DancePartnerFinderState(true, 0, const [], thisDancerName);
+  DancePartnerFinderState setSearchingRadius(int searchingRadius) {
+    return DancePartnerFinderState(true, 0, [], searchingRadius);
   }
 
   DancePartnerFinderState loading() {
-    return DancePartnerFinderState(true, 0, const [], thisDancerName);
+    return DancePartnerFinderState(true, 0, [], searchingRadius);
   }
 
   DancePartnerFinderState loaded(List<String> loadedDancerNames) {
-    return DancePartnerFinderState(false, 0, loadedDancerNames, thisDancerName);
+    return DancePartnerFinderState(false, 0, loadedDancerNames, searchingRadius);
   }
 
   static DancePartnerFinderState empty() {
-    return const DancePartnerFinderState(false, 0, [], "");
+    return const DancePartnerFinderState(false, 0, [], 0);
   }
 
   DancePartnerFinderState moveToNextDancer() {
     if (currentDancerIndex + 1 >= dancerNames.length) {
       return loading();
     }
-    return DancePartnerFinderState(
-        false, currentDancerIndex + 1, dancerNames, thisDancerName);
+    return DancePartnerFinderState(false, currentDancerIndex + 1, dancerNames, searchingRadius);
   }
 
   String getCurrentDancerName() {
@@ -41,11 +39,11 @@ class DancePartnerFinderState extends Equatable {
   }
 
   @override
-  List<Object> get props => [currentDancerIndex, isLoading, dancerNames];
+  List<Object> get props => [currentDancerIndex, isLoading, dancerNames, searchingRadius];
 
   DancePartnerFinderState addPotentialDancer(String potentialDancePartnerName) {
     List<String> newDancerNames = dancerNames.toList(growable: true);
     newDancerNames.add(potentialDancePartnerName);
-    return DancePartnerFinderState(false, currentDancerIndex, newDancerNames, thisDancerName);
+    return DancePartnerFinderState(false, currentDancerIndex, newDancerNames, searchingRadius);
   }
 }

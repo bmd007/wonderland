@@ -5,22 +5,18 @@ import 'chat_message.dart';
 class DancerMatchAndChatState extends Equatable {
   final Map<String, List<ChatMessage>> chatHistory;
   final bool isLoading;
-  final String thisDancerName; //todo might not be needed as a state here
   final String currentlyChattingWith;
 
   static const String _NO_ONE = "NO_ONE";
 
-  const DancerMatchAndChatState(this.isLoading, this.chatHistory,
-      this.thisDancerName, this.currentlyChattingWith);
+  const DancerMatchAndChatState(this.isLoading, this.chatHistory, this.currentlyChattingWith);
 
   static DancerMatchAndChatState withThisDancerName(thisDancerName) {
-    return DancerMatchAndChatState(
-        true, const <String, List<ChatMessage>>{}, thisDancerName, _NO_ONE);
+    return const DancerMatchAndChatState(true, <String, List<ChatMessage>>{}, _NO_ONE);
   }
 
   DancerMatchAndChatState loading() {
-    return DancerMatchAndChatState(
-        true, chatHistory, thisDancerName, currentlyChattingWith);
+    return DancerMatchAndChatState(true, chatHistory, currentlyChattingWith);
   }
 
   DancerMatchAndChatState loaded(
@@ -37,8 +33,7 @@ class DancerMatchAndChatState extends Equatable {
     var newEntry = MapEntry(chatParticipant, newMessageListForParticipant.toList(growable: false));
     var newChatHistoryEntries =
         chatHistory.entries.where((element) => element.key != chatParticipant).followedBy([newEntry]);
-    return DancerMatchAndChatState(
-        false, Map.fromEntries(newChatHistoryEntries), thisDancerName, currentlyChattingWith);
+    return DancerMatchAndChatState(false, Map.fromEntries(newChatHistoryEntries), currentlyChattingWith);
   }
 
   bool isChattingWithSomeOne() {
@@ -46,15 +41,15 @@ class DancerMatchAndChatState extends Equatable {
   }
 
   DancerMatchAndChatState chattingWith(String chatParticipant) {
-    return DancerMatchAndChatState(false, chatHistory, thisDancerName, chatParticipant);
+    return DancerMatchAndChatState(false, chatHistory, chatParticipant);
   }
 
   DancerMatchAndChatState noMoreChatting() {
-    return DancerMatchAndChatState(false, chatHistory, thisDancerName, _NO_ONE);
+    return DancerMatchAndChatState(false, chatHistory, _NO_ONE);
   }
 
   @override
-  List<Object> get props => [isLoading, chatHistory, thisDancerName, currentlyChattingWith];
+  List<Object> get props => [isLoading, chatHistory, currentlyChattingWith];
 
   DancerMatchAndChatState addMessage(ChatMessage loadedMassage) {
     return loaded(loadedMassage.participantName, [loadedMassage]);

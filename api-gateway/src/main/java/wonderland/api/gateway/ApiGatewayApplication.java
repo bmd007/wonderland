@@ -37,9 +37,9 @@ public class ApiGatewayApplication {
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
         return builder.routes()
-                .route(r -> r.path("/v1/chat/*/queues")
+                .route(r -> r.path("/v1/chat/queues/user/*")
                         .filters(gatewayFilterSpec ->
-                                gatewayFilterSpec.rewritePath("/v1/chat/(?<username>\\w+)/queues",
+                                gatewayFilterSpec.rewritePath("/v1/chat/queues/user/(?<username>\\w+)",
                                         "/create/queue/for/${username}")
                         )
                         .uri("lb://message-publisher")

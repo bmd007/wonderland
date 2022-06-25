@@ -1,11 +1,18 @@
+import 'package:dance_partner_finder/bloc/login/login_cubit.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-import 'bloc/dance_partner_finder/dance_partner_finder_bloc.dart';
+import 'bloc/login/login_state.dart';
 import 'dance_partner_select_widget.dart';
+import 'firebase_options.dart';
+import 'login_page.dart';
 
-void main() {
+void main() async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -16,14 +23,18 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => DancePartnerFinderBloc()),
+        BlocProvider(create: (context) => LoginCubit()),
       ],
       child: MaterialApp(
         title: 'Dance Partner Finder',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: DancePartnerSelectWidget(),
+        home: BlocBuilder<LoginCubit, LoginState>(
+          builder: (context, state) {
+            return state.isLoggedIn ? DancePartnerSelectWidget() : LoginPage();
+          },
+        ),
       ),
     );
   }

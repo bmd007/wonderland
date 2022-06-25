@@ -22,13 +22,13 @@ class DancerDislikedEvent extends DancePartnerFinderEvent {
   List<Object?> get props => [dancerName];
 }
 
-class ThisDancerChoseNameEvent extends DancePartnerFinderEvent {
-  final String thisDancerName;
+class SearchingRadiusEnteredEvent extends DancePartnerFinderEvent {
+  final int searchingRadius;
 
-  const ThisDancerChoseNameEvent(this.thisDancerName);
+  const SearchingRadiusEnteredEvent(this.searchingRadius);
 
   @override
-  List<Object?> get props => [thisDancerName];
+  List<Object?> get props => [searchingRadius];
 }
 
 class DancersLoadedEvent extends DancePartnerFinderEvent {

@@ -12,16 +12,16 @@ class ApiGatewayRSocketClient {
       .keepAlive(2000, 999999999)
       .connect('ws://192.168.1.188:7022')
       .catchError((error) => print(error));
-  
+
   Payload routeAndDataPayload(String route, String data) {
-    var compositeMetadata =
-        CompositeMetadata.fromEntries([RoutingMetadata(route, List.empty())]);
+    var compositeMetadata = CompositeMetadata.fromEntries([RoutingMetadata(route, List.empty())]);
     var metadataBytes = compositeMetadata.toUint8Array();
     var dataBytes = Uint8List.fromList(utf8.encode(data));
     return Payload.from(metadataBytes, dataBytes);
   }
 
-  Stream<String?> fetchDancePartnerSeekersNames(String name, double latitude, double longitude) {
+  Stream<String?> fetchDancePartnerSeekersNames(String name, double latitude, double longitude, int searchingRadius) {
+    //todo use radius
     var body = """
     {
       "location": {
@@ -33,27 +33,26 @@ class ApiGatewayRSocketClient {
   """;
     return _rsocketConnectionStream
         .asStream()
-        .asyncExpand((rSocket) => rSocket.requestStream!(
-            routeAndDataPayload("/api/dance/partner/finder/names", body)))
+        .asyncExpand((rSocket) => rSocket.requestStream!(routeAndDataPayload("/api/dance/partner/finder/names", body)))
         .map((element) => element!.getDataUtf8())
         .doOnError((p0, p1) => print(p1));
   }
 
-  Stream<void> introduceAsDancePartnerSeeker(String name, double latitude, double longitude) {
+  void introduceAsDancePartnerSeeker(String name, double latitude, double longitude) {
     var body = """
     {
       "location": {
           "latitude": "$latitude",
           "longitude": "$longitude"
         },
-        "name": "${name}"
+        "name": "$name"
     }
   """;
-    return _rsocketConnectionStream
+    _rsocketConnectionStream
         .asStream()
-        .asyncMap((rSocket) => rSocket.fireAndForget!(
-            routeAndDataPayload("/api/dance/partner/finder/addName", body)))
-        .doOnError((error, stackTrace) => print(stackTrace));
+        .asyncMap((rSocket) => rSocket.fireAndForget!(routeAndDataPayload("/api/dance/partner/finder/addName", body)))
+        .doOnError((error, stackTrace) => print(stackTrace))
+        .forEach((element) {});
   }
 
   Stream<void> likeADancer(String whoHasLiked, String whomIsLiked) {

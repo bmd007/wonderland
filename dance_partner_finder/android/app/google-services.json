@@ -29,6 +29,13 @@
             {
               "client_id": "948788582778-cgnrqc0u0jodbca317bifv0v0r4atj71.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "948788582778-15jr2hqnpvoc57p79pi8rt52rp09hn9p.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "wonderland.dance.partner.finder.dancePartnerFinder"
+              }
             }
           ]
         }
