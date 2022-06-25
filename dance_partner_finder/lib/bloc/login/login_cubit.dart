@@ -33,25 +33,27 @@ class LoginCubit extends Cubit<LoginState> {
 
   void signInWithGoogle() {
     (kIsWeb ? _signInWithGoogleWeb() : _signInWithGoogleNonWeb())
-        .asStream()
         .doOnError((p0, p1) => print("login error $p0 $p1"))
         .forEach((element) => print(element));
   }
 
-  Future<UserCredential> _signInWithGoogleNonWeb() async {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
-    return await FirebaseAuth.instance.signInWithCredential(credential);
+  Stream<UserCredential> _signInWithGoogleNonWeb() {
+    return GoogleSignIn()
+        .signIn()
+        .asStream()
+        .asyncMap((event) => event!.authentication)
+        .map((googleAuth) => GoogleAuthProvider.credential(
+              accessToken: googleAuth.accessToken,
+              idToken: googleAuth.idToken,
+            ))
+        .asyncMap((credential) => FirebaseAuth.instance.signInWithCredential(credential));
   }
 
-  Future<UserCredential> _signInWithGoogleWeb() async {
+  Stream<UserCredential> _signInWithGoogleWeb() {
     GoogleAuthProvider googleProvider = GoogleAuthProvider();
     googleProvider.addScope('https://www.googleapis.com/auth/contacts.readonly');
     googleProvider.setCustomParameters({'login_hint': 'bmd579@gmail.com'});
-    return FirebaseAuth.instance.signInWithPopup(googleProvider);
+    return FirebaseAuth.instance.signInWithPopup(googleProvider)
+        .asStream();
   }
 }
