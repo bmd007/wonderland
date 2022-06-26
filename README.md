@@ -13,12 +13,13 @@ Toward outside:
  - RSocket communication from API-gateway to the flutter app.
 
 ## ToDo:
+    * profile edit widget
+    * search among close by dancers within a raduis specified by the user
     * create chat-history kafka streams Map<ThisDancerName, Map<ChateeName, List<Message>> and back chatBoxWidget with it!
+    * refill dance partner avaialble option automatically when no more left to choose from
     * rename wonder-matcher to dance-partner-finder or dance-partner-matcher .... names in the match making stack are not mature enough!
     * refactor Consumed/Produced management in kafka stream applications. Use Kafka classes rather than yours. 
-    * add websocket to the flutter app for chatting. Matched users wants to be able to chat with each other`
     * upgrade elastic search stack to 7 and higher
     * add authorization/authentication checks (resource server in OAuath2 world) (and connect it to google) in API gateway 
     * publish logs into elastic search as application_log index
-    * complete person_profile and ui apps
-	* integrate nomad (use information from master thesis)
+ 	* integrate nomad (use information from master thesis)
