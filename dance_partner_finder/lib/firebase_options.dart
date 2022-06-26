@@ -50,6 +50,7 @@ class DefaultFirebaseOptions {
     projectId: 'wonderland-007',
     authDomain: 'wonderland-007.firebaseapp.com',
     storageBucket: 'wonderland-007.appspot.com',
+    measurementId: 'G-X2MBM59KX4',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -66,6 +67,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '948788582778',
     projectId: 'wonderland-007',
     storageBucket: 'wonderland-007.appspot.com',
+    androidClientId: '948788582778-8mnc43d0naqvhibo7j9d3t5agpn9cv9a.apps.googleusercontent.com',
     iosClientId: '948788582778-15jr2hqnpvoc57p79pi8rt52rp09hn9p.apps.googleusercontent.com',
     iosBundleId: 'wonderland.dance.partner.finder.dancePartnerFinder',
   );
@@ -76,6 +78,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '948788582778',
     projectId: 'wonderland-007',
     storageBucket: 'wonderland-007.appspot.com',
+    androidClientId: '948788582778-8mnc43d0naqvhibo7j9d3t5agpn9cv9a.apps.googleusercontent.com',
     iosClientId: '948788582778-15jr2hqnpvoc57p79pi8rt52rp09hn9p.apps.googleusercontent.com',
     iosBundleId: 'wonderland.dance.partner.finder.dancePartnerFinder',
   );

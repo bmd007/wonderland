@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "948788582778-8mnc43d0naqvhibo7j9d3t5agpn9cv9a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "wonderland.dance.partner.finder.dance_partner_finder",
+            "certificate_hash": "d59123dc5862e0cafb8b2be9821ef07797551599"
+          }
+        },
+        {
           "client_id": "948788582778-cgnrqc0u0jodbca317bifv0v0r4atj71.apps.googleusercontent.com",
           "client_type": 3
         }

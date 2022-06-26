@@ -12,7 +12,8 @@ import 'login_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform)
-      .then((value) => runApp(const MyApp()));
+      .then((value) => runApp(const MyApp()))
+      .then((value) => flutter );
 }
 
 class MyApp extends StatelessWidget {
