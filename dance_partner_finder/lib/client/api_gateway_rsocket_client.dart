@@ -8,19 +8,21 @@ import 'package:rsocket/rsocket_connector.dart';
 import 'package:rxdart/rxdart.dart';
 
 class ApiGatewayRSocketClient {
-  Future<RSocket> _rsocketConnectionStream = RSocketConnector.create()
+  final Future<RSocket> _rsocketConnectionStream = RSocketConnector.create()
       .keepAlive(2000, 999999999)
       .connect('ws://192.168.1.188:7022')
       .catchError((error) => print(error));
 
   Payload routeAndDataPayload(String route, String data) {
-    var compositeMetadata = CompositeMetadata.fromEntries([RoutingMetadata(route, List.empty())]);
+    var compositeMetadata =
+        CompositeMetadata.fromEntries([RoutingMetadata(route, List.empty())]);
     var metadataBytes = compositeMetadata.toUint8Array();
     var dataBytes = Uint8List.fromList(utf8.encode(data));
     return Payload.from(metadataBytes, dataBytes);
   }
 
-  Stream<String?> fetchDancePartnerSeekersNames(String name, double latitude, double longitude, int searchingRadius) {
+  Stream<String?> fetchDancePartnerSeekersNames(
+      String name, double latitude, double longitude, int searchingRadius) {
     //todo use radius
     var body = """
     {
@@ -33,12 +35,14 @@ class ApiGatewayRSocketClient {
   """;
     return _rsocketConnectionStream
         .asStream()
-        .asyncExpand((rSocket) => rSocket.requestStream!(routeAndDataPayload("/api/dance/partner/finder/names", body)))
+        .asyncExpand((rSocket) => rSocket.requestStream!(
+            routeAndDataPayload("/api/dance/partner/finder/names", body)))
         .map((element) => element!.getDataUtf8())
         .doOnError((p0, p1) => print(p1));
   }
 
-  void introduceAsDancePartnerSeeker(String name, double latitude, double longitude) {
+  void introduceAsDancePartnerSeeker(
+      String name, double latitude, double longitude) {
     var body = """
     {
       "location": {
@@ -50,7 +54,8 @@ class ApiGatewayRSocketClient {
   """;
     _rsocketConnectionStream
         .asStream()
-        .asyncMap((rSocket) => rSocket.fireAndForget!(routeAndDataPayload("/api/dance/partner/finder/addName", body)))
+        .asyncMap((rSocket) => rSocket.fireAndForget!(
+            routeAndDataPayload("/api/dance/partner/finder/addName", body)))
         .doOnError((error, stackTrace) => print(stackTrace))
         .forEach((element) {});
   }
@@ -86,8 +91,8 @@ class ApiGatewayRSocketClient {
   Stream<String?> matchStreams(String thisDancerName) {
     return _rsocketConnectionStream
         .asStream()
-        .asyncExpand((rSocket) => rSocket.requestStream!(
-            routeAndDataPayload("/api/dance/partner/finder/matches", thisDancerName)))
+        .asyncExpand((rSocket) => rSocket.requestStream!(routeAndDataPayload(
+            "/api/dance/partner/finder/matches", thisDancerName)))
         .map((element) => element!.getDataUtf8())
         .doOnError((error, stackTrace) => print(stackTrace));
   }

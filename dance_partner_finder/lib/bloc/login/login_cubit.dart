@@ -19,7 +19,8 @@ class LoginCubit extends Cubit<LoginState> {
         ClientHolder.apiGatewayHttpClient
             .post('/v1/chat/queues/user/${user.email!}')
             .asStream()
-            .doOnError((p0, p1) => print("error creating Q for ${user.email!}: $p0 $p1"))
+            .doOnError((p0, p1) =>
+                print("error creating Q for ${user.email!}: $p0 $p1"))
             .forEach((element) => print(element));
 
         emit(state.login(user.email!, user.displayName!, user.photoURL!));
@@ -46,14 +47,16 @@ class LoginCubit extends Cubit<LoginState> {
               accessToken: googleAuth.accessToken,
               idToken: googleAuth.idToken,
             ))
-        .asyncMap((credential) => FirebaseAuth.instance.signInWithCredential(credential));
+        .doOnData((event) => print(event))
+        .asyncMap((credential) =>
+            FirebaseAuth.instance.signInWithCredential(credential));
   }
 
   Stream<UserCredential> _signInWithGoogleWeb() {
     GoogleAuthProvider googleProvider = GoogleAuthProvider();
-    googleProvider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+    googleProvider
+        .addScope('https://www.googleapis.com/auth/contacts.readonly');
     googleProvider.setCustomParameters({'login_hint': 'bmd579@gmail.com'});
-    return FirebaseAuth.instance.signInWithPopup(googleProvider)
-        .asStream();
+    return FirebaseAuth.instance.signInWithPopup(googleProvider).asStream();
   }
 }

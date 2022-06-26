@@ -10,10 +10,9 @@ import 'firebase_options.dart';
 import 'login_page.dart';
 
 void main() async {
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform)
+      .then((value) => runApp(const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -32,7 +31,9 @@ class MyApp extends StatelessWidget {
         ),
         home: BlocBuilder<LoginCubit, LoginState>(
           builder: (context, state) {
-            return state.isLoggedIn ? DancePartnerSelectWidget() : LoginPage();
+            return state.isLoggedIn
+                ? DancePartnerSelectWidget()
+                : LoginPage(); //todo show profile edit screen instead of DancePartnerSelectWidget
           },
         ),
       ),
