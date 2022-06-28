@@ -35,11 +35,12 @@ management:
         enabled: true
 
 spring:
+  main:
+    web-application-type: reactive
   rsocket:
     server:
       port: 7022
       transport: websocket
-  #      mapping-path: /rsocket
 
   config:
     import: optional:consul:localhost:8500
