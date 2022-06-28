@@ -119,7 +119,7 @@ services:
 
   elasticsearch:
     hostname: elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.5
     environment:
       - cluster.name=elasticsearch
       - bootstrap.memory_lock=true
