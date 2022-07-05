@@ -32,7 +32,7 @@ public class DancePartnerFinderResource {
     private final WebClient wonderMatcherClient;
 
     static {
-        potentialDancePartners.put("brucee", new DancerIsLookingForPartnerUpdate("brucee", new Location(59.854216, 17.643421)));
+        potentialDancePartners.put("bruce", new DancerIsLookingForPartnerUpdate("bruce", new Location(59.854216, 17.643421)));
         potentialDancePartners.put("camila", new DancerIsLookingForPartnerUpdate("camila", new Location(59.854253, 17.638438)));
         potentialDancePartners.put("jlo", new DancerIsLookingForPartnerUpdate("jlo", new Location(59.857912, 17.646473)));
         potentialDancePartners.put("johnny", new DancerIsLookingForPartnerUpdate("johnny", new Location(59.857064, 17.627195)));
