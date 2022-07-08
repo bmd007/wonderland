@@ -54,7 +54,7 @@ dependencies {
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
-	testImplementation 'com.xebialabs.restito:restito:0.9.4'
+	testImplementation 'com.xebialabs.restito:restito:0.9.5'
 	testImplementation('org.mockito:mockito-junit-jupiter')
 	testImplementation 'io.projectreactor:reactor-test'
 	testImplementation 'org.springframework.kafka:spring-kafka-test'
