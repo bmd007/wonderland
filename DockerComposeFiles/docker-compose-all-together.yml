@@ -151,7 +151,7 @@ services:
       - '5601:5601'
 
   neo4j:
-    image: neo4j:4.0.6
+    image: neo4j:4.4.9
     hostname: neo4j
     ports:
       - "7474:7474"
