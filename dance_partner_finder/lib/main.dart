@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bloc/login/login_state.dart';
-import 'dance_partner_select_widget.dart';
+import 'dancer_profile_widget.dart';
 import 'firebase_options.dart';
 import 'login_page.dart';
 
@@ -32,8 +32,8 @@ class MyApp extends StatelessWidget {
         home: BlocBuilder<LoginCubit, LoginState>(
           builder: (context, state) {
             return state.isLoggedIn
-                ? DancePartnerSelectWidget()
-                : LoginPage(); //todo show profile edit screen instead of DancePartnerSelectWidget
+                ? DanceProfileWidget()
+                : LoginPage();
           },
         ),
       ),

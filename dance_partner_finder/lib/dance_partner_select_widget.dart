@@ -81,17 +81,17 @@ class DancePartnerSelectWidget extends StatelessWidget {
                   iconSize: 100,
                   icon: Image.asset('images/panda.gif'),
                 ),
-                IconButton(
-                  onPressed: () => dancerBloc.add(DancerLikedEvent(dancerBloc.state.getCurrentDancerName())),
-                  iconSize: 150,
-                  icon: Image.asset('images/dancer.png'),
-                ),
-              ],
-            )
-          ],
-        )
-      ],
-    )
+                      IconButton(
+                        onPressed: () => dancerBloc.add(DancerLikedEvent(dancerBloc.state.getCurrentDancerName())),
+                        iconSize: 150,
+                        icon: Image.asset('images/dancer.png'),
+                      ),
+                    ],
+                  )
+                ],
+              )
+            ],
+          )
         : Image.asset('images/wait.png');
   }
 

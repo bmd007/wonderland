@@ -50,10 +50,10 @@ class LoginPage extends StatelessWidget {
                   textColor: Colors.white,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      const Icon(FontAwesomeIcons.google),
-                      const SizedBox(width: 10),
-                      const Text('Sign-in using Google', style: TextStyle(color: Colors.white, fontSize: 16)),
+                    children: const <Widget>[
+                      Icon(FontAwesomeIcons.google),
+                      SizedBox(width: 10),
+                      Text('Sign-in using Google', style: TextStyle(color: Colors.white, fontSize: 16)),
                     ],
                   ),
                 ),

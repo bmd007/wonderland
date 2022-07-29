@@ -7,12 +7,12 @@ class DancerMatchAndChatState extends Equatable {
   final bool isLoading;
   final String currentlyChattingWith;
 
-  static const String _NO_ONE = "NO_ONE";
+  static const String _noOne = "NO_ONE";
 
   const DancerMatchAndChatState(this.isLoading, this.chatHistory, this.currentlyChattingWith);
 
   static DancerMatchAndChatState withThisDancerName(thisDancerName) {
-    return const DancerMatchAndChatState(true, <String, List<ChatMessage>>{}, _NO_ONE);
+    return const DancerMatchAndChatState(true, <String, List<ChatMessage>>{}, _noOne);
   }
 
   DancerMatchAndChatState loading() {
@@ -25,7 +25,7 @@ class DancerMatchAndChatState extends Equatable {
     if (!chatHistory.containsKey(chatParticipant) ||
         (chatHistory.containsKey(chatParticipant) && chatHistory[chatParticipant]!.isEmpty)) {
       newMessageListForParticipant
-          .add(ChatMessage("start of your conversation with $chatParticipant", MessageType.systemic, _NO_ONE));
+          .add(ChatMessage("start of your conversation with $chatParticipant", MessageType.systemic, _noOne));
     } else {
       newMessageListForParticipant.addAll(chatHistory[chatParticipant]!);
     }
@@ -37,7 +37,7 @@ class DancerMatchAndChatState extends Equatable {
   }
 
   bool isChattingWithSomeOne() {
-    return _NO_ONE != currentlyChattingWith;
+    return _noOne != currentlyChattingWith;
   }
 
   DancerMatchAndChatState chattingWith(String chatParticipant) {
@@ -45,7 +45,7 @@ class DancerMatchAndChatState extends Equatable {
   }
 
   DancerMatchAndChatState noMoreChatting() {
-    return DancerMatchAndChatState(false, chatHistory, _NO_ONE);
+    return DancerMatchAndChatState(false, chatHistory, _noOne);
   }
 
   @override
