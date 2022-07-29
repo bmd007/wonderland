@@ -6,8 +6,8 @@ import 'bloc/profile_bloc/profile_edit_bloc.dart';
 import 'bloc/profile_bloc/profile_edit_state.dart';
 import 'dance_partner_select_widget.dart';
 
-class DanceProfileWidget extends StatelessWidget {
-  const DanceProfileWidget({super.key});
+class DanceProfileEditWidget extends StatelessWidget {
+  const DanceProfileEditWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,25 +21,24 @@ class DanceProfileWidget extends StatelessWidget {
             return Image.asset('images/wait.png');
           }
           return Scaffold(
-              appBar: AppBar(actions: [
-                TextButton(
-                  onPressed: () => IconButton(
-                    onPressed: () =>
-                        Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) => DancePartnerSelectWidget())),
-                            icon: Image.asset(
-                              'images/match.gif',
-                              height: 40,
-                              width: 40,
-                            ),
-                          ),
-                  child: const Text("start matching", style: TextStyle(color: Colors.black)),
-                )
-              ]),
+              appBar: AppBar(
+                  centerTitle: true,
+                  title: TextButton(onPressed: () => {}, child: const Text("to change it")),
+                  actions: [
+                    IconButton(
+                      onPressed: () =>
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => DancePartnerSelectWidget())),
+                      icon: Image.asset('images/match.png', height: 140, width: 140),
+                    )
+                  ]),
               body: body(profileEditBloc, loginCubit));
         },
       ),
     );
+  }
+
+  Image loadProfileImage(String dancerEmail) {
+    return Image.asset('images/$dancerEmail.png', fit: BoxFit.fitHeight);
   }
 
   Widget body(ProfileEditBloc profileEditBloc, LoginCubit loginCubit) {
@@ -47,7 +46,7 @@ class DanceProfileWidget extends StatelessWidget {
         ? Stack(
             fit: StackFit.expand,
             children: [
-              Image.asset('images/${loginCubit.state.email}.png', fit: BoxFit.fitHeight),
+              loadProfileImage(loginCubit.state.email),
               Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.stretch,

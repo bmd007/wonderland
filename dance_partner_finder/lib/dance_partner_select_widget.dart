@@ -36,7 +36,7 @@ class DancePartnerSelectWidget extends StatelessWidget {
             destinations: [
               IconButton(
                 onPressed: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => DancePartnerMatchesWidget())),
+                    MaterialPageRoute(builder: (context) => const DancePartnerMatchesWidget())),
                 icon: Image.asset(
                   'images/match.gif',
                   height: 40,
