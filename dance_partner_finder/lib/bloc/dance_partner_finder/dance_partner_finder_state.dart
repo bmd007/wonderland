@@ -6,6 +6,8 @@ class DancePartnerFinderState extends Equatable {
   final int searchingRadius;
   final bool isLoading;
 
+  //todo apparently we need a Class called dancer with name (email) and profile pic downloadable url
+
   const DancePartnerFinderState(this.isLoading, this.currentDancerIndex, this.dancerNames, this.searchingRadius);
 
   DancePartnerFinderState setSearchingRadius(int searchingRadius) {

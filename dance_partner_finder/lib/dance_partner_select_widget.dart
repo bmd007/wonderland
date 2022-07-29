@@ -13,8 +13,6 @@ class DancePartnerSelectWidget extends StatelessWidget {
 
   final _searchingRadiusTextController = TextEditingController();
 
-  final storage = FirebaseStorage.instanceFor(bucket: "gs://wonderland-007.appspot.com");
-
   @override
   Widget build(BuildContext context) {
     var loginCubit = context.watch<LoginCubit>();
@@ -58,11 +56,6 @@ class DancePartnerSelectWidget extends StatelessWidget {
   }
 
   Widget body(DancePartnerFinderBloc dancerBloc, String thisDancerName) {
-    storage.ref()
-    .child("$thisDancerName.jpeg")
-    .getData(20 * 1024 * 1024);
-    //todo apparently we need a Class called dancer with name (email) and profile pic downloadable url
-
     return thisDancerName.isNotEmpty && !dancerBloc.state.isLoading
         ? Stack(
             fit: StackFit.expand,

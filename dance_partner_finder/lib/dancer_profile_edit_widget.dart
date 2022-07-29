@@ -109,7 +109,7 @@ class DanceProfileEditWidget extends StatelessWidget {
             ),
             TextButton(
                 onPressed: () => uploadProfileImage(loginCubit.state.email, profileEditBloc),
-                child: const Text("to change it")),
+                child: const Text("change it")),
           ],
         )
       ],
