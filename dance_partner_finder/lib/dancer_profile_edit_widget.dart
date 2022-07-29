@@ -10,17 +10,18 @@ import 'bloc/profile_bloc/profile_edit_state.dart';
 import 'dance_partner_select_widget.dart';
 
 class DanceProfileEditWidget extends StatelessWidget {
+
   DanceProfileEditWidget({super.key});
+
+  final storage = FirebaseStorage.instanceFor(bucket: "gs://wonderland-007.appspot.com");
 
   @override
   Widget build(BuildContext context) {
+    var loginCubit = context.watch<LoginCubit>();
     return BlocProvider(
       create: (context) => ProfileEditBloc(),
       child: BlocBuilder<ProfileEditBloc, ProfileEditState>(
         builder: (context, state) {
-          if (state.isLoading) {
-            return Image.asset('images/wait.png');
-          }
           return Scaffold(
               appBar: AppBar(centerTitle: true, title: const Text("Change your profile pic"), actions: [
                 IconButton(
@@ -29,59 +30,23 @@ class DanceProfileEditWidget extends StatelessWidget {
                   icon: Image.asset('images/match.png', height: 40, width: 40),
                 )
               ]),
-              body: body(context));
+              body: body(context, loginCubit));
         },
       ),
     );
   }
 
-  final storage = FirebaseStorage.instanceFor(bucket: "gs://wonderland-007.appspot.com");
-
-  void uploadProfileImage(String dancerEmail, ProfileEditBloc profileEditBloc) {
-    profileEditBloc.add(const ProfileLoadingEvent());
-    Future<FilePickerResult?> filePickerResults = FilePicker.platform
-        .pickFiles(type: FileType.image, allowMultiple: false, lockParentWindow: true, withData: true);
-
-    filePickerResults
-        .asStream()
-        .where((event) => event != null)
-        .where((event) => event!.files.isNotEmpty)
-        .map((event) => event?.files.first.bytes)
-        .map((event) => storage.ref().child("$dancerEmail.jpeg").putData(event!))
-        .forEach((event) => event.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
-              switch (taskSnapshot.state) {
-                case TaskState.running:
-                  final progress = 100.0 * (taskSnapshot.bytesTransferred / taskSnapshot.totalBytes);
-                  print("Upload is $progress% complete.");
-                  break;
-                case TaskState.paused:
-                  print("Upload is paused.");
-                  break;
-                case TaskState.canceled:
-                  print("Upload was canceled");
-                  break;
-                case TaskState.error:
-                  print("Upload has failed");
-                  break;
-                case TaskState.success:
-                  taskSnapshot.ref
-                      .getDownloadURL()
-                      .asStream()
-                      .forEach((element) => profileEditBloc.add(ProfileLoadedEvent(element)));
-                  break;
-              }
-            }));
-  }
-
-  Widget body(BuildContext context) {
-    var loginCubit = context.watch<LoginCubit>();
+  Widget body(BuildContext context, LoginCubit loginCubit) {
     var profileEditBloc = context.watch<ProfileEditBloc>();
 
-    if (loginCubit.state.email.isNotEmpty){
-      Future<String> downloadUrlFuture = storage.ref().child("${loginCubit.state.email}.jpeg").getDownloadURL();
-      downloadUrlFuture.then((value) => profileEditBloc.add(ProfileLoadedEvent(value)));
+    if (profileEditBloc.state.profilePicUrl.isEmpty){
+      storage.ref().child("${loginCubit.state.email}.jpeg")
+          .getDownloadURL()
+          .asStream()
+          .where((event) => event.isNotEmpty)
+          .forEach((element) => profileEditBloc.add(ProfileLoadedEvent(element)));
     }
-    return loginCubit.state.email.isNotEmpty && !profileEditBloc.state.isLoading
+    return loginCubit.state.email.isNotEmpty
         ? Stack(
             fit: StackFit.expand,
             children: [
@@ -114,5 +79,42 @@ class DanceProfileEditWidget extends StatelessWidget {
             ],
           )
         : Image.asset('images/wait.png');
+  }
+
+  void uploadProfileImage(String dancerEmail, ProfileEditBloc profileEditBloc) {
+    profileEditBloc.add(const ProfileLoadingEvent());
+
+    Future<FilePickerResult?> filePickerResults = FilePicker.platform
+        .pickFiles(type: FileType.image, allowMultiple: false, lockParentWindow: true, withData: true);
+
+    filePickerResults
+        .asStream()
+        .where((event) => event != null)
+        .where((event) => event!.files.isNotEmpty)
+        .map((event) => event?.files.first.bytes)
+        .map((event) => storage.ref().child("$dancerEmail.jpeg").putData(event!))
+        .forEach((event) => event.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
+      switch (taskSnapshot.state) {
+        case TaskState.running:
+          final progress = 100.0 * (taskSnapshot.bytesTransferred / taskSnapshot.totalBytes);
+          print("Upload is $progress% complete.");
+          break;
+        case TaskState.paused:
+          print("Upload is paused.");
+          break;
+        case TaskState.canceled:
+          print("Upload was canceled");
+          break;
+        case TaskState.error:
+          print("Upload has failed");
+          break;
+        case TaskState.success:
+          taskSnapshot.ref
+              .getDownloadURL()
+              .asStream()
+              .forEach((element) => profileEditBloc.add(ProfileLoadedEvent(element)));
+          break;
+      }
+    }));
   }
 }
