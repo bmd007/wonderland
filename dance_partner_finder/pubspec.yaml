@@ -48,6 +48,7 @@ dependencies:
   firebase_core: ^1.18.0
   firebase_app_check: ^0.0.6+14
   firebase_storage: ^10.3.4
+  file_picker: ^5.0.0
 
 dev_dependencies:
   flutter_test:

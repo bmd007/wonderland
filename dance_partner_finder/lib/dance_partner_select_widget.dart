@@ -1,4 +1,5 @@
 import 'package:dance_partner_finder/bloc/login/login_cubit.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,6 +12,8 @@ class DancePartnerSelectWidget extends StatelessWidget {
   DancePartnerSelectWidget({Key? key}) : super(key: key);
 
   final _searchingRadiusTextController = TextEditingController();
+
+  final storage = FirebaseStorage.instanceFor(bucket: "gs://wonderland-007.appspot.com");
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +58,11 @@ class DancePartnerSelectWidget extends StatelessWidget {
   }
 
   Widget body(DancePartnerFinderBloc dancerBloc, String thisDancerName) {
+    storage.ref()
+    .child("$thisDancerName.jpeg")
+    .getData(20 * 1024 * 1024);
+    //todo apparently we need a Class called dancer with name (email) and profile pic downloadable url
+
     return thisDancerName.isNotEmpty && !dancerBloc.state.isLoading
         ? Stack(
             fit: StackFit.expand,
