@@ -5,12 +5,11 @@ abstract class ProfileEditEvent extends Equatable {
 }
 
 class ProfileLoadedEvent extends ProfileEditEvent {
-  final String profilePicDownloadableUrl;
 
-  const ProfileLoadedEvent(this.profilePicDownloadableUrl);
+  const ProfileLoadedEvent();
 
   @override
-  List<Object?> get props => [this.profilePicDownloadableUrl];
+  List<Object?> get props => [];
 }
 
 class ProfileLoadingEvent extends ProfileEditEvent {

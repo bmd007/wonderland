@@ -39,18 +39,11 @@ class DanceProfileEditWidget extends StatelessWidget {
   Widget body(BuildContext context, LoginCubit loginCubit) {
     var profileEditBloc = context.watch<ProfileEditBloc>();
 
-    if (profileEditBloc.state.profilePicUrl.isEmpty){
-      storage.ref().child("${loginCubit.state.email}.jpeg")
-          .getDownloadURL()
-          .asStream()
-          .where((event) => event.isNotEmpty)
-          .forEach((element) => profileEditBloc.add(ProfileLoadedEvent(element)));
-    }
-    return loginCubit.state.email.isNotEmpty
+    return !profileEditBloc.state.isLoading
         ? Stack(
             fit: StackFit.expand,
             children: [
-              Image.network(profileEditBloc.state.profilePicUrl, fit: BoxFit.fitHeight),
+              Image.network(profileEditBloc.profilePicUrl(loginCubit.state.email), fit: BoxFit.fitHeight),
               Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -94,27 +87,30 @@ class DanceProfileEditWidget extends StatelessWidget {
         .map((event) => event?.files.first.bytes)
         .map((event) => storage.ref().child("$dancerEmail.jpeg").putData(event!))
         .forEach((event) => event.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
-      switch (taskSnapshot.state) {
-        case TaskState.running:
-          final progress = 100.0 * (taskSnapshot.bytesTransferred / taskSnapshot.totalBytes);
-          print("Upload is $progress% complete.");
-          break;
-        case TaskState.paused:
-          print("Upload is paused.");
-          break;
-        case TaskState.canceled:
-          print("Upload was canceled");
-          break;
-        case TaskState.error:
-          print("Upload has failed");
-          break;
-        case TaskState.success:
-          taskSnapshot.ref
-              .getDownloadURL()
-              .asStream()
-              .forEach((element) => profileEditBloc.add(ProfileLoadedEvent(element)));
-          break;
-      }
-    }));
+              switch (taskSnapshot.state) {
+                case TaskState.running:
+                  final progress = 100.0 * (taskSnapshot.bytesTransferred / taskSnapshot.totalBytes);
+                  print("Upload is $progress% complete.");
+                  profileEditBloc.add(const ProfileLoadingEvent());
+                  break;
+                case TaskState.paused:
+                  print("Upload is paused.");
+                  profileEditBloc.add(const ProfileLoadedEvent());
+                  break;
+                case TaskState.canceled:
+                  print("Upload was canceled");
+                  profileEditBloc.add(const ProfileLoadedEvent());
+                  break;
+                case TaskState.error:
+                  print("Upload has failed");
+                  profileEditBloc.add(const ProfileLoadedEvent());
+                  break;
+                case TaskState.success:
+                  print("Upload done");
+                  imageCache.clear();
+                  profileEditBloc.add(const ProfileLoadedEvent());
+                  break;
+              }
+            }));
   }
 }
