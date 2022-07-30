@@ -41,7 +41,7 @@ spring:
     name: wonder-matcher
   kafka:
     streams:
-      replication-factor: 3
+      replication-factor: 1
       properties:
         num.stream.threads: 1
     bootstrap-servers: "localhost:9092"
@@ -68,8 +68,8 @@ spring:
 kafka:
   topic:
     config:
-      event: '6:3'
-      changelog: '6:3'
+      event: '1:1'
+      changelog: '1:1'
 
   streams:
     server:
@@ -81,8 +81,9 @@ spring:
   config:
     activate:
       on-profile: confluent
-
   kafka:
+    streams:
+      replication-factor: 3
     bootstrap-servers: "pkc-l7q2j.europe-north1.gcp.confluent.cloud:9092"
     properties:
       sasl:
@@ -95,7 +96,11 @@ spring:
           credentials:
             source: USER_INFO
           user.info: "5WDGJP7DLN5VO2SQ:3iRgkgd3EP4mO1ZnLbaE8F85W68spkQPrvsvf4w8ubTnRkr8r9bgNlXrcRnHcgdZ"
-
+kafka:
+  topic:
+    config:
+      event: '6:3'
+      changelog: '6:3'
 ---
 spring:
   config:
@@ -105,12 +110,6 @@ spring:
     streams:
       replication-factor: 1
 
-kafka:
-  topic:
-    config:
-      event: '1:1'
-      changelog: '1:1'
-
 ---
 spring:
   config:
@@ -118,12 +117,3 @@ spring:
       on-profile: no-consul
   application:
     name: wonder-matcher
-  kafka:
-    streams:
-      replication-factor: 1
-
-kafka:
-  topic:
-    config:
-      event: '1:1'
-      changelog: '1:1'

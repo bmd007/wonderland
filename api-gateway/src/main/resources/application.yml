@@ -1,6 +1,5 @@
 server.port: 9531
 
-
 management:
   server.port: 9532
   health:
@@ -69,8 +68,8 @@ spring:
 kafka:
   topic:
     config:
-      event: '6:3'
-      update: '6:3'
+      event: '1:1'
+      update: '1:1'
 
 ---
 spring:
@@ -91,17 +90,12 @@ spring:
           credentials:
             source: USER_INFO
           user.info: "5WDGJP7DLN5VO2SQ:3iRgkgd3EP4mO1ZnLbaE8F85W68spkQPrvsvf4w8ubTnRkr8r9bgNlXrcRnHcgdZ"
----
-spring:
-  config:
-    activate:
-      on-profile: local
 
 kafka:
   topic:
     config:
-      event: '1:1'
-      update: '1:1'
+      event: '6:3'
+      update: '6:3'
 
 ---
 spring:
@@ -110,9 +104,3 @@ spring:
       on-profile: no-consul
   application:
     name: api-gateway
-
-kafka:
-  topic:
-    config:
-      event: '1:1'
-      update: '1:1'

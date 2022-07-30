@@ -63,14 +63,12 @@ rabbitmq:
     host: rabbitmq
     port: 5672
 
-
 kafka:
   topic:
     config:
-      event: '6:3'
-      update: '6:3'
-      changelog: '3:2'
-      messageEvents: '3:2'
+      event: '1:1'
+      changelog: '1:1'
+      messageEvents: '1:1'
 
 ---
 spring:
@@ -92,25 +90,24 @@ spring:
             source: USER_INFO
           user.info: "5WDGJP7DLN5VO2SQ:3iRgkgd3EP4mO1ZnLbaE8F85W68spkQPrvsvf4w8ubTnRkr8r9bgNlXrcRnHcgdZ"
 
+kafka:
+  topic:
+    config:
+      event: '6:3'
+      update: '6:3'
+      changelog: '3:2'
+      messageEvents: '3:2'
 ---
 spring:
   config:
     activate:
       on-profile: local
 
-
 rabbitmq:
   password: guest
   username: guest
   host: localhost
   port: 5672
-
-kafka:
-  topic:
-    config:
-      event: '1:1'
-      changelog: '1:1'
-      messageEvents: '1:1'
 
 ---
 spring:
@@ -119,11 +116,3 @@ spring:
       on-profile: no-consul
   application:
     name: message-publisher
-
-kafka:
-  topic:
-    config:
-      event: '1:1'
-      changelog: '1:1'
-      messageEvents: '1:1'
-
