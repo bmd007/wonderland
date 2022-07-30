@@ -58,5 +58,9 @@ class DancePartnerFinderBloc extends Bloc<DancePartnerFinderEvent, DancePartnerF
       ClientHolder.client.disLikeADancer(thisDancerName, event.dancerName).forEach((element) {});
       emit(state.moveToNextDancer());
     });
+
+    if(state.dancerNames.isEmpty){
+      add(const SearchingRadiusEnteredEvent(1));
+    }
   }
 }

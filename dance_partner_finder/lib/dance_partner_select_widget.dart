@@ -22,7 +22,7 @@ class DancePartnerSelectWidget extends StatelessWidget {
         builder: (context, state) {
           var dancerBloc = context.watch<DancePartnerFinderBloc>();
           return Scaffold(
-            appBar: appBar(dancerBloc),
+            // appBar: appBar(dancerBloc),
             bottomNavigationBar: bottomNavigationBar(dancerBloc, context, loginCubit.state.email),
             body: body(dancerBloc, loginCubit.state.email),
           );
