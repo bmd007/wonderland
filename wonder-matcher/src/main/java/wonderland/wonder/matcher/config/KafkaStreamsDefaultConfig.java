@@ -35,7 +35,7 @@ public class KafkaStreamsDefaultConfig {
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServers);
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationName);
         props.put(StreamsConfig.NUM_STREAM_THREADS_CONFIG, 1);
-        props.put(StreamsConfig.CLIENT_ID_CONFIG, applicationName + "-" + UUID.randomUUID());
+//        props.put(StreamsConfig.CLIENT_ID_CONFIG, applicationName + "-" + UUID.randomUUID());
 
         // Using this means accepting the app to continue when it faces a deserialization error, instead of break down
         props.put(StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG, LogAndContinueExceptionHandler.class);
