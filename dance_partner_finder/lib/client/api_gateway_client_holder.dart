@@ -7,7 +7,7 @@ import 'api_gateway_rsocket_client.dart';
 class ClientHolder {
   static final ApiGatewayRSocketClient client = ApiGatewayRSocketClient();
   static final Dio apiGatewayHttpClient = Dio(BaseOptions(
-    baseUrl: 'http://192.168.1.188:9531',
+    baseUrl: 'http://34.88.16.93:9531',
     contentType: ContentType.parse('application/json').value,
     connectTimeout: 15000,
     receiveTimeout: 13000,
