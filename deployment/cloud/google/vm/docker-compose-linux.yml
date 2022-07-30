@@ -11,26 +11,26 @@ services:
     volumes:
       - ./metrics/consul.json:/consul/config/consul.json
 
-  prometheus:
-    image: prom/prometheus
-    container_name: prometheus
-    hostname: prometheus
-#    network_mode: host
-    user: "1000"
-    volumes:
-      - ./metrics/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./metrics/prometheus_db:/var/lib/prometheus
-      - ./metrics/prometheus_db:/prometheus
-      - ./metrics/prometheus_db:/etc/prometheus
-      - ./metrics/alert.rules:/etc/prometheus/alert.rules
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--web.route-prefix=/'
-      - '--storage.tsdb.retention.time=200h'
-      - '--web.enable-lifecycle'
-    restart: unless-stopped
-    ports:
-      - '9090:9090'
+#  prometheus:
+#    image: prom/prometheus
+#    container_name: prometheus
+#    hostname: prometheus
+##    network_mode: host
+#    user: "1000"
+#    volumes:
+#      - ./metrics/prometheus.yml:/etc/prometheus/prometheus.yml
+#      - ./metrics/prometheus_db:/var/lib/prometheus
+#      - ./metrics/prometheus_db:/prometheus
+#      - ./metrics/prometheus_db:/etc/prometheus
+#      - ./metrics/alert.rules:/etc/prometheus/alert.rules
+#    command:
+#      - '--config.file=/etc/prometheus/prometheus.yml'
+#      - '--web.route-prefix=/'
+#      - '--storage.tsdb.retention.time=200h'
+#      - '--web.enable-lifecycle'
+#    restart: unless-stopped
+#    ports:
+#      - '9090:9090'
 
 #  grafana:
 #    container_name: grafana
@@ -43,8 +43,7 @@ services:
 #    volumes:
 #      - ./metrics/grafana_db:/var/lib/grafana
 #    depends_on:
-#      - prometheus
-#    ports:
+##    ports:
 #      - '3000:3000'
 
   rabbitmq:
@@ -70,12 +69,14 @@ services:
     ports:
       - "9532:9532"
       - "9533:9533"
+      - "7022:7022"
     depends_on:
       - consul
-      - prometheus
     environment:
       SPRING_PROFILES_ACTIVE: confluent
       SPRING_CLOUD_CONSUL_HOST: consul
+      SPRING_CONFIG_IMPORT: optional:consul:consul:8500
+
 
   message-publisher:
     container_name: message-publisher
@@ -87,11 +88,9 @@ services:
     depends_on:
       - api-gateway
       - consul
-      - prometheus
     environment:
-      SERVER_PORT: 9566
-      MANAGEMENT_SERVER_PORT: 9567
       SPRING_PROFILES_ACTIVE: confluent
+      SPRING_CONFIG_IMPORT: optional:consul:consul:8500
       SPRING_CLOUD_CONSUL_HOST: consul
 
   wonder-matcher:
@@ -106,9 +105,9 @@ services:
     depends_on:
       - api-gateway
       - consul
-      - prometheus
     environment:
       KAFKA_STREAMS_SERVER_CONFIG_APP_IP: wonder-matcher
       KAFKA_STREAMS_SERVER_CONFIG_APP_PORT: 9585
       SPRING_PROFILES_ACTIVE: confluent
+      SPRING_CONFIG_IMPORT: optional:consul:consul:8500
       SPRING_CLOUD_CONSUL_HOST: consul
