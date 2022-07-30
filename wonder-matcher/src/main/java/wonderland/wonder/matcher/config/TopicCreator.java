@@ -14,9 +14,6 @@ import static org.apache.kafka.common.config.TopicConfig.CLEANUP_POLICY_CONFIG;
 import static org.apache.kafka.common.config.TopicConfig.RETENTION_BYTES_CONFIG;
 import static org.apache.kafka.common.config.TopicConfig.RETENTION_MS_CONFIG;
 
-/**
- * Configuration class to automatically create the topics with the configured partitions and replication factor.
- */
 @Configuration
 @Profile("!test")
 public class TopicCreator {
@@ -50,6 +47,7 @@ public class TopicCreator {
     public static String stateStoreTopicName(String storeName, String applicationName) {
         return String.format("%s-%s-changelog", applicationName, storeName);
     }
+
     @Bean
     public NewTopic wonderSeekerSeekChangeLogTopic() {
         return new NewTopic(stateStoreTopicName(StateStores.WONDER_SEEKER_IN_MEMORY_STATE_STORE, applicationName),

@@ -32,7 +32,6 @@ public class TopicCreator {
         this.applicationName = applicationName;
         this.eventsTopicDefinition = PartitionDef.parse(eventsTopicDefinition);
         this.updateTopicDefinition = PartitionDef.parse(updateTopicDefinition);
-
     }
 
     @Bean

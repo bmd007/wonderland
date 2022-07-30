@@ -69,9 +69,28 @@ spring:
 kafka:
   topic:
     config:
-      event: '3:2'
-      update: '3:2'
+      event: '6:3'
+      update: '6:3'
 
+---
+spring:
+  config:
+    activate:
+      on-profile: confluent
+
+  kafka:
+    bootstrap-servers: "pkc-l7q2j.europe-north1.gcp.confluent.cloud:9092"
+    properties:
+      sasl:
+        mechanism: PLAIN
+        jaas.config: "org.apache.kafka.common.security.plain.PlainLoginModule   required username='5WDGJP7DLN5VO2SQ'   password='3iRgkgd3EP4mO1ZnLbaE8F85W68spkQPrvsvf4w8ubTnRkr8r9bgNlXrcRnHcgdZ';"
+      security.protocol: SASL_SSL
+      session.timeout.ms: 45000
+      basic:
+        auth:
+          credentials:
+            source: USER_INFO
+          user.info: "5WDGJP7DLN5VO2SQ:3iRgkgd3EP4mO1ZnLbaE8F85W68spkQPrvsvf4w8ubTnRkr8r9bgNlXrcRnHcgdZ"
 ---
 spring:
   config:
