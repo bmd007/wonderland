@@ -31,6 +31,9 @@ services:
       - "29092:29092"
       - "9101:9101"
     environment:
+      KAFKA_CREATE_TOPICS: >-
+        wonder-matcher-wonder-seeker-match-events-repartition:1:1,
+        event_log:1:1
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
