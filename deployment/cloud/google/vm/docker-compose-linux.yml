@@ -80,7 +80,6 @@ services:
     depends_on:
       - consul
       - prometheus
-      - grafana
     environment:
       SPRING_PROFILES_ACTIVE: confluent
       SPRING_CLOUD_CONSUL_HOST: consul
@@ -96,7 +95,6 @@ services:
       - api-gateway
       - consul
       - prometheus
-      - grafana
     environment:
       SERVER_PORT: 9566
       MANAGEMENT_SERVER_PORT: 9567
@@ -116,7 +114,6 @@ services:
       - api-gateway
       - consul
       - prometheus
-      - grafana
     environment:
       KAFKA_STREAMS_SERVER_CONFIG_APP_IP: wonder-matcher
       KAFKA_STREAMS_SERVER_CONFIG_APP_PORT: 9585
