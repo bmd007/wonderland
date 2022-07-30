@@ -4,7 +4,7 @@ RUN apt-get update && apt-get -y upgrade
 RUN apt-get --yes --force-yes install nano
 RUN apt-get --yes --force-yes install curl
 
-COPY rabbitmq.conf /etc/rabbitmq/conf.d/10-defaults.conf
+COPY rabbitmq.conf /etc/rabbitmq/rabbitmq.conf
 
 RUN rabbitmq-plugins enable rabbitmq_stomp
 RUN rabbitmq-plugins enable rabbitmq_management

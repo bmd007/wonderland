@@ -56,12 +56,11 @@ spring:
     retries: 3
     acks: all
 
-
-rabbitmq:
-    password: guest
-    username: guest
-    host: rabbitmq
-    port: 5672
+  rabbitmq:
+      password: imarabbit
+      username: noyouarenot
+      host: rabbitmq
+      port: 5672
 
 kafka:
   topic:
@@ -103,11 +102,9 @@ spring:
     activate:
       on-profile: local
 
-rabbitmq:
-  password: guest
-  username: guest
-  host: localhost
-  port: 5672
+  rabbitmq:
+    host: localhost
+    port: 5672
 
 ---
 spring:
@@ -116,3 +113,7 @@ spring:
       on-profile: no-consul
   application:
     name: message-publisher
+
+  rabbitmq:
+    host: localhost
+    port: 5672

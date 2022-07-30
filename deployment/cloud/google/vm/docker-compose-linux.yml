@@ -100,7 +100,8 @@ services:
       - "61613:61613"
       - "61614:61614"
     environment:
-      SERVICE_IGNORE: any_value
+      - RABBITMQ_DEFAULT_USER=imarabbit
+      - RABBITMQ_DEFAULT_PASS=noyouarenot
 
   api-gateway:
     container_name: api-gateway
