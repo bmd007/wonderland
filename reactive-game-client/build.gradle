@@ -43,8 +43,8 @@ dependencies {
     implementation "org.jmonkeyengine:jme3-core:3.5.2-stable"
     implementation "org.jmonkeyengine:jme3-lwjgl:3.5.2-stable"
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
     testImplementation 'io.projectreactor:reactor-test:3.4.21'
 }
 
