@@ -123,7 +123,7 @@ services:
   message-publisher:
     container_name: message-publisher
     hostname: message-publisher
-    image: bmd007/wonder-matcher
+    image: bmd007/message-publisher
     ports:
       - "9566:9566"
       - "9567:9567"
