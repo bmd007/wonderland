@@ -60,7 +60,7 @@ spring:
 rabbitmq:
     password: guest
     username: guest
-    host: localhost
+    host: rabbitmq
     port: 5672
 
 
@@ -97,6 +97,13 @@ spring:
   config:
     activate:
       on-profile: local
+
+
+rabbitmq:
+  password: guest
+  username: guest
+  host: localhost
+  port: 5672
 
 kafka:
   topic:
