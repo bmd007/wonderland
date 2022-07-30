@@ -11,40 +11,59 @@ services:
     volumes:
       - ./metrics/consul.json:/consul/config/consul.json
 
-#  prometheus:
-#    image: prom/prometheus
-#    container_name: prometheus
-#    hostname: prometheus
-##    network_mode: host
-#    user: "1000"
-#    volumes:
-#      - ./metrics/prometheus.yml:/etc/prometheus/prometheus.yml
-#      - ./metrics/prometheus_db:/var/lib/prometheus
-#      - ./metrics/prometheus_db:/prometheus
-#      - ./metrics/prometheus_db:/etc/prometheus
-#      - ./metrics/alert.rules:/etc/prometheus/alert.rules
-#    command:
-#      - '--config.file=/etc/prometheus/prometheus.yml'
-#      - '--web.route-prefix=/'
-#      - '--storage.tsdb.retention.time=200h'
-#      - '--web.enable-lifecycle'
-#    restart: unless-stopped
-#    ports:
-#      - '9090:9090'
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    hostname: zookeeper
+    ports:
+      - "2181:2181"
 
-#  grafana:
-#    container_name: grafana
-#    image: grafana/grafana
-##    network_mode: host
-#    user: "1000"
-#    environment:
-#      - GF_SECURITY_ADMIN_USER=admin
-#      - GF_SECURITY_ADMIN_PASSWORD=admin
-#    volumes:
-#      - ./metrics/grafana_db:/var/lib/grafana
-#    depends_on:
-##    ports:
-#      - '3000:3000'
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    hostname: prometheus
+#    network_mode: host
+    user: "1000"
+    volumes:
+      - ./metrics/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./metrics/prometheus_db:/var/lib/prometheus
+      - ./metrics/prometheus_db:/prometheus
+      - ./metrics/prometheus_db:/etc/prometheus
+      - ./metrics/alert.rules:/etc/prometheus/alert.rules
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--web.route-prefix=/'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    ports:
+      - '9090:9090'
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+#    network_mode: host
+    user: "1000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./metrics/grafana_db:/var/lib/grafana
+    depends_on:
+      - prometheus
+    ports:
+      - '3000:3000'
 
   rabbitmq:
     container_name: rabbitmq
@@ -73,7 +92,8 @@ services:
     depends_on:
       - consul
     environment:
-      SPRING_PROFILES_ACTIVE: confluent
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+#      SPRING_PROFILES_ACTIVE: confluent
       SPRING_CLOUD_CONSUL_HOST: consul
       SPRING_CONFIG_IMPORT: optional:consul:consul:8500
 
@@ -89,7 +109,8 @@ services:
       - api-gateway
       - consul
     environment:
-      SPRING_PROFILES_ACTIVE: confluent
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+#      SPRING_PROFILES_ACTIVE: confluent
       SPRING_CONFIG_IMPORT: optional:consul:consul:8500
       SPRING_CLOUD_CONSUL_HOST: consul
 
@@ -106,8 +127,9 @@ services:
       - api-gateway
       - consul
     environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
       KAFKA_STREAMS_SERVER_CONFIG_APP_IP: wonder-matcher
       KAFKA_STREAMS_SERVER_CONFIG_APP_PORT: 9585
-      SPRING_PROFILES_ACTIVE: confluent
+#      SPRING_PROFILES_ACTIVE: confluent
       SPRING_CONFIG_IMPORT: optional:consul:consul:8500
       SPRING_CLOUD_CONSUL_HOST: consul
