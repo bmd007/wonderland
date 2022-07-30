@@ -52,7 +52,7 @@ services:
     hostname: rabbitmq
     build:
       context: ./rabbitmq
-      dockerfile: RabbitMQwithStompDockerfile
+      dockerfile: Dockerfile
     ports:
       - "5672:5672"
       - "15672:15672"
