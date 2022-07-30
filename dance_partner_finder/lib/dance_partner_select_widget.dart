@@ -1,11 +1,11 @@
 import 'package:dance_partner_finder/bloc/login/login_cubit.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bloc/dance_partner_finder/dance_partner_finder_bloc.dart';
 import 'bloc/dance_partner_finder/dance_partner_finder_event.dart';
 import 'bloc/dance_partner_finder/dance_partner_finder_state.dart';
+import 'bloc/profile_bloc/profile_edit_bloc.dart';
 import 'dance_partner_matches_page.dart';
 
 class DancePartnerSelectWidget extends StatelessWidget {
@@ -56,11 +56,11 @@ class DancePartnerSelectWidget extends StatelessWidget {
   }
 
   Widget body(DancePartnerFinderBloc dancerBloc, String thisDancerName) {
-    return thisDancerName.isNotEmpty && !dancerBloc.state.isLoading
+    return thisDancerName.isNotEmpty && !dancerBloc.state.isLoading && dancerBloc.state.dancerNames.isNotEmpty
         ? Stack(
             fit: StackFit.expand,
             children: [
-              Image.asset('images/${dancerBloc.state.getCurrentDancerName()}.png', fit: BoxFit.fitHeight),
+              Image.network(ProfileEditBloc.profilePicUrl(dancerBloc.state.getCurrentDancerName()), fit: BoxFit.fitHeight),
               Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -68,10 +68,10 @@ class DancePartnerSelectWidget extends StatelessWidget {
                   Text(
                     dancerBloc.state.getCurrentDancerName(),
                     textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 50,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 50,
               ),
             ),
             Row(
@@ -93,7 +93,7 @@ class DancePartnerSelectWidget extends StatelessWidget {
               )
             ],
           )
-        : Image.asset('images/wait.png');
+        : Image.asset('images/wait.gif');
   }
 
   AppBar? appBar(DancePartnerFinderBloc dancerBloc) {

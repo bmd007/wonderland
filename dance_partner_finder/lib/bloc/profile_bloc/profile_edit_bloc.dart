@@ -16,7 +16,7 @@ class ProfileEditBloc extends Bloc<ProfileEditEvent, ProfileEditState> {
     });
   }
 
-  String profilePicUrl(String dancerEmail){
+  static String profilePicUrl(String dancerEmail){
     return "https://firebasestorage.googleapis.com/v0/b/wonderland-007.appspot.com/o/$dancerEmail.jpeg?alt=media";
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bloc/dancer_match_and_chat/dancer_chat_bloc.dart';
 import 'bloc/dancer_match_and_chat/dancer_chat_state.dart';
+import 'bloc/profile_bloc/profile_edit_bloc.dart';
 
 class DancerChatWidget extends StatelessWidget {
   final _messageTypingController = TextEditingController();
@@ -37,7 +38,8 @@ class DancerChatWidget extends StatelessWidget {
                       width: 2,
                     ),
                     CircleAvatar(
-                      backgroundImage: AssetImage('images/${matchAndChatBloc.state.currentlyChattingWith}.png'),
+                      backgroundImage:
+                          NetworkImage(ProfileEditBloc.profilePicUrl(matchAndChatBloc.state.currentlyChattingWith)),
                       maxRadius: 20,
                     ),
                     const SizedBox(

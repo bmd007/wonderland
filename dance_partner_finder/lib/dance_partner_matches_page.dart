@@ -6,6 +6,7 @@ import 'bloc/dancer_match_and_chat/dancer_chat_bloc.dart';
 import 'bloc/dancer_match_and_chat/dancer_chat_event.dart';
 import 'bloc/dancer_match_and_chat/dancer_chat_state.dart';
 import 'bloc/login/login_cubit.dart';
+import 'bloc/profile_bloc/profile_edit_bloc.dart';
 
 class DancePartnerMatchesWidget extends StatelessWidget {
 
@@ -19,7 +20,7 @@ class DancePartnerMatchesWidget extends StatelessWidget {
       child: BlocBuilder<DancerMatchAndChatBloc, DancerMatchAndChatState>(
         builder: (context, state) {
           if (state.isLoading) {
-            return Image.asset('images/wait.png');
+            return Image.asset('images/wait.gif');
           } else if (state.isChattingWithSomeOne()) {
             return DancerChatWidget();
           }
@@ -64,12 +65,8 @@ class DancePartnerMatchWidget extends StatelessWidget {
       child: ListTile(
         onLongPress: () {},
         onTap: () => bloc.add(WantedToChatEvent(matchedDancerName)),
-        leading: CircleAvatar(
-            backgroundImage: AssetImage('images/$matchedDancerName.png')),
-        title: Column(children: [
-          Text(matchedDancerName, style: _getTextStyle(true)),
-          Text(lastMessage)
-        ]),
+        leading: CircleAvatar(backgroundImage: NetworkImage(ProfileEditBloc.profilePicUrl(matchedDancerName))),
+        title: Column(children: [Text(matchedDancerName, style: _getTextStyle(true)), Text(lastMessage)]),
       ),
     );
   }

@@ -1,12 +1,11 @@
 import 'package:equatable/equatable.dart';
 
 class DancePartnerFinderState extends Equatable {
+
   final List<String> dancerNames;
   final int currentDancerIndex;
   final int searchingRadius;
   final bool isLoading;
-
-  //todo apparently we need a Class called dancer with name (email) and profile pic downloadable url
 
   const DancePartnerFinderState(this.isLoading, this.currentDancerIndex, this.dancerNames, this.searchingRadius);
 
@@ -34,9 +33,6 @@ class DancePartnerFinderState extends Equatable {
   }
 
   String getCurrentDancerName() {
-    if (dancerNames.isEmpty || isLoading) {
-      return "wait";
-    }
     return dancerNames.elementAt(currentDancerIndex);
   }
 
