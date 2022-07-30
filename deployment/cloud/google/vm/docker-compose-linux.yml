@@ -33,6 +33,8 @@ services:
     environment:
       KAFKA_CREATE_TOPICS: >-
         wonder-matcher-wonder-seeker-match-events-repartition:1:1,
+        wonder-seeker-passive-like-events:1:1,
+        dance-partner-events:1:1,
         event_log:1:1
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
