@@ -48,9 +48,7 @@ services:
       CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
       CONFLUENT_METRICS_ENABLE: 'true'
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
-
-
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
 
   prometheus:
     image: prom/prometheus
