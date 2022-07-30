@@ -57,9 +57,9 @@ spring:
     acks: all
 
   rabbitmq:
-      password: imarabbit
-      username: noyouarenot
-      host: rabbitmq
+      password: guest
+      username: guest
+      host: localhost
       port: 5672
 
 kafka:
@@ -101,11 +101,6 @@ spring:
   config:
     activate:
       on-profile: local
-
-  rabbitmq:
-    host: localhost
-    port: 5672
-
 ---
 spring:
   config:
@@ -113,7 +108,3 @@ spring:
       on-profile: no-consul
   application:
     name: message-publisher
-
-  rabbitmq:
-    host: localhost
-    port: 5672
