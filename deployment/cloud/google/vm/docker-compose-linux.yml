@@ -11,13 +11,6 @@ services:
     volumes:
       - ./metrics/consul.json:/consul/config/consul.json
 
-  zookeeper:
-    image: wurstmeister/zookeeper
-    container_name: zookeeper
-    hostname: zookeeper
-    ports:
-      - "2181:2181"
-
   prometheus:
     image: prom/prometheus
     container_name: prometheus
