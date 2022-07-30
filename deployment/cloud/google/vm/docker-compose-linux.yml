@@ -39,26 +39,26 @@ services:
     ports:
       - '9090:9090'
 
-  grafana:
-    container_name: grafana
-    image: grafana/grafana
-#    network_mode: host
-    user: "1000"
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    volumes:
-      - ./metrics/grafana_db:/var/lib/grafana
-    depends_on:
-      - prometheus
-    ports:
-      - '3000:3000'
+#  grafana:
+#    container_name: grafana
+#    image: grafana/grafana
+##    network_mode: host
+#    user: "1000"
+#    environment:
+#      - GF_SECURITY_ADMIN_USER=admin
+#      - GF_SECURITY_ADMIN_PASSWORD=admin
+#    volumes:
+#      - ./metrics/grafana_db:/var/lib/grafana
+#    depends_on:
+#      - prometheus
+#    ports:
+#      - '3000:3000'
 
   rabbitmq:
     container_name: rabbitmq
     hostname: rabbitmq
     build:
-      context: .
+      context: ./rabbitmq
       dockerfile: RabbitMQwithStompDockerfile
     ports:
       - "5672:5672"
@@ -73,8 +73,6 @@ services:
   api-gateway:
     container_name: api-gateway
     hostname: api-gateway
-    #    cpu_shares: 50
-    #    mem_limit: 800mb
     image: bmd007/api-gateway
     ports:
       - "9532:9532"
