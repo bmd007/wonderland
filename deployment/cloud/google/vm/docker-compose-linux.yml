@@ -139,6 +139,8 @@ services:
 #      SPRING_PROFILES_ACTIVE: confluent
       SPRING_CONFIG_IMPORT: optional:consul:consul:8500
       SPRING_CLOUD_CONSUL_HOST: consul
+    command:
+      - /etc/rabbitmq/rabbitMqUserCreation.sh
 
 
   wonder-matcher:

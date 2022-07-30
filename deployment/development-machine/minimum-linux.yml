@@ -51,6 +51,8 @@ services:
       - "15675:15675"
     environment:
       SERVICE_IGNORE: any_value
+    command:
+      - /etc/rabbitmq/rabbitMqUserCreation.sh
 
   registrator:
     container_name: registrator
