@@ -18,7 +18,6 @@ public class ApiGatewayApplication {
         SpringApplication.run(ApiGatewayApplication.class, args);
     }
 
-
     @Profile("local")
     @Bean
     public CorsWebFilter corsWebFilter() {

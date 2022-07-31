@@ -14,7 +14,6 @@ Toward outside:
 
 ## ToDo:
     * what if pic is empty in firebase
-    * make messaging work on vm
     * deploy web
     * search among close by dancers within a raduis specified by the user
     * create chat-history kafka streams Map<ThisDancerName, Map<ChateeName, List<Message>> and back chatBoxWidget with it!

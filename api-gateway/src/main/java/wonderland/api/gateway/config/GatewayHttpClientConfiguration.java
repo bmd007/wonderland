@@ -6,12 +6,14 @@ import org.springframework.cloud.gateway.discovery.DiscoveryClientRouteDefinitio
 import org.springframework.cloud.gateway.discovery.DiscoveryLocatorProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
-//@EnableDiscoveryClient
+@EnableDiscoveryClient
 public class GatewayHttpClientConfiguration {
-//    @Bean
-    public DiscoveryClientRouteDefinitionLocator discoveryClientRouteLocator(ConsulReactiveDiscoveryClient discoveryClient, DiscoveryLocatorProperties discoveryLocatorProperties) {
+    @Bean
+    public DiscoveryClientRouteDefinitionLocator discoveryClientRouteLocator(ConsulReactiveDiscoveryClient discoveryClient,
+                                                                             DiscoveryLocatorProperties discoveryLocatorProperties) {
         return new DiscoveryClientRouteDefinitionLocator(discoveryClient, discoveryLocatorProperties);
     }
 }
