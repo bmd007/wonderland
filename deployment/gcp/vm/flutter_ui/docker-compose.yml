@@ -1,0 +1,11 @@
+version: "3.7"
+services:
+  flutter_ui:
+    network_mode: bridge
+    container_name:   flutter_ui
+    hostname:   flutter_ui
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
