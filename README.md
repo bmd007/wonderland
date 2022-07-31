@@ -14,7 +14,8 @@ Toward outside:
 
 ## ToDo:
     * what if pic is empty in firebase
-    * deploy web
+    * SSL all over rabbit mq
+    * ssl API-gateway
     * search among close by dancers within a raduis specified by the user
     * create chat-history kafka streams Map<ThisDancerName, Map<ChateeName, List<Message>> and back chatBoxWidget with it!
     * refill dance partner avaialble option automatically when no more left to choose from
