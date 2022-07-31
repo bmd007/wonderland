@@ -73,7 +73,7 @@ tasks.named('wrapper') {
 }
 
 bootBuildImage {
-//	imageName = "bmd007/${project.name}:${project.version}"
-	imageName = "bmd007/${project.name}"
+	imageName = "bmd007/${project.name}:1"
+//	imageName = "bmd007/${project.name}"
 	environment = ["BP_JVM_VERSION" : "17"]
 }
