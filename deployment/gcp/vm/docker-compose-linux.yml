@@ -111,11 +111,11 @@ services:
   api-gateway:
     container_name: api-gateway
     hostname: api-gateway
-    image: bmd007/api-gateway
+    image: bmd007/api-gateway:2
     ports:
-      - "80:80"
-      - "9532:9532"
-      - "7022:7022"
+      - "9591:9591"
+      - "9592:9592"
+      - "8080:8080"
     depends_on:
       - consul
       - kafka
