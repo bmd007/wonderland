@@ -64,3 +64,15 @@ node_modules/
 
 # dotenv environment variables file
 .env
+/public/favicon.png
+/public/version.json
+/public/assets/
+/public/index.html
+/public/.last_build_id
+/public/icons/
+/public/manifest.json
+/public/flutter_service_worker.js
+/public/404.html
+/public/flutter.js
+/public/main.dart.js
+/public/canvaskit/
