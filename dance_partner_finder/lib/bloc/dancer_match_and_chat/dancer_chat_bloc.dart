@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:dance_partner_finder/client/api_gateway_client_holder.dart';
 import 'package:dance_partner_finder/client/message_is_sent_to_you_event.dart';
 import 'package:dance_partner_finder/client/rabbitmq_websocket_stomp_chat_client.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 
 import 'chat_message.dart';
@@ -41,6 +42,8 @@ class DancerMatchAndChatBloc
             "content": event.massage.text
           })
           .asStream()
+          .doOnError((p0, p1) => print(p0))
+          .doOnError((p0, p1) => print(p1))
           .where((event) => event.statusCode == 200)
           .forEach((element) {
             print(element);

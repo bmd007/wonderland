@@ -13,8 +13,9 @@ Toward outside:
  - RSocket communication from API-gateway to the flutter app.
 
 ## ToDo:
-    * load profile pics from firebase
     * what if pic is empty in firebase
+    * make messaging work on vm
+    * deploy web
     * search among close by dancers within a raduis specified by the user
     * create chat-history kafka streams Map<ThisDancerName, Map<ChateeName, List<Message>> and back chatBoxWidget with it!
     * refill dance partner avaialble option automatically when no more left to choose from
