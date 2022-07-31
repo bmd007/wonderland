@@ -92,6 +92,8 @@ services:
       - '3000:3000'
 
   rabbitmq:
+    command:
+      - /etc/rabbitmq/rabbitMqUserCreation.sh
     container_name: rabbitmq
     hostname: rabbitmq
     build:
@@ -144,9 +146,6 @@ services:
 #      SPRING_PROFILES_ACTIVE: confluent
       SPRING_CONFIG_IMPORT: optional:consul:consul:8500
       SPRING_CLOUD_CONSUL_HOST: consul
-    command:
-      - /etc/rabbitmq/rabbitMqUserCreation.sh
-
 
   wonder-matcher:
     container_name: wonder-matcher
