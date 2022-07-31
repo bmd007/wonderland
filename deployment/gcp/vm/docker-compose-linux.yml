@@ -109,6 +109,7 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=imarabbit
       - RABBITMQ_DEFAULT_PASS=noyouarenot
+      - SERVICE_IGNORE=any_value
 
   api-gateway:
     container_name: api-gateway
@@ -167,3 +168,13 @@ services:
 #      SPRING_PROFILES_ACTIVE: confluent
       SPRING_CONFIG_IMPORT: optional:consul:consul:8500
       SPRING_CLOUD_CONSUL_HOST: consul
+
+  # Registrator to register services in consul
+  registrator:
+    container_name: registrator
+    image: gliderlabs/registrator
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    command: "-internal consul://consul:8500"
+    depends_on:
+      - consul
