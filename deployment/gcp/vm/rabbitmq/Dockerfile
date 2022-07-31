@@ -16,6 +16,7 @@ COPY rabbitMqUserCreation.sh /etc/rabbitmq/rabbitMqUserCreation.sh
 
 EXPOSE 5672
 EXPOSE 15672
+EXPOSE 15674
 EXPOSE 4369
 EXPOSE 25672
 EXPOSE 61613
