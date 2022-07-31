@@ -38,6 +38,7 @@ spring:
     web-application-type: reactive
   rsocket:
     server:
+      address: 0.0.0.0
       port: 7022
       transport: websocket
 

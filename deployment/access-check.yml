@@ -94,7 +94,7 @@ services:
   api-gateway:
     container_name: api-gateway
     hostname: api-gateway
-    image: bmd007/api-gateway
+    image: bmd007/api-gateway:1
     ports:
       - "9531:9531"
       - "9532:9532"
