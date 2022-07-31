@@ -61,3 +61,4 @@ libopenal.dylib
 /deployment/gcp/kafka/confluent/api-key-5WDGJP7DLN5VO2SQ.txt
 /deployment/gcp/vm/metrics/prometheus_db/
 /deployment/gcp/vm/metrics/grafana_db/
+/deployment/gcp/vm/flutter_ui/public-html/
