@@ -22,3 +22,7 @@ spring:
       enabled: false
       discovery:
         enabled: false
+      service-registry:
+        enabled: false
+    discovery:
+      enabled: false

@@ -1,0 +1,109 @@
+version: "3.7"
+services:
+
+  consul:
+    container_name: consul
+    hostname: consul
+    image: consul
+    ports:
+      - "8500:8500"
+      - "8300:8300"
+    volumes:
+      - ./metrics/consul.json:/consul/config/consul.json
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.2.1
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-server:7.2.1
+    hostname: kafka
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "29092:29092"
+      - "9101:9101"
+    environment:
+      KAFKA_CREATE_TOPICS: >-
+        wonder-matcher-wonder-seeker-match-events-repartition:1:1,
+        wonder-seeker-passive-like-events:1:1,
+        dance-partner-events:1:1,
+        event_log:1:1
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+#      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: kafka:9092
+      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
+      CONFLUENT_METRICS_ENABLE: 'true'
+      CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    hostname: prometheus
+#    network_mode: host
+    user: "1000"
+    volumes:
+      - ./metrics/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./metrics/prometheus_db:/var/lib/prometheus
+      - ./metrics/prometheus_db:/prometheus
+      - ./metrics/prometheus_db:/etc/prometheus
+      - ./metrics/alert.rules:/etc/prometheus/alert.rules
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--web.route-prefix=/'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    ports:
+      - '9090:9090'
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+#    network_mode: host
+    user: "1000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./metrics/grafana_db:/var/lib/grafana
+    depends_on:
+      - prometheus
+    ports:
+      - '3000:3000'
+
+  api-gateway:
+    container_name: api-gateway
+    hostname: api-gateway
+    image: bmd007/api-gateway
+    ports:
+      - "9531:9531"
+      - "9532:9532"
+      - "7022:7022"
+    depends_on:
+      - consul
+      - kafka
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+      SPRING_PROFILES_ACTIVE: no-consul
+#      SPRING_CLOUD_CONSUL_HOST: consul
+#      SPRING_CONFIG_IMPORT: optional:consul:consul:8500

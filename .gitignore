@@ -6,8 +6,8 @@
 *.jar
 **/someBackUp/**
 /tmp
-/DockerComposeFiles/neo4j/
-/DockerComposeFiles/neo4j/*
+/deployment/DockerComposeFiles/neo4j/
+/deployment/DockerComposeFiles/neo4j/*
 /temp
 
 /articles/
@@ -58,6 +58,6 @@ deployment/development-machine/neo4j/
 
 liblwjgl.dylib
 libopenal.dylib
-/deployment/cloud/google/kafka/confluent/api-key-5WDGJP7DLN5VO2SQ.txt
-/deployment/cloud/google/vm/metrics/prometheus_db/
-/deployment/cloud/google/vm/metrics/grafana_db/
+/deployment/gcp/kafka/confluent/api-key-5WDGJP7DLN5VO2SQ.txt
+/deployment/gcp/vm/metrics/prometheus_db/
+/deployment/gcp/vm/metrics/grafana_db/

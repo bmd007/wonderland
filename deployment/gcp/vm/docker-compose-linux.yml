@@ -95,8 +95,8 @@ services:
     container_name: rabbitmq
     hostname: rabbitmq
     build:
-      context: ./rabbitmq
-      dockerfile: Dockerfile
+      context: rabbitmq
+      dockerfile: rabbitmq/Dockerfile
     ports:
       - "5672:5672"
       - "15672:15672"
