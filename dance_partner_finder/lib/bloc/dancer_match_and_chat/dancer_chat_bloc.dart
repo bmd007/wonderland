@@ -42,6 +42,7 @@ class DancerMatchAndChatBloc
             "content": event.massage.text
           })
           .asStream()
+          .doOnData((event) => print(event))
           .doOnError((p0, p1) => print(p0))
           .doOnError((p0, p1) => print(p1))
           .where((event) => event.statusCode == 200)

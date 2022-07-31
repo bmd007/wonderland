@@ -19,7 +19,14 @@ Content-Type: application/text
 hi JLO
 
 ###
-POST http://192.168.1.188:80/v1/chat/message/send/taylor/jlo?topic=messages
-Content-Type: application/text
+POST http://localhost:9591/v1/chat/messages
+Content-Type: application/json
 
-hi JLOss
+{
+  "sender": "mm7amini@gmail.com",
+  "receiver": "bmd579@gmail.com",
+  "content": "hi kooni"
+}
+
+###
+POST http://localhost:9591/v1/chat/queues/user/bmd579@gmail.com

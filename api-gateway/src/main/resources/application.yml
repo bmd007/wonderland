@@ -1,7 +1,7 @@
 server.port: 9591
 
 management:
-  server.port: 9592
+#  server.port: 9592
   health:
     defaults.enabled: true
     diskspace.enabled: false
@@ -72,6 +72,14 @@ kafka:
       event: '1:1'
       update: '1:1'
 
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  kafka:
+    bootstrap-servers: "localhost:29092"
 ---
 spring:
   config:

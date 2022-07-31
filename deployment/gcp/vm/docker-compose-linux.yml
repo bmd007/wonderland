@@ -1,6 +1,6 @@
 version: "3.7"
 services:
-
+#4290
   consul:
     container_name: consul
     hostname: consul
@@ -10,6 +10,8 @@ services:
       - "8300:8300"
     volumes:
       - ./metrics/consul.json:/consul/config/consul.json
+    environment:
+      SERVICE_IGNORE: any_value
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.2.1
@@ -20,6 +22,7 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+      SERVICE_IGNORE: any_value
 
   kafka:
     image: confluentinc/cp-server:7.2.1
@@ -54,6 +57,7 @@ services:
       CONFLUENT_METRICS_ENABLE: 'true'
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      SERVICE_IGNORE: any_value
 
   prometheus:
     image: prom/prometheus
@@ -75,6 +79,8 @@ services:
     restart: unless-stopped
     ports:
       - '9090:9090'
+    environment:
+      SERVICE_IGNORE: any_value
 
   grafana:
     container_name: grafana
@@ -82,8 +88,9 @@ services:
 #    network_mode: host
     user: "1000"
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      SERVICE_IGNORE: any_value
     volumes:
       - ./metrics/grafana_db:/var/lib/grafana
     depends_on:
@@ -107,14 +114,14 @@ services:
       - "61613:61613"
       - "61614:61614"
     environment:
-      - RABBITMQ_DEFAULT_USER=imarabbit
-      - RABBITMQ_DEFAULT_PASS=noyouarenot
-      - SERVICE_IGNORE=any_value
+      RABBITMQ_DEFAULT_USER: imarabbit
+      RABBITMQ_DEFAULT_PASS: noyouarenot
+      SERVICE_IGNORE: any_value
 
   api-gateway:
     container_name: api-gateway
     hostname: api-gateway
-    image: bmd007/api-gateway:2
+    image: bmd007/api-gateway
     ports:
       - "9591:9591"
       - "9592:9592"
@@ -127,6 +134,7 @@ services:
 #      SPRING_PROFILES_ACTIVE: confluent
       SPRING_CLOUD_CONSUL_HOST: consul
       SPRING_CONFIG_IMPORT: optional:consul:consul:8500
+      SERVICE_IGNORE: any_value
 
   message-publisher:
     container_name: message-publisher
@@ -147,6 +155,7 @@ services:
 #      SPRING_PROFILES_ACTIVE: confluent
       SPRING_CONFIG_IMPORT: optional:consul:consul:8500
       SPRING_CLOUD_CONSUL_HOST: consul
+      SERVICE_IGNORE: any_value
 
   wonder-matcher:
     container_name: wonder-matcher
@@ -168,6 +177,7 @@ services:
 #      SPRING_PROFILES_ACTIVE: confluent
       SPRING_CONFIG_IMPORT: optional:consul:consul:8500
       SPRING_CLOUD_CONSUL_HOST: consul
+      SERVICE_IGNORE: any_value
 
   # Registrator to register services in consul
   registrator:
