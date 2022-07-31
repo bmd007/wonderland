@@ -104,6 +104,5 @@ services:
       - kafka
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
-      SPRING_PROFILES_ACTIVE: no-consul
-#      SPRING_CLOUD_CONSUL_HOST: consul
-#      SPRING_CONFIG_IMPORT: optional:consul:consul:8500
+      SPRING_CLOUD_CONSUL_HOST: consul
+      SPRING_CONFIG_IMPORT: optional:consul:consul:8500
