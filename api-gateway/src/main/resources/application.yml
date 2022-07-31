@@ -1,4 +1,4 @@
-server.port: 9531
+server.port: 80
 
 management:
   server.port: 9532

@@ -10,7 +10,7 @@ GET http://localhost:9585/api/match
 Accept: application/json
 
 ###
-POST http://192.168.1.188:9531/v1/chat/taylor/queues
+POST http://192.168.1.188:80/v1/chat/taylor/queues
 
 ###
 POST http://localhost:9566/prepare/then/send/message/taylor/jlo?topic=messages
@@ -19,7 +19,7 @@ Content-Type: application/text
 hi JLO
 
 ###
-POST http://192.168.1.188:9531/v1/chat/message/send/taylor/jlo?topic=messages
+POST http://192.168.1.188:80/v1/chat/message/send/taylor/jlo?topic=messages
 Content-Type: application/text
 
 hi JLOss

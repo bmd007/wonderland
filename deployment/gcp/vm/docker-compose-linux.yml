@@ -113,7 +113,7 @@ services:
     hostname: api-gateway
     image: bmd007/api-gateway
     ports:
-      - "9531:9531"
+      - "80:80"
       - "9532:9532"
       - "7022:7022"
     depends_on:
