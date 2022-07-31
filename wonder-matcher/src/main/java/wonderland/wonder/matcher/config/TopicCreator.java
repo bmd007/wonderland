@@ -37,6 +37,11 @@ public class TopicCreator {
         return new NewTopic(Topics.WONDER_SEEKER_PASSIVE_LIKE_EVENTS, eventTopicDefinition.numPartitions, eventTopicDefinition.replicationFactor)
                 .configs(Map.of(RETENTION_MS_CONFIG, "-1", RETENTION_BYTES_CONFIG, "-1"));
     }
+    @Bean
+    public NewTopic wonderMatcherWonderSeekerMatchEventsRepartition() {
+        return new NewTopic("wonder-matcher-wonder-seeker-match-events-repartition", eventTopicDefinition.numPartitions, eventTopicDefinition.replicationFactor)
+                .configs(Map.of(RETENTION_MS_CONFIG, "-1", RETENTION_BYTES_CONFIG, "-1"));
+    }
 
 //    @Bean
 //    public NewTopic wonderSeekerMatchEventsTopic() {
