@@ -38,6 +38,12 @@ spring:
     web-application-type: reactive
   rsocket:
     server:
+      ssl:
+        enabled: true
+        key-store: "classpath:keystore.p12"
+        key-store-password: ohpassword
+        keyStoreType: PKCS12
+        keyAlias: tomcat
       address: 0.0.0.0
       port: 8080
       transport: websocket
@@ -89,9 +95,13 @@ spring:
 
   kafka:
     bootstrap-servers: "localhost:29092"
-
+  rsocket:
+    server:
+      ssl:
+        enabled: false
 security:
   require-ssl: false
+
 ---
 spring:
   config:
@@ -125,6 +135,9 @@ spring:
       on-profile: no-consul
   application:
     name: api-gateway
-
+  rsocket:
+    server:
+      ssl:
+        enabled: false
 security:
   require-ssl: false
