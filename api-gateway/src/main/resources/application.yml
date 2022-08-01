@@ -74,10 +74,12 @@ kafka:
 
 security:
   require-ssl: true
-  ssl.key-store: "/etc/letsencrypt/live/7thwonder.click/keystore.p12"
-server.ssl.key-store-password: ohpassword
-server.ssl.keyStoreType: PKCS12
-server.ssl.keyAlias: tomcat
+server:
+    ssl:
+      key-store: "/etc/letsencrypt/live/7thwonder.click/keystore.p12"
+      key-store-password: ohpassword
+      keyStoreType: PKCS12
+      keyAlias: tomcat
 
 ---
 spring:
