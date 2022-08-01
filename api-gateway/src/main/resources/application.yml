@@ -72,6 +72,13 @@ kafka:
       event: '1:1'
       update: '1:1'
 
+security:
+  require-ssl: true
+  ssl.key-store: "/etc/letsencrypt/live/7thwonder.click/keystore.p12"
+server.ssl.key-store-password: ohpassword
+server.ssl.keyStoreType: PKCS12
+server.ssl.keyAlias: tomcat
+
 ---
 spring:
   config:
@@ -80,6 +87,9 @@ spring:
 
   kafka:
     bootstrap-servers: "localhost:29092"
+
+security:
+  require-ssl: false
 ---
 spring:
   config:
@@ -113,3 +123,6 @@ spring:
       on-profile: no-consul
   application:
     name: api-gateway
+
+security:
+  require-ssl: false
