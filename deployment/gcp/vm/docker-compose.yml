@@ -120,7 +120,6 @@ services:
       SERVICE_IGNORE: any_value
 
   api-gateway:
-    user: root
     container_name: api-gateway
     hostname: api-gateway
     image: bmd007/api-gateway
