@@ -78,8 +78,6 @@ kafka:
       event: '1:1'
       update: '1:1'
 
-security:
-  require-ssl: true
 server:
     ssl:
       key-store: "classpath:keystore.p12"
@@ -95,12 +93,6 @@ spring:
 
   kafka:
     bootstrap-servers: "localhost:29092"
-  rsocket:
-    server:
-      ssl:
-        enabled: false
-security:
-  require-ssl: false
 
 ---
 spring:
@@ -135,9 +127,4 @@ spring:
       on-profile: no-consul
   application:
     name: api-gateway
-  rsocket:
-    server:
-      ssl:
-        enabled: false
-security:
-  require-ssl: false
+

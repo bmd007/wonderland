@@ -5,6 +5,7 @@ RUN apt-get --yes --force-yes install nano
 RUN apt-get --yes --force-yes install curl
 
 COPY rabbitmq.conf /etc/rabbitmq/rabbitmq.conf
+
 COPY cert.pem /etc/rabbitmq/cert.pem
 COPY chain.pem /etc/rabbitmq/chain.pem
 COPY fullchain.pem /etc/rabbitmq/fullchain.pem
