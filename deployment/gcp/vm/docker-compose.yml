@@ -132,6 +132,7 @@ services:
       - consul
       - kafka
     environment:
+      SPRING_RSOCKET_SERVER_SSL_KEY-STORE: "/home/bmd579/wonderland/deployment/gcp/vm/keystore.p12"
       SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
 #      SPRING_PROFILES_ACTIVE: confluent
       SPRING_CLOUD_CONSUL_HOST: consul
