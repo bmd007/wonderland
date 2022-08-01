@@ -10,7 +10,7 @@ import 'package:rxdart/rxdart.dart';
 class ApiGatewayRSocketClient {
   final Future<RSocket> _rsocketConnectionStream = RSocketConnector.create()
       .keepAlive(2000, 999999999)
-      .connect('wss://34.88.16.93:8080')
+      .connect('wss://7thwonder.click:8080')
       .catchError((error) => print(error));
 
   Payload routeAndDataPayload(String route, String data) {

@@ -64,3 +64,8 @@ libopenal.dylib
 /deployment/gcp/vm/flutter_ui/public-html/
 /deployment/gcp/firebase/flutter_ui/public-html/
 /api-gateway/src/main/resources/keystore.p12
+/deployment/gcp/vm/rabbitmq/keystore.p12
+/deployment/gcp/vm/rabbitmq/chain.pem
+/deployment/gcp/vm/rabbitmq/cert.pem
+/deployment/gcp/vm/rabbitmq/fullchain.pem
+/deployment/gcp/vm/rabbitmq/privkey.pem
