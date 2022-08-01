@@ -63,3 +63,4 @@ libopenal.dylib
 /deployment/gcp/vm/metrics/grafana_db/
 /deployment/gcp/vm/flutter_ui/public-html/
 /deployment/gcp/firebase/flutter_ui/public-html/
+/api-gateway/src/main/resources/keystore.p12
