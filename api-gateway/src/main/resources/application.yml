@@ -76,7 +76,7 @@ security:
   require-ssl: true
 server:
     ssl:
-      key-store: "/etc/letsencrypt/live/7thwonder.click/keystore.p12"
+      key-store: "/home/bmd579/wonderland/deployment/gcp/vm/keystore.p12"
       key-store-password: ohpassword
       keyStoreType: PKCS12
       keyAlias: tomcat
