@@ -10,7 +10,7 @@ class RabbitMqWebSocketStompChatClient {
     var loginCode = {'login': 'rabbit-mq-web-stomp-credentials', 'passcode': 'rabbit-mq-web-stomp-credentials'};
 
     var config = StompConfig(
-        url: 'ws://7thwonder.click:15155/ws',
+        url: 'wss://7thwonder.click:15673/ws',
         // beforeConnect: () async => print("before connect"),
         onUnhandledFrame: (dynamic onUnhandledFrame) =>
             print('onUnhandledFrame $onUnhandledFrame'),
