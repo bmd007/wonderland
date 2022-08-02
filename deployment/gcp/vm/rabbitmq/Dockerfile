@@ -22,7 +22,7 @@ COPY rabbitMqUserCreation.sh /etc/rabbitmq/rabbitMqUserCreation.sh
 
 EXPOSE 5672
 EXPOSE 15672
-#EXPOSE 15674
+EXPOSE 15670
 EXPOSE 15676
 EXPOSE 4369
 EXPOSE 25672
