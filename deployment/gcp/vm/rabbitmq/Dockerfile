@@ -14,7 +14,6 @@ COPY privkey.pem /etc/rabbitmq/privkey.pem
 RUN #rabbitmq-plugins enable rabbitmq_stomp
 RUN rabbitmq-plugins enable rabbitmq_web_stomp
 RUN #rabbitmq-plugins enable rabbitmq_management
-#RUN rabbitmq-plugins enable rabbitmq_web_stomp_examples
 #RUN rabbitmq-plugins enable rabbitmq_mqtt
 #RUN rabbitmq-plugins enable rabbitmq_web_mqtt
 
