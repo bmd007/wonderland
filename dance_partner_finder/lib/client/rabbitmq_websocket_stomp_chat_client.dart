@@ -7,7 +7,7 @@ class RabbitMqWebSocketStompChatClient {
 
   RabbitMqWebSocketStompChatClient(String thisDancerName,
       void Function(StompFrame stompFrame) stompMessageHandler) {
-    var loginCode = {'login': 'mqtt-test', 'passcode': 'mqtt-test'};
+    var loginCode = {'login': 'rabbit-mq-web-stomp-credentials', 'passcode': 'rabbit-mq-web-stomp-credentials'};
 
     var config = StompConfig(
         url: 'wss://7thwonder.click:15676/ws',
