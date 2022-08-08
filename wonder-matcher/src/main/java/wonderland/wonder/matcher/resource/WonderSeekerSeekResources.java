@@ -48,7 +48,7 @@ public class WonderSeekerSeekResources {
                                      @RequestParam double longitude,
                                      @RequestParam(required = false) Long maxAge) {
         var point = geometryFactory.createPoint(new Coordinate(latitude, longitude));
-        var polygon = (Polygon) point.buffer(0.0925);
+        var polygon = (Polygon) point.buffer(2);//2 / 180 * PI * 6371 = 222.389853289
         try {
             var results = repository.query(polygon)
                     .stream()
