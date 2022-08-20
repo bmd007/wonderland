@@ -2,7 +2,6 @@ import 'package:bloc/bloc.dart';
 import 'package:dance_partner_finder/client/api_gateway_client_holder.dart';
 import 'package:dance_partner_finder/client/message_is_sent_to_you_event.dart';
 import 'package:dance_partner_finder/client/rabbitmq_websocket_stomp_chat_client.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 
 import 'chat_message.dart';
@@ -33,6 +32,9 @@ class DancerMatchAndChatBloc
     on<MessageReceivedEvent>((event, emit) {
       emit(state.addMessage(event.massage));
     });
+    on<TextTypedEvent>((event, emit) {
+      emit(state.typing(event.text));
+    });
     on<DancerSendMessageEvent>((event, emit) async {
       //todo some sort of refactoring here if possible!?
       await ClientHolder.apiGatewayHttpClient
@@ -46,6 +48,7 @@ class DancerMatchAndChatBloc
           .forEach((element) {
             print(element);
             emit(state.addMessage(event.massage));
+            emit(state.typing(""));
           });
     });
 

@@ -62,6 +62,15 @@ class WantedToChatEvent extends DancerChatAndMatchEvent {
   List<Object?> get props => [chatParticipant];
 }
 
+class TextTypedEvent extends DancerChatAndMatchEvent {
+  final String text;
+
+  const TextTypedEvent(this.text);
+
+  @override
+  List<Object?> get props => [text];
+}
+
 class BackToMatchesEvent extends DancerChatAndMatchEvent {
   @override
   List<Object?> get props => ["ignore"];

@@ -56,7 +56,7 @@ class LoginCubit extends Cubit<LoginState> {
     GoogleAuthProvider googleProvider = GoogleAuthProvider();
     googleProvider
         .addScope('https://www.googleapis.com/auth/contacts.readonly');
-    googleProvider.setCustomParameters({'login_hint': 'bmd579@gmail.com'});
+    googleProvider.setCustomParameters({'login_hint': '@gmail.com'});
     return FirebaseAuth.instance.signInWithPopup(googleProvider).asStream();
   }
 }

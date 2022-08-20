@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bloc/dancer_match_and_chat/dancer_chat_bloc.dart';
-import 'bloc/dancer_match_and_chat/dancer_chat_state.dart';
 import 'bloc/profile_bloc/profile_edit_bloc.dart';
 
 class DancerChatWidget extends StatelessWidget {
@@ -14,42 +13,40 @@ class DancerChatWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<DancerMatchAndChatBloc, DancerMatchAndChatState>(
-      builder: (context, state) {
-        var matchAndChatBloc = context.watch<DancerMatchAndChatBloc>();
-        return Scaffold(
-          appBar: AppBar(
-            elevation: 0,
-            automaticallyImplyLeading: false,
-            backgroundColor: Colors.white,
-            flexibleSpace: SafeArea(
-              child: Container(
-                padding: const EdgeInsets.only(right: 16),
-                child: Row(
-                  children: <Widget>[
-                    IconButton(
-                      onPressed: () => matchAndChatBloc.add(BackToMatchesEvent()),
-                      icon: const Icon(
-                        Icons.arrow_back,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 2,
-                    ),
-                    CircleAvatar(
-                      backgroundImage:
-                          NetworkImage(ProfileEditBloc.profilePicUrl(matchAndChatBloc.state.currentlyChattingWith)),
-                      maxRadius: 20,
-                    ),
-                    const SizedBox(
-                      width: 12,
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
+    var matchAndChatBloc = context.watch<DancerMatchAndChatBloc>();
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
+        flexibleSpace: SafeArea(
+          child: Container(
+            padding: const EdgeInsets.only(right: 16),
+            child: Row(
+              children: <Widget>[
+                IconButton(
+                  onPressed: () => matchAndChatBloc.add(BackToMatchesEvent()),
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(
+                  width: 2,
+                ),
+                CircleAvatar(
+                  backgroundImage:
+                      NetworkImage(ProfileEditBloc.profilePicUrl(matchAndChatBloc.state.currentlyChattingWith)),
+                  maxRadius: 20,
+                ),
+                const SizedBox(
+                  width: 12,
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
                           Text(
                             matchAndChatBloc.state.currentlyChattingWith,
                             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -75,11 +72,10 @@ class DancerChatWidget extends StatelessWidget {
           ),
           body: chatBox(matchAndChatBloc),
         );
-      },
-    );
   }
 
   Widget chatBox(DancerMatchAndChatBloc chatBloc) {
+    _messageTypingController.text = chatBloc.state.lastTextInTextBox;
     return Stack(
       children: <Widget>[
         ListView.builder(
@@ -119,11 +115,9 @@ class DancerChatWidget extends StatelessWidget {
                 ),
                 Expanded(
                   child: TextField(
+                    onChanged: (value) => chatBloc.add(TextTypedEvent(value)),
                     controller: _messageTypingController,
-                    decoration: const InputDecoration(
-                        hintText: "Write message...",
-                        hintStyle: TextStyle(color: Colors.black54),
-                        border: InputBorder.none),
+                    decoration: const InputDecoration(border: InputBorder.none),
                   ),
                 ),
                 const SizedBox(
