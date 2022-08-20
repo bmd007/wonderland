@@ -75,7 +75,10 @@ class DancerChatWidget extends StatelessWidget {
   }
 
   Widget chatBox(DancerMatchAndChatBloc chatBloc) {
-    _messageTypingController.text = chatBloc.state.lastTextInTextBox;
+    _messageTypingController.value = _messageTypingController.value.copyWith(
+      text: chatBloc.state.lastTextInTextBox,
+      selection: TextSelection.collapsed(offset: chatBloc.state.lastTextInTextBox.length),
+    );
     return Stack(
       children: <Widget>[
         ListView.builder(
@@ -124,8 +127,12 @@ class DancerChatWidget extends StatelessWidget {
                   width: 15,
                 ),
                 FloatingActionButton(
-                  onPressed: () => chatBloc.add(DancerSendMessageEvent(ChatMessage(
-                      _messageTypingController.text, MessageType.sent, chatBloc.state.currentlyChattingWith))),
+                  onPressed: () {
+                    if (chatBloc.state.lastTextInTextBox.isNotEmpty) {
+                      chatBloc.add(DancerSendMessageEvent(ChatMessage(
+                          chatBloc.state.lastTextInTextBox, MessageType.sent, chatBloc.state.currentlyChattingWith)));
+                    }
+                  },
                   backgroundColor: Colors.blue,
                   elevation: 0,
                   child: const Icon(
