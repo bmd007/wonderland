@@ -8,6 +8,7 @@ class SubjectTableWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(centerTitle: true, title: const Text("Welcome to AnyMatch")),
       body: Center(
         child: GridView.count(
           crossAxisCount: (MediaQuery.of(context).size.width ~/ 250).toInt(),

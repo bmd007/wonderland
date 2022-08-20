@@ -51,14 +51,14 @@ class DanceProfileEditWidget extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
-                      fontSize: 50,
+                      fontSize: 20,
                     ),
                   ),
                   Text(loginCubit.state.email,
                       style: const TextStyle(
                         color: Colors.black54,
                         fontWeight: FontWeight.bold,
-                        fontSize: 50,
+                        fontSize: 15,
                       )),
                 ],
               ),

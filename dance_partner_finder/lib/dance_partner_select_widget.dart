@@ -22,37 +22,12 @@ class DancePartnerSelectWidget extends StatelessWidget {
         builder: (context, state) {
           var dancerBloc = context.watch<DancePartnerFinderBloc>();
           return Scaffold(
-            // appBar: appBar(dancerBloc),
-            bottomNavigationBar: bottomNavigationBar(dancerBloc, context, loginCubit.state.email),
+            appBar: appBar(dancerBloc, context),
             body: body(dancerBloc, loginCubit.state.email),
           );
         },
       ),
     );
-  }
-
-  NavigationBar? bottomNavigationBar(DancePartnerFinderBloc dancerBloc, BuildContext context, String thisDancerName) {
-    return thisDancerName.isNotEmpty
-        ? NavigationBar(
-            destinations: [
-              IconButton(
-                onPressed: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const DancePartnerMatchesWidget())),
-                icon: Image.asset(
-                  'images/match.gif',
-                  height: 40,
-                  width: 40,
-                ),
-              ),
-        Image.asset(
-                'images/match.png',
-                height: 40,
-                width: 40,
-              ),
-            ],
-            height: 40,
-          )
-        : null;
   }
 
   Widget body(DancePartnerFinderBloc dancerBloc, String thisDancerName) {
@@ -96,20 +71,28 @@ class DancePartnerSelectWidget extends StatelessWidget {
         : Image.asset('images/wait.gif');
   }
 
-  AppBar? appBar(DancePartnerFinderBloc dancerBloc) {
+  AppBar? appBar(DancePartnerFinderBloc dancerBloc, BuildContext context) {
     //todo change radius selector to another type of input than text
-    return dancerBloc.state.searchingRadius == 0
-        ? AppBar(
-            title: TextField(
-              controller: _searchingRadiusTextController,
-            ),
-            actions: [
-                TextButton(
-                  onPressed: () => dancerBloc
-                      .add(SearchingRadiusEnteredEvent(int.parse(_searchingRadiusTextController.text.trim()))),
-                  child: const Text("touch after radius entry", style: TextStyle(color: Colors.black)),
-                )
-              ])
-        : null;
+    return
+      // dancerBloc.state.searchingRadius == 0
+      //   ? AppBar(
+      //       title: TextField(
+      //         controller: _searchingRadiusTextController,
+      //       ),
+      //       actions: [
+      //           TextButton(
+      //             onPressed: () => dancerBloc
+      //                 .add(SearchingRadiusEnteredEvent(int.parse(_searchingRadiusTextController.text.trim()))),
+      //             child: const Text("touch after radius entry", style: TextStyle(color: Colors.black)),
+      //           )
+      //         ])
+      //   :
+    AppBar(centerTitle: true, title: const Text("Choose your dance partner"), actions: [
+      IconButton(
+        onPressed: () =>
+            Navigator.push(context, MaterialPageRoute(builder: (context) => DancePartnerMatchesWidget())),
+        icon: Image.asset('images/matches.png', height: 40, width: 40),
+      )
+    ],);
   }
 }
