@@ -14,10 +14,11 @@ implemented using Stream processing and reactive system ideas
 ### Stack:
  * Java
  * Spring family
-   * Kafka and KafkaStreams
+ * Kafka and KafkaStreams
  * H2, Elasticsearch, Neo4j
  * Flutter
- * RSocket and HTTP
+ * RSocket, AMQP, STOMP, HTTP
+ * Firebase, GCP
 
 ### Architecture
 The architecture is event driven microservices and the applied pattern is CQRS. 
@@ -29,8 +30,9 @@ A new concept somewhat similar to event sourcing is being experimented with here
     This idea relies on the fact that Kafka topics can act as a durable, avaialbe, scalable, distrubted and ... database.
 
 Toward outside:
- - There is AMQP based communication to outside (with help of rabbit mq) as push solution for chatting feature
- - RSocket communication from API-gateway to the app.
+ - There is AMQP based communication to RabbitMq and STOMP connection to the APP, as push solution for chatting
+ - RSocket communication between API-gateway and the app.
+ - HTTPs communication between API-gateway and the app.
 
 ## ToDo:
     * what if pic is empty in firebase
