@@ -7,7 +7,6 @@ import 'bloc/login/login_cubit.dart';
 import 'bloc/profile_bloc/profile_edit_bloc.dart';
 import 'bloc/profile_bloc/profile_edit_event.dart';
 import 'bloc/profile_bloc/profile_edit_state.dart';
-import 'dance_partner_select_widget.dart';
 
 class DanceProfileEditWidget extends StatelessWidget {
 
@@ -23,13 +22,7 @@ class DanceProfileEditWidget extends StatelessWidget {
       child: BlocBuilder<ProfileEditBloc, ProfileEditState>(
         builder: (context, state) {
           return Scaffold(
-              appBar: AppBar(centerTitle: true, title: const Text("Change your profile pic"), actions: [
-                IconButton(
-                  onPressed: () =>
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => DancePartnerSelectWidget())),
-                  icon: Image.asset('images/match.png', height: 40, width: 40),
-                )
-              ]),
+              appBar: AppBar(centerTitle: true, title: const Text("Edit your profile")),
               body: body(context, loginCubit));
         },
       ),
@@ -40,35 +33,35 @@ class DanceProfileEditWidget extends StatelessWidget {
     var profileEditBloc = context.watch<ProfileEditBloc>();
 
     return !profileEditBloc.state.isLoading
-        ? Stack(
-            fit: StackFit.expand,
+        ? Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Image.network(ProfileEditBloc.profilePicUrl(loginCubit.state.email), fit: BoxFit.fitHeight),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+              Stack(children: [
+                Image.network(ProfileEditBloc.profilePicUrl(loginCubit.state.email), fit: BoxFit.fitHeight),
+                IconButton(
+                    onPressed: () => uploadProfileImage(loginCubit.state.email, profileEditBloc),
+                    icon: Image.asset('images/edit_profile.png')),
+              ]),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    loginCubit.state.email,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
+                  const Text(
+                    "Name: ",
+                    style: TextStyle(
+                      color: Colors.black,
                       fontWeight: FontWeight.bold,
                       fontSize: 50,
                     ),
                   ),
-                  Text(loginCubit.state.name,
-                      textAlign: TextAlign.center,
+                  Text(loginCubit.state.email,
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: Colors.black54,
                         fontWeight: FontWeight.bold,
                         fontSize: 50,
                       )),
-                  TextButton(
-                      onPressed: () => uploadProfileImage(loginCubit.state.email, profileEditBloc),
-                      child: const Text("change it")),
                 ],
-              )
+              ),
             ],
           )
         : Image.asset('images/wait.gif');

@@ -1,10 +1,10 @@
 import 'package:dance_partner_finder/bloc/login/login_cubit.dart';
+import 'package:dance_partner_finder/subject_table.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bloc/login/login_state.dart';
-import 'dancer_profile_edit_widget.dart';
 import 'firebase_options.dart';
 import 'login_page.dart';
 
@@ -29,11 +29,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         home: BlocBuilder<LoginCubit, LoginState>(
-          builder: (context, state) {
-            return state.isLoggedIn
-                ? DanceProfileEditWidget()
-                : LoginPage();
-          },
+          builder: (context, state) => state.isLoggedIn ? const SubjectTableWidget() : LoginPage(),
         ),
       ),
     );
