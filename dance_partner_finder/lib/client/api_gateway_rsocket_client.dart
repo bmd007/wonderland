@@ -21,15 +21,15 @@ class ApiGatewayRSocketClient {
     return Payload.from(metadataBytes, dataBytes);
   }
 
-  Stream<String?> fetchDancePartnerSeekersNames(String name, double latitude, double longitude, int searchingRadius) {
+  Stream<String?> fetchDancePartnerSeekersNames(String name, double latitude, double longitude, double searchingRadius) {
     var body = """
     {
       "location": {
-          "latitude": "$latitude",
-          "longitude": "$longitude"
-          "radius": $searchingRadius
+          "latitude": $latitude,
+          "longitude": $longitude
         },
-        "dancerPartnerSeekerName": "${name}"
+        "radius": $searchingRadius,
+        "dancerPartnerSeekerName": "$name"
     }
   """;
     return _rsocketConnectionStream

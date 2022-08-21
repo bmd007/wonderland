@@ -23,7 +23,7 @@ class DancerDislikedEvent extends DancePartnerFinderEvent {
 }
 
 class SearchingRadiusEnteredEvent extends DancePartnerFinderEvent {
-  final int searchingRadius;
+  final double searchingRadius;
 
   const SearchingRadiusEnteredEvent(this.searchingRadius);
 

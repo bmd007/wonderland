@@ -42,14 +42,20 @@ class DancePartnerFinderBloc extends Bloc<DancePartnerFinderEvent, DancePartnerF
     on<DancerLikedEvent>((event, emit) {
       ClientHolder.client.likeADancer(thisDancerName, event.dancerName).forEach((element) {});
       emit(state.moveToNextDancer());
+      if (state.isRunningOutOfDancers()) {
+        add(SearchingRadiusEnteredEvent(state.searchingRadius));
+      }
     });
     on<DancerDislikedEvent>((event, emit) {
       ClientHolder.client.disLikeADancer(thisDancerName, event.dancerName).forEach((element) {});
       emit(state.moveToNextDancer());
+      if (state.isRunningOutOfDancers()) {
+        add(SearchingRadiusEnteredEvent(state.searchingRadius));
+      }
     });
 
     if(state.dancerNames.isEmpty){
-      add(const SearchingRadiusEnteredEvent(40));
+      add(const SearchingRadiusEnteredEvent(100));
     }
   }
 }

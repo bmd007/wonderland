@@ -68,6 +68,7 @@ public class DancePartnerFinderResource {
         var disLikedDancersByPartnerSeeker = Optional.ofNullable(disLikedDancers.get(requestBody.dancerPartnerSeekerName))
                 .map(Map::keySet)
                 .orElseGet(Set::of);
+        log.info("GetOtherDancerPartnerSeekersRequestBody {}", requestBody);
         log.info("likees {}", likedDancersByPartnerSeeker);
         log.info("disLikees {}", disLikedDancersByPartnerSeeker);
         return wonderMatcherClient.get()

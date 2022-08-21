@@ -4,12 +4,12 @@ class DancePartnerFinderState extends Equatable {
 
   final List<String> dancerNames;
   final int currentDancerIndex;
-  final int searchingRadius;
+  final double searchingRadius;
   final bool isLoading;
 
   const DancePartnerFinderState(this.isLoading, this.currentDancerIndex, this.dancerNames, this.searchingRadius);
 
-  DancePartnerFinderState setSearchingRadius(int searchingRadius) {
+  DancePartnerFinderState setSearchingRadius(double searchingRadius) {
     return DancePartnerFinderState(true, 0, [], searchingRadius);
   }
 
@@ -22,7 +22,7 @@ class DancePartnerFinderState extends Equatable {
   }
 
   static DancePartnerFinderState empty() {
-    return const DancePartnerFinderState(false, 0, [], 0);
+    return const DancePartnerFinderState(false, 0, [], 200);
   }
 
   DancePartnerFinderState moveToNextDancer() {
@@ -30,6 +30,10 @@ class DancePartnerFinderState extends Equatable {
       return loading();
     }
     return DancePartnerFinderState(false, currentDancerIndex + 1, dancerNames, searchingRadius);
+  }
+
+  bool isRunningOutOfDancers(){
+    return currentDancerIndex >= dancerNames.length || dancerNames.isEmpty;
   }
 
   String getCurrentDancerName() {

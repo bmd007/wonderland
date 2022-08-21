@@ -50,6 +50,7 @@ public class WonderSeekerSeekResources {
                                      @RequestParam double longitude,
                                      @RequestParam double radius,
                                      @RequestParam(required = false) Long maxAge) {
+        LOGGER.info("radius {}", radius);
         var point = geometryFactory.createPoint(new Coordinate(latitude, longitude));
         /*
         * (distance / 180) * PI * 6371 = radius
