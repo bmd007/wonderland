@@ -55,7 +55,7 @@ public class DancePartnerFinderResource {
                 .subscribe();
     }
 
-    record GetOtherDancerPartnerSeekersRequestBody(String dancerPartnerSeekerName, Location location){}
+    record GetOtherDancerPartnerSeekersRequestBody(String dancerPartnerSeekerName, Location location, double radius){}
     @MessageMapping("/api/dance/partner/finder/names")
     //todo support time and search circle radius as input params
     //todo create a circle around seeker using radius and convert to wkt
@@ -74,6 +74,7 @@ public class DancePartnerFinderResource {
                 .uri(uriBuilder -> uriBuilder.path("api/wonder/box/by/coordinate")
                         .queryParam("latitude", requestBody.location.latitude())
                         .queryParam("longitude", requestBody.location.longitude())
+                        .queryParam("radius", requestBody.radius)
                         .build())
                 .retrieve()
                 .bodyToMono(WonderSeekersDto.class)

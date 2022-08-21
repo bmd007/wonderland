@@ -18,13 +18,11 @@ public class WonderSeekerLikedByResource {
         this.wonderSeekerLikedByViewService = wonderSeekerLikedByViewService;
     }
 
-
-    //isHighLevelQuery query param is related to inter instance communication and it should be true in normal operations or not defined
+    //isHighLevelQuery query param is related to inter instance communication, it should be true in normal operations or not defined
     @GetMapping
     public Mono<WonderSeekersLikedBysDto> getLikes(@RequestParam(required = false, value = ViewService.HIGH_LEVEL_QUERY_PARAM_NAME, defaultValue = "true") boolean isHighLevelQuery) {
         return wonderSeekerLikedByViewService.getAll(isHighLevelQuery);
     }
-
 
     @GetMapping("/{wonderSeeker}")
     public Mono<WonderSeekerLikedBysDto> getLikesByWonderSeekerName(@PathVariable("wonderSeeker") String wonderSeeker) {

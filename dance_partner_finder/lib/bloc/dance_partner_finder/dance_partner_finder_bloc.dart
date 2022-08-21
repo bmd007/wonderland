@@ -17,18 +17,7 @@ Stream<LocationData> getCurrentLocation() {
       .doOnData((event) => print("request permission result: ${event}"))
       .asyncMap((value) => location.getLocation())
       .doOnData((event) => print("request location result: ${event}"))
-      .doOnError(
-        (p0, p1) => print("location error: ${p0}:${p1}"),
-      );
-
-  // if (!await location.serviceEnabled() && !await location.requestService()) {
-  //   return Future.error(Error());
-  // }
-  // if (await location.hasPermission() == PermissionStatus.denied &&
-  //     await location.requestPermission() != PermissionStatus.granted) {
-  //   return Future.error(Error());
-  // }
-  // return await location.getLocation();
+      .doOnError((p0, p1) => print("location error: ${p0}:${p1}"));
 }
 
 class DancePartnerFinderBloc extends Bloc<DancePartnerFinderEvent, DancePartnerFinderState> {
@@ -60,7 +49,7 @@ class DancePartnerFinderBloc extends Bloc<DancePartnerFinderEvent, DancePartnerF
     });
 
     if(state.dancerNames.isEmpty){
-      add(const SearchingRadiusEnteredEvent(1));
+      add(const SearchingRadiusEnteredEvent(40));
     }
   }
 }

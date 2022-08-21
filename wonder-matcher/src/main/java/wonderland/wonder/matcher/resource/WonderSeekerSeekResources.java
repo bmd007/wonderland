@@ -17,6 +17,8 @@ import wonderland.wonder.matcher.repository.WonderSeekerJdbcRepository;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.lang.Math.PI;
+
 //todo expose RSocket as well
 @RestController
 @RequestMapping("/api/wonder")
@@ -46,9 +48,14 @@ public class WonderSeekerSeekResources {
     @GetMapping("/box/by/coordinate")//todo support instant max age, in hours
     public WonderSeekersDto queryBox(@RequestParam double latitude,
                                      @RequestParam double longitude,
+                                     @RequestParam double radius,
                                      @RequestParam(required = false) Long maxAge) {
         var point = geometryFactory.createPoint(new Coordinate(latitude, longitude));
-        var polygon = (Polygon) point.buffer(2);//2 / 180 * PI * 6371 = 222.389853289
+        /*
+        * (distance / 180) * PI * 6371 = radius
+        * distance = (radius*180)/(PI*6371)
+        * */
+        var polygon = (Polygon) point.buffer((radius*180)/(PI*6371));
         try {
             var results = repository.query(polygon)
                     .stream()

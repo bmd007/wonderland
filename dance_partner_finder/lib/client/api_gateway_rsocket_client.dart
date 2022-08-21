@@ -21,14 +21,13 @@ class ApiGatewayRSocketClient {
     return Payload.from(metadataBytes, dataBytes);
   }
 
-  Stream<String?> fetchDancePartnerSeekersNames(
-      String name, double latitude, double longitude, int searchingRadius) {
-    //todo use radius
+  Stream<String?> fetchDancePartnerSeekersNames(String name, double latitude, double longitude, int searchingRadius) {
     var body = """
     {
       "location": {
           "latitude": "$latitude",
           "longitude": "$longitude"
+          "radius": $searchingRadius
         },
         "dancerPartnerSeekerName": "${name}"
     }
