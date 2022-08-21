@@ -38,7 +38,6 @@ Toward outside:
     * what if pic is empty in firebase
     * search among close by dancers within a raduis specified by the user
     * create chat-history kafka streams Map<ThisDancerName, Map<ChateeName, List<Message>> and back chatBoxWidget with it!
-    * refill dance partner avaialble option automatically when no more left to choose from
     * publish logs into elastic search as application_log index
     * rename wonder-matcher to dance-partner-finder or dance-partner-matcher .... names in the match making stack are not mature enough!
     * refactor Consumed/Produced management in kafka stream applications. Use Kafka classes rather than yours. 
