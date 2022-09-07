@@ -45,7 +45,7 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
-    testImplementation 'io.projectreactor:reactor-test:3.4.21'
+    testImplementation 'io.projectreactor:reactor-test:3.4.22'
 }
 
 testing {
