@@ -70,7 +70,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     testImplementation 'com.playtika.testcontainers:embedded-elasticsearch:2.2.9'
-    testImplementation 'com.playtika.testcontainers:embedded-kafka:2.2.6'
+    testImplementation 'com.playtika.testcontainers:embedded-kafka:2.2.9'
 }
 
 
