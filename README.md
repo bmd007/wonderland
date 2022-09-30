@@ -35,7 +35,6 @@ Toward outside:
  - HTTPs communication between API-gateway and the app.
 
 ## ToDo:
-    * what if pic is empty in firebase
     * create chat-history kafka streams Map<ThisDancerName, Map<ChateeName, List<Message>> and back chatBoxWidget with it!
     * publish logs into elastic search as application_log index
     * rename wonder-matcher to dance-partner-finder or dance-partner-matcher .... names in the match making stack are not mature enough!
