@@ -33,7 +33,11 @@ class DancePartnerSelectWidget extends StatelessWidget {
         ? Stack(
             fit: StackFit.expand,
             children: [
-              Image.network(ProfileEditBloc.profilePicUrl(dancerBloc.state.getCurrentDancerName()), fit: BoxFit.fitHeight),
+              FadeInImage.assetNetwork(
+                  placeholder: 'images/fortnight.png',
+                  image: ProfileEditBloc.profilePicUrl(dancerBloc.state.getCurrentDancerName()),
+                  fit: BoxFit.fitHeight,
+              ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
