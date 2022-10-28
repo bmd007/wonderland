@@ -45,7 +45,7 @@ dependencies:
   google_sign_in: ^5.3.3
   google_fonts: ^3.0.1
   font_awesome_flutter: ^10.1.0
-  firebase_core: ^1.18.0
+  firebase_core: ^2.0.0
   firebase_storage: ^11.0.0
   firebase_app_check: ^0.1.0
   file_picker: ^5.0.0
