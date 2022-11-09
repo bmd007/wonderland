@@ -1,5 +1,6 @@
 import 'package:dance_partner_finder/bloc/dancer_match_and_chat/chat_message.dart';
 import 'package:dance_partner_finder/bloc/dancer_match_and_chat/dancer_chat_event.dart';
+import 'package:dance_partner_finder/video_chat_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -60,21 +61,21 @@ class DancerChatWidget extends StatelessWidget {
                           ),
                         ],
                       ),
-                    ),
-                    const Icon(
-                      Icons.settings,
-                      color: Colors.black54,
-                    ),
-                  ],
                 ),
-              ),
+                const Icon(
+                  Icons.settings,
+                  color: Colors.black54,
+                ),
+              ],
             ),
           ),
-          body: chatBox(matchAndChatBloc),
-        );
+        ),
+      ),
+      body: chatBox(matchAndChatBloc, context),
+    );
   }
 
-  Widget chatBox(DancerMatchAndChatBloc chatBloc) {
+  Widget chatBox(DancerMatchAndChatBloc chatBloc, BuildContext context) {
     _messageTypingController.value = _messageTypingController.value.copyWith(
       text: chatBloc.state.lastTextInTextBox,
       selection: TextSelection.collapsed(offset: chatBloc.state.lastTextInTextBox.length),
@@ -98,7 +99,14 @@ class DancerChatWidget extends StatelessWidget {
             child: Row(
               children: <Widget>[
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => VideoChatWidget(
+                                  chatParty: chatBloc.state.currentlyChattingWith,
+                                )));
+                  },
                   child: Container(
                     height: 30,
                     width: 30,
@@ -107,7 +115,7 @@ class DancerChatWidget extends StatelessWidget {
                       borderRadius: BorderRadius.circular(30),
                     ),
                     child: const Icon(
-                      Icons.add,
+                      Icons.ac_unit_sharp,
                       color: Colors.white,
                       size: 20,
                     ),

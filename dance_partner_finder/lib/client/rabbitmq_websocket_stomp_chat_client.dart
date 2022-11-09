@@ -8,7 +8,7 @@ class RabbitMqWebSocketStompChatClient {
   RabbitMqWebSocketStompChatClient(String thisDancerName,
       void Function(StompFrame stompFrame) stompMessageHandler) {
     var loginCode = {'login': 'rabbit-mq-web-stomp-credentials', 'passcode': 'rabbit-mq-web-stomp-credentials'};
-
+  //ssl port in rabbitmq: 15673 (check gcp/vm/*)
     var config = StompConfig(
         url: 'ws://192.168.10.179:15155/ws',
         // beforeConnect: () async => print("before connect"),
