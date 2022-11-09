@@ -12,17 +12,6 @@ services:
     environment:
       SERVICE_IGNORE: any_value
 
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.3.0
-    hostname: zookeeper
-    container_name: zookeeper
-    ports:
-      - "2181:2181"
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-      SERVICE_IGNORE: any_value
-
   kafka:
     image: confluentinc/cp-server:7.3.0
     hostname: kafka
@@ -39,10 +28,9 @@ services:
         dance-partner-events:1:1,
         event_log:1:1
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
-#      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      #      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
@@ -57,6 +45,11 @@ services:
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
       SERVICE_IGNORE: any_value
+      KAFKA_LISTENERS: PLAINTEXT://kafka:9092,CONTROLLER://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9092'
+      #      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9092,2@kafka2:9093,3@kafka3:9093'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
 
   prometheus:
     image: prom/prometheus
@@ -134,7 +127,6 @@ services:
       - kafka
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
-#      SPRING_PROFILES_ACTIVE: confluent
       SPRING_CLOUD_CONSUL_HOST: consul
       SPRING_CONFIG_IMPORT: optional:consul:consul:8500
       SERVICE_IGNORE: any_value
@@ -155,7 +147,6 @@ services:
       SPRING_RABBITMQ_HOST: "rabbitmq"
       SPRING_RABBITMQ_USERNAME: "imarabbit"
       SPRING_RABBITMQ_PASSWORD: "noyouarenot"
-#      SPRING_PROFILES_ACTIVE: confluent
       SPRING_CONFIG_IMPORT: optional:consul:consul:8500
       SPRING_CLOUD_CONSUL_HOST: consul
       SERVICE_IGNORE: any_value
@@ -177,7 +168,6 @@ services:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
       KAFKA_STREAMS_SERVER_CONFIG_APP_IP: wonder-matcher
       KAFKA_STREAMS_SERVER_CONFIG_APP_PORT: 9585
-#      SPRING_PROFILES_ACTIVE: confluent
       SPRING_CONFIG_IMPORT: optional:consul:consul:8500
       SPRING_CLOUD_CONSUL_HOST: consul
       SERVICE_IGNORE: any_value
