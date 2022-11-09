@@ -51,7 +51,6 @@ class DancerMatchAndChatBloc
             emit(state.typing(""));
           });
     });
-
     ClientHolder.client.matchStreams(thisDancerName).forEach((match) => add(MatchFoundEvent(match!)));
 
     chatClient = RabbitMqWebSocketStompChatClient(thisDancerName, (StompFrame stompFrame) {

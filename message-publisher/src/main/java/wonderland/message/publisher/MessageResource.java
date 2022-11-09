@@ -49,7 +49,6 @@ public class MessageResource {
     public String sendMessage(@RequestParam(required = false, defaultValue = "messages") String topic,
                               @PathVariable String from, @PathVariable String to, @RequestBody String body) {
         LOGGER.info("sending {}, from {} to {}", body, from, to);
-
         try {
             var messageProperties = new MessageProperties();
             messageProperties.setMessageId(UUID.randomUUID().toString());
