@@ -69,7 +69,6 @@ kafka:
       changelog: '1:1'
       messageEvents: '1:1'
 ---
----
 spring:
   config:
     activate:
