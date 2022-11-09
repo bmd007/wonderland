@@ -81,8 +81,6 @@ services:
 #      - '3000:3000'
 
   rabbitmq:
-#    command:
-#      - /etc/rabbitmq/rabbitMqUserCreation.sh
     container_name: rabbitmq
     hostname: rabbitmq
     build:

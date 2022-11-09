@@ -10,7 +10,7 @@ class RabbitMqWebSocketStompChatClient {
     var loginCode = {'login': 'rabbit-mq-web-stomp-credentials', 'passcode': 'rabbit-mq-web-stomp-credentials'};
   //ssl port in rabbitmq: 15673 (check gcp/vm/*)
     var config = StompConfig(
-        url: 'ws://192.168.10.179:15155/ws',
+        url: 'ws://192.168.1.188:15674/ws',
         // beforeConnect: () async => print("before connect"),
         onUnhandledFrame: (dynamic onUnhandledFrame) =>
             print('onUnhandledFrame $onUnhandledFrame'),

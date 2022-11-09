@@ -1,77 +1,39 @@
 import 'package:equatable/equatable.dart';
 
-import 'video_chat_message.dart';
-
 class VideoChatState extends Equatable {
-  final Map<String, List<ChatMessage>> chatHistory;
   final bool isLoading;
   final String currentlyChattingWith;
-  final String lastTextInTextBox;
+  final String thisDancerName;
+  final String offer;
+  final String answer;
   static const String _noOne = "NO_ONE";
 
-  const VideoChatState(this.isLoading, this.chatHistory, this.currentlyChattingWith, this.lastTextInTextBox);
+  const VideoChatState(this.isLoading, this.answer, this.currentlyChattingWith, this.offer, this.thisDancerName);
 
-  static VideoChatState withThisDancerName(thisDancerName) {
-    return const VideoChatState(true, <String, List<ChatMessage>>{}, _noOne, "");
+  static VideoChatState withThisDancerName(String thisDancerName, String currentlyChattingWith) {
+    return const VideoChatState(false, "", _noOne, "", _noOne);
   }
 
   VideoChatState loading() {
-    return VideoChatState(true, chatHistory, currentlyChattingWith, lastTextInTextBox);
-  }
-
-  VideoChatState loaded(
-      String chatParticipant, List<ChatMessage> loadedMassages) {
-    List<ChatMessage> newMessageListForParticipant = List.empty(growable: true);
-    if (!chatHistory.containsKey(chatParticipant) ||
-        (chatHistory.containsKey(chatParticipant) && chatHistory[chatParticipant]!.isEmpty)) {
-      newMessageListForParticipant
-          .add(ChatMessage("start of your conversation with $chatParticipant", MessageType.systemic, _noOne));
-    } else {
-      newMessageListForParticipant.addAll(chatHistory[chatParticipant]!);
-    }
-    newMessageListForParticipant.addAll(loadedMassages);
-    var newEntry = MapEntry(chatParticipant, newMessageListForParticipant.toList(growable: false));
-    var newChatHistoryEntries =
-        chatHistory.entries.where((element) => element.key != chatParticipant).followedBy([newEntry]);
-    return VideoChatState(false, Map.fromEntries(newChatHistoryEntries), currentlyChattingWith, lastTextInTextBox);
+    return VideoChatState(true, "", currentlyChattingWith, offer, thisDancerName);
   }
 
   bool isChattingWithSomeOne() {
     return _noOne != currentlyChattingWith;
   }
 
-  VideoChatState chattingWith(String chatParticipant) {
-    return VideoChatState(false, chatHistory, chatParticipant, lastTextInTextBox);
+  VideoChatState offered(String offer) {
+    return VideoChatState(false, "", currentlyChattingWith, offer, thisDancerName);
+  }
+
+  VideoChatState answered(String answer) {
+    return VideoChatState(false, answer, currentlyChattingWith, offer, thisDancerName);
   }
 
   VideoChatState noMoreChatting() {
-    return VideoChatState(false, chatHistory, _noOne, "write here");
+    return const VideoChatState(false, "", _noOne, "", _noOne);
   }
 
   @override
-  List<Object> get props => [isLoading, chatHistory, currentlyChattingWith, lastTextInTextBox];
-
-  VideoChatState addMessage(ChatMessage loadedMassage) {
-    return loaded(loadedMassage.participantName, [loadedMassage]);
-  }
-
-  VideoChatState addMatch(String chatParticipant) {
-    return loaded(chatParticipant, []);
-  }
-
-  String lastMessage(String matchedDancerName) {
-    if (!chatHistory.containsKey(matchedDancerName)) {
-      return "no such a match";
-    }
-    var chats = chatHistory[matchedDancerName] ?? [];
-    if(chats.isEmpty){
-      return "no text yet";
-    }
-    return chats.last.text;
-  }
-  //todo implement removing messages related to a specific person
-
-  VideoChatState typing(String text) {
-    return VideoChatState(isLoading, chatHistory, currentlyChattingWith, text);
-  }
+  List<Object> get props => [isLoading, answer, currentlyChattingWith, offer, thisDancerName];
 }

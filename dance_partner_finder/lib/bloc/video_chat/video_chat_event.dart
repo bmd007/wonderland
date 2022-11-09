@@ -1,79 +1,37 @@
 import 'package:equatable/equatable.dart';
 
-import 'video_chat_message.dart';
-
 abstract class VideoChatEvent extends Equatable {
   const VideoChatEvent();
 }
-
-class MessagesLoadedEvent extends VideoChatEvent {
-  final String chatParticipant;
-  final List<ChatMessage> loadedMassages;
-
-  const MessagesLoadedEvent(this.chatParticipant, this.loadedMassages);
+class AnswerReceivedEvent extends VideoChatEvent {
+  final String answer;
+  const AnswerReceivedEvent(this.answer);
 
   @override
-  List<Object?> get props => [chatParticipant, loadedMassages];
+  List<Object?> get props => [answer];
 }
 
-class MessageLoadedEvent extends VideoChatEvent {
-  final String chatParticipant;
-  final ChatMessage loadedMassage;
-
-  const MessageLoadedEvent(this.chatParticipant, this.loadedMassage);
+class CreateAnswerRequestedEvent extends VideoChatEvent {
+  const CreateAnswerRequestedEvent();
 
   @override
-  List<Object?> get props => [chatParticipant, loadedMassage];
+  List<Object?> get props => [];
 }
 
-class MessageReceivedEvent extends VideoChatEvent {
-  final ChatMessage massage;
-
-  const MessageReceivedEvent(this.massage);
+class OfferCreationRequestedEvent extends VideoChatEvent {
+  const OfferCreationRequestedEvent();
 
   @override
-  List<Object?> get props => [massage];
+  List<Object?> get props => [];
 }
 
-class DancerSendMessageEvent extends VideoChatEvent {
-  final ChatMessage massage;
+class OfferReceivedEvent extends VideoChatEvent {
+  final String offer;
 
-  const DancerSendMessageEvent(this.massage);
-
-  @override
-  List<Object?> get props => [massage];
-}
-
-class MatchFoundEvent extends VideoChatEvent {
-  final String matchName;
-
-  const MatchFoundEvent(this.matchName);
+  const OfferReceivedEvent(this.offer);
 
   @override
-  List<Object?> get props => [matchName];
-}
-
-class WantedToChatEvent extends VideoChatEvent {
-  final String chatParticipant;
-
-  const WantedToChatEvent(this.chatParticipant);
-
-  @override
-  List<Object?> get props => [chatParticipant];
-}
-
-class TextTypedEvent extends VideoChatEvent {
-  final String text;
-
-  const TextTypedEvent(this.text);
-
-  @override
-  List<Object?> get props => [text];
-}
-
-class BackToMatchesEvent extends VideoChatEvent {
-  @override
-  List<Object?> get props => ["ignore"];
+  List<Object?> get props => [offer];
 }
 
 class StompConnectionReadyEvent extends VideoChatEvent {

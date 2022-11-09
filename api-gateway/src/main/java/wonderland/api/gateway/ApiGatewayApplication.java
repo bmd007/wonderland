@@ -45,6 +45,8 @@ public class ApiGatewayApplication {
                         .uri("lb://message-publisher")
                 )
                 .route(r -> r.path("/v1/chat/messages").uri("lb://message-publisher"))
+                .route(r -> r.path("/v1/video/chat/answer").uri("lb://message-publisher"))
+                .route(r -> r.path("/v1/video/chat/offer").uri("lb://message-publisher"))
                 .build();
     }
 }

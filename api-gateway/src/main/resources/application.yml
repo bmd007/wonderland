@@ -96,9 +96,12 @@ spring:
         enabled: false
       address: 0.0.0.0
       port: 8080
-
   kafka:
     bootstrap-servers: "localhost:29092"
+
+server:
+  ssl:
+    enabled: false
 ---
 spring:
   config:
