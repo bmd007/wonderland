@@ -15,8 +15,6 @@ services:
     image: confluentinc/cp-server:7.3.0
     hostname: kafka
     container_name: kafka
-    depends_on:
-      - zookeeper
     ports:
       - "29092:29092"
       - "9101:9101"
@@ -80,17 +78,3 @@ services:
     command: "-internal consul://consul:8500"
     depends_on:
       - consul
-
-  kafka-manager:
-    container_name: kafka-manager
-    hostname: kafka-manager
-    depends_on:
-      - zookeeper
-      - kafka
-    image: rafabsb/kafka-manager-docker
-    ports:
-      - "9000:9000"
-    environment:
-      ZK_HOSTS: zookeeper:2181
-      APPLICATION_SECRET: letmein
-      KM_ARGS: -Djava.net.preferIPv4Stack=true
