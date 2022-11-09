@@ -13,7 +13,7 @@ services:
       SERVICE_IGNORE: any_value
 
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.2.2
+    image: confluentinc/cp-zookeeper:7.3.0
     hostname: zookeeper
     container_name: zookeeper
     ports:
@@ -24,7 +24,7 @@ services:
       SERVICE_IGNORE: any_value
 
   kafka:
-    image: confluentinc/cp-server:7.2.2
+    image: confluentinc/cp-server:7.3.0
     hostname: kafka
     container_name: kafka
     depends_on:

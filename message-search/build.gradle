@@ -39,7 +39,7 @@ repositories {
 }
 
 ext {
-    set('springCloudVersion', "2021.0.4")
+    set('springCloudVersion', "2021.0.5")
 }
 
 dependencies {
@@ -69,8 +69,8 @@ dependencies {
     testImplementation 'org.mockito:mockito-junit-jupiter'
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-    testImplementation 'com.playtika.testcontainers:embedded-kafka:2.2.10'
     testImplementation 'com.playtika.testcontainers:embedded-elasticsearch:2.2.11'
+    testImplementation 'com.playtika.testcontainers:embedded-kafka:2.2.11'
 }
 
 
