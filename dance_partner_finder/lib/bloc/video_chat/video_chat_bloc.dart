@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:dance_partner_finder/client/api_gateway_client_holder.dart';
-import 'package:dance_partner_finder/client/message_is_sent_to_you_event.dart';
 import 'package:dance_partner_finder/client/rabbitmq_websocket_stomp_chat_client.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:sdp_transform/sdp_transform.dart';
@@ -29,8 +28,6 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
       print(offerString);
       print("bmd offer \n --------------\n");
 
-      _peerConnection!.setLocalDescription(description);
-
       await ClientHolder.apiGatewayHttpClient
           .post('/v1/video/chat/offer', data: {"sender": thisDancerName, "receiver": chatParty, "content": offerString})
           .asStream()
@@ -38,6 +35,7 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
           .forEach((element) {
             print(element);
             emit(state.offered(offerString));
+            _peerConnection!.setLocalDescription(description);
           });
     });
 
@@ -50,8 +48,6 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
       print(answerString);
       print("bmd answer \n --------------\n");
 
-      _peerConnection!.setLocalDescription(description);
-
       await ClientHolder.apiGatewayHttpClient
           .post('/v1/video/chat/answer',
               data: {"sender": thisDancerName, "receiver": chatParty, "content": answerString})
@@ -60,6 +56,7 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
           .forEach((element) {
             print(element);
             emit(state.answered(answerString));
+            _peerConnection!.setLocalDescription(description).then((value) => {});
           });
     });
 
@@ -76,9 +73,9 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
       String sdp = write(session, null);
       RTCSessionDescription description = RTCSessionDescription(sdp, 'answer');
       print(description.toMap());
-      await _peerConnection!.setRemoteDescription(description);
+      _peerConnection!.setRemoteDescription(description)
+          .then((value) => add(const CreateAnswerRequestedEvent()));
       emit(state.offered(event.offer));
-      add(const CreateAnswerRequestedEvent());
     });
 
     localVideoRenderer.initialize();
@@ -89,12 +86,14 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
     });
 
     chatClient = RabbitMqWebSocketStompChatClient(thisDancerName, (StompFrame stompFrame) {
+      String body = stompFrame.body!;
       if (stompFrame.headers.containsKey("type")) {
-        var messageIsSentToYouEvent = MessageIsSentToYouEvent.fromJson(stompFrame.body!);
         if (stompFrame.headers["type"] == "WebRtcAnswer") {
-          add(AnswerReceivedEvent(messageIsSentToYouEvent.content));
+          print("bmd received answer in $body");
+          add(AnswerReceivedEvent(body));
         } else if (stompFrame.headers["type"] == "WebRtcOffer") {
-          add(OfferReceivedEvent(messageIsSentToYouEvent.content));
+          print("bmd received offer in $body");
+          add(OfferReceivedEvent(body));
         }
       }
     });
