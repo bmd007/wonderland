@@ -62,18 +62,14 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
       RTCSessionDescription description = RTCSessionDescription(sdp, 'answer');
       await _peerConnection!.setRemoteDescription(description);
       print('remote description after receiving answer');
-      // dynamic candidate = RTCIceCandidate(session['candidate'], session['sdpMid'], session['sdpMlineIndex']);
-      // //TypeError: Failed to construct 'RTCIceCandidate': sdpMid and sdpMLineIndex are both null. todo
-      // await _peerConnection!.addCandidate(candidate);
       emit(state.answered(event.answer));
+
       MediaStream remoteMediaStream = await _peerConnection!.getRemoteStreams()!.first!;
-      print(
-          "remote stream after receiving answer: ${remoteMediaStream?.id}, ${remoteMediaStream?.active}, ${remoteMediaStream?.ownerTag}");
+      print("remote stream after receiving answer: ${remoteMediaStream?.id}, ${remoteMediaStream?.ownerTag}");
       remoteVideoRenderer.srcObject = remoteMediaStream;
 
       MediaStream localMediaStream = await _peerConnection!.getLocalStreams()!.first!;
-      print(
-          "local stream after receiving answer: ${localMediaStream?.id}, ${localMediaStream?.active}, ${localMediaStream?.ownerTag}");
+      print("local stream after receiving answer: ${localMediaStream?.id},  ${localMediaStream?.ownerTag}");
       localVideoRenderer.srcObject = localMediaStream;
     });
 
@@ -86,14 +82,13 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
       add(const CreateAnswerRequestedEvent());
       print('remote description after receiving offer');
       emit(state.offered(event.offer));
+
       MediaStream remoteMediaStream = await _peerConnection!.getRemoteStreams()!.first!;
-      print(
-          "remote stream after receiving offer: ${remoteMediaStream?.id}, ${remoteMediaStream?.active}, ${remoteMediaStream?.ownerTag}");
+      print("remote stream after receiving offer: ${remoteMediaStream?.id}, ${remoteMediaStream?.ownerTag}");
       remoteVideoRenderer.srcObject = remoteMediaStream;
 
       MediaStream localMediaStream = await _peerConnection!.getLocalStreams()!.first!;
-      print(
-          "local stream after receiving offer: ${localMediaStream?.id}, ${localMediaStream?.active}, ${localMediaStream?.ownerTag}");
+      print("local stream after receiving offer: ${localMediaStream?.id}, ${localMediaStream?.ownerTag}");
       localVideoRenderer.srcObject = localMediaStream;
     });
 
@@ -128,7 +123,7 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
 
     final Map<String, dynamic> offerSdpConstraints = {
       "mandatory": {
-        "OfferToReceiveAudio": false,
+        "OfferToReceiveAudio": true,
         "OfferToReceiveVideo": true,
       },
       "optional": [],
@@ -137,7 +132,7 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
     RTCPeerConnection pc = await createPeerConnection(configuration, offerSdpConstraints);
 
     final Map<String, dynamic> mediaConstraints = {
-      'audio': false,
+      'audio': true,
       'video': {
         'facingMode': 'user',
       }
