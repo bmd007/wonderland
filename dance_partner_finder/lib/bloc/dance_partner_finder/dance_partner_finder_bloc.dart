@@ -12,12 +12,12 @@ Stream<LocationData> getCurrentLocation() {
   return location
       .requestService()
       .asStream()
-      .doOnData((event) => print("request service result: ${event}"))
+      .doOnData((event) => print("request service result: $event"))
       .asyncMap((value) => location.requestPermission())
-      .doOnData((event) => print("request permission result: ${event}"))
+      .doOnData((event) => print("request permission result: $event"))
       .asyncMap((value) => location.getLocation())
-      .doOnData((event) => print("request location result: ${event}"))
-      .doOnError((p0, p1) => print("location error: ${p0}:${p1}"));
+      .doOnData((event) => print("request location result: $event"))
+      .doOnError((p0, p1) => print("location error: $p0:$p1"));
 }
 
 class DancePartnerFinderBloc extends Bloc<DancePartnerFinderEvent, DancePartnerFinderState> {

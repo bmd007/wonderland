@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 import 'profile_edit_event.dart';
 import 'profile_edit_state.dart';

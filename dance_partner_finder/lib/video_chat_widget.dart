@@ -57,29 +57,27 @@ class VideoChatWidget extends StatelessWidget {
 
   Widget body(BuildContext context, LoginCubit loginCubit) {
     var videoChatBloc = context.watch<VideoChatBloc>();
-    return !videoChatBloc.state.isLoading
-        ? Column(
-            children: [
-              videoRenderers(context),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      videoChatBloc.add(const OfferCreationRequestedEvent());
-                    },
-                    child: const Text("Offer"),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                ],
-              )
-            ],
-          )
-        : Image.asset('images/wait.gif');
+    return Column(
+      children: [
+        videoRenderers(context),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                videoChatBloc.add(const OfferCreationRequestedEvent());
+              },
+              child: const Text("Offer"),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+          ],
+        )
+      ],
+    );
   }
 }

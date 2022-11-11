@@ -1,10 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:dance_partner_finder/client/api_gateway_client_holder.dart';
-import 'package:dance_partner_finder/client/message_is_sent_to_you_event.dart';
 import 'package:dance_partner_finder/client/rabbitmq_websocket_stomp_chat_client.dart';
-import 'package:stomp_dart_client/stomp_frame.dart';
 
-import 'chat_message.dart';
 import 'dancer_chat_event.dart';
 import 'dancer_chat_state.dart';
 

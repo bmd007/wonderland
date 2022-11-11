@@ -9,7 +9,7 @@ import 'bloc/profile_bloc/profile_edit_bloc.dart';
 import 'dance_partner_matches_page.dart';
 
 class DancePartnerSelectWidget extends StatelessWidget {
-  DancePartnerSelectWidget({Key? key}) : super(key: key);
+  const DancePartnerSelectWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

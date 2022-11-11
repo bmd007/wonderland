@@ -55,7 +55,7 @@ class SubjectTableWidget extends StatelessWidget {
             Card(
               child: GestureDetector(
                 onTap: () =>
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => DancePartnerSelectWidget())),
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const DancePartnerSelectWidget())),
                 child: Container(
                   height: 300,
                   decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),

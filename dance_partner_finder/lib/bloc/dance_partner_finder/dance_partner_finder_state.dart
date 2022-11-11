@@ -10,11 +10,11 @@ class DancePartnerFinderState extends Equatable {
   const DancePartnerFinderState(this.isLoading, this.currentDancerIndex, this.dancerNames, this.searchingRadius);
 
   DancePartnerFinderState setSearchingRadius(double searchingRadius) {
-    return DancePartnerFinderState(true, 0, [], searchingRadius);
+    return DancePartnerFinderState(true, 0, const [], searchingRadius);
   }
 
   DancePartnerFinderState loading() {
-    return DancePartnerFinderState(true, 0, [], searchingRadius);
+    return DancePartnerFinderState(true, 0, const [], searchingRadius);
   }
 
   DancePartnerFinderState loaded(List<String> loadedDancerNames) {

@@ -29,7 +29,6 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
           .asStream()
           .where((event) => event.statusCode == 200)
           .forEach((element) {
-            emit(state.offered(offerString));
             _peerConnection!
                 .setLocalDescription(description)
                 .asStream()
@@ -48,7 +47,6 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
           .where((event) => event.statusCode == 200)
           .forEach((element) {
         print('answer sent');
-            emit(state.answered(answerString));
             _peerConnection!
                 .setLocalDescription(description)
                 .asStream()
@@ -62,33 +60,28 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
       RTCSessionDescription description = RTCSessionDescription(sdp, 'answer');
       await _peerConnection!.setRemoteDescription(description);
       print('remote description after receiving answer');
-      emit(state.answered(event.answer));
 
-      MediaStream remoteMediaStream = await _peerConnection!.getRemoteStreams()!.first!;
-      print("remote stream after receiving answer: ${remoteMediaStream?.id}, ${remoteMediaStream?.ownerTag}");
+      MediaStream remoteMediaStream = _peerConnection!.getRemoteStreams().first!;
       remoteVideoRenderer.srcObject = remoteMediaStream;
 
-      MediaStream localMediaStream = await _peerConnection!.getLocalStreams()!.first!;
-      print("local stream after receiving answer: ${localMediaStream?.id},  ${localMediaStream?.ownerTag}");
+      MediaStream localMediaStream = _peerConnection!.getLocalStreams().first!;
       localVideoRenderer.srcObject = localMediaStream;
     });
 
     on<OfferReceivedEvent>((event, emit) async {
+      _peerConnection = await _createPeerConnection();
+
       dynamic session = await jsonDecode(event.offer);
       String sdp = write(session, null);
-      _peerConnection = await _createPeerConnection();
       RTCSessionDescription description = RTCSessionDescription(sdp, 'offer');
       await _peerConnection!.setRemoteDescription(description);
       add(const CreateAnswerRequestedEvent());
       print('remote description after receiving offer');
-      emit(state.offered(event.offer));
 
-      MediaStream remoteMediaStream = await _peerConnection!.getRemoteStreams()!.first!;
-      print("remote stream after receiving offer: ${remoteMediaStream?.id}, ${remoteMediaStream?.ownerTag}");
+      MediaStream remoteMediaStream = _peerConnection!.getRemoteStreams().first!;
       remoteVideoRenderer.srcObject = remoteMediaStream;
 
-      MediaStream localMediaStream = await _peerConnection!.getLocalStreams()!.first!;
-      print("local stream after receiving offer: ${localMediaStream?.id}, ${localMediaStream?.ownerTag}");
+      MediaStream localMediaStream = _peerConnection!.getLocalStreams().first!;
       localVideoRenderer.srcObject = localMediaStream;
     });
 
@@ -99,10 +92,10 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
       String body = stompFrame.body!;
       if (stompFrame.headers.containsKey("type")) {
         if (stompFrame.headers["type"] == "WebRtcAnswer") {
-          print("bmd received answer");
+          print("received answer");
           add(AnswerReceivedEvent(body));
         } else if (stompFrame.headers["type"] == "WebRtcOffer") {
-          print("bmd received offer");
+          print("received offer");
           add(OfferReceivedEvent(body));
         }
       }
@@ -151,7 +144,7 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
     };
 
     pc.onIceConnectionState = (e) {
-      print(' onIceConnectionState $e');
+      print('onIceConnectionState $e');
     };
 
     return pc;
