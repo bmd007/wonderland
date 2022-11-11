@@ -14,7 +14,7 @@ class VideoChatWidget extends StatelessWidget {
   SizedBox videoRenderers(BuildContext context) {
     var videoChatBloc = context.watch<VideoChatBloc>();
     return SizedBox(
-      height: 210,
+      height: 500,
       child: Row(children: [
         Flexible(
           child: Container(
@@ -28,7 +28,7 @@ class VideoChatWidget extends StatelessWidget {
           child: Container(
             key: const Key('remote'),
             margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-            decoration: const BoxDecoration(color: Colors.black),
+            decoration: const BoxDecoration(color: Colors.red),
             child: RTCVideoView(videoChatBloc.remoteVideoRenderer),
           ),
         ),

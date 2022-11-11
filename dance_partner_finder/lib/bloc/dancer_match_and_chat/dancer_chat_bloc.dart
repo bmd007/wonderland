@@ -53,12 +53,12 @@ class DancerMatchAndChatBloc
     });
     ClientHolder.client.matchStreams(thisDancerName).forEach((match) => add(MatchFoundEvent(match!)));
 
-    chatClient = RabbitMqWebSocketStompChatClient(thisDancerName, (StompFrame stompFrame) {
-      if (stompFrame.headers.containsKey("type") && stompFrame.headers["type"] == "MessageIsSentToYouEvent") {
-        var messageIsSentToYouEvent = MessageIsSentToYouEvent.fromJson(stompFrame.body!);
-        add(MessageReceivedEvent(
-            ChatMessage(messageIsSentToYouEvent.content, MessageType.received, messageIsSentToYouEvent.sender)));
-      }
-    });
+    // chatClient = RabbitMqWebSocketStompChatClient(thisDancerName, (StompFrame stompFrame) {
+    //   if (stompFrame.headers.containsKey("type") && stompFrame.headers["type"] == "MessageIsSentToYouEvent") {
+    //     var messageIsSentToYouEvent = MessageIsSentToYouEvent.fromJson(stompFrame.body!);
+    //     add(MessageReceivedEvent(
+    //         ChatMessage(messageIsSentToYouEvent.content, MessageType.received, messageIsSentToYouEvent.sender)));
+    //   }
+    // });
   }
 }

@@ -29,10 +29,10 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
           .asStream()
           .where((event) => event.statusCode == 200)
           .forEach((element) {
-            print(element);
             emit(state.offered(offerString));
-            _peerConnection!.setLocalDescription(description);
-          });
+            _peerConnection!.setLocalDescription(description).asStream()
+                .forEach((value) => {print('local des set after sending offer')});
+      });
     });
 
     on<CreateAnswerRequestedEvent>((event, emit) async {
@@ -45,17 +45,22 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
           .asStream()
           .where((event) => event.statusCode == 200)
           .forEach((element) {
-            print(element);
+            print('answer sent');
             emit(state.answered(answerString));
-            _peerConnection!.setLocalDescription(description).asStream().forEach((value) => {});
+            _peerConnection!.setLocalDescription(description).asStream()
+                .forEach((value) => {print('local des set after sending answer')});
           });
     });
 
     on<AnswerReceivedEvent>((event, emit) async {
       dynamic session = await jsonDecode(event.answer);
-      print(session['candidate']);
+      String sdp = write(session, null);
+      RTCSessionDescription description = RTCSessionDescription(sdp, 'answer');
+      await _peerConnection!.setRemoteDescription(description);
+      print('remote des set after receiving answer');
       dynamic candidate = RTCIceCandidate(session['candidate'], session['sdpMid'], session['sdpMlineIndex']);
-      await _peerConnection!.addCandidate(candidate);//todo ?_peerConnection!.setRemoteDescription(description)
+      //TypeError: Failed to construct 'RTCIceCandidate': sdpMid and sdpMLineIndex are both null. todo
+      await _peerConnection!.addCandidate(candidate);
       emit(state.answered(event.answer));
     });
 
@@ -64,9 +69,11 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
       String sdp = write(session, null);
       _peerConnection = await _createPeerConnection();
       RTCSessionDescription description = RTCSessionDescription(sdp, 'offer');
-      print(description.toMap());
       _peerConnection!.setRemoteDescription(description)
-          .asStream().forEach((value) => add(const CreateAnswerRequestedEvent()));
+          .asStream().forEach((value) {
+        add(const CreateAnswerRequestedEvent());
+        print('remote des set after receiving offer');
+      });
       emit(state.offered(event.offer));
     });
 
@@ -77,10 +84,10 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
       String body = stompFrame.body!;
       if (stompFrame.headers.containsKey("type")) {
         if (stompFrame.headers["type"] == "WebRtcAnswer") {
-          print("bmd received answer in $body");
+          print("bmd received answer");
           add(AnswerReceivedEvent(body));
         } else if (stompFrame.headers["type"] == "WebRtcOffer") {
-          print("bmd received offer in $body");
+          print("bmd received offer");
           add(OfferReceivedEvent(body));
         }
       }
@@ -95,6 +102,24 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
         {'url':'stun:stun2.l.google.com:19302'},
         {'url':'stun:stun3.l.google.com:19302'},
         {'url':'stun:stun4.l.google.com:19302'},
+        {
+          'url': "stun:openrelay.metered.ca:80",
+        },
+        {
+          'url': "turn:openrelay.metered.ca:80",
+          'username': "openrelayproject",
+          'credential': "openrelayproject",
+        },
+        {
+          'url': "turn:openrelay.metered.ca:443",
+          'username': "openrelayproject",
+          'credential': "openrelayproject",
+        },
+        {
+          'url': "turn:openrelay.metered.ca:443?transport=tcp",
+          'username': "openrelayproject",
+          'credential': "openrelayproject",
+        },
       ]
     };
 
@@ -114,16 +139,16 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
 
     pc.onIceCandidate = (e) {
       if (e.candidate != null) {
-        print(json.encode({
-          'candidate': e.candidate.toString(),
-          'sdpMid': e.sdpMid.toString(),
-          'sdpMlineIndex': e.sdpMLineIndex,
-        }));
+        // print(json.encode({
+        //   'candidate': e.candidate.toString(),
+        //   'sdpMid': e.sdpMid.toString(),
+        //   'sdpMlineIndex': e.sdpMLineIndex,
+        // }));
       }
     };
 
     pc.onIceConnectionState = (e) {
-      print(e);
+      print(' onIceConnectionState $e');
     };
 
     pc.onAddStream = (stream) {
