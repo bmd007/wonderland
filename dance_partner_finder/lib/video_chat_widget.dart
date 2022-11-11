@@ -14,7 +14,7 @@ class VideoChatWidget extends StatelessWidget {
   SizedBox videoRenderers(BuildContext context) {
     var videoChatBloc = context.watch<VideoChatBloc>();
     return SizedBox(
-      height: 500,
+      height: 150,
       child: Row(children: [
         Flexible(
           child: Container(
