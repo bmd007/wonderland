@@ -55,7 +55,7 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
       dynamic session = await jsonDecode(event.answer);
       print(session['candidate']);
       dynamic candidate = RTCIceCandidate(session['candidate'], session['sdpMid'], session['sdpMlineIndex']);
-      await _peerConnection!.addCandidate(candidate);
+      await _peerConnection!.addCandidate(candidate);//todo ?_peerConnection!.setRemoteDescription(description)
       emit(state.answered(event.answer));
     });
 
@@ -63,7 +63,7 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
       dynamic session = await jsonDecode(event.offer);
       String sdp = write(session, null);
       _peerConnection = await _createPeerConnection();
-      RTCSessionDescription description = RTCSessionDescription(sdp, 'answer');
+      RTCSessionDescription description = RTCSessionDescription(sdp, 'offer');
       print(description.toMap());
       _peerConnection!.setRemoteDescription(description)
           .asStream().forEach((value) => add(const CreateAnswerRequestedEvent()));
