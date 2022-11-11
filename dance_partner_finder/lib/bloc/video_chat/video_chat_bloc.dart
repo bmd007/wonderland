@@ -20,14 +20,10 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
   VideoChatBloc(String thisDancerName, String chatParty)
       : super(VideoChatState.withThisDancerName(thisDancerName, chatParty)) {
     on<OfferCreationRequestedEvent>((event, emit) async {
+      _peerConnection = await _createPeerConnection();
       RTCSessionDescription description = await _peerConnection!.createOffer({'offerToReceiveVideo': 1});
       var session = parse(description.sdp.toString());
-      print("bmd offer \n --------------\n");
-
       var offerString = json.encode(session);
-      print(offerString);
-      print("bmd offer \n --------------\n");
-
       await ClientHolder.apiGatewayHttpClient
           .post('/v1/video/chat/offer', data: {"sender": thisDancerName, "receiver": chatParty, "content": offerString})
           .asStream()
@@ -41,13 +37,8 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
 
     on<CreateAnswerRequestedEvent>((event, emit) async {
       RTCSessionDescription description = await _peerConnection!.createAnswer({'offerToReceiveVideo': 1});
-
       var session = parse(description.sdp.toString());
-      print("bmd answer \n --------------\n");
       var answerString = json.encode(session);
-      print(answerString);
-      print("bmd answer \n --------------\n");
-
       await ClientHolder.apiGatewayHttpClient
           .post('/v1/video/chat/answer',
               data: {"sender": thisDancerName, "receiver": chatParty, "content": answerString})
@@ -56,7 +47,7 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
           .forEach((element) {
             print(element);
             emit(state.answered(answerString));
-            _peerConnection!.setLocalDescription(description).then((value) => {});
+            _peerConnection!.setLocalDescription(description).asStream().forEach((value) => {});
           });
     });
 
@@ -71,19 +62,16 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
     on<OfferReceivedEvent>((event, emit) async {
       dynamic session = await jsonDecode(event.offer);
       String sdp = write(session, null);
+      _peerConnection = await _createPeerConnection();
       RTCSessionDescription description = RTCSessionDescription(sdp, 'answer');
       print(description.toMap());
       _peerConnection!.setRemoteDescription(description)
-          .then((value) => add(const CreateAnswerRequestedEvent()));
+          .asStream().forEach((value) => add(const CreateAnswerRequestedEvent()));
       emit(state.offered(event.offer));
     });
 
     localVideoRenderer.initialize();
     remoteVideoRenderer.initialize();
-
-    _createPeerConnection().then((pc) {
-      _peerConnection = pc;
-    });
 
     chatClient = RabbitMqWebSocketStompChatClient(thisDancerName, (StompFrame stompFrame) {
       String body = stompFrame.body!;
@@ -102,7 +90,11 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
   _createPeerConnection() async {
     Map<String, dynamic> configuration = {
       "iceServers": [
-        {"url": "stun:stun.l.google.com:19302"},
+        {'url':'stun:stun.l.google.com:19302'},
+        {'url':'stun:stun1.l.google.com:19302'},
+        {'url':'stun:stun2.l.google.com:19302'},
+        {'url':'stun:stun3.l.google.com:19302'},
+        {'url':'stun:stun4.l.google.com:19302'},
       ]
     };
 
@@ -135,7 +127,7 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
     };
 
     pc.onAddStream = (stream) {
-      print('addStream: ' + stream.id);
+      print('addStream: ${stream.id}');
       remoteVideoRenderer.srcObject = stream;
     };
 

@@ -53,5 +53,9 @@
 	<string>This app needs access to location in the background.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
     <string>allow library access to be able to change your profile picture</string>
+    <key>NSCameraUsageDescription</key>
+    <string>$(PRODUCT_NAME) Camera Usage!</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>$(PRODUCT_NAME) Microphone Usage!</string>
 </dict>
 </plist>
