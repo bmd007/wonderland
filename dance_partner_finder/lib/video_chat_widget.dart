@@ -15,28 +15,24 @@ class VideoChatWidget extends StatelessWidget {
     var videoChatBloc = context.watch<VideoChatBloc>();
     return SizedBox(
       height: 150,
-      child: Column(
-        children: [
-          Row(children: [
-            Flexible(
-              child: Container(
-                key: const Key('local'),
-                margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-                decoration: const BoxDecoration(color: Colors.black),
-                child: RTCVideoView(videoChatBloc.localVideoRenderer),
-              ),
-            ),
-            Flexible(
-              child: Container(
-                key: const Key('remote'),
-                margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-                decoration: const BoxDecoration(color: Colors.red),
-                child: RTCVideoView(videoChatBloc.remoteVideoRenderer),
-              ),
-            ),
-          ]),
-        ],
-      ),
+      child: Row(children: [
+        Flexible(
+          child: Container(
+            key: const Key('local'),
+            margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
+            decoration: const BoxDecoration(color: Colors.black),
+            child: RTCVideoView(videoChatBloc.localVideoRenderer),
+          ),
+        ),
+        Flexible(
+          child: Container(
+            key: const Key('remote'),
+            margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
+            decoration: const BoxDecoration(color: Colors.red),
+            child: RTCVideoView(videoChatBloc.remoteVideoRenderer),
+          ),
+        ),
+      ]),
     );
   }
 
