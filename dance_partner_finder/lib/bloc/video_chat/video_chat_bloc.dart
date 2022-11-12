@@ -24,15 +24,14 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
       RTCSessionDescription description = await _peerConnection!.createOffer({'offerToReceiveVideo': 1});
       var session = parse(description.sdp.toString());
       var offerString = json.encode(session);
+      await _peerConnection!.setLocalDescription(description);
+      print('local description before sending offer');
       await ClientHolder.apiGatewayHttpClient
           .post('/v1/video/chat/offer', data: {"sender": thisDancerName, "receiver": chatParty, "content": offerString})
           .asStream()
           .where((event) => event.statusCode == 200)
           .forEach((element) {
-            _peerConnection!
-                .setLocalDescription(description)
-                .asStream()
-                .forEach((value) => {print('local description after sending offer')});
+            print('offer sent');
           });
     });
 
@@ -40,17 +39,15 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
       RTCSessionDescription description = await _peerConnection!.createAnswer({'offerToReceiveVideo': 1});
       var session = parse(description.sdp.toString());
       var answerString = json.encode(session);
+      await _peerConnection!.setLocalDescription(description);
+      print('local description before sending answer');
       await ClientHolder.apiGatewayHttpClient
           .post('/v1/video/chat/answer',
               data: {"sender": thisDancerName, "receiver": chatParty, "content": answerString})
           .asStream()
           .where((event) => event.statusCode == 200)
           .forEach((element) {
-        print('answer sent');
-            _peerConnection!
-                .setLocalDescription(description)
-                .asStream()
-                .forEach((value) => {print('local description after sending answer')});
+            print('answer sent');
           });
     });
 
@@ -75,7 +72,6 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
       String sdp = write(session, null);
       RTCSessionDescription description = RTCSessionDescription(sdp, 'offer');
       await _peerConnection!.setRemoteDescription(description);
-      add(const CreateAnswerRequestedEvent());
       print('remote description after receiving offer');
 
       MediaStream remoteMediaStream = _peerConnection!.getRemoteStreams().first!;
@@ -83,6 +79,8 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
 
       MediaStream localMediaStream = _peerConnection!.getLocalStreams().first!;
       localVideoRenderer.srcObject = localMediaStream;
+
+      add(const CreateAnswerRequestedEvent());
     });
 
     localVideoRenderer.initialize();
