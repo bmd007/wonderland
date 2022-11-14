@@ -40,7 +40,7 @@ class VideoChatWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     var loginCubit = context.watch<LoginCubit>();
     return BlocProvider(
-      create: (context) => VideoChatBloc(chatParty, loginCubit.state.email),
+      create: (context) => VideoChatBloc(loginCubit.state.email, chatParty),
       child: BlocBuilder<VideoChatBloc, VideoChatState>(
         builder: (context, state) {
           return Scaffold(

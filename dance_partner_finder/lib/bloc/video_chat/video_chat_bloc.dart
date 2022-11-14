@@ -31,7 +31,7 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
           .asStream()
           .where((event) => event.statusCode == 200)
           .forEach((element) {
-            print('offer sent');
+            print('offer sent to $chatParty');
           });
     });
 
@@ -47,7 +47,7 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
           .asStream()
           .where((event) => event.statusCode == 200)
           .forEach((element) {
-            print('answer sent');
+            print('answer sent to $chatParty');
           });
     });
 
@@ -90,10 +90,10 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
       String body = stompFrame.body!;
       if (stompFrame.headers.containsKey("type")) {
         if (stompFrame.headers["type"] == "WebRtcAnswer") {
-          print("received answer");
+          print("received answer by $thisDancerName");
           add(AnswerReceivedEvent(body));
         } else if (stompFrame.headers["type"] == "WebRtcOffer") {
-          print("received offer");
+          print("received offer by $thisDancerName");
           add(OfferReceivedEvent(body));
         }
       }
