@@ -12,8 +12,7 @@ import 'video_chat_state.dart';
 
 class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
   late final RabbitMqWebSocketStompChatClient chatClient;
-  late RTCPeerConnection? _peerConnection;
-  MediaStream? _localStream;
+  late RTCPeerConnection _peerConnection;
   late final localVideoRenderer = RTCVideoRenderer();
   late final remoteVideoRenderer = RTCVideoRenderer();
 
@@ -21,10 +20,12 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
       : super(VideoChatState.withThisDancerName(thisDancerName, chatParty)) {
     on<OfferCreationRequestedEvent>((event, emit) async {
       _peerConnection = await _createPeerConnection();
-      RTCSessionDescription description = await _peerConnection!.createOffer({'offerToReceiveVideo': 1});
+      await prepareLocalVideo();
+
+      RTCSessionDescription description = await _peerConnection.createOffer({'offerToReceiveVideo': 1});
       var session = parse(description.sdp.toString());
       var offerString = json.encode(session);
-      await _peerConnection!.setLocalDescription(description);
+      await _peerConnection.setLocalDescription(description);
       print('local description before sending offer');
       await ClientHolder.apiGatewayHttpClient
           .post('/v1/video/chat/offer', data: {"sender": thisDancerName, "receiver": chatParty, "content": offerString})
@@ -36,10 +37,10 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
     });
 
     on<CreateAnswerRequestedEvent>((event, emit) async {
-      RTCSessionDescription description = await _peerConnection!.createAnswer({'offerToReceiveVideo': 1});
+      RTCSessionDescription description = await _peerConnection.createAnswer({'offerToReceiveVideo': 1});
       var session = parse(description.sdp.toString());
       var answerString = json.encode(session);
-      await _peerConnection!.setLocalDescription(description);
+      await _peerConnection.setLocalDescription(description);
       print('local description before sending answer');
       await ClientHolder.apiGatewayHttpClient
           .post('/v1/video/chat/answer',
@@ -55,36 +56,27 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
       dynamic session = await jsonDecode(event.answer);
       String sdp = write(session, null);
       RTCSessionDescription description = RTCSessionDescription(sdp, 'answer');
-      await _peerConnection!.setRemoteDescription(description);
+      await _peerConnection.setRemoteDescription(description);
       print('remote description after receiving answer');
-
-      MediaStream remoteMediaStream = _peerConnection!.getRemoteStreams().first!;
-      remoteVideoRenderer.srcObject = remoteMediaStream;
-
-      MediaStream localMediaStream = _peerConnection!.getLocalStreams().first!;
-      localVideoRenderer.srcObject = localMediaStream;
     });
 
     on<OfferReceivedEvent>((event, emit) async {
       _peerConnection = await _createPeerConnection();
-
+      await prepareLocalVideo();
       dynamic session = await jsonDecode(event.offer);
       String sdp = write(session, null);
       RTCSessionDescription description = RTCSessionDescription(sdp, 'offer');
-      await _peerConnection!.setRemoteDescription(description);
+      await _peerConnection.setRemoteDescription(description);
       print('remote description after receiving offer');
-
-      MediaStream remoteMediaStream = _peerConnection!.getRemoteStreams().first!;
-      remoteVideoRenderer.srcObject = remoteMediaStream;
-
-      MediaStream localMediaStream = _peerConnection!.getLocalStreams().first!;
-      localVideoRenderer.srcObject = localMediaStream;
-
       add(const CreateAnswerRequestedEvent());
     });
 
-    localVideoRenderer.initialize();
-    remoteVideoRenderer.initialize();
+    localVideoRenderer.initialize().asStream().forEach((element) {
+      print('remoteVideoRenderer ready');
+    });
+    remoteVideoRenderer.initialize().asStream().forEach((element) {
+      print('remoteVideoRenderer ready');
+    });
 
     chatClient = RabbitMqWebSocketStompChatClient(thisDancerName, (StompFrame stompFrame) {
       String body = stompFrame.body!;
@@ -100,10 +92,24 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
     });
   }
 
-  _createPeerConnection() async {
+  Future<void> prepareLocalVideo() async {
+    final Map<String, dynamic> mediaConstraints = {
+      'audio': true,
+      'video': {
+        'facingMode': 'user',
+      }
+    };
+    MediaStream mediaStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
+    await _peerConnection.addStream(mediaStream);
+    localVideoRenderer.srcObject = _peerConnection.getLocalStreams().first;
+    print("local video added as stream to peer connection");
+    return;
+  }
+
+  Future<RTCPeerConnection> _createPeerConnection() async {
     Map<String, dynamic> configuration = {
       "iceServers": [
-        {'url':'stun:stun.l.google.com:19302'},
+        {'url': 'stun:stun.l.google.com:19302'},
         {
           'url': "turn:openrelay.metered.ca:80",
           'username': "openrelayproject",
@@ -122,15 +128,6 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
 
     RTCPeerConnection pc = await createPeerConnection(configuration, offerSdpConstraints);
 
-    final Map<String, dynamic> mediaConstraints = {
-      'audio': true,
-      'video': {
-        'facingMode': 'user',
-      }
-    };
-    _localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
-    pc.addStream(_localStream!);
-
     pc.onIceCandidate = (e) {
       if (e.candidate != null) {
         // print(' onIceCandidate  ${json.encode({
@@ -144,6 +141,24 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
     pc.onIceConnectionState = (e) {
       print('onIceConnectionState $e');
     };
+
+    pc.onRenegotiationNeeded = () {
+      print("onRenegotiationNeeded");
+      // add(const OfferCreationRequestedEvent());
+    };
+
+    pc.onTrack = (event) {
+      print("on track event");
+      remoteVideoRenderer.srcObject = event.streams.last;
+    };
+    // pc.onAddStream = (event) {
+    //   print(" onAddStream event ownerTag ${event.ownerTag}");
+    //   remoteVideoRenderer.srcObject = event;
+    // };
+    // pc.onAddTrack = (stream, track) {
+    //   print(" onAddTrack stream ownerTag ${stream.ownerTag}");
+    //   remoteVideoRenderer.srcObject = stream;
+    // };
 
     return pc;
   }
