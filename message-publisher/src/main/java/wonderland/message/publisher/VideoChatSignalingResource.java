@@ -87,4 +87,27 @@ public class VideoChatSignalingResource {
         }
     }
 
+    @PostMapping("/v1/video/chat/candidate")
+    public String sendCandidate(@RequestBody SendMessageRequestBody requestBody){
+        try {
+            var messageProperties = new MessageProperties();
+            messageProperties.setMessageId(UUID.randomUUID().toString());
+            messageProperties.setAppId("wonderland.message-publisher");
+            messageProperties.setContentType(MessageProperties.CONTENT_TYPE_JSON);
+            messageProperties.setCorrelationId(UUID.randomUUID().toString());
+            messageProperties.setReceivedExchange("messages");
+            messageProperties.setReceivedRoutingKey(requestBody.receiver());
+            messageProperties.setDeliveryMode(MessageDeliveryMode.PERSISTENT);
+            messageProperties.setReceivedDeliveryMode(MessageDeliveryMode.PERSISTENT);
+            messageProperties.setHeader("type", "WebRtcCandidate");
+            messageProperties.setHeader("version", "1");
+            var message = new Message(requestBody.content().getBytes(StandardCharsets.UTF_8), messageProperties);
+            rabbitTemplate.send("messages", requestBody.receiver(), message);
+            LOGGER.info("candidate {} sent to {} from {}", requestBody.content(), requestBody.receiver(), requestBody.sender());
+            return requestBody.content() + " sent to " + requestBody.receiver() + " at " + LocalDateTime.now();
+        } catch (AmqpException e) {
+            return e.getMessage();
+        }
+    }
+
 }

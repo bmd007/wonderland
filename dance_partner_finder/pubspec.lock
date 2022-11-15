@@ -175,7 +175,7 @@ packages:
       name: dart_webrtc
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.10"
+    version: "1.0.11"
   diff_match_patch:
     dependency: transitive
     description:
@@ -351,7 +351,7 @@ packages:
       name: flutter_webrtc
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.9.12"
+    version: "0.9.16"
   font_awesome_flutter:
     dependency: "direct main"
     description:
@@ -855,7 +855,7 @@ packages:
       name: webrtc_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.9"
+    version: "1.0.10"
   win32:
     dependency: transitive
     description:

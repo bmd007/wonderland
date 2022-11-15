@@ -25,6 +25,15 @@ class OfferCreationRequestedEvent extends VideoChatEvent {
   List<Object?> get props => [];
 }
 
+class CandidatePropagationRequestedEvent extends VideoChatEvent {
+  final String candidate;
+
+  const CandidatePropagationRequestedEvent(this.candidate);
+
+  @override
+  List<Object?> get props => [candidate];
+}
+
 class OfferReceivedEvent extends VideoChatEvent {
   final String offer;
 
@@ -32,6 +41,15 @@ class OfferReceivedEvent extends VideoChatEvent {
 
   @override
   List<Object?> get props => [offer];
+}
+
+class CandidateReceivedEvent extends VideoChatEvent {
+  final String candidate;
+
+  const CandidateReceivedEvent(this.candidate);
+
+  @override
+  List<Object?> get props => [candidate];
 }
 
 class StompConnectionReadyEvent extends VideoChatEvent {
