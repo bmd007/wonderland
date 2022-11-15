@@ -20,9 +20,7 @@ class VideoChatWidget extends StatelessWidget {
       create: (context) => VideoChatBloc(loginCubit.state.email, chatParty),
       child: BlocBuilder<VideoChatBloc, VideoChatState>(
         builder: (context, state) {
-          return Scaffold(
-              appBar: AppBar(centerTitle: true, title: Text("talking with $chatParty")),
-              body: body(context, loginCubit));
+          return body(context, loginCubit);
         },
       ),
     );
