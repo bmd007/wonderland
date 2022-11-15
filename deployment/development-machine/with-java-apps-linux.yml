@@ -1,0 +1,130 @@
+version: "3.8"
+services:
+
+  consul:
+    container_name: consul
+    hostname: consul
+    image: consul
+    ports:
+      - "8500:8500"
+      - "8300:8300"
+    volumes:
+      - ./metrics/consul.json:/consul/config/consul.json
+
+  kafka:
+#    https://github.com/confluentinc/cp-all-in-one/blob/7.3.0-post/cp-all-in-one-kraft/docker-compose.yml
+    image: confluentinc/cp-kafka:7.3.0
+    hostname: kafka
+    container_name: kafka
+    ports:
+      - "29092:29092"
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
+      KAFKA_LISTENERS: 'PLAINTEXT://kafka:9092,CONTROLLER://kafka:9093,PLAINTEXT_HOST://0.0.0.0:29092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+    volumes:
+      - ./kafka_update_run.sh:/tmp/update_run.sh
+    command: "bash -c 'if [ ! -f /tmp/update_run.sh ]; then echo \"ERROR: Did you forget the update_run.sh file that came with this docker-compose.yml file?\" && exit 1 ; else /tmp/update_run.sh && /etc/confluent/docker/run ; fi'"
+
+  rabbitmq:
+    container_name: rabbitmq
+    hostname: rabbitmq
+    build:
+      context: ./rabbitmq/.
+      dockerfile: Dockerfile
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "4369:4369"
+      - "25672:25672"
+      - "61613:61613"
+      - "61614:61614"
+      - "55674:55674"
+      - "15674:15674"
+      - "1883:1883"
+      - "15675:15675"
+    environment:
+      RABBITMQ_DEFAULT_USER: imarabbit
+      RABBITMQ_DEFAULT_PASS: noyouarenot
+      SERVICE_IGNORE: any_value
+
+  registrator:
+    container_name: registrator
+    image: gliderlabs/registrator
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    command: "-internal consul://consul:8500"
+    depends_on:
+      - consul
+
+  api-gateway:
+    container_name: api-gateway
+    hostname: api-gateway
+    image: bmd007/api-gateway
+    ports:
+      - "9591:9591"
+      - "9592:9592"
+      - "8080:8080"
+    depends_on:
+      - consul
+      - kafka
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+      SPRING_CLOUD_CONSUL_HOST: consul
+      SPRING_CONFIG_IMPORT: optional:consul:consul:8500
+      SERVICE_IGNORE: any_value
+
+  message-publisher:
+    container_name: message-publisher
+    hostname: message-publisher
+    image: bmd007/message-publisher
+    ports:
+      - "9566:9566"
+      - "9567:9567"
+    depends_on:
+      - consul
+      - kafka
+      - api-gateway
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+      SPRING_RABBITMQ_HOST: "rabbitmq"
+      SPRING_RABBITMQ_USERNAME: "imarabbit"
+      SPRING_RABBITMQ_PASSWORD: "noyouarenot"
+      SPRING_CONFIG_IMPORT: optional:consul:consul:8500
+      SPRING_CLOUD_CONSUL_HOST: consul
+      SERVICE_IGNORE: any_value
+
+  wonder-matcher:
+    container_name: wonder-matcher
+    hostname: wonder-matcher
+    image: bmd007/wonder-matcher
+    ports:
+      - "9585:9585"
+      - "9586:9586"
+      - "8084:8084"
+      - "9097:9097"
+    depends_on:
+      - consul
+      - kafka
+      - api-gateway
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+      KAFKA_STREAMS_SERVER_CONFIG_APP_IP: wonder-matcher
+      KAFKA_STREAMS_SERVER_CONFIG_APP_PORT: 9585
+      SPRING_CONFIG_IMPORT: optional:consul:consul:8500
+      SPRING_CLOUD_CONSUL_HOST: consul
+      SERVICE_IGNORE: any_value
