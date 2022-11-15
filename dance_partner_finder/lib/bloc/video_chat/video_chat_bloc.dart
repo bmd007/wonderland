@@ -165,18 +165,6 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
       printWithTime("onRenegotiationNeeded");
       add(const OfferCreationRequestedEvent());
     };
-    // pc.onAddStream = (event) {
-    //   printWithTime("onAddStream event ownerTag ${event.ownerTag}");
-    //   printWithTime("onAddStream event id ${event.id}");
-    //   printWithTime("onAddStream event getVideoTracks.length ${event.getVideoTracks().length}");
-    //   printWithTime("onAddStream event pc.getRemoteStreams().length ${pc.getRemoteStreams().length}");
-    //   printWithTime("onAddStream event pc.getLocalStreams().length ${pc.getLocalStreams().length}");
-    //   localVideoRenderer.srcObject = pc.getLocalStreams().first;
-    //   printWithTime("local video added");
-    //   remoteVideoRenderer.srcObject = pc.getRemoteStreams().first;
-    //   remoteVideoRenderer.srcObject!.addTrack(event.getTracks().first);
-    //   printWithTime("remote video added");
-    // };
     final Map<String, dynamic> mediaConstraints = {
       'audio': true,
       'video': {
