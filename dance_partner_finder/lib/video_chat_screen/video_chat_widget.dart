@@ -38,39 +38,31 @@ class VideoChatWidget extends StatelessWidget {
     //       child: RTCVideoView(videoChatBloc.remoteVideoRenderer),
     //     )
     final size = MediaQuery.of(context).size;
-    return Scaffold(
-      body: Stack(
-        children: [
-          GestureDetector(
-            onDoubleTap: () {},
-            child: Container(
-              height: size.height,
-              width: size.width,
-              child: Flexible(
-                child: Container(
-                  key: const Key('remote'),
-                  // margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-                  child: RTCVideoView(videoChatBloc.remoteVideoRenderer),
-                ),
-              ),
-            ),
+    return Stack(
+      children: [
+        GestureDetector(
+          onDoubleTap: () {},
+          child: SizedBox(
+            height: size.height,
+            width: size.width,
+            child: RTCVideoView(videoChatBloc.remoteVideoRenderer),
           ),
-          AnimatedPositioned(
-            left: 0,
-            right: 0,
-            top: -200,
-            duration: const Duration(milliseconds: 300),
-            child: CallScreenHeaderComponents(ctx: context),
-          ),
-          const AnimatedPositioned(
-            duration: Duration(milliseconds: 300),
-            bottom: -250,
-            left: 0,
-            right: 0,
-            child: BottomMenu(),
-          ),
-        ],
-      ),
+        ),
+        AnimatedPositioned(
+          left: 0,
+          right: 0,
+          top: 0,
+          duration: const Duration(milliseconds: 300),
+          child: CallScreenHeaderComponents(ctx: context),
+        ),
+        const AnimatedPositioned(
+          duration: Duration(milliseconds: 300),
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: BottomMenu(),
+        ),
+      ],
     );
   }
 }
