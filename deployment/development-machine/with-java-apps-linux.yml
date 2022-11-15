@@ -87,6 +87,7 @@ services:
       SPRING_CLOUD_CONSUL_HOST: consul
       SPRING_CONFIG_IMPORT: optional:consul:consul:8500
       SERVICE_IGNORE: any_value
+      SPRING_PROFILES_ACTIVE: "local"
 
   message-publisher:
     container_name: message-publisher
@@ -107,6 +108,7 @@ services:
       SPRING_CONFIG_IMPORT: optional:consul:consul:8500
       SPRING_CLOUD_CONSUL_HOST: consul
       SERVICE_IGNORE: any_value
+      SPRING_PROFILES_ACTIVE: "local"
 
   wonder-matcher:
     container_name: wonder-matcher
@@ -128,3 +130,4 @@ services:
       SPRING_CONFIG_IMPORT: optional:consul:consul:8500
       SPRING_CLOUD_CONSUL_HOST: consul
       SERVICE_IGNORE: any_value
+      SPRING_PROFILES_ACTIVE: "local"

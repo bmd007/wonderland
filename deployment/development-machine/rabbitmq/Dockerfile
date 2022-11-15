@@ -11,6 +11,7 @@ RUN rabbitmq-plugins enable rabbitmq_management
 RUN rabbitmq-plugins enable rabbitmq_web_mqtt
 
 COPY rabbitMqUserCreation.sh /etc/rabbitmq/rabbitMqUserCreation.sh
+#todo make the command above automaticaally executable
 
 EXPOSE 1883
 EXPOSE 4369
