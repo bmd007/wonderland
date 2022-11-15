@@ -1,6 +1,6 @@
 import 'package:dance_partner_finder/bloc/dancer_match_and_chat/chat_message.dart';
 import 'package:dance_partner_finder/bloc/dancer_match_and_chat/dancer_chat_event.dart';
-import 'package:dance_partner_finder/video_chat_widget.dart';
+import 'package:dance_partner_finder/video_chat_screen/video_chat_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
