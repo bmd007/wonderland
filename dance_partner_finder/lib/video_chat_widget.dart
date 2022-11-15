@@ -11,31 +11,6 @@ class VideoChatWidget extends StatelessWidget {
 
   const VideoChatWidget({super.key, required this.chatParty});
 
-  SizedBox videoRenderers(BuildContext context) {
-    var videoChatBloc = context.watch<VideoChatBloc>();
-    return SizedBox(
-      height: 150,
-      child: Row(children: [
-        Flexible(
-          child: Container(
-            key: const Key('local'),
-            margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-            decoration: const BoxDecoration(color: Colors.black),
-            child: RTCVideoView(videoChatBloc.localVideoRenderer),
-          ),
-        ),
-        Flexible(
-          child: Container(
-            key: const Key('remote'),
-            margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-            decoration: const BoxDecoration(color: Colors.red),
-            child: RTCVideoView(videoChatBloc.remoteVideoRenderer),
-          ),
-        ),
-      ]),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     var loginCubit = context.watch<LoginCubit>();
@@ -53,27 +28,23 @@ class VideoChatWidget extends StatelessWidget {
 
   Widget body(BuildContext context, LoginCubit loginCubit) {
     var videoChatBloc = context.watch<VideoChatBloc>();
-    return Column(
-      children: [
-        videoRenderers(context),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                videoChatBloc.add(const OfferCreationRequestedEvent());
-              },
-              child: const Text("Offer"),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-          ],
-        )
-      ],
-    );
+    return Column(children: [
+      Flexible(
+        child: Container(
+          key: const Key('local'),
+          // margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
+          decoration: const BoxDecoration(color: Colors.black),
+          child: RTCVideoView(videoChatBloc.localVideoRenderer),
+        ),
+      ),
+      Flexible(
+        child: Container(
+          key: const Key('remote'),
+          // margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
+          decoration: const BoxDecoration(color: Colors.red),
+          child: RTCVideoView(videoChatBloc.remoteVideoRenderer),
+        ),
+      ),
+    ]);
   }
 }
