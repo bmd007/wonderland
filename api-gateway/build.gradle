@@ -1,82 +1,82 @@
 plugins {
-	id 'java'
-	id 'idea'
-	id 'org.springframework.boot' version '3.0.0-RC2'
-	id 'io.spring.dependency-management' version '1.1.0'
+    id 'java'
+    id 'idea'
+    id 'org.springframework.boot' version '3.0.0-RC2'
+    id 'io.spring.dependency-management' version '1.1.0'
 }
 
 java {
-	sourceCompatibility = 17
-	targetCompatibility = 17
+    sourceCompatibility = 17
+    targetCompatibility = 17
 }
 
 group = 'wonderland'
 
 ext.buildNumber = {
-	def buildNumber = System.getenv('VERSION')
-	if (buildNumber == null || buildNumber.allWhitespace) {
-		buildNumber = 'beta'
-	}
-	return buildNumber
+    def buildNumber = System.getenv('VERSION')
+    if (buildNumber == null || buildNumber.allWhitespace) {
+        buildNumber = 'beta'
+    }
+    return buildNumber
 }
 
 project.version = buildNumber()
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
-	maven { url 'https://repo.spring.io/milestone' }
-	maven { url 'https://repo.spring.io/snapshot' }
+    mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
+    maven { url 'https://repo.spring.io/snapshot' }
 }
 
 ext {
-	set('springCloudVersion', "2022.0.0-RC1")
+    set('springCloudVersion', "2022.0.0-RC1")
 }
 
 dependencies {
-	implementation 'org.springframework.cloud:spring-cloud-starter'
-	implementation 'org.springframework.boot:spring-boot-starter'
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'io.micrometer:micrometer-registry-prometheus'
-	implementation "org.springframework.cloud:spring-cloud-starter-consul-config"
-	implementation "org.springframework.cloud:spring-cloud-starter-consul-discovery"
-	implementation 'org.springframework.boot:spring-boot-starter-rsocket'
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-	implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
-	implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
-	implementation 'org.springframework.kafka:spring-kafka'
-	compileOnly 'org.projectlombok:lombok'
-	implementation 'com.google.guava:guava:31.1-jre'
-	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'io.projectreactor:reactor-test'
-	testImplementation 'org.mockito:mockito-junit-jupiter'
-	testImplementation 'org.junit.jupiter:junit-jupiter-api'
-	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-	testImplementation 'org.springframework.kafka:spring-kafka-test'
+    implementation 'org.springframework.cloud:spring-cloud-starter'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+    implementation "org.springframework.cloud:spring-cloud-starter-consul-config"
+    implementation "org.springframework.cloud:spring-cloud-starter-consul-discovery"
+    implementation 'org.springframework.boot:spring-boot-starter-rsocket'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+    implementation 'org.springframework.kafka:spring-kafka'
+    compileOnly 'org.projectlombok:lombok'
+    implementation 'com.google.guava:guava:31.1-jre'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation 'org.mockito:mockito-junit-jupiter'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
 }
 
 dependencyManagement {
-	imports {
-		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-	}
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 tasks.named('wrapper') {
-	distributionType = Wrapper.DistributionType.ALL
+    distributionType = Wrapper.DistributionType.ALL
 }
 
 bootBuildImage {
-	imageName = "bmd007/${project.name}"
-	environment = ["BP_JVM_VERSION": "17"]
+    imageName = "bmd007/${project.name}"
+    environment = ["BP_JVM_VERSION": "17"]
 }

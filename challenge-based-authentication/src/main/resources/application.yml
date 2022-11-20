@@ -101,8 +101,8 @@ kafka:
       messageEvents: '1:1'
 
 
-# This the mapped ip:port for inter instance communication.
-# This value should (will) be injected based on evn variables. Those variables will be defined by orchestration tool environment variables
+  # This the mapped ip:port for inter instance communication.
+  # This value should (will) be injected based on evn variables. Those variables will be defined by orchestration tool environment variables
   streams:
     server.config:
       app-ip: localhost

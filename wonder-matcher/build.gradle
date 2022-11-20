@@ -40,7 +40,7 @@ project.version = buildNumber()
 
 repositories {
     mavenCentral()
-	maven { url 'https://repo.spring.io/milestone' }
+    maven { url 'https://repo.spring.io/milestone' }
 }
 
 ext {

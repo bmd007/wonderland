@@ -26,7 +26,7 @@ public interface PersonRepository extends Neo4jRepository<Person, Long> {
             LIMIT 1""")
     PersonInfluenceScoreProjection getInfluenceRank();
 
-//    @Query("""
+    //    @Query("""
 //            YIELD node
 //            MATCH (node) WHERE node.email =: email
 //            RETURN node.email AS email, node.id as id, node.version as version""")

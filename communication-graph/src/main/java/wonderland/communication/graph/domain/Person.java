@@ -2,7 +2,6 @@ package wonderland.communication.graph.domain;
 
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.Value;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
@@ -11,10 +10,7 @@ import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.springframework.data.neo4j.core.schema.Relationship.Direction.OUTGOING;
 
@@ -63,7 +59,7 @@ public final class Person {
                 .build();
     }
 
-    public Person.PersonBuilder cloneBuilder(){
+    public Person.PersonBuilder cloneBuilder() {
         return Person.builder()
                 .id(this.getId())
                 .version(this.getVersion())

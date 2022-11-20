@@ -9,7 +9,9 @@ import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 @Profile("test")
 public class EmbeddedKafkaConfig {
 
-    /** This must be done during construction phase, not after. */
+    /**
+     * This must be done during construction phase, not after.
+     */
     @Bean
     public KafkaStreamsAwait kafkaStreamsAwait(StreamsBuilderFactoryBean streams) {
         var await = new KafkaStreamsAwait();

@@ -1,7 +1,7 @@
 server.port: 9591
 
 management:
-#  server.port: 9592
+  #  server.port: 9592
   health:
     defaults.enabled: true
     diskspace.enabled: false
@@ -80,11 +80,11 @@ kafka:
       update: '1:1'
 
 server:
-    ssl:
-      key-store: "classpath:keystore.p12"
-      key-store-password: ohpassword
-      keyStoreType: PKCS12
-      keyAlias: tomcat
+  ssl:
+    key-store: "classpath:keystore.p12"
+    key-store-password: ohpassword
+    keyStoreType: PKCS12
+    keyAlias: tomcat
 
 ---
 spring:

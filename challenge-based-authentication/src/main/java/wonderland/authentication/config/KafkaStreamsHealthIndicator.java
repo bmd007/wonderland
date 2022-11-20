@@ -1,5 +1,6 @@
 package wonderland.authentication.config;
 
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.health.Health;
@@ -7,7 +8,6 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PostConstruct;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.apache.kafka.streams.KafkaStreams.State.REBALANCING;

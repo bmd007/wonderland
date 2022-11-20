@@ -19,9 +19,6 @@ import wonderland.message.search.domain.Message;
 import wonderland.message.search.event.MessageSentEvent;
 import wonderland.message.search.repository.MessageRepository;
 
-import java.net.UnknownHostException;
-import java.time.Instant;
-
 
 @RestController
 @SpringBootApplication
@@ -35,10 +32,11 @@ public class MessageSearchApplication {
         SpringApplication.run(MessageSearchApplication.class, args);
     }
 
-    @Autowired private MessageRepository messageRepository;
+    @Autowired
+    private MessageRepository messageRepository;
 
     @KafkaListener(topicPattern = MESSAGES_EVENTS_TOPIC)
-    public void messageEventsSentSubscription(@Payload MessageSentEvent messageSentEvent, @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key){
+    public void messageEventsSentSubscription(@Payload MessageSentEvent messageSentEvent, @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key) {
         var msg = Message.define(messageSentEvent.from(), messageSentEvent.to(), messageSentEvent.body(), messageSentEvent.time());
         messageRepository.save(msg).subscribe(message -> LOGGER.info("Message {} saved", message));
     }
@@ -49,7 +47,7 @@ public class MessageSearchApplication {
     }
 
     @GetMapping("/message/containing/{text}")
-    public Flux<Message> searchAmongMessagesByBody(@PathVariable String text){
+    public Flux<Message> searchAmongMessagesByBody(@PathVariable String text) {
         return messageRepository.findByTextContaining(text);
     }
 

@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
@@ -18,7 +17,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import wonderland.authentication.config.Topics;
-
 import wonderland.authentication.event.internal.Event;
 import wonderland.authentication.serialization.JsonDeserializer;
 import wonderland.authentication.util.EmbeddedKafkaHelper;
@@ -28,7 +26,8 @@ import java.time.Instant;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ActiveProfiles("test")
 @ExtendWith({SpringExtension.class})
@@ -105,7 +104,9 @@ public class AcceptanceTest {
     }
 
     public static class EventDeserializer extends JsonDeserializer<Event> {
-        public EventDeserializer() { super(Event.class); }
+        public EventDeserializer() {
+            super(Event.class);
+        }
     }
 
 }

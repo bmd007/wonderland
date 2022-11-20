@@ -11,19 +11,19 @@ public record WonderSeekerLikedBysDto(
         String wonderSeekerName,
         Map<String, LocalDateTime> likedByHistory
 ) {
-    public static WonderSeekerLikedBysDto empty(){
+    public static WonderSeekerLikedBysDto empty() {
         return new WonderSeekerLikedBysDto(null, Map.of());
     }
 
-    public static WonderSeekerLikedBysDto initialize(String wonderSeekerName){
+    public static WonderSeekerLikedBysDto initialize(String wonderSeekerName) {
         return new WonderSeekerLikedBysDto(wonderSeekerName, Map.of());
     }
 
-    public WonderSeekerLikedBysDto withName(String wonderSeekerName){
+    public WonderSeekerLikedBysDto withName(String wonderSeekerName) {
         return new WonderSeekerLikedBysDto(wonderSeekerName, Map.of());
     }
 
-    public WonderSeekerLikedBysDto addLikeToHistory(String likeeName, LocalDateTime likedAt){
+    public WonderSeekerLikedBysDto addLikeToHistory(String likeeName, LocalDateTime likedAt) {
         Map<String, LocalDateTime> updatedLikeHistory = Stream.concat(likedByHistory.entrySet().stream(), Stream.of(Map.entry(likeeName, likedAt)))
                 .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue,
                         (localDateTime, localDateTime2) -> localDateTime2));
@@ -31,8 +31,8 @@ public record WonderSeekerLikedBysDto(
     }
 
     @JsonIgnore
-    public boolean isEmpty(){
-        return wonderSeekerName==null || wonderSeekerName.isEmpty() || wonderSeekerName.isBlank();
+    public boolean isEmpty() {
+        return wonderSeekerName == null || wonderSeekerName.isEmpty() || wonderSeekerName.isBlank();
     }
 
 }

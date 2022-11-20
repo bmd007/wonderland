@@ -41,7 +41,7 @@ public class MessageResource {
     }
 
     @PostMapping("/v1/chat/messages")
-    public String sendMessage(@RequestBody SendMessageRequestBody requestBody){
+    public String sendMessage(@RequestBody SendMessageRequestBody requestBody) {
         return sendMessage("messages", requestBody.sender(), requestBody.receiver(), requestBody.content());
     }
 

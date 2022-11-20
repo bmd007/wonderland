@@ -1,7 +1,12 @@
 package wonderland.wonder.matcher.repository;
 
 
-import org.locationtech.jts.geom.*;
+import jakarta.annotation.Nullable;
+import org.locationtech.jts.geom.CoordinateXY;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -10,7 +15,6 @@ import org.springframework.stereotype.Repository;
 import wonderland.wonder.matcher.domain.Location;
 import wonderland.wonder.matcher.domain.WonderSeeker;
 
-import jakarta.annotation.Nullable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;

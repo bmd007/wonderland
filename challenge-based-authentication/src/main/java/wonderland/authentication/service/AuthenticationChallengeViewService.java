@@ -1,9 +1,9 @@
 package wonderland.authentication.service;
 
-import wonderland.authentication.config.Stores;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.stereotype.Service;
+import wonderland.authentication.config.Stores;
 import wonderland.authentication.domain.AuthenticationChallenge;
 import wonderland.authentication.dto.AuthenticationChallengeDto;
 import wonderland.authentication.dto.AuthenticationChallengesDto;

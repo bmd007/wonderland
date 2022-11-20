@@ -30,16 +30,16 @@ public class TopicPublisher<K, V> {
     public void publish(K key, V value) {
         var fut = producer.send(new ProducerRecord<>(topic, key, value));
         Mono.create(sink -> {
-            try {
-                fut.get(TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
-                sink.success();
-                LOGGER.debug("Message {} sent to {} topic successfully", value, topic);
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                LOGGER.error("Failed to send: {} to {}", value, topic, e);
-                sink.error(e);
-            }
-        })
-        .subscribeOn(scheduler)
-        .subscribe();
+                    try {
+                        fut.get(TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+                        sink.success();
+                        LOGGER.debug("Message {} sent to {} topic successfully", value, topic);
+                    } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                        LOGGER.error("Failed to send: {} to {}", value, topic, e);
+                        sink.error(e);
+                    }
+                })
+                .subscribeOn(scheduler)
+                .subscribe();
     }
 }

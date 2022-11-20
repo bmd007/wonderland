@@ -16,7 +16,6 @@ import wonderland.wonder.matcher.exception.ServiceUnavailableException;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 

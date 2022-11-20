@@ -22,15 +22,15 @@ import java.util.concurrent.TimeUnit;
  *
  * <pre>
  * <code>
-    &#64;BeforeEach
-    void setup(ApplicationContext context) {
-        helper = new EmbeddedKafkaHelper<>(embeddedKafka, Topics.ORDER_COMMANDS,
-                LongDeserializer.class, OrderCommandDeserializer.class);
-    }
-    &#64;AfterEach
-    void tearDown() {
-        helper.tearDown();
-    }
+ * &#64;BeforeEach
+ * void setup(ApplicationContext context) {
+ * helper = new EmbeddedKafkaHelper<>(embeddedKafka, Topics.ORDER_COMMANDS,
+ * LongDeserializer.class, OrderCommandDeserializer.class);
+ * }
+ * &#64;AfterEach
+ * void tearDown() {
+ * helper.tearDown();
+ * }
  * </code>
  * </pre>
  *
@@ -38,10 +38,8 @@ import java.util.concurrent.TimeUnit;
  * This saves the coder from repeating initialization code and does a clean tear down (see:
  * https://github.com/spring-projects/spring-kafka/issues/194)
  *
- * @param <K>
- *            deserializer class for the keys
- * @param <V>
- *            deserializer class for the values
+ * @param <K> deserializer class for the keys
+ * @param <V> deserializer class for the values
  */
 public class EmbeddedKafkaHelper<K, V> {
 

@@ -1,8 +1,7 @@
 package wonderland.api.gateway.event;
 
-import wonderland.api.gateway.dto.Location;
-
 import jakarta.validation.constraints.NotBlank;
+import wonderland.api.gateway.dto.Location;
 
 public record DancerIsLookingForPartnerUpdate(
         @NotBlank String dancerName,

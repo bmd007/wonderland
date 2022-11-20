@@ -9,7 +9,7 @@ public record WonderSeekersMatchedEvent(@NotBlank String matchee1, @NotBlank Str
         return matchee1;
     }
 
-    public WonderSeekersMatchedEvent reverse(){
+    public WonderSeekersMatchedEvent reverse() {
         return new WonderSeekersMatchedEvent(this.matchee2, this.matchee1);
     }
 }

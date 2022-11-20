@@ -44,7 +44,7 @@ public class ElasticSearchConfig extends AbstractReactiveElasticsearchConfigurat
                     .stream()
                     .map(ServiceInstance::getHost)
                     .findFirst()
-                    .map(host -> host.contains("http://") ?  host.split("http://")[1] : host)
+                    .map(host -> host.contains("http://") ? host.split("http://")[1] : host)
                     .orElseThrow();
         }
         elasticSearchHost += ":9200";

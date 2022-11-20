@@ -59,10 +59,10 @@ spring:
       auto-offset-reset: earliest
 
   rabbitmq:
-      username: imarabbit
-      password: noyouarenot
-      host: localhost
-      port: 5672
+    username: imarabbit
+    password: noyouarenot
+    host: localhost
+    port: 5672
 
 kafka:
   topic:

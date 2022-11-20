@@ -1,7 +1,19 @@
 package wonderland.authentication.resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import reactor.core.publisher.Mono;
 import wonderland.authentication.domain.AuthenticationChallenge;
 import wonderland.authentication.dto.AuthenticationChallengeDto;
 import wonderland.authentication.dto.AuthenticationChallengesDto;
@@ -13,10 +25,6 @@ import wonderland.authentication.event.internal.ChallengeUsedForLoginEvent;
 import wonderland.authentication.event.internal.EventLogger;
 import wonderland.authentication.service.AuthenticationChallengeViewService;
 import wonderland.authentication.service.ViewService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/authentication/challenges")
@@ -71,6 +79,6 @@ public class AuthenticationResource {
     @GetMapping("/{signingNonce}")
     public Mono<AuthenticationChallengeDto> getChallenge(@PathVariable String signingNonce) {
         return authenticationChallengeViewService.getById(signingNonce)
-                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Challenge Not found: "+ signingNonce)));
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Challenge Not found: " + signingNonce)));
     }
 }

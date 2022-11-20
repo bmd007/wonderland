@@ -1,10 +1,10 @@
 package wonderland.authentication.event.internal;
 
-import wonderland.authentication.config.Topics;
-import wonderland.authentication.util.TopicPublisher;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import wonderland.authentication.config.Topics;
+import wonderland.authentication.util.TopicPublisher;
 
 @Component
 public class EventLogger {

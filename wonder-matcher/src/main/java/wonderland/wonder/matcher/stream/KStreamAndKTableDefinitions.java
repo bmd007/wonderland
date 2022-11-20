@@ -1,5 +1,6 @@
 package wonderland.wonder.matcher.stream;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
@@ -25,15 +26,25 @@ import wonderland.wonder.matcher.event.DancerIsLookingForPartnerUpdate;
 import wonderland.wonder.matcher.event.WonderSeekersMatchedEvent;
 import wonderland.wonder.matcher.repository.WonderSeekerJdbcRepository;
 
-import jakarta.annotation.PostConstruct;
 import java.time.ZoneOffset;
 import java.util.Set;
 
-import static wonderland.wonder.matcher.config.StateStores.*;
+import static wonderland.wonder.matcher.config.StateStores.WONDER_SEEKER_GLOBAL_STATE_STORE;
+import static wonderland.wonder.matcher.config.StateStores.WONDER_SEEKER_IN_MEMORY_STATE_STORE;
+import static wonderland.wonder.matcher.config.StateStores.WONDER_SEEKER_LIKED_BY_HISTORY_STATE_STORE;
+import static wonderland.wonder.matcher.config.StateStores.WONDER_SEEKER_LIKE_HISTORY_STATE_STORE;
+import static wonderland.wonder.matcher.config.StateStores.WONDER_SEEKER_MATCH_HISTORY_STATE_STORE;
 import static wonderland.wonder.matcher.config.TopicCreator.stateStoreTopicName;
 import static wonderland.wonder.matcher.config.Topics.WONDER_SEEKER_MATCH_EVENTS;
 import static wonderland.wonder.matcher.config.Topics.WONDER_SEEKER_PASSIVE_LIKE_EVENTS;
-import static wonderland.wonder.matcher.serialization.CustomSerdes.*;
+import static wonderland.wonder.matcher.serialization.CustomSerdes.DANCER_SEEKING_PARTNER_JSON_SERDE;
+import static wonderland.wonder.matcher.serialization.CustomSerdes.LIKEES_EVENT_JSON_SERDE;
+import static wonderland.wonder.matcher.serialization.CustomSerdes.LIKERS_EVENT_JSON_SERDE;
+import static wonderland.wonder.matcher.serialization.CustomSerdes.WONDER_SEEKERS_MATCHED_EVENT_JSON_SERDE;
+import static wonderland.wonder.matcher.serialization.CustomSerdes.WONDER_SEEKER_JSON_SERDE;
+import static wonderland.wonder.matcher.serialization.CustomSerdes.WONDER_SEEKER_LIKED_BY_HISTORY_JSON_SERDE;
+import static wonderland.wonder.matcher.serialization.CustomSerdes.WONDER_SEEKER_LIKE_HISTORY_JSON_SERDE;
+import static wonderland.wonder.matcher.serialization.CustomSerdes.WONDER_SEEKER_MATCH_HISTORY_JSON_SERDE;
 
 @Slf4j
 @Configuration

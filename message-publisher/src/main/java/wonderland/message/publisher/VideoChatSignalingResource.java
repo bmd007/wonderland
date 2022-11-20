@@ -29,7 +29,7 @@ public class VideoChatSignalingResource {
     }
 
     @PostMapping("/v1/video/chat/offer")
-    public String sendOffer(@RequestBody SendMessageRequestBody requestBody){
+    public String sendOffer(@RequestBody SendMessageRequestBody requestBody) {
         try {
             var messageProperties = new MessageProperties();
             messageProperties.setMessageId(UUID.randomUUID().toString());
@@ -52,7 +52,7 @@ public class VideoChatSignalingResource {
     }
 
     @PostMapping("/v1/video/chat/answer")
-    public String sendAnswer(@RequestBody SendMessageRequestBody requestBody){
+    public String sendAnswer(@RequestBody SendMessageRequestBody requestBody) {
         try {
             var messageProperties = new MessageProperties();
             messageProperties.setMessageId(UUID.randomUUID().toString());
@@ -75,7 +75,7 @@ public class VideoChatSignalingResource {
     }
 
     @PostMapping("/v1/video/chat/candidate")
-    public String sendCandidate(@RequestBody SendMessageRequestBody requestBody){
+    public String sendCandidate(@RequestBody SendMessageRequestBody requestBody) {
         try {
             var messageProperties = new MessageProperties();
             messageProperties.setMessageId(UUID.randomUUID().toString());

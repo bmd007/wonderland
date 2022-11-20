@@ -1,5 +1,6 @@
 package wonderland.wonder.matcher.config;
 
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.health.Health;
@@ -7,10 +8,11 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PostConstruct;
 import java.util.Set;
 
-import static org.apache.kafka.streams.KafkaStreams.State.*;
+import static org.apache.kafka.streams.KafkaStreams.State.CREATED;
+import static org.apache.kafka.streams.KafkaStreams.State.REBALANCING;
+import static org.apache.kafka.streams.KafkaStreams.State.RUNNING;
 import static org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse.REPLACE_THREAD;
 
 @Component

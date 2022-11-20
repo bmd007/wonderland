@@ -1,8 +1,6 @@
 package wonderland.wiseman;
 
 import com.jayway.jsonpath.JsonPath;
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +53,7 @@ public class WiseSoulApplication {
 
 //        safeSleep(80000);
         people.stream().forEach(this::requestQueueFor);
-        for (int i = 0; i < 8 ; i++) {
+        for (int i = 0; i < 8; i++) {
             safeSleep(200);
             var from = aRandomPerson();
             var to = aRandomPerson();

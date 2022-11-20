@@ -28,9 +28,9 @@ public class ViewResourcesClient {
                                @Qualifier("notLoadBalancedClient") WebClient.Builder notLoadBalancedWebClientBuilder,
                                Environment environment) {
         var activeProfiles = Arrays.stream(environment.getActiveProfiles()).collect(Collectors.toSet());
-        if (!activeProfiles.contains("no-consul") && !activeProfiles.contains("local") ){
+        if (!activeProfiles.contains("no-consul") && !activeProfiles.contains("local")) {
             webClientBuilder = loadBalancedWebClientBuilder;
-        }else{
+        } else {
             webClientBuilder = notLoadBalancedWebClientBuilder;
         }
     }

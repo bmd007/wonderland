@@ -1,6 +1,7 @@
 package wonderland.authentication;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.annotation.PostConstruct;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -17,8 +18,6 @@ import wonderland.authentication.domain.AuthenticationChallenge;
 import wonderland.authentication.event.internal.Event;
 import wonderland.authentication.event.internal.EventHandler;
 import wonderland.authentication.serialization.JsonSerde;
-
-import jakarta.annotation.PostConstruct;
 
 @Configuration
 public class KStreamAndKTableDefinitions {

@@ -12,9 +12,9 @@ java {
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 group = 'wonderland'
@@ -30,11 +30,10 @@ ext.buildNumber = {
 project.version = buildNumber()
 
 
-
 repositories {
     mavenLocal()
     mavenCentral()
-	maven { url 'https://repo.spring.io/milestone' }
+    maven { url 'https://repo.spring.io/milestone' }
 //    flatDir {
 //        dirs 'libs'
 //    }
@@ -45,7 +44,7 @@ ext {
 }
 
 dependencies {
-    
+
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     implementation 'org.springframework.cloud:spring-cloud-starter'
     implementation 'org.springframework.boot:spring-boot-starter'

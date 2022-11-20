@@ -59,7 +59,9 @@ public class DancePartnerFinderResource {
                 .subscribe();
     }
 
-    record GetOtherDancerPartnerSeekersRequestBody(String dancerPartnerSeekerName, Location location, double radius){}
+    record GetOtherDancerPartnerSeekersRequestBody(String dancerPartnerSeekerName, Location location, double radius) {
+    }
+
     @MessageMapping("/api/dance/partner/finder/names")
     //todo support time and search circle radius as input params
     //todo create a circle around seeker using radius and convert to wkt
@@ -114,7 +116,7 @@ public class DancePartnerFinderResource {
         var alreadyLikeLikeesStream = Optional.ofNullable(likedDancers.get(requestBody.whoHasLiked))
                 .orElseGet(Map::of).entrySet().stream();
         Map<String, LocalDateTime> newLikeesMap = Stream.concat(newLikee, alreadyLikeLikeesStream)
-                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue, (localDateTime, localDateTime2) ->  localDateTime2));
+                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue, (localDateTime, localDateTime2) -> localDateTime2));
         likedDancers.put(requestBody.whoHasLiked, newLikeesMap);
         log.info("likedDancers {}", likedDancers);
         var event = new DancePartnerSeekerHasLikedAnotherDancerEvent(requestBody.whoHasLiked, requestBody.whomIsLiked);
