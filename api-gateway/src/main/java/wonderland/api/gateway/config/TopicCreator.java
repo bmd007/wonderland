@@ -49,7 +49,7 @@ public class TopicCreator {
 
     private record PartitionDef(int numPartitions, short replicationFactor) {
 
-        private final static Pattern PATTERN = Pattern.compile("(\\d+):(\\d+)");
+        private static final Pattern PATTERN = Pattern.compile("(\\d+):(\\d+)");
 
         public static PartitionDef parse(String value) {
             var matcher = PATTERN.matcher(value);

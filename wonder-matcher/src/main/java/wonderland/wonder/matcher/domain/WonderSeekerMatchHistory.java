@@ -7,10 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public record WonderSeekerMatchHistory(
-        String wonderSeekerName,
-        Map<String, LocalDateTime> matchHistory
-) {
+public record WonderSeekerMatchHistory(String wonderSeekerName, Map<String, LocalDateTime> matchHistory) {
     public static WonderSeekerMatchHistory empty() {
         return new WonderSeekerMatchHistory(null, Map.of());
     }

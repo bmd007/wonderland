@@ -24,8 +24,8 @@ import java.util.List;
 @Repository
 public class WonderSeekerJdbcRepository {
 
-    public final static GeometryFactory GEOMETRY_FACTORY = new GeometryFactory(new PrecisionModel(PrecisionModel.maximumPreciseValue), 4326);
-    public final static WKTReader wktReader = new WKTReader(GEOMETRY_FACTORY);
+    public static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory(new PrecisionModel(PrecisionModel.maximumPreciseValue), 4326);
+    public static final WKTReader wktReader = new WKTReader(GEOMETRY_FACTORY);
     private final JdbcTemplate jdbc;
 
     public WonderSeekerJdbcRepository(JdbcTemplate jdbc) {

@@ -16,7 +16,7 @@ import wonderland.wonder.matcher.service.WonderSeekerLikedByViewService;
 @RequestMapping("/api/like")
 public class WonderSeekerLikedByResource {
 
-    private WonderSeekerLikedByViewService wonderSeekerLikedByViewService;
+    private final WonderSeekerLikedByViewService wonderSeekerLikedByViewService;
 
     public WonderSeekerLikedByResource(WonderSeekerLikedByViewService wonderSeekerLikedByViewService) {
         this.wonderSeekerLikedByViewService = wonderSeekerLikedByViewService;

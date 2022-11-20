@@ -5,10 +5,7 @@ import wonderland.wonder.matcher.domain.Location;
 
 public record DancerIsLookingForPartnerUpdate(
         @NotBlank String dancerName,
-        Location location
-
-) implements Event {
-
+        Location location) implements Event {
     @Override
     public String key() {
         return dancerName;

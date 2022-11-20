@@ -22,7 +22,7 @@ public class VideoChatSignalingResource {
     private final AmqpTemplate rabbitTemplate;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VideoChatSignalingResource.class);
-    private final String RABBIT_MQ_MESSAGES_EXCHANGE = "messages";
+    private static final String RABBIT_MQ_MESSAGES_EXCHANGE = "messages";
 
     public VideoChatSignalingResource(AmqpTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;

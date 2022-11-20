@@ -9,8 +9,7 @@ import java.util.stream.Stream;
 
 public record WonderSeekerLikedBysDto(
         String wonderSeekerName,
-        Map<String, LocalDateTime> likedByHistory
-) {
+        Map<String, LocalDateTime> likedByHistory) {
     public static WonderSeekerLikedBysDto empty() {
         return new WonderSeekerLikedBysDto(null, Map.of());
     }

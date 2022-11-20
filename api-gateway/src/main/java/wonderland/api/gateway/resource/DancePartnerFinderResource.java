@@ -44,8 +44,8 @@ public class DancePartnerFinderResource {
         potentialDancePartners.put("taylor", new DancerIsLookingForPartnerUpdate("taylor", new Location(59.834210, 17.614565)));
     }
 
-    private static Map<String, Map<String, LocalDateTime>> likedDancers = new HashMap<>();
-    private static Map<String, Map<String, LocalDateTime>> disLikedDancers = new HashMap<>();
+    private static final Map<String, Map<String, LocalDateTime>> likedDancers = new HashMap<>();
+    private static final Map<String, Map<String, LocalDateTime>> disLikedDancers = new HashMap<>();
 
     public DancePartnerFinderResource(KafkaTemplate<String, Event> kafkaTemplate,
                                       @Qualifier("loadBalancedClient") WebClient.Builder loadBalancedWebClientBuilder) {

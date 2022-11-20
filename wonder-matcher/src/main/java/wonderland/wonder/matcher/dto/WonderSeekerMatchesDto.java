@@ -6,6 +6,6 @@ import java.util.Map;
 
 public record WonderSeekerMatchesDto(
         String wonderSeekerName,
-        Map<String, LocalDateTime> matchHistory
-) {
+        Map<String, LocalDateTime> matchHistory) {
+
 }

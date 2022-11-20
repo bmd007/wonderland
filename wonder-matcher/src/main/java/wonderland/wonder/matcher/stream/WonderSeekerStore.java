@@ -180,40 +180,34 @@ public class WonderSeekerStore implements KeyValueStore<String, WonderSeeker> {
         }
     }
 
-    private static class InMemoryKeyValueIterator<K, V> implements KeyValueIterator<K, V> {
-
-        private final Iterator<Map.Entry<K, V>> iter;
-
-        private InMemoryKeyValueIterator(final Iterator<Map.Entry<K, V>> iter) {
-            this.iter = iter;
-        }
+    private record InMemoryKeyValueIterator<K, V>(Iterator<Map.Entry<K, V>> iter) implements KeyValueIterator<K, V> {
 
         @Override
-        public boolean hasNext() {
-            return iter.hasNext();
-        }
+            public boolean hasNext() {
+                return iter.hasNext();
+            }
 
-        @Override
-        public KeyValue<K, V> next() {
-            Map.Entry<K, V> entry = iter.next();
-            return new KeyValue<>(entry.getKey(), entry.getValue());
-        }
+            @Override
+            public KeyValue<K, V> next() {
+                Map.Entry<K, V> entry = iter.next();
+                return new KeyValue<>(entry.getKey(), entry.getValue());
+            }
 
-        @Override
-        public void remove() {
-            iter.remove();
-        }
+            @Override
+            public void remove() {
+                iter.remove();
+            }
 
-        @Override
-        public void close() {
-            // do nothing
-        }
+            @Override
+            public void close() {
+                // do nothing
+            }
 
-        @Override
-        public K peekNextKey() {
-            throw new UnsupportedOperationException("peekNextKey() not supported in " + getClass().getName());
+            @Override
+            public K peekNextKey() {
+                throw new UnsupportedOperationException("peekNextKey() not supported in " + getClass().getName());
+            }
         }
-    }
 
     private static class EmptyKeyValueIterator<K, V> implements KeyValueIterator<K, V> {
 

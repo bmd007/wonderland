@@ -8,7 +8,7 @@ import statefull.geofencing.faas.realtime.fencing.dto.ErrorsDto;
 
 public class ApplicationException extends RuntimeException {
 
-    private static final long serialVersionUID = 1L;
+    
 
     private HttpStatus status;
     private List<ErrorDto> errors;

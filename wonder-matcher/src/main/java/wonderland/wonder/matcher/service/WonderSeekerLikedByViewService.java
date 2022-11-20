@@ -15,9 +15,9 @@ import java.util.function.Function;
 @Service
 public class WonderSeekerLikedByViewService extends ViewService<WonderSeekersLikedBysDto, WonderSeekerLikedBysDto, WonderSeekerLikedByHistory> {
 
-    final static Function<WonderSeekersLikedBysDto, List<WonderSeekerLikedBysDto>> LIST_EXTRACTOR = WonderSeekersLikedBysDto::likedBys;
-    final static Function<List<WonderSeekerLikedBysDto>, WonderSeekersLikedBysDto> LIST_WRAPPER = WonderSeekersLikedBysDto::new;
-    final static BiFunction<String, WonderSeekerLikedByHistory, WonderSeekerLikedBysDto> DTO_MAPPER =
+    static final Function<WonderSeekersLikedBysDto, List<WonderSeekerLikedBysDto>> LIST_EXTRACTOR = WonderSeekersLikedBysDto::likedBys;
+    static final Function<List<WonderSeekerLikedBysDto>, WonderSeekersLikedBysDto> LIST_WRAPPER = WonderSeekersLikedBysDto::new;
+    static final BiFunction<String, WonderSeekerLikedByHistory, WonderSeekerLikedBysDto> DTO_MAPPER =
             (wonderSeekerName, wonderSeekerMatchHistory) ->
                     new WonderSeekerLikedBysDto(wonderSeekerMatchHistory.wonderSeekerName(), wonderSeekerMatchHistory.likedByHistory());
 

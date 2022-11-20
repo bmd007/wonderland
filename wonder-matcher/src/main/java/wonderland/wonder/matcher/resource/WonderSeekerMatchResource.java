@@ -16,7 +16,7 @@ import wonderland.wonder.matcher.service.WonderSeekerMatchViewService;
 @RequestMapping("/api/match")
 public class WonderSeekerMatchResource {
 
-    private WonderSeekerMatchViewService wonderSeekerMatchViewService;
+    private final WonderSeekerMatchViewService wonderSeekerMatchViewService;
 
     public WonderSeekerMatchResource(WonderSeekerMatchViewService wonderSeekerMatchViewService) {
         this.wonderSeekerMatchViewService = wonderSeekerMatchViewService;

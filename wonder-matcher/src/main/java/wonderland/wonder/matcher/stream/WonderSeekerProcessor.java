@@ -34,9 +34,9 @@ public class WonderSeekerProcessor extends ContextualProcessor<String, WonderSee
     }
 
     @Override
-    public void process(Record<String, WonderSeeker> record) {
-        LOGGER.info("Processing {}, (saving it in global store)", record);
-        getStore().put(record.key(), record.value());
+    public void process(Record<String, WonderSeeker> kafkaRecord) {
+        LOGGER.info("Processing {}, (saving it in global store)", kafkaRecord);
+        getStore().put(kafkaRecord.key(), kafkaRecord.value());
     }
 
 }

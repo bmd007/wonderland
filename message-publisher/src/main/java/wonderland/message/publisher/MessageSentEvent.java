@@ -7,9 +7,9 @@ import java.time.Instant;
 
 @Value
 @Builder
-public final class MessageSentEvent {
-    private final String from;
-    private final String to;
-    private final String body;
-    private final Instant time;
+public class MessageSentEvent {
+    String from;
+    String to;
+    String body;
+    Instant time;
 }
