@@ -1,6 +1,6 @@
 package wonderland.api.gateway.event;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 public record DancePartnerSeekerHasLikedAnotherDancerEvent(@NotBlank String liker, @NotBlank String likee) implements Event {
 

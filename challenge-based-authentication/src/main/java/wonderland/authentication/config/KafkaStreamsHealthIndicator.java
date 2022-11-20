@@ -7,7 +7,7 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.apache.kafka.streams.KafkaStreams.State.REBALANCING;

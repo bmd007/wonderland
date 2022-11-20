@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.MoreObjects;
 import org.hibernate.annotations.Proxy;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Objects;
 import java.util.Set;
 

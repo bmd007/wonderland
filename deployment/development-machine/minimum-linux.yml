@@ -58,13 +58,6 @@ services:
       - "1883:1883"
       - "15675:15675"
     environment:
+      RABBITMQ_DEFAULT_USER: imarabbit
+      RABBITMQ_DEFAULT_PASS: noyouarenot
       SERVICE_IGNORE: any_value
-
-  registrator:
-    container_name: registrator
-    image: gliderlabs/registrator
-    volumes:
-      - /var/run/docker.sock:/tmp/docker.sock
-    command: "-internal consul://consul:8500"
-    depends_on:
-      - consul

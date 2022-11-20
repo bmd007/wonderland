@@ -1,4 +1,4 @@
-pplugins {
+plugins {
     id 'java'
     id 'idea'
     id 'org.springframework.boot' version '3.0.0-RC2'
@@ -6,6 +6,14 @@ pplugins {
     id 'org.graalvm.buildtools.native' version '0.9.17'
     id 'org.hibernate.orm' version '6.1.5.Final'
     id "jacoco"
+}
+
+hibernate {
+    enhancement {
+        lazyInitialization true
+        dirtyTracking true
+        associationManagement true
+    }
 }
 
 java {
@@ -93,12 +101,4 @@ bootBuildImage {
 //	imageName = "bmd007/${project.name}:${project.version}"
     imageName = "bmd007/${project.name}"
     environment = ["BP_JVM_VERSION" : "19"]
-}
-
-hibernate {
-    enhancement {
-        lazyInitialization true
-        dirtyTracking true
-        associationManagement true
-    }
 }

@@ -9,9 +9,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import wonderland.api.gateway.config.Topics;
-import wonderland.api.gateway.dto.*;
-import wonderland.api.gateway.event.DancePartnerSeekerIsDisLikedEvent;
+import wonderland.api.gateway.dto.Location;
+import wonderland.api.gateway.dto.WonderSeekerDto;
+import wonderland.api.gateway.dto.WonderSeekerLikesDto;
+import wonderland.api.gateway.dto.WonderSeekerMatchesDto;
+import wonderland.api.gateway.dto.WonderSeekersDto;
 import wonderland.api.gateway.event.DancePartnerSeekerHasLikedAnotherDancerEvent;
+import wonderland.api.gateway.event.DancePartnerSeekerIsDisLikedEvent;
 import wonderland.api.gateway.event.DancerIsLookingForPartnerUpdate;
 import wonderland.api.gateway.event.Event;
 
@@ -49,7 +53,7 @@ public class DancePartnerFinderResource {
         this.wonderMatcherClient = loadBalancedWebClientBuilder.baseUrl("http://wonder-matcher").build();
 
         Flux.fromIterable(potentialDancePartners.values())
-                .flatMap(event -> Mono.fromFuture(kafkaTemplate.send(Topics.DANCER_SEEKING_PARTNER_UPDATES, event.key(), event).completable()))
+                .flatMap(event -> Mono.fromFuture(kafkaTemplate.send(Topics.DANCER_SEEKING_PARTNER_UPDATES, event.key(), event)))
                 .doOnError(throwable -> log.error("error while publishing"))
                 .log()
                 .subscribe();
@@ -94,7 +98,7 @@ public class DancePartnerFinderResource {
     public Mono<Void> reportSeekingPartner(SeekingPartnerRequestBody requestBody) {
         log.info("current dancers,{}", potentialDancePartners.keySet());
         var event = new DancerIsLookingForPartnerUpdate(requestBody.name, requestBody.location);
-        return Mono.fromFuture(kafkaTemplate.send(Topics.DANCER_SEEKING_PARTNER_UPDATES, event.key(), event).completable())
+        return Mono.fromFuture(kafkaTemplate.send(Topics.DANCER_SEEKING_PARTNER_UPDATES, event.key(), event))
                 .doOnError(throwable -> log.error("error while publishing {}", event))
                 .log()
                 .then();
@@ -114,7 +118,7 @@ public class DancePartnerFinderResource {
         likedDancers.put(requestBody.whoHasLiked, newLikeesMap);
         log.info("likedDancers {}", likedDancers);
         var event = new DancePartnerSeekerHasLikedAnotherDancerEvent(requestBody.whoHasLiked, requestBody.whomIsLiked);
-        return Mono.fromFuture(kafkaTemplate.send(Topics.DANCE_PARTNER_EVENTS, event.key(), event).completable())
+        return Mono.fromFuture(kafkaTemplate.send(Topics.DANCE_PARTNER_EVENTS, event.key(), event))
                 .doOnError(throwable -> log.error("error while publishing {}", event))
                 .log()
                 .then();

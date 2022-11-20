@@ -1,6 +1,6 @@
 package wonderland.wonder.matcher.event;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 public record WonderSeekersMatchedEvent(@NotBlank String matchee1, @NotBlank String matchee2) implements Event {
 

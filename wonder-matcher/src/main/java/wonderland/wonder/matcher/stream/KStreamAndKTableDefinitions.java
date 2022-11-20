@@ -25,7 +25,7 @@ import wonderland.wonder.matcher.event.DancerIsLookingForPartnerUpdate;
 import wonderland.wonder.matcher.event.WonderSeekersMatchedEvent;
 import wonderland.wonder.matcher.repository.WonderSeekerJdbcRepository;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.time.ZoneOffset;
 import java.util.Set;
 

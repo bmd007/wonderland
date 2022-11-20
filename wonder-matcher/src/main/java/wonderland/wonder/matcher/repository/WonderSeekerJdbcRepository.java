@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import wonderland.wonder.matcher.domain.Location;
 import wonderland.wonder.matcher.domain.WonderSeeker;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
