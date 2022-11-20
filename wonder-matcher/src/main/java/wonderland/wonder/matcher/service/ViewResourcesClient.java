@@ -22,15 +22,15 @@ import java.util.stream.Collectors;
 @Component
 public class ViewResourcesClient {
 
-    private WebClient.Builder webClientBuilder;
+    private final WebClient.Builder webClientBuilder;
 
     public ViewResourcesClient(@Qualifier("loadBalancedClient") WebClient.Builder loadBalancedWebClientBuilder,
                                @Qualifier("notLoadBalancedClient") WebClient.Builder notLoadBalancedWebClientBuilder,
                                Environment environment) {
         var activeProfiles = Arrays.stream(environment.getActiveProfiles()).collect(Collectors.toSet());
-        if (!activeProfiles.contains("no-consul")){
+        if (!activeProfiles.contains("no-consul")) {
             webClientBuilder = loadBalancedWebClientBuilder;
-        }else{
+        } else {
             webClientBuilder = notLoadBalancedWebClientBuilder;
         }
     }
