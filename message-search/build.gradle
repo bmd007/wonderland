@@ -3,13 +3,12 @@ plugins {
     id 'idea'
     id 'org.springframework.boot' version '3.0.0-RC2'
     id 'io.spring.dependency-management' version '1.1.0'
-    id 'org.graalvm.buildtools.native' version '0.9.17'
     id "jacoco"
 }
 
 java {
-    sourceCompatibility = 19
-    targetCompatibility = 19
+    sourceCompatibility = 17
+    targetCompatibility = 17
 }
 
 configurations {
@@ -101,5 +100,5 @@ tasks.named('wrapper') {
 bootBuildImage {
 //	imageName = "bmd007/${project.name}:${project.version}"
     imageName = "bmd007/${project.name}"
-    environment = ["BP_JVM_VERSION": "19"]
+    environment = ["BP_JVM_VERSION": "17"]
 }
