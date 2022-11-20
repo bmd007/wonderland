@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 @ExtendWith({SpringExtension.class})
 @SpringBootTest(properties = {
-        "server_port=4965",
+        "server.port=4965",
         "kafka.streams.server.config.app-port=4965",
         "kafka.streams.server.config.app-ip=localhost"
 })

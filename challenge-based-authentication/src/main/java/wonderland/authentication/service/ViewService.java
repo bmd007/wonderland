@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 import wonderland.authentication.exception.ServiceUnavailableException;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -80,19 +81,19 @@ public class ViewService<E, M, I> {
     }
 
     //**
-    // Use this method for fetching all of data ONLY if the assigned store is GLOBAL
+    // Use this method for fetching all of the data ONLY if the assigned store is GLOBAL
     // **//
     public Mono<E> getAllFromGlobalStore() {
         return getFromLocalStorage().collectList().map(listOfMtoE);
     }
 
     private Flux<M> getAllFromRemoteStorage() {
-        var metadataCollection = streams.getKafkaStreams().streamsMetadataForStore(storeName);
+        var metadataCollection = Objects.requireNonNull(streams.getKafkaStreams()).streamsMetadataForStore(storeName);
         return Flux.fromIterable(metadataCollection)
                 .switchIfEmpty(Flux.error(() -> new ServiceUnavailableException("No metadata found for " + storeName)))
                 .filter(this::isRemoteNode)
                 .flatMap(this::getFromRemoteStorage)
-                .doOnError(throwable -> Flux.error(() -> new ServiceUnavailableException("Error " + throwable.getMessage() + " when getting all for store" + storeName)));
+                .onErrorResume(throwable -> Flux.error(() -> new ServiceUnavailableException("Error " + throwable.getMessage() + " when getting all for store" + storeName)));
     }
 
     private Flux<M> getFromRemoteStorage(StreamsMetadata metadata) {

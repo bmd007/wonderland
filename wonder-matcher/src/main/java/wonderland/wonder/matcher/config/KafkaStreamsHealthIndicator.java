@@ -18,7 +18,7 @@ public class KafkaStreamsHealthIndicator implements HealthIndicator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaStreamsHealthIndicator.class);
 
-    private final String messageKey = "kafka-streams";
+    private final String MESSAGE_KEY = "kafka-streams";
 
     private final StreamsBuilderFactoryBean streams;
     private boolean stillRunning = false;
@@ -38,9 +38,9 @@ public class KafkaStreamsHealthIndicator implements HealthIndicator {
     @Override
     public Health health() {
         if (streams.isRunning() && isStillRunning()) {
-            return Health.up().withDetail(messageKey, "Available").build();
+            return Health.up().withDetail(MESSAGE_KEY, "Available").build();
         }
-        return Health.down().withDetail(messageKey, "Not Available").build();
+        return Health.down().withDetail(MESSAGE_KEY, "Not Available").build();
     }
 
     @PostConstruct

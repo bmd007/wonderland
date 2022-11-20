@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 import wonderland.wonder.matcher.exception.ServiceUnavailableException;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -41,10 +42,10 @@ public class ViewService<E, M, I> {
     private final Function<E, List<M>> dtoListContainerToListOfDtos;
     private final Function<List<M>, E> listOfDtosToDtoListContainer;
     private final String pathPart;
-    private String ip;
-    private int port;
-    private StreamsBuilderFactoryBean streams;
-    private ViewResourcesClient commonClient;
+    private final String ip;
+    private final int port;
+    private final StreamsBuilderFactoryBean streams;
+    private final ViewResourcesClient commonClient;
 
     public ViewService(String ip,
                        int port,
@@ -89,12 +90,12 @@ public class ViewService<E, M, I> {
     }
 
     private Flux<M> getAllFromRemoteStorage() {
-        var metadataCollection = streams.getKafkaStreams().streamsMetadataForStore(storeName);
+        var metadataCollection = Objects.requireNonNull(streams.getKafkaStreams()).streamsMetadataForStore(storeName);
         return Flux.fromIterable(metadataCollection)
                 .switchIfEmpty(Flux.error(() -> new ServiceUnavailableException("No metadata found for " + storeName)))
                 .filter(this::isRemoteNode)
                 .flatMap(this::getFromRemoteStorage)
-                .doOnError(throwable -> Flux.error(() -> new ServiceUnavailableException("Error " + throwable.getMessage() + " when getting all for store" + storeName)));
+                .onErrorResume(throwable -> Flux.error(() -> new ServiceUnavailableException("Error " + throwable.getMessage() + " when getting all for store" + storeName)));
     }
 
     private Flux<M> getFromRemoteStorage(StreamsMetadata metadata) {
@@ -117,7 +118,7 @@ public class ViewService<E, M, I> {
     }
 
     public Mono<M> getById(String id) {
-        var metadata = streams.getKafkaStreams().queryMetadataForKey(storeName, id, new StringSerializer());
+        var metadata = Objects.requireNonNull(streams.getKafkaStreams()).queryMetadataForKey(storeName, id, new StringSerializer());
 
         if (metadata.equals(KeyQueryMetadata.NOT_AVAILABLE) || metadata == null) {
             LOGGER.error("Neither this nor other instances has access to requested key. Metadata: {}", metadata);
@@ -127,10 +128,8 @@ public class ViewService<E, M, I> {
         if (metadata.activeHost().host().equals(ip) && metadata.activeHost().port() == port) {
             LOGGER.debug("Querying local store {} for id: {}", storeName, id);
             var store = waitUntilStoreIsQueryable();
-            return Optional.ofNullable(store.get(id))
-                    .map(i -> domainToDtoMapper.apply(id, i))
-                    .map(Mono::just)
-                    .orElseGet(() -> Mono.empty());//No data for that key locally
+            return Mono.justOrEmpty(store.get(id))
+                    .map(i -> domainToDtoMapper.apply(id, i));//No data for that key locally
         }
 
         var url = String.format("http://%s:%d/%s/%s", metadata.activeHost().host(), metadata.activeHost().port(), pathPart, id);
@@ -140,7 +139,7 @@ public class ViewService<E, M, I> {
     }
 
     public Mono<M> getByIdFromGlobalStore(String id) {
-        var metadata = streams.getKafkaStreams().queryMetadataForKey(storeName, id, new StringSerializer());
+        var metadata = Objects.requireNonNull(streams.getKafkaStreams()).queryMetadataForKey(storeName, id, new StringSerializer());
 
         if (metadata.equals(KeyQueryMetadata.NOT_AVAILABLE) || metadata == null) {
             LOGGER.error("Neither this nor other instances has access to requested key. Metadata: {}", metadata);
@@ -149,17 +148,15 @@ public class ViewService<E, M, I> {
 
         LOGGER.debug("Querying local part of global store {} for id: {}", storeName, id);
         var store = waitUntilStoreIsQueryable();
-        return Optional.ofNullable(store.get(id))
-                .map(i -> domainToDtoMapper.apply(id, i))
-                .map(Mono::just)
-                .orElseGet(() -> Mono.empty());//No data for that key locally
+        return Mono.justOrEmpty(store.get(id))
+                .map(i -> domainToDtoMapper.apply(id, i));//No data for that key locally
     }
 
     public ReadOnlyKeyValueStore<String, I> waitUntilStoreIsQueryable() {
         for (int i = 0; i < 10; i++) {
             try {
                 var storeQueryParameters = StoreQueryParameters.fromNameAndType(storeName, QueryableStoreTypes.<String, I>keyValueStore());
-                return streams.getKafkaStreams().store(storeQueryParameters);
+                return Objects.requireNonNull(streams.getKafkaStreams()).store(storeQueryParameters);
             } catch (InvalidStateStoreException e2) {
                 // store not yet ready for querying
                 LOGGER.error("Invalid State Store Error while fetching the kafkaStream store: {}. A retry will happen after 300 ms", storeName);

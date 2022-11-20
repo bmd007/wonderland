@@ -32,7 +32,7 @@ import java.util.stream.Stream;
 public class DancePartnerFinderResource {
 
     private final KafkaTemplate<String, Event> kafkaTemplate;
-    private static Map<String, DancerIsLookingForPartnerUpdate> potentialDancePartners = new HashMap<>();
+    private static final Map<String, DancerIsLookingForPartnerUpdate> potentialDancePartners = new HashMap<>();
     private final WebClient wonderMatcherClient;
 
     static {

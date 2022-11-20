@@ -29,8 +29,9 @@ management:
       enable.http.server.requests: true
       enable.logback: true
       enable.system: true
-    export:
-      prometheus:
+  prometheus:
+    metrics:
+      export:
         enabled: true
 
 spring:
@@ -44,8 +45,11 @@ spring:
         prefer-ip-address: true
         health-check-path: /health
   kafka:
+
     bootstrap-servers: "localhost:9092"
     producer:
+      retries: 3
+      acks: all
       key-serializer: org.springframework.kafka.support.serializer.StringOrBytesSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     #      properties:
@@ -53,8 +57,6 @@ spring:
     consumer:
       group-id: ${spring.application.name}
       auto-offset-reset: earliest
-    retries: 3
-    acks: all
 
   rabbitmq:
       username: imarabbit

@@ -17,9 +17,9 @@ public class TopicPublisher<K, V> {
     private static final Logger LOGGER = LoggerFactory.getLogger(TopicPublisher.class);
     private static final int TIMEOUT_MILLIS = 1000;
 
-    private KafkaProducer<K, V> producer;
-    private String topic;
-    private Scheduler scheduler;
+    private final KafkaProducer<K, V> producer;
+    private final String topic;
+    private final Scheduler scheduler;
 
     public TopicPublisher(KafkaProducer<K, V> producer, String topic) {
         this.producer = producer;

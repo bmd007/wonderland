@@ -29,8 +29,9 @@ management:
       enable.http.server.requests: true
       enable.logback: true
       enable.system: true
-    export:
-      prometheus:
+  prometheus:
+    metrics:
+      export:
         enabled: true
 
 spring:
@@ -46,14 +47,14 @@ spring:
   kafka:
     bootstrap-servers: "localhost:9092"
     producer:
+      retries: 3
+      acks: all
       key-serializer: org.springframework.kafka.support.serializer.StringOrBytesSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
     consumer:
       group-id: ${spring.application.name}
       auto-offset-reset: earliest
-    retries: 3
-    acks: all
 
 kafka:
   topic:

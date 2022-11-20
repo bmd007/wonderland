@@ -8,10 +8,6 @@ spring:
       enabled: true
       discovery:
         enabled: true
-    loadbalancer:
-      ribbon:
-        enabled: false
-
 
 ---
 spring:

@@ -39,9 +39,6 @@ build
 
 
 /src/main/resources/assets
-
 /src/main/resources/assets/*
-/src/main/resources/assets/
-/src/main/resources/assets/
 /src/main/resources/assets/
 /assets/
