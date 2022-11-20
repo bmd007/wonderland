@@ -1,13 +1,16 @@
-plugins {
-    id "java"
-    id "idea"
-    id "org.springframework.boot" version "2.7.5"
-    id "io.spring.dependency-management" version "1.1.0"
-    id "jacoco" //code coverage
+pplugins {
+    id 'java'
+    id 'idea'
+    id 'org.springframework.boot' version '3.0.0-RC2'
+    id 'io.spring.dependency-management' version '1.1.0'
+    id 'org.graalvm.buildtools.native' version '0.9.17'
+    id 'org.hibernate.orm' version '6.1.5.Final'
+    id "jacoco"
 }
 
-jacoco {
-    toolVersion = "0.8.7"
+java {
+    sourceCompatibility = 19
+    targetCompatibility = 19
 }
 
 configurations {
@@ -28,14 +31,13 @@ ext.buildNumber = {
 
 project.version = buildNumber()
 
-sourceCompatibility = 17
-
 repositories {
     mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' }
 }
 
 ext {
-    set('springCloudVersion', "2021.0.5")
+    set('springCloudVersion', "2022.0.0-RC1")
 }
 
 dependencies {
@@ -90,5 +92,13 @@ tasks.named('wrapper') {
 bootBuildImage {
 //	imageName = "bmd007/${project.name}:${project.version}"
     imageName = "bmd007/${project.name}"
-    environment = ["BP_JVM_VERSION" : "17"]
+    environment = ["BP_JVM_VERSION" : "19"]
+}
+
+hibernate {
+    enhancement {
+        lazyInitialization true
+        dirtyTracking true
+        associationManagement true
+    }
 }
