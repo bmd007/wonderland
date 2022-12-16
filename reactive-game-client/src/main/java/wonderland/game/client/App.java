@@ -33,14 +33,12 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.system.AppSettings;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import reactor.core.publisher.Flux;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@Slf4j
 public class App extends SimpleApplication {
 
     private Spatial sniperSpatial;

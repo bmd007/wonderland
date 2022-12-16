@@ -29,7 +29,7 @@ class BottomMenu extends StatelessWidget {
             radius: 25,
             backgroundColor: Colors.red,
             child: SvgPicture.asset(
-              'images/svg/phone-call-end.svg',
+              'assets/images/svg/phone-call-end.svg',
               color: Colors.white,
               height: 30,
               width: 30,
@@ -44,26 +44,26 @@ class BottomMenu extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               SvgPicture.asset(
-                'images/svg/upload.svg',
+                'assets/images/svg/upload.svg',
                 color: Colors.white,
                 height: 18,
                 width: 18,
               ),
               SvgPicture.asset(
-                'images/svg/reload.svg',
+                'assets/images/svg/reload.svg',
                 color: Colors.white,
                 height: 20,
                 width: 20,
               ),
               const SizedBox(width: 60),
               SvgPicture.asset(
-                'images/svg/comment.svg',
+                'assets/images/svg/comment.svg',
                 color: Colors.white,
                 height: 20,
                 width: 20,
               ),
               SvgPicture.asset(
-                'images/svg/menu.svg',
+                'assets/images/svg/menu.svg',
                 color: Colors.white,
                 height: 18,
                 width: 18,

@@ -53,12 +53,12 @@ class DancePartnerSelectWidget extends StatelessWidget {
                 IconButton(
                   onPressed: () => dancerBloc.add(DancerDislikedEvent(dancerBloc.state.getCurrentDancerName())),
                   iconSize: 100,
-                  icon: Image.asset('images/panda.gif'),
+                  icon: Image.asset('assets/images/panda.gif'),
                 ),
                       IconButton(
                         onPressed: () => dancerBloc.add(DancerLikedEvent(dancerBloc.state.getCurrentDancerName())),
                         iconSize: 150,
-                        icon: Image.asset('images/dancer.png'),
+                        icon: Image.asset('assets/images/dancer.png'),
                       ),
                     ],
                   )
@@ -66,7 +66,7 @@ class DancePartnerSelectWidget extends StatelessWidget {
               )
             ],
           )
-        : Image.asset('images/wait.gif');
+        : Image.asset('assets/images/wait.gif');
   }
 
   AppBar? appBar(DancePartnerFinderBloc dancerBloc, BuildContext context) {
@@ -77,7 +77,7 @@ class DancePartnerSelectWidget extends StatelessWidget {
         IconButton(
           onPressed: () =>
               Navigator.push(context, MaterialPageRoute(builder: (context) => const DancePartnerMatchesWidget())),
-          icon: Image.asset('images/matches.png', height: 40, width: 40),
+          icon: Image.asset('assets/images/matches.png', height: 40, width: 40),
         )
       ],
       bottom: PreferredSize(

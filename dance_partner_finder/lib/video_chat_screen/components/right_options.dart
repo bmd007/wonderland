@@ -26,7 +26,7 @@ class _RightOptionsState extends State<RightOptions> {
               backgroundColor: Colors.white,
               //backgroundColor: Colors.black.withOpacity(0.8),
               child: SvgPicture.asset(
-                'images/svg/microphone.svg',
+                'assets/images/svg/microphone.svg',
                 height: 22,
                 width: 22,
                 color: Colors.red,
@@ -41,7 +41,7 @@ class _RightOptionsState extends State<RightOptions> {
               backgroundColor: Colors.white,
               //backgroundColor: Colors.black.withOpacity(0.8),
               child: SvgPicture.asset(
-                'images/svg/no-video.svg',
+                'assets/images/svg/no-video.svg',
                 height: 22,
                 width: 22,
                 color: Colors.red,

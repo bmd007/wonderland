@@ -20,7 +20,7 @@ class DancePartnerMatchesWidget extends StatelessWidget {
       child: BlocBuilder<DancerMatchAndChatBloc, DancerMatchAndChatState>(
         builder: (context, state) {
           if (state.isLoading) {
-            return Image.asset('images/wait.gif');
+            return Image.asset('assets/images/wait.gif');
           } else if (state.isChattingWithSomeOne()) {
             return DancerChatWidget();
           }

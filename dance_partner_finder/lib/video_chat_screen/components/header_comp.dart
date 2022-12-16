@@ -41,7 +41,7 @@ class _CallScreenHeaderComponentsState
               ),
               child: Center(
                 child: SvgPicture.asset(
-                  'images/svg/left.svg',
+                  'assets/images/svg/left.svg',
                   height: 15,
                   color: Colors.red.withOpacity(0.8),
                 ),
@@ -71,7 +71,7 @@ class _CallScreenHeaderComponentsState
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: Image.asset(
-                      'images/fortnight.png',
+                      'assets/images/fortnight.png',
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -80,7 +80,7 @@ class _CallScreenHeaderComponentsState
                   left: 10,
                   bottom: 10,
                   child: SvgPicture.asset(
-                    'images/svg/expand-tool.svg',
+                    'assets/images/svg/expand-tool.svg',
                     height: isExpanded ? 24 : 16,
                     color: Colors.white,
                   ),

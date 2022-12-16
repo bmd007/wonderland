@@ -41,7 +41,7 @@ class DanceProfileEditWidget extends StatelessWidget {
                 Image.network(ProfileEditBloc.profilePicUrl(loginCubit.state.email), fit: BoxFit.fitHeight),
                 IconButton(
                     onPressed: () => uploadProfileImage(loginCubit.state.email, profileEditBloc),
-                    icon: Image.asset('images/edit_profile.png')),
+                    icon: Image.asset('assets/images/edit_profile.png')),
               ]),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -64,7 +64,7 @@ class DanceProfileEditWidget extends StatelessWidget {
               ),
             ],
           )
-        : Image.asset('images/wait.gif');
+        : Image.asset('assets/images/wait.gif');
   }
 
   void uploadProfileImage(String dancerEmail, ProfileEditBloc profileEditBloc) {
