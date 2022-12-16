@@ -9,9 +9,10 @@ class MyForge2DFlameGame extends Forge2DGame with HasTappables {
   Future<void> onLoad() async {
     await super.onLoad();
     debugMode = false;
+    var gameSize = screenToWorld(camera.viewport.effectiveSize);
     addAll(createBoundaries(this));
-    add(MyPlatform(Vector2(100, 30)));
-    add(MyGirl(Vector2(100, 20)));
+    add(MyPlatform(gameSize/2));
+    add(MyGirl(gameSize/1.5));
     add(MyGround(screenToWorld(camera.viewport.effectiveSize)));
   }
 }
