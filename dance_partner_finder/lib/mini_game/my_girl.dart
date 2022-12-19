@@ -3,14 +3,17 @@ import 'package:flame_forge2d/flame_forge2d.dart';
 
 class MyGirl extends BodyComponent {
   SpriteAnimationData glidingAnimationData =
-      SpriteAnimationData.sequenced(amount: 9, stepTime: 0.03, textureSize: Vector2(152.0, 142.0));
+  SpriteAnimationData.sequenced(amount: 9, stepTime: 0.03, textureSize: Vector2(152.0, 142.0));
   SpriteAnimationData runningAnimationDate =
-      SpriteAnimationData.sequenced(amount: 9, stepTime: 0.03, textureSize: Vector2(375.0, 520.0));
+  SpriteAnimationData.sequenced(amount: 9, stepTime: 0.03, textureSize: Vector2(375.0, 520.0));
   SpriteAnimationData idleAnimationData =
-      SpriteAnimationData.sequenced(amount: 9, stepTime: 0.03, textureSize: Vector2(290.0, 500.0));
+  SpriteAnimationData.sequenced(amount: 9, stepTime: 0.03, textureSize: Vector2(290.0, 500.0));
+  SpriteAnimationData jumpingAnimationData =
+  SpriteAnimationData.sequenced(amount: 9, stepTime: 0.03, textureSize: Vector2(399.0, 543.0));
   late SpriteAnimation glidingAnimation;
   late SpriteAnimation runningAnimation;
   late SpriteAnimation idleAnimation;
+  late SpriteAnimation jumpingAnimation;
   bool lookingTowardRight = true;
   bool landedSinceLastElevation = false;
   final double speed = 20;
@@ -50,8 +53,8 @@ class MyGirl extends BodyComponent {
       }
       girlComponent.animation = runningAnimation;
     } else if ((direction == JoystickDirection.up ||
-            direction == JoystickDirection.upRight ||
-            direction == JoystickDirection.upLeft) &&
+        direction == JoystickDirection.upRight ||
+        direction == JoystickDirection.upLeft) &&
         landedSinceLastElevation) {
       landedSinceLastElevation = false;
       body.applyLinearImpulse(Vector2(0, 10000));
@@ -64,10 +67,12 @@ class MyGirl extends BodyComponent {
     body.angularVelocity = 0;
     landedSinceLastElevation = body.linearVelocity.y == 0;
 
-    if (body.linearVelocity.y <= 0) {
-      girlComponent.animation = idleAnimation; //taking off
-    } else if (body.linearVelocity.y > 3) {
-      girlComponent.animation = glidingAnimation; //diving
+    if (body.linearVelocity.y == 0) {
+      girlComponent.animation = idleAnimation;
+    } else if (body.linearVelocity.y < -5) {
+      girlComponent.animation = jumpingAnimation;
+    } else if (body.linearVelocity.y > 5) {
+      girlComponent.animation = glidingAnimation;
     }
     if (!joystick.delta.isZero()) {
       move(dt);
@@ -83,14 +88,15 @@ class MyGirl extends BodyComponent {
     glidingAnimation = await gameRef.loadSpriteAnimation("red_girl/gliding_spriteSheet.png", glidingAnimationData);
     runningAnimation = await gameRef.loadSpriteAnimation("red_girl/running_spriteSheet.png", runningAnimationDate);
     idleAnimation = await gameRef.loadSpriteAnimation("red_girl/idle_spriteSheet.png", idleAnimationData);
+    jumpingAnimation = await gameRef.loadSpriteAnimation("red_girl/jumping_spriteSheet.png", jumpingAnimationData);
 
     girlComponent = SpriteAnimationComponent()
       ..animation = idleAnimation
       ..size = Vector2.all(6)
       ..anchor = Anchor.center;
     add(girlComponent);
-   camera.followBodyComponent(this, useCenterOfMass: false);
-   camera.zoom = 15;
+    camera.followBodyComponent(this, useCenterOfMass: false);
+    camera.zoom = 15;
   }
 
   @override
