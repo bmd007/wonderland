@@ -1,6 +1,6 @@
 import 'package:dance_partner_finder/dance_partner_select_widget.dart';
 import 'package:dance_partner_finder/dancer_profile_edit_widget.dart';
-import 'package:dance_partner_finder/mini_game.dart';
+import 'package:dance_partner_finder/mini_game/my_game.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
