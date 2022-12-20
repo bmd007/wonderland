@@ -40,7 +40,9 @@ dependencies:
   universal_io: ^2.0.4
   stomp_dart_client: ^0.4.4
   rsocket:
-    git: git@github.com:rsocket/rsocket-dart.git
+    git:
+      url: git@github.com:rsocket/rsocket-dart.git
+      ref: master
   firebase_auth: ^4.0.0
   google_sign_in: ^5.3.3
   google_fonts: ^3.0.1
