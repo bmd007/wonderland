@@ -30,4 +30,4 @@ jobs:
 
     - name: Build api-gateway 
       working-directory: ./api-gateway
-      run: ./gradlew clean build
+      run: ./gradlew clean
