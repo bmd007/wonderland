@@ -29,33 +29,14 @@ jobs:
         working-directory: ./dance_partner_finder
         run: flutter build web --release
 
-      - name: copy file
-        uses: canastro/copy-file-action@master
-        with:
-          source: "/dance_partner_finder/build/web/*"
-          target: "/dance_partner_finder/docs"
+      - name: copy from flutter build to firebase folder
+        uses: actions/checkout@v2
+        run: |
+          cp -r ./dance_partner_finder/build/web/* ./deployment/gcp/firebase/flutter_ui/public/ 
+          ls ./deployment/gcp/firebase/flutter_ui/public/ 
 
-#      - name: Upload Web Build Files
-#        working-directory: ./dance_partner_finder
-#        uses: actions/upload-artifact@v2
-#        with:
-#            name: web-release
-#            path: ./build/web/
-#
-#  deploy:
-#    name: Deploy Web Build
-#    needs: build
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: Download Web Release
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: web-release
-#
-#      - name: Deploy to gh-pages
-#        uses: peaceiris/actions-gh-pages@v3
-#        with:
-#          github_token: ${{ secrets.GITHUB_TOKEN }}
-#          publish_dir: ./
+      - name: create PR for the built flutter web
+        uses: peter-evans/create-pull-request@v4
+        add-paths: ./deployment/gcp/firebase/flutter_ui/public/
+        commit-message: creating PR for deploying flutter to firebase
 
