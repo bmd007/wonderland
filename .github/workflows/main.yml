@@ -3,6 +3,9 @@ name: Flutter CI
 on:
   push:
     branches: [ master ]
+    paths:
+        - 'dance_partner_finder/**'
+
 
 jobs:
   build:
