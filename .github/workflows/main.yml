@@ -19,13 +19,13 @@ jobs:
         with:
           flutter-version: '3.3.10'
           channel: 'stable'
-      - run: flutter --version
+
+      - name: flutter version
+        run: flutter --version
 
       - name: flutter pub get
         working-directory: ./dance_partner_finder
         run: flutter pub get
-
-#      - run: flutter test
 
       - name: flutter build web
         working-directory: ./dance_partner_finder
