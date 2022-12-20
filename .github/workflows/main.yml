@@ -38,6 +38,7 @@ jobs:
 
       - name: create PR for the built flutter web
         uses: peter-evans/create-pull-request@v4
-        add-paths: ./deployment/gcp/firebase/flutter_ui/public/
-        commit-message: creating PR for deploying flutter to firebase
+        with:
+          add-paths: ./deployment/gcp/firebase/flutter_ui/public/
+          commit-message: creating PR for deploying flutter to firebase
 
