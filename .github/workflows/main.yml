@@ -41,11 +41,12 @@ jobs:
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_WONDERLAND_007 }}'
           projectId: wonderland-007
           entryPoint: ./deployment/gcp/firebase/flutter_ui
+          channelId: live
 
-      - name: create PR for the built flutter web
-        uses: peter-evans/create-pull-request@v4
-        with:
-          add-paths: ./deployment/gcp/firebase/flutter_ui/public/
-          commit-message: creating PR for deploying flutter to firebase
-          branch: firebase-deployment
+#      - name: create PR for the built flutter web
+#        uses: peter-evans/create-pull-request@v4
+#        with:
+#          add-paths: ./deployment/gcp/firebase/flutter_ui/public/
+#          commit-message: creating PR for deploying flutter to firebase
+#          branch: firebase-deployment
 

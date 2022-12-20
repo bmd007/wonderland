@@ -18,3 +18,4 @@ jobs:
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_WONDERLAND_007 }}'
           projectId: wonderland-007
           entryPoint: ./deployment/gcp/firebase/flutter_ui
+          channelId: live
