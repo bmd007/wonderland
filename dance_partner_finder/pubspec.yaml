@@ -39,8 +39,8 @@ dependencies:
   web_socket_channel: ^2.2.0
   universal_io: ^2.0.4
   stomp_dart_client: ^0.4.4
-  rsocket: ^1.0.0
-#    git: git@github.com:rsocket/rsocket-dart.git
+  rsocket:
+    git: git@github.com:rsocket/rsocket-dart.git
   firebase_auth: ^4.0.0
   google_sign_in: ^5.3.3
   google_fonts: ^3.0.1
