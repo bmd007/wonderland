@@ -44,4 +44,6 @@ jobs:
         with:
           add-paths: ./deployment/gcp/firebase/flutter_ui/public/
           commit-message: creating PR for deploying flutter to firebase
+          allow_no_diff: true
+          branch: firebase-deployment
 
