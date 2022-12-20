@@ -60,7 +60,7 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'com.xebialabs.restito:restito:1.1.0'
-    testImplementation('org.mockito:mockito-junit-jupiter')
+    testImplementation 'org.mockito:mockito-junit-jupiter'
     testImplementation 'io.projectreactor:reactor-test'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
 }

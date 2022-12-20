@@ -15,9 +15,4 @@ spring:
   sleuth.enabled: false
   kafka:
     enabled: false
-    bootstrap-servers: ${spring.embedded.kafka.brokers}
-
-kafka:
-  topic-partitions:
-    event: '1:1'
-    update: '1:1'
+#    bootstrap-servers: ${spring.embedded.kafka.brokers}
