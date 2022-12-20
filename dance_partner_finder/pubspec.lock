@@ -719,11 +719,9 @@ packages:
   rsocket:
     dependency: "direct main"
     description:
-      path: "."
-      ref: master
-      resolved-ref: f31cc6e24f4a3cfda711f459e8cb78b446a62245
-      url: "git@github.com:rsocket/rsocket-dart.git"
-    source: git
+      name: rsocket
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "1.0.0"
   rx_bloc:
     dependency: "direct main"
