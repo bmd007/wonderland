@@ -33,8 +33,8 @@ jobs:
         working-directory: ./dance_partner_finder
         uses: actions/upload-artifact@v2
         with:
-          name: web-release
-          path: ./build/web/
+            name: web-release
+            path: ./build/web/
 
   deploy:
     name: Deploy Web Build
