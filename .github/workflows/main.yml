@@ -34,6 +34,14 @@ jobs:
           cp -r ./dance_partner_finder/build/web/* ./deployment/gcp/firebase/flutter_ui/public/ 
           ls ./deployment/gcp/firebase/flutter_ui/public/ 
 
+      - name: Deploy to firebase
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_WONDERLAND_007 }}'
+          projectId: wonderland-007
+          entryPoint: ./deployment/gcp/firebase/flutter_ui
+
       - name: create PR for the built flutter web
         uses: peter-evans/create-pull-request@v4
         with:
