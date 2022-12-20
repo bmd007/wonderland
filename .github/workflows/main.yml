@@ -23,6 +23,9 @@ jobs:
       - name: flutter version
         run: flutter --version
 
+      - name: flutter doctor
+        run: flutter doctor
+
       - name: flutter pub get
         working-directory: ./dance_partner_finder
         run: flutter pub get
