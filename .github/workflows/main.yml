@@ -32,7 +32,6 @@ jobs:
         run: flutter build web --release
 
       - name: copy from flutter build to firebase folder
-        uses: actions/checkout@v2
         run: |
           cp -r ./dance_partner_finder/build/web/* ./deployment/gcp/firebase/flutter_ui/public/ 
           ls ./deployment/gcp/firebase/flutter_ui/public/ 
