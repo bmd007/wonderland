@@ -11,7 +11,7 @@ class MyPlatform extends BodyComponent {
     await super.onLoad();
     renderBody = true;
     var girlAnimation = SpriteComponent()
-      ..sprite = await gameRef.loadSprite("freescifiplatform/Tile_13.png")
+      ..sprite = await gameRef.loadSprite("red_girl/Tile_13.png")
       ..size = Vector2(10, 2)
       ..anchor = Anchor.topCenter;
     add(girlAnimation);

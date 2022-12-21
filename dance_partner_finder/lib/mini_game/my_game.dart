@@ -56,9 +56,4 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
     add(shapeButton);
     add(joystickComponent);
   }
-
-// @override
-// void update(double dt){
-//   super.update(dt);
-// }
 }
