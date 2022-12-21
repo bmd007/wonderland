@@ -17,7 +17,7 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-    debugMode = true;
+    debugMode = false;
     var screenSize = screenToWorld(camera.viewport.effectiveSize);
     print(screenSize);
     addAll(createBoundaries(this));
