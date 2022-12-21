@@ -12,15 +12,15 @@ class MyPlatform extends BodyComponent {
     renderBody = true;
     var girlAnimation = SpriteComponent()
       ..sprite = await gameRef.loadSprite("freescifiplatform/Tile_13.png")
-      ..size = Vector2(24, 4)
+      ..size = Vector2(10, 2)
       ..anchor = Anchor.topCenter;
     add(girlAnimation);
   }
 
   @override
   Body createBody() {
-    PolygonShape shape = PolygonShape()..setAsBoxXY(12, 1);
-    final fixtureDefinition = FixtureDef(shape, density: 1, restitution: 0.1, friction: 1);
+    PolygonShape shape = PolygonShape()..setAsBoxXY(5, 0.5);
+    final fixtureDefinition = FixtureDef(shape, density: 1, restitution: 0.1, friction: 0.3);
     final bodyDefinition = BodyDef(position: position, type: BodyType.static);
     return world.createBody(bodyDefinition)..createFixture(fixtureDefinition);
   }

@@ -28,7 +28,7 @@ class Wall extends BodyComponent {
     final shape = EdgeShape()..set(start, end);
 
     final fixtureDef = FixtureDef(shape)
-      ..restitution = 0.0
+      ..restitution = 0.1
       ..friction = 0.3;
 
     final bodyDef = BodyDef()
