@@ -84,6 +84,10 @@ flutter:
      - assets/images/
      - assets/images/red_girl/
      - assets/images/svg/
+     - assets/images/TeamGunner/CHARACTER_SPRITES/Green/
+     - assets/images/TeamGunner/EXTRAS/
+     - assets/images/Tiles/
+     - assets/images/Objects/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

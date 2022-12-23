@@ -5,9 +5,9 @@ import 'package:flame/palette.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/material.dart';
 
-import 'boundry_creator.dart';
+import 'boundary_creator.dart';
+import 'enemy.dart';
 import 'my_girl.dart';
-import 'my_platform.dart';
 
 class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
   late final JoystickComponent joystickComponent;
@@ -19,16 +19,7 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
     await super.onLoad();
     debugMode = false;
     var screenSize = screenToWorld(camera.viewport.effectiveSize);
-    print(screenSize);
-    addAll(createBoundaries(this));
-    for (double i = 0; i <= 87; i = i + 7) {
-        add(MyPlatform(Vector2(87-i, 87-i)));
-    }
-    // add(MyPlatform(Vector2(0,screenSize.y)));
-    // add(MyPlatform(Vector2(1,screenSize.y-1)));
-    // add(MyPlatform(Vector2(2,screenSize.y-2)));
-    // add(MyPlatform(Vector2(3,screenSize.y-3)));
-    // add(MyGround(screenSize));
+    addAll(createBoundaries(screenSize));
 
     final knobPaint = BasicPalette.red.withAlpha(200).paint();
     final backgroundPaint = BasicPalette.blue.withAlpha(100).paint();
@@ -37,23 +28,37 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
       background: CircleComponent(radius: 60, paint: backgroundPaint),
       margin: const EdgeInsets.only(left: 40, bottom: 40),
     );
+    await add(joystickComponent);
 
-    myGirl = MyGirl(screenSize, joystickComponent);
+    myGirl = MyGirl(joystickComponent, screenSize / 2);
+    add(myGirl);
 
     final shapeButton = HudButtonComponent(
-      button: CircleComponent(radius: 20),
-      buttonDown: RectangleComponent(
-        size: Vector2(10, 10),
-        paint: BasicPalette.blue.paint(),
-      ),
-      margin: const EdgeInsets.only(
-        right: 85,
-        bottom: 150,
-      ),
-    );
+        button: CircleComponent(radius: 20),
+        buttonDown: RectangleComponent(
+          size: Vector2(10, 10),
+          paint: BasicPalette.blue.paint(),
+        ),
+        margin: const EdgeInsets.only(
+          right: 85,
+          bottom: 150,
+        ),
+        onPressed: () async {
+          await myGirl.throwKanui();
+        });
 
-    add(myGirl);
     add(shapeButton);
-    add(joystickComponent);
+
+    add(Enemy(screenSize / 2));
+    add(Enemy(screenSize / 2));
+    add(Enemy(screenSize / 2));
+    add(Enemy(screenSize / 2));
+    add(Enemy(screenSize / 2));
+    add(Enemy(screenSize / 2));
+    add(Enemy(screenSize / 2));
+    add(Enemy(screenSize / 2));
+    add(Enemy(screenSize / 2));
+    add(Enemy(screenSize / 2));
+    add(Enemy(screenSize / 2));
   }
 }
