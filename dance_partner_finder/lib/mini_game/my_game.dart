@@ -1,14 +1,16 @@
+import 'dart:math';
+
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flame/palette.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
-import 'package:flame_playground/my_platform.dart';
 import 'package:flutter/material.dart';
 
 import 'boundary_creator.dart';
 import 'enemy.dart';
 import 'my_girl.dart';
+import 'my_platform.dart';
 
 class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
   late final JoystickComponent joystickComponent;
@@ -16,17 +18,12 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
   late final HudButtonComponent shapeButton;
 
   @override
-  void update(double dt) {
-    super.update(dt);
-  }
-
-  @override
   Future<void> onLoad() async {
     await super.onLoad();
-    camera.zoom = 11;
     debugMode = false;
-    var screenSize = screenToWorld(camera.viewport.effectiveSize);
-    addAll(createBoundaries(screenSize));
+
+    // camera.viewport = FixedResolutionViewport(Vector2.all(maxSide));
+    addAll(createBoundaries(size));
 
     final knobPaint = BasicPalette.red.withAlpha(200).paint();
     final backgroundPaint = BasicPalette.blue.withAlpha(100).paint();
@@ -37,8 +34,8 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
     );
     await add(joystickComponent);
 
-    myGirl = MyGirl(joystickComponent, screenSize / 2);
-    add(myGirl);
+    myGirl = MyGirl(joystickComponent, size / 2);
+    await add(myGirl);
 
     final shootButton = HudButtonComponent(
         button: CircleComponent(radius: 20),
@@ -55,15 +52,17 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
         });
     add(shootButton);
 
-    add(Enemy(screenSize / 1.47));
-    add(Enemy(screenSize / 2.5));
-    add(MyPlatform(screenSize / 1.5));
-    add(MyPlatform(screenSize / 2.5));
+    add(Enemy(size / 1.47));
+    add(Enemy(size / 2.5));
+    add(MyPlatform(size / 1.5));
+    add(MyPlatform(size / 2.5));
 
-    add(Enemy(screenSize / 1.3));
-    add(MyPlatform(screenSize / 1.3));
+    add(Enemy(size / 1.3));
+    add(MyPlatform(size / 1.3));
 
-    add(Enemy(screenSize / 2.1));
-    add(MyPlatform(screenSize / 1.05));
+    add(Enemy(size / 2.1));
+    add(MyPlatform(size / 1.05));
+
+    camera.followBodyComponent(myGirl, useCenterOfMass: false);
   }
 }

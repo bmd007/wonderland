@@ -55,7 +55,7 @@ class Enemy extends BodyComponent with ContactCallbacks {
       component.animation = runningAnimation;
     } else if (direction == JoystickDirection.up && landedSinceLastElevation) {
       landedSinceLastElevation = false;
-      body.applyLinearImpulse(Vector2(0, -1200));
+      body.applyLinearImpulse(Vector2(0, -800));
     } else if (direction == JoystickDirection.upLeft && landedSinceLastElevation) {
       if (lookingTowardRight) {
         component.flipHorizontally();
@@ -63,7 +63,7 @@ class Enemy extends BodyComponent with ContactCallbacks {
       lookingTowardRight = false;
       landedSinceLastElevation = false;
       body.linearVelocity.x = 0;
-      body.applyLinearImpulse(Vector2(relativeDelta.x * 1200, relativeDelta.y * 1200));
+      body.applyLinearImpulse(Vector2(relativeDelta.x * 800, relativeDelta.y * 800));
     } else if (direction == JoystickDirection.upRight && landedSinceLastElevation) {
       if (!lookingTowardRight) {
         component.flipHorizontally();
@@ -71,9 +71,16 @@ class Enemy extends BodyComponent with ContactCallbacks {
       lookingTowardRight = true;
       body.linearVelocity.x = 0;
       landedSinceLastElevation = false;
-      body.applyLinearImpulse(Vector2(relativeDelta.x * 1200, relativeDelta.y * 1200));
+      body.applyLinearImpulse(Vector2(relativeDelta.x * 800, relativeDelta.y * 800));
     }
   }
+
+  List<JoystickDirection> directions = [
+    JoystickDirection.upLeft,
+    JoystickDirection.upRight,
+    JoystickDirection.downRight,
+    JoystickDirection.downLeft,
+  ];
 
   @override
   void update(double dt) {
@@ -85,8 +92,8 @@ class Enemy extends BodyComponent with ContactCallbacks {
     } else if (body.linearVelocity.y != 0) {
       component.animation = jumpingAnimation;
     }
-    if (dt.ceil() % 2 == 0) {
-      var direction = JoystickDirection.values[Random.secure().nextInt(8)];
+    if (dt.ceil() % 5 == 0) {
+      var direction = directions[Random.secure().nextInt(4)];
       move(dt, direction, Vector2(10000, 10000));
     } else if (landedSinceLastElevation) {
       body.linearVelocity.x = 0;
@@ -119,8 +126,8 @@ class Enemy extends BodyComponent with ContactCallbacks {
 
   @override
   Body createBody() {
-    final shape = PolygonShape()..setAsBoxXY(2, 2);
-    final fixtureDefinition = FixtureDef(shape, density: 2, restitution: 0.5, friction: 2);
+    final shape = CircleShape()..radius = 2.5;
+    final fixtureDefinition = FixtureDef(shape, density: 1, restitution: 0.5, friction: 1);
     final bodyDefinition = BodyDef(position: initialPosition, type: BodyType.dynamic)
       ..fixedRotation = true
       ..userData = this;

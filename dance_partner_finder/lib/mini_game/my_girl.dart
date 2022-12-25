@@ -117,7 +117,6 @@ class MyGirl extends BodyComponent with ContactCallbacks {
       ..size = Vector2.all(6)
       ..anchor = Anchor.center;
     add(component);
-    camera.followBodyComponent(this, useCenterOfMass: false);
 
     kanuies.add(MyGirlKanui());
     kanuies.add(MyGirlKanui());
@@ -146,9 +145,8 @@ class MyGirl extends BodyComponent with ContactCallbacks {
 
     playerLifeIndicator = TextComponent()
       ..size = Vector2(0.1, 0.1)
-      ..position = initialPosition + Vector2(-20, (-component.size.y / 2) - 2)
-      ..textRenderer = TextPaint(style: TextStyle(color: BasicPalette.white.color, fontSize: 2))
-      ..anchor = Anchor.topCenter;
+      ..position = Vector2(0, -(component.size.y/2)-2)
+      ..textRenderer = TextPaint(style: TextStyle(color: BasicPalette.white.color, fontSize: 2));
     add(playerLifeIndicator);
   }
 
@@ -171,8 +169,8 @@ class MyGirl extends BodyComponent with ContactCallbacks {
       if (!lookingTowardRight) {
         kanui.component.flipHorizontally();
       }
-      kanui.body.linearVelocity.x = lookingTowardRight ? 60 : -60;
-      kanui.body.linearVelocity.y = 0;
+      kanui.body.linearVelocity.x = lookingTowardRight ? 80 : -80;
+      kanui.body.linearVelocity.y = -5;
     }
   }
 
