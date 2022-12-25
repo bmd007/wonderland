@@ -12,14 +12,14 @@ class MyPlatform extends BodyComponent {
     renderBody = true;
     var girlAnimation = SpriteComponent()
       ..sprite = await gameRef.loadSprite("Tiles/Tile_13.png")
-      ..size = Vector2(20, 2)
+      ..size = Vector2(10, 1)
       ..anchor = Anchor.topCenter;
     add(girlAnimation);
   }
 
   @override
   Body createBody() {
-    PolygonShape shape = PolygonShape()..setAsBoxXY(10, 0.5);
+    PolygonShape shape = PolygonShape()..setAsBoxXY(5, 0.25);
     final fixtureDefinition = FixtureDef(shape, density: 1, restitution: 0.1, friction: 0.3);
     final bodyDefinition = BodyDef(position: position, type: BodyType.static)..userData = this;
     return world.createBody(bodyDefinition)..createFixture(fixtureDefinition);

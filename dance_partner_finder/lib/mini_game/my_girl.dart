@@ -1,7 +1,9 @@
 import 'dart:collection';
 
 import 'package:flame/components.dart';
+import 'package:flame/palette.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
+import 'package:flutter/painting.dart';
 
 import 'bullet.dart';
 import 'my_girl_kanui.dart';
@@ -27,6 +29,7 @@ class MyGirl extends BodyComponent with ContactCallbacks {
   late SpriteAnimationComponent component;
   Queue<MyGirlKanui> kanuies = Queue<MyGirlKanui>();
   int life = 100;
+  late TextComponent playerLifeIndicator;
 
   MyGirl(this.joystick, this.initialPosition);
 
@@ -57,7 +60,7 @@ class MyGirl extends BodyComponent with ContactCallbacks {
       component.animation = runningAnimation;
     } else if (direction == JoystickDirection.up && landedSinceLastElevation) {
       landedSinceLastElevation = false;
-      body.applyLinearImpulse(Vector2(0, -1200));
+      body.applyLinearImpulse(Vector2(0, -1000));
     } else if (direction == JoystickDirection.upLeft && landedSinceLastElevation) {
       if (lookingTowardRight) {
         component.flipHorizontally();
@@ -65,7 +68,7 @@ class MyGirl extends BodyComponent with ContactCallbacks {
       lookingTowardRight = false;
       landedSinceLastElevation = false;
       body.linearVelocity.x = 0;
-      body.applyLinearImpulse(Vector2(joystick.relativeDelta.x * 1200, joystick.relativeDelta.y * 1200));
+      body.applyLinearImpulse(Vector2(joystick.relativeDelta.x * 1000, joystick.relativeDelta.y * 1000));
     } else if (direction == JoystickDirection.upRight && landedSinceLastElevation) {
       if (!lookingTowardRight) {
         component.flipHorizontally();
@@ -73,12 +76,13 @@ class MyGirl extends BodyComponent with ContactCallbacks {
       lookingTowardRight = true;
       body.linearVelocity.x = 0;
       landedSinceLastElevation = false;
-      body.applyLinearImpulse(Vector2(joystick.relativeDelta.x * 1200, joystick.relativeDelta.y * 1200));
+      body.applyLinearImpulse(Vector2(joystick.relativeDelta.x * 1000, joystick.relativeDelta.y * 1000));
     }
   }
 
   @override
   void update(double dt) {
+    playerLifeIndicator.text = life.toString();//use observer pattern instead...separate the indicator class
     super.update(dt);
     if (life <= 0) {
       removeFromParent();
@@ -114,7 +118,6 @@ class MyGirl extends BodyComponent with ContactCallbacks {
       ..anchor = Anchor.center;
     add(component);
     camera.followBodyComponent(this, useCenterOfMass: false);
-    camera.zoom = 10;
 
     kanuies.add(MyGirlKanui());
     kanuies.add(MyGirlKanui());
@@ -140,11 +143,18 @@ class MyGirl extends BodyComponent with ContactCallbacks {
     kanuies.add(MyGirlKanui());
     kanuies.add(MyGirlKanui());
     kanuies.add(MyGirlKanui());
+
+    playerLifeIndicator = TextComponent()
+      ..size = Vector2(0.1, 0.1)
+      ..position = initialPosition + Vector2(-20, (-component.size.y / 2) - 2)
+      ..textRenderer = TextPaint(style: TextStyle(color: BasicPalette.white.color, fontSize: 2))
+      ..anchor = Anchor.topCenter;
+    add(playerLifeIndicator);
   }
 
   @override
   Body createBody() {
-    final shape = PolygonShape()..setAsBoxXY(3, 3);
+    final shape = CircleShape()..radius = 3;
     final fixtureDefinition = FixtureDef(shape, density: 2, restitution: 0.1, friction: 2);
     final bodyDefinition = BodyDef(position: initialPosition, type: BodyType.dynamic)
       ..fixedRotation = true
@@ -169,7 +179,7 @@ class MyGirl extends BodyComponent with ContactCallbacks {
   @override
   void beginContact(Object other, Contact contact) {
     if (other is Bullet) {
-      life -= 20;
+      life--;
     }
   }
 }

@@ -137,6 +137,7 @@ class Enemy extends BodyComponent with ContactCallbacks {
     bullet.body.linearVelocity.x = lookingTowardRight ? 40 : -40;
     bullet.body.linearVelocity.y = 0;
   }
+
   @override
   void beginContact(Object other, Contact contact) {
     if (other is MyGirlKanui) {
