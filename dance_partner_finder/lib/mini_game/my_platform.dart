@@ -21,7 +21,7 @@ class MyPlatform extends BodyComponent {
   Body createBody() {
     PolygonShape shape = PolygonShape()..setAsBoxXY(10, 0.5);
     final fixtureDefinition = FixtureDef(shape, density: 1, restitution: 0.1, friction: 0.3);
-    final bodyDefinition = BodyDef(position: position, type: BodyType.static);
+    final bodyDefinition = BodyDef(position: position, type: BodyType.static)..userData = this;
     return world.createBody(bodyDefinition)..createFixture(fixtureDefinition);
   }
 }

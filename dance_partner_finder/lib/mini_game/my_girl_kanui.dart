@@ -1,7 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 
-class MyGirlKanui extends BodyComponent {
+class MyGirlKanui extends BodyComponent with ContactCallbacks {
   late Vector2 initialPosition;
   late SpriteComponent component;
 
@@ -22,7 +22,13 @@ class MyGirlKanui extends BodyComponent {
     final fixtureDefinition = FixtureDef(shape, density: 1, restitution: 0.1, friction: 0.3);
     final bodyDefinition = BodyDef(position: initialPosition, type: BodyType.dynamic)
       ..fixedRotation = true
-      ..bullet = true;
+      ..bullet = true
+      ..userData = this;
     return world.createBody(bodyDefinition)..createFixture(fixtureDefinition);
+  }
+
+  @override
+  void beginContact(Object other, Contact contact) {
+    removeFromParent();
   }
 }

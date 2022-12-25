@@ -1,17 +1,19 @@
+import 'dart:async' as async;
 import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 
 import 'bullet.dart';
+import 'my_girl_kanui.dart';
 
-class Enemy extends BodyComponent {
+class Enemy extends BodyComponent with ContactCallbacks {
   SpriteAnimationData runningAnimationDate =
-      SpriteAnimationData.sequenced(amount: 5, stepTime: 0.03, textureSize: Vector2(286 / 6, 48.0));
+  SpriteAnimationData.sequenced(amount: 5, stepTime: 0.03, textureSize: Vector2(286 / 6, 48.0));
   SpriteAnimationData idleAnimationData =
-      SpriteAnimationData.sequenced(amount: 4, stepTime: 0.03, textureSize: Vector2(240.0 / 5, 48));
+  SpriteAnimationData.sequenced(amount: 4, stepTime: 0.03, textureSize: Vector2(240.0 / 5, 48));
   SpriteAnimationData jumpingAnimationData =
-      SpriteAnimationData.sequenced(amount: 1, stepTime: 0.03, textureSize: Vector2(96.0 / 2, 48.0));
+  SpriteAnimationData.sequenced(amount: 1, stepTime: 0.03, textureSize: Vector2(96.0 / 2, 48.0));
   SpriteAnimationData dyingAnimationData =
       SpriteAnimationData.sequenced(amount: 7, stepTime: 0.03, textureSize: Vector2(384.0 / 8, 48.0));
   late SpriteAnimation runningAnimation;
@@ -23,6 +25,7 @@ class Enemy extends BodyComponent {
   final double speed = 20;
   final Vector2 initialPosition;
   late SpriteAnimationComponent component;
+  late async.Timer timer;
 
   Enemy(this.initialPosition);
 
@@ -75,10 +78,6 @@ class Enemy extends BodyComponent {
   @override
   void update(double dt) {
     super.update(dt);
-    if (dt.ceil() % 2 == 0) {
-      shootBullet();
-    }
-
     landedSinceLastElevation = body.linearVelocity.y == 0;
 
     if (body.linearVelocity.y == 0) {
@@ -97,7 +96,7 @@ class Enemy extends BodyComponent {
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-    renderBody = true;
+    renderBody = false;
     runningAnimation = await gameRef.loadSpriteAnimation(
         "TeamGunner/CHARACTER_SPRITES/Green/Gunner_Green_Run.png", runningAnimationDate);
     idleAnimation = await gameRef.loadSpriteAnimation(
@@ -112,20 +111,37 @@ class Enemy extends BodyComponent {
       ..size = Vector2.all(7)
       ..anchor = Anchor.center;
     add(component);
+
+    timer = async.Timer.periodic(const Duration(seconds: 1), (timer) {
+      shootBullet();
+    });
   }
 
   @override
   Body createBody() {
     final shape = PolygonShape()..setAsBoxXY(2, 2);
-    final fixtureDefinition = FixtureDef(shape, density: 2, restitution: 0.1, friction: 2);
-    final bodyDefinition = BodyDef(position: initialPosition, type: BodyType.dynamic)..fixedRotation = true;
+    final fixtureDefinition = FixtureDef(shape, density: 2, restitution: 0.5, friction: 2);
+    final bodyDefinition = BodyDef(position: initialPosition, type: BodyType.dynamic)
+      ..fixedRotation = true
+      ..userData = this;
     return world.createBody(bodyDefinition)..createFixture(fixtureDefinition);
   }
 
   shootBullet() async {
-    Bullet bullet = Bullet(body.position);
+    var positionDelta = lookingTowardRight ? Vector2(component.x + 4, 0) : Vector2(-component.x - 4, 0);
+    Bullet bullet = Bullet(body.position + positionDelta);
     await parent?.add(bullet);
-    bullet.body.linearVelocity.x = lookingTowardRight ? 20 : -20;
+    if (!lookingTowardRight) {
+      component.flipHorizontally();
+    }
+    bullet.body.linearVelocity.x = lookingTowardRight ? 40 : -40;
     bullet.body.linearVelocity.y = 0;
+  }
+  @override
+  void beginContact(Object other, Contact contact) {
+    if (other is MyGirlKanui) {
+      timer.cancel();
+      removeFromParent();
+    }
   }
 }

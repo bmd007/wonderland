@@ -33,7 +33,8 @@ class Wall extends BodyComponent {
     final bodyDef = BodyDef()
       ..userData = this // To be able to determine object in collision
       ..position = Vector2.zero()
-      ..type = BodyType.static;
+      ..type = BodyType.static
+      ..userData = this;
 
     return world.createBody(bodyDef)..createFixture(fixtureDef);
   }

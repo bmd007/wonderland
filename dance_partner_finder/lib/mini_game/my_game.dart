@@ -14,6 +14,7 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
   late final MyGirl myGirl;
   late final HudButtonComponent shapeButton;
 
+
   @override
   Future<void> onLoad() async {
     await super.onLoad();
@@ -49,16 +50,7 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
 
     add(shapeButton);
 
-    add(Enemy(screenSize / 2));
-    add(Enemy(screenSize / 2));
-    add(Enemy(screenSize / 2));
-    add(Enemy(screenSize / 2));
-    add(Enemy(screenSize / 2));
-    add(Enemy(screenSize / 2));
-    add(Enemy(screenSize / 2));
-    add(Enemy(screenSize / 2));
-    add(Enemy(screenSize / 2));
-    add(Enemy(screenSize / 2));
-    add(Enemy(screenSize / 2));
+    add(Enemy(screenSize / 1.5));
+    add(Enemy(screenSize / 2.5));
   }
 }

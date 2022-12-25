@@ -3,9 +3,10 @@ import 'dart:collection';
 import 'package:flame/components.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 
+import 'bullet.dart';
 import 'my_girl_kanui.dart';
 
-class MyGirl extends BodyComponent {
+class MyGirl extends BodyComponent with ContactCallbacks {
   SpriteAnimationData glidingAnimationData =
       SpriteAnimationData.sequenced(amount: 9, stepTime: 0.03, textureSize: Vector2(152.0, 142.0));
   SpriteAnimationData runningAnimationDate =
@@ -25,6 +26,7 @@ class MyGirl extends BodyComponent {
   final Vector2 initialPosition;
   late SpriteAnimationComponent component;
   Queue<MyGirlKanui> kanuies = Queue<MyGirlKanui>();
+  int life = 100;
 
   MyGirl(this.joystick, this.initialPosition);
 
@@ -63,7 +65,6 @@ class MyGirl extends BodyComponent {
       lookingTowardRight = false;
       landedSinceLastElevation = false;
       body.linearVelocity.x = 0;
-      print(joystick.relativeDelta);
       body.applyLinearImpulse(Vector2(joystick.relativeDelta.x * 1200, joystick.relativeDelta.y * 1200));
     } else if (direction == JoystickDirection.upRight && landedSinceLastElevation) {
       if (!lookingTowardRight) {
@@ -79,6 +80,9 @@ class MyGirl extends BodyComponent {
   @override
   void update(double dt) {
     super.update(dt);
+    if (life <= 0) {
+      removeFromParent();
+    }
     landedSinceLastElevation = body.linearVelocity.y == 0;
 
     if (body.linearVelocity.y == 0) {
@@ -110,12 +114,8 @@ class MyGirl extends BodyComponent {
       ..anchor = Anchor.center;
     add(component);
     camera.followBodyComponent(this, useCenterOfMass: false);
-    camera.zoom = 9;
+    camera.zoom = 10;
 
-    kanuies.add(MyGirlKanui());
-    kanuies.add(MyGirlKanui());
-    kanuies.add(MyGirlKanui());
-    kanuies.add(MyGirlKanui());
     kanuies.add(MyGirlKanui());
     kanuies.add(MyGirlKanui());
     kanuies.add(MyGirlKanui());
@@ -146,17 +146,30 @@ class MyGirl extends BodyComponent {
   Body createBody() {
     final shape = PolygonShape()..setAsBoxXY(3, 3);
     final fixtureDefinition = FixtureDef(shape, density: 2, restitution: 0.1, friction: 2);
-    final bodyDefinition = BodyDef(position: initialPosition, type: BodyType.dynamic)..fixedRotation = true;
+    final bodyDefinition = BodyDef(position: initialPosition, type: BodyType.dynamic)
+      ..fixedRotation = true
+      ..userData = this;
     return world.createBody(bodyDefinition)..createFixture(fixtureDefinition);
   }
 
   throwKanui() async {
     if (kanuies.isNotEmpty) {
       var kanui = kanuies.removeFirst();
-      kanui.initialPosition = body.position;
+      var positionDelta = lookingTowardRight ? Vector2(component.x + 5, 0) : Vector2(-component.x - 5, 0);
+      kanui.initialPosition = body.position + positionDelta;
       await parent?.add(kanui);
+      if (!lookingTowardRight) {
+        kanui.component.flipHorizontally();
+      }
       kanui.body.linearVelocity.x = lookingTowardRight ? 60 : -60;
       kanui.body.linearVelocity.y = 0;
+    }
+  }
+
+  @override
+  void beginContact(Object other, Contact contact) {
+    if (other is Bullet) {
+      life -= 20;
     }
   }
 }
