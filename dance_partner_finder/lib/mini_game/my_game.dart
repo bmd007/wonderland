@@ -14,6 +14,7 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
   late final JoystickComponent joystickComponent;
   late final MyGirl myGirl;
   late final HudButtonComponent shapeButton;
+  late final TextComponent playerLifeIndicator;
 
   @override
   Future<void> onLoad() async {
@@ -26,7 +27,7 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
       knob: CircleComponent(radius: 20, paint: knobPaint),
       background: CircleComponent(radius: 60, paint: backgroundPaint),
       margin: const EdgeInsets.only(left: 30, bottom: 20),
-    );
+    )..positionType = PositionType.viewport;
     await add(joystickComponent);
 
     myGirl = MyGirl(joystickComponent, size / 2);
@@ -44,8 +45,18 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
         ),
         onPressed: () async {
           await myGirl.throwKanui();
-        });
+        })
+      ..positionType = PositionType.viewport;
     add(shootButton);
+
+    playerLifeIndicator = TextComponent()
+      ..size = Vector2(0.1, 0.1)
+      ..positionType = PositionType.viewport
+      ..anchor = Anchor.bottomCenter
+      ..position = Vector2(size.x, size.y)
+      ..textRenderer = TextPaint(style: TextStyle(color: BasicPalette.white.color, fontSize: 20));
+    await add(playerLifeIndicator);
+    myGirl.playerLife.addListener(() => playerLifeIndicator.text = "lives: ${myGirl.playerLife.value}");
 
     add(Enemy(size / 1.47));
     add(Enemy(size / 2.5));
@@ -57,7 +68,6 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
 
     add(Enemy(size / 2.1));
     add(MyPlatform(size / 1.05));
-
 
     // camera.viewport = FixedResolutionViewport(Vector2.all(maxSide));
     var bottom = size.y;

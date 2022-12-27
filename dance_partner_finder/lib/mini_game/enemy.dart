@@ -78,25 +78,19 @@ class Enemy extends BodyComponent with ContactCallbacks {
   List<JoystickDirection> directions = [
     JoystickDirection.upLeft,
     JoystickDirection.upRight,
-    JoystickDirection.upRight,
-    JoystickDirection.upRight,
-    JoystickDirection.upRight,
-    JoystickDirection.upRight,
-    JoystickDirection.upRight,
-    JoystickDirection.upRight,
-    JoystickDirection.upRight,
-    JoystickDirection.upRight,
-    JoystickDirection.upRight,
-    JoystickDirection.upRight,
-    JoystickDirection.upRight,
-    JoystickDirection.upRight,
-    JoystickDirection.upRight,
-    JoystickDirection.upRight,
-    JoystickDirection.upRight,
-    JoystickDirection.upRight,
-    JoystickDirection.upRight,
-    JoystickDirection.upRight,
     JoystickDirection.downRight,
+    JoystickDirection.downRight,
+    JoystickDirection.downRight,
+    JoystickDirection.downRight,
+    JoystickDirection.downRight,
+    JoystickDirection.downRight,
+    JoystickDirection.downRight,
+    JoystickDirection.downRight,
+    JoystickDirection.downRight,
+    JoystickDirection.downRight,
+    JoystickDirection.downRight,
+    JoystickDirection.downLeft,
+    JoystickDirection.downLeft,
     JoystickDirection.downLeft,
   ];
 
@@ -110,12 +104,10 @@ class Enemy extends BodyComponent with ContactCallbacks {
     } else if (body.linearVelocity.y != 0) {
       component.animation = jumpingAnimation;
     }
-    // if (dt.ceil() % 2 == 0) {
-      var direction = directions[Random.secure().nextInt(directions.length)];
-      move(dt, direction, Vector2(10, 10));
-    // } else
-      if (landedSinceLastElevation) {
+    if (landedSinceLastElevation) {
       body.linearVelocity.x = 0;
+      var direction = directions[Random.secure().nextInt(directions.length)];
+      move(dt, direction, Vector2(1, 1));
     }
   }
 
@@ -146,7 +138,7 @@ class Enemy extends BodyComponent with ContactCallbacks {
   @override
   Body createBody() {
     final shape = CircleShape()..radius = 2.5;
-    final fixtureDefinition = FixtureDef(shape, density: 1, restitution: 0.5, friction: 2);
+    final fixtureDefinition = FixtureDef(shape, density: 2, restitution: 0.1, friction: 2);
     final bodyDefinition = BodyDef(position: initialPosition, type: BodyType.dynamic)
       ..fixedRotation = true
       ..userData = this;

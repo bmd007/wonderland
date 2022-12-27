@@ -1,14 +1,13 @@
 import 'dart:collection';
 
 import 'package:flame/components.dart';
-import 'package:flame/palette.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
-import 'package:flutter/painting.dart';
+import 'package:flutter/foundation.dart';
 
 import 'bullet.dart';
 import 'my_girl_kanui.dart';
 
-class MyGirl extends BodyComponent with ContactCallbacks {
+class MyGirl<MyForge2DFlameGame> extends BodyComponent with ContactCallbacks {
   SpriteAnimationData glidingAnimationData =
       SpriteAnimationData.sequenced(amount: 9, stepTime: 0.03, textureSize: Vector2(152.0, 142.0));
   SpriteAnimationData runningAnimationDate =
@@ -28,8 +27,7 @@ class MyGirl extends BodyComponent with ContactCallbacks {
   final Vector2 initialPosition;
   late SpriteAnimationComponent component;
   Queue<MyGirlKanui> kanuies = Queue<MyGirlKanui>();
-  int life = 100;
-  late TextComponent playerLifeIndicator;
+  final playerLife = ValueNotifier<int>(100);
 
   MyGirl(this.joystick, this.initialPosition);
 
@@ -82,9 +80,8 @@ class MyGirl extends BodyComponent with ContactCallbacks {
 
   @override
   void update(double dt) {
-    playerLifeIndicator.text = life.toString();//use observer pattern instead...separate the indicator class
     super.update(dt);
-    if (life <= 0) {
+    if (playerLife.value <= 0) {
       removeFromParent();
     }
     landedSinceLastElevation = body.linearVelocity.y == 0;
@@ -143,12 +140,6 @@ class MyGirl extends BodyComponent with ContactCallbacks {
     kanuies.add(MyGirlKanui());
     kanuies.add(MyGirlKanui());
     kanuies.add(MyGirlKanui());
-
-    playerLifeIndicator = TextComponent()
-      ..size = Vector2(0.1, 0.1)
-      ..position = Vector2(0, -(component.size.y/2)-2)
-      ..textRenderer = TextPaint(style: TextStyle(color: BasicPalette.white.color, fontSize: 2));
-    add(playerLifeIndicator);
   }
 
   @override
@@ -178,7 +169,7 @@ class MyGirl extends BodyComponent with ContactCallbacks {
   @override
   void beginContact(Object other, Contact contact) {
     if (other is Bullet) {
-      life--;
+      playerLife.value = playerLife.value - 1;
     }
   }
 }
