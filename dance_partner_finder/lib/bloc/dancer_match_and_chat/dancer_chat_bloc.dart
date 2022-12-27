@@ -1,7 +1,10 @@
 import 'package:bloc/bloc.dart';
-import 'package:dance_partner_finder/client/api_gateway_client_holder.dart';
+import 'package:dance_partner_finder/client/client_holder.dart';
+import 'package:dance_partner_finder/client/message_is_sent_to_you_event.dart';
 import 'package:dance_partner_finder/client/rabbitmq_websocket_stomp_chat_client.dart';
+import 'package:stomp_dart_client/stomp_frame.dart';
 
+import 'chat_message.dart';
 import 'dancer_chat_event.dart';
 import 'dancer_chat_state.dart';
 
@@ -48,14 +51,19 @@ class DancerMatchAndChatBloc
             emit(state.typing(""));
           });
     });
-    ClientHolder.client.matchStreams(thisDancerName).forEach((match) => add(MatchFoundEvent(match!)));
+    ClientHolder.client
+        .matchStreams(thisDancerName)
+        .forEach((match) => add(MatchFoundEvent(match!)));
 
-    // chatClient = RabbitMqWebSocketStompChatClient(thisDancerName, (StompFrame stompFrame) {
-    //   if (stompFrame.headers.containsKey("type") && stompFrame.headers["type"] == "MessageIsSentToYouEvent") {
-    //     var messageIsSentToYouEvent = MessageIsSentToYouEvent.fromJson(stompFrame.body!);
-    //     add(MessageReceivedEvent(
-    //         ChatMessage(messageIsSentToYouEvent.content, MessageType.received, messageIsSentToYouEvent.sender)));
-    //   }
-    // });
+    chatClient = RabbitMqWebSocketStompChatClient("/queue/$thisDancerName",
+        (StompFrame stompFrame) {
+      if (stompFrame.headers.containsKey("type") &&
+          stompFrame.headers["type"] == "MessageIsSentToYouEvent") {
+        var messageIsSentToYouEvent =
+            MessageIsSentToYouEvent.fromJson(stompFrame.body!);
+        add(MessageReceivedEvent(ChatMessage(messageIsSentToYouEvent.content,
+            MessageType.received, messageIsSentToYouEvent.sender)));
+      }
+    });
   }
 }

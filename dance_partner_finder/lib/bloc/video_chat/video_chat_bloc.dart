@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
-import 'package:dance_partner_finder/client/api_gateway_client_holder.dart';
+import 'package:dance_partner_finder/client/client_holder.dart';
 import 'package:dance_partner_finder/client/rabbitmq_websocket_stomp_chat_client.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:sdp_transform/sdp_transform.dart';
@@ -19,13 +19,18 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
   VideoChatBloc(String thisDancerName, String chatParty)
       : super(VideoChatState.withThisDancerName(thisDancerName, chatParty)) {
     on<OfferCreationRequestedEvent>((event, emit) async {
-      RTCSessionDescription description = await _peerConnection.createOffer({'offerToReceiveVideo': 1});
+      RTCSessionDescription description =
+          await _peerConnection.createOffer({'offerToReceiveVideo': 1});
       var session = parse(description.sdp.toString());
       var offerString = json.encode(session);
       await _peerConnection.setLocalDescription(description);
       printWithTime('local description before sending offer');
       await ClientHolder.apiGatewayHttpClient
-          .post('/v1/video/chat/offer', data: {"sender": thisDancerName, "receiver": chatParty, "content": offerString})
+          .post('/v1/video/chat/offer', data: {
+            "sender": thisDancerName,
+            "receiver": chatParty,
+            "content": offerString
+          })
           .asStream()
           .where((event) => event.statusCode == 200)
           .forEach((element) {
@@ -35,8 +40,11 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
 
     on<CandidatePropagationRequestedEvent>((event, emit) async {
       await ClientHolder.apiGatewayHttpClient
-          .post('/v1/video/chat/candidate',
-              data: {"sender": thisDancerName, "receiver": chatParty, "content": event.candidate})
+          .post('/v1/video/chat/candidate', data: {
+            "sender": thisDancerName,
+            "receiver": chatParty,
+            "content": event.candidate
+          })
           .asStream()
           .where((event) => event.statusCode == 200)
           .forEach((element) {
@@ -45,14 +53,18 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
     });
 
     on<CreateAnswerRequestedEvent>((event, emit) async {
-      RTCSessionDescription description = await _peerConnection.createAnswer({'offerToReceiveVideo': 1});
+      RTCSessionDescription description =
+          await _peerConnection.createAnswer({'offerToReceiveVideo': 1});
       var session = parse(description.sdp.toString());
       var answerString = json.encode(session);
       await _peerConnection.setLocalDescription(description);
       printWithTime('local description before sending answer');
       await ClientHolder.apiGatewayHttpClient
-          .post('/v1/video/chat/answer',
-              data: {"sender": thisDancerName, "receiver": chatParty, "content": answerString})
+          .post('/v1/video/chat/answer', data: {
+            "sender": thisDancerName,
+            "receiver": chatParty,
+            "content": answerString
+          })
           .asStream()
           .where((event) => event.statusCode == 200)
           .forEach((element) {
@@ -71,8 +83,8 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
 
     on<CandidateReceivedEvent>((event, emit) async {
       dynamic session = await jsonDecode(event.candidate);
-      RTCIceCandidate rtcIceCandidate =
-          RTCIceCandidate(session['candidate'], session['sdpMid'], session['sdpMlineIndex']);
+      RTCIceCandidate rtcIceCandidate = RTCIceCandidate(
+          session['candidate'], session['sdpMid'], session['sdpMlineIndex']);
       await _peerConnection.addCandidate(rtcIceCandidate);
       printWithTime(' _peerConnection.addCandidate');
     });
@@ -96,7 +108,8 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
       printWithTime("pc created");
     });
 
-    chatClient = RabbitMqWebSocketStompChatClient(thisDancerName, (StompFrame stompFrame) {
+    chatClient = RabbitMqWebSocketStompChatClient(
+        "/queue/webrtc/$thisDancerName", (StompFrame stompFrame) {
       String body = stompFrame.body!;
       if (stompFrame.headers.containsKey("type")) {
         if (stompFrame.headers["type"] == "WebRtcAnswer") {
@@ -120,7 +133,8 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
         'facingMode': 'user',
       }
     };
-    MediaStream mediaStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
+    MediaStream mediaStream =
+        await navigator.mediaDevices.getUserMedia(mediaConstraints);
     return _peerConnection.addStream(mediaStream);
   }
 
@@ -144,23 +158,26 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
       "optional": [],
     };
 
-    RTCPeerConnection pc = await createPeerConnection(configuration, offerSdpConstraints);
+    RTCPeerConnection pc =
+        await createPeerConnection(configuration, offerSdpConstraints);
 
     pc.onIceCandidate = (e) {
       if (e.candidate != null) {
         var encodedCandidate = json.encode({
-              'candidate': e.candidate.toString(),
-              'sdpMid': e.sdpMid.toString(),
-              'sdpMlineIndex': e.sdpMLineIndex,
-            });
+          'candidate': e.candidate.toString(),
+          'sdpMid': e.sdpMid.toString(),
+          'sdpMlineIndex': e.sdpMLineIndex,
+        });
         printWithTime(' onIceCandidate  $encodedCandidate');
         add(CandidatePropagationRequestedEvent(encodedCandidate));
       }
     };
     pc.onSignalingState = (state) => printWithTime('onSignalingState $state');
     pc.onConnectionState = (state) => printWithTime('onConnectionState $state');
-    pc.onIceConnectionState = (state) => printWithTime('onIceConnectionState $state');
-    pc.onIceGatheringState = (state) => printWithTime('onIceGatheringState $state');
+    pc.onIceConnectionState =
+        (state) => printWithTime('onIceConnectionState $state');
+    pc.onIceGatheringState =
+        (state) => printWithTime('onIceGatheringState $state');
     pc.onRenegotiationNeeded = () {
       printWithTime("onRenegotiationNeeded");
       add(const OfferCreationRequestedEvent());
@@ -171,7 +188,8 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
         'facingMode': 'user',
       }
     };
-    MediaStream mediaStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
+    MediaStream mediaStream =
+        await navigator.mediaDevices.getUserMedia(mediaConstraints);
     localVideoRenderer.srcObject = mediaStream;
     mediaStream.getTracks().forEach((track) {
       pc.addTrack(track, mediaStream);

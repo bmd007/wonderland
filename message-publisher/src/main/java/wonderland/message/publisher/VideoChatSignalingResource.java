@@ -15,35 +15,41 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static wonderland.message.publisher.config.RabbitMqConfig.RABBIT_WEBRTC_MESSAGES_EXCHANGE;
+
 @RestController
 public class VideoChatSignalingResource {
 
-    public static final String APP_ID = "wonderland.message-publisher";
-    private final AmqpTemplate rabbitTemplate;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(VideoChatSignalingResource.class);
-    private static final String RABBIT_MQ_MESSAGES_EXCHANGE = "messages";
+    public static final String APP_ID = "wonderland.message-publisher";
+
+    private final AmqpTemplate rabbitTemplate;
 
     public VideoChatSignalingResource(AmqpTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
     }
 
+    private static MessageProperties beaseMessageProperties(SendMessageRequestBody requestBody) {
+        var messageProperties = new MessageProperties();
+        messageProperties.setMessageId(UUID.randomUUID().toString());
+        messageProperties.setAppId(APP_ID);
+        messageProperties.setContentType(MessageProperties.CONTENT_TYPE_JSON);
+        messageProperties.setCorrelationId(UUID.randomUUID().toString());
+        messageProperties.setReceivedExchange(RABBIT_WEBRTC_MESSAGES_EXCHANGE);
+        messageProperties.setReceivedRoutingKey(requestBody.receiver());
+        messageProperties.setDeliveryMode(MessageDeliveryMode.PERSISTENT);
+        messageProperties.setReceivedDeliveryMode(MessageDeliveryMode.PERSISTENT);
+        messageProperties.setHeader("version", "1");
+        return messageProperties;
+    }
+
     @PostMapping("/v1/video/chat/offer")
     public String sendOffer(@RequestBody SendMessageRequestBody requestBody) {
         try {
-            var messageProperties = new MessageProperties();
-            messageProperties.setMessageId(UUID.randomUUID().toString());
-            messageProperties.setAppId(APP_ID);
-            messageProperties.setContentType(MessageProperties.CONTENT_TYPE_JSON);
-            messageProperties.setCorrelationId(UUID.randomUUID().toString());
-            messageProperties.setReceivedExchange(RABBIT_MQ_MESSAGES_EXCHANGE);
-            messageProperties.setReceivedRoutingKey(requestBody.receiver());
-            messageProperties.setDeliveryMode(MessageDeliveryMode.PERSISTENT);
-            messageProperties.setReceivedDeliveryMode(MessageDeliveryMode.PERSISTENT);
+            MessageProperties messageProperties = beaseMessageProperties(requestBody);
             messageProperties.setHeader("type", "WebRtcOffer");
-            messageProperties.setHeader("version", "1");
             var message = new Message(requestBody.content().getBytes(StandardCharsets.UTF_8), messageProperties);
-            rabbitTemplate.send(RABBIT_MQ_MESSAGES_EXCHANGE, requestBody.receiver(), message);
+            rabbitTemplate.send(RABBIT_WEBRTC_MESSAGES_EXCHANGE, requestBody.receiver(), message);
             LOGGER.info("offer {} sent to {} from {}", requestBody.content(), requestBody.receiver(), requestBody.sender());
             return requestBody.content() + " sent to " + requestBody.receiver() + " at " + LocalDateTime.now();
         } catch (AmqpException e) {
@@ -54,19 +60,10 @@ public class VideoChatSignalingResource {
     @PostMapping("/v1/video/chat/answer")
     public String sendAnswer(@RequestBody SendMessageRequestBody requestBody) {
         try {
-            var messageProperties = new MessageProperties();
-            messageProperties.setMessageId(UUID.randomUUID().toString());
-            messageProperties.setAppId(APP_ID);
-            messageProperties.setContentType(MessageProperties.CONTENT_TYPE_JSON);
-            messageProperties.setCorrelationId(UUID.randomUUID().toString());
-            messageProperties.setReceivedExchange(RABBIT_MQ_MESSAGES_EXCHANGE);
-            messageProperties.setReceivedRoutingKey(requestBody.receiver());
-            messageProperties.setDeliveryMode(MessageDeliveryMode.PERSISTENT);
-            messageProperties.setReceivedDeliveryMode(MessageDeliveryMode.PERSISTENT);
+            MessageProperties messageProperties = beaseMessageProperties(requestBody);
             messageProperties.setHeader("type", "WebRtcAnswer");
-            messageProperties.setHeader("version", "1");
             var message = new Message(requestBody.content().getBytes(StandardCharsets.UTF_8), messageProperties);
-            rabbitTemplate.send(RABBIT_MQ_MESSAGES_EXCHANGE, requestBody.receiver(), message);
+            rabbitTemplate.send(RABBIT_WEBRTC_MESSAGES_EXCHANGE, requestBody.receiver(), message);
             LOGGER.info("answer {} sent to {} from {}", requestBody.content(), requestBody.receiver(), requestBody.sender());
             return requestBody.content() + " sent to " + requestBody.receiver() + " at " + LocalDateTime.now();
         } catch (AmqpException e) {
@@ -77,24 +74,14 @@ public class VideoChatSignalingResource {
     @PostMapping("/v1/video/chat/candidate")
     public String sendCandidate(@RequestBody SendMessageRequestBody requestBody) {
         try {
-            var messageProperties = new MessageProperties();
-            messageProperties.setMessageId(UUID.randomUUID().toString());
-            messageProperties.setAppId(APP_ID);
-            messageProperties.setContentType(MessageProperties.CONTENT_TYPE_JSON);
-            messageProperties.setCorrelationId(UUID.randomUUID().toString());
-            messageProperties.setReceivedExchange(RABBIT_MQ_MESSAGES_EXCHANGE);
-            messageProperties.setReceivedRoutingKey(requestBody.receiver());
-            messageProperties.setDeliveryMode(MessageDeliveryMode.PERSISTENT);
-            messageProperties.setReceivedDeliveryMode(MessageDeliveryMode.PERSISTENT);
+            MessageProperties messageProperties = beaseMessageProperties(requestBody);
             messageProperties.setHeader("type", "WebRtcCandidate");
-            messageProperties.setHeader("version", "1");
             var message = new Message(requestBody.content().getBytes(StandardCharsets.UTF_8), messageProperties);
-            rabbitTemplate.send(RABBIT_MQ_MESSAGES_EXCHANGE, requestBody.receiver(), message);
+            rabbitTemplate.send(RABBIT_WEBRTC_MESSAGES_EXCHANGE, requestBody.receiver(), message);
             LOGGER.info("candidate {} sent to {} from {}", requestBody.content(), requestBody.receiver(), requestBody.sender());
             return requestBody.content() + " sent to " + requestBody.receiver() + " at " + LocalDateTime.now();
         } catch (AmqpException e) {
             return e.getMessage();
         }
     }
-
 }

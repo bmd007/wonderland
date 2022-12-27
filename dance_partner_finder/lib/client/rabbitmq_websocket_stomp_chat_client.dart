@@ -5,21 +5,28 @@ import 'package:stomp_dart_client/stomp_frame.dart';
 class RabbitMqWebSocketStompChatClient {
   late final StompClient stompClient;
 
-  RabbitMqWebSocketStompChatClient(String thisDancerName,
-      void Function(StompFrame stompFrame) stompMessageHandler) {
-    var loginCode = {'login': 'rabbit-mq-web-stomp-credentials', 'passcode': 'rabbit-mq-web-stomp-credentials'};
-  //ssl port in rabbitmq: 15673 (check gcp/vm/*)
+  RabbitMqWebSocketStompChatClient(
+      String queue, void Function(StompFrame stompFrame) stompMessageHandler) {
+    var loginCode = {
+      'login': 'rabbit-mq-web-stomp-credentials',
+      'passcode': 'rabbit-mq-web-stomp-credentials'
+    };
+    //ssl port in rabbitmq: 15673 (check gcp/vm/*)
     var config = StompConfig(
         url: 'ws://0.0.0.0:15674/ws',
         // beforeConnect: () async => print("before connect"),
-        onUnhandledFrame: (dynamic onUnhandledFrame) => print('onUnhandledFrame $onUnhandledFrame'),
-        onUnhandledMessage: (dynamic onUnhandledMessage) => print('onUnhandledMessage $onUnhandledMessage'),
-        onUnhandledReceipt: (dynamic onUnhandledReceipt) => print('onUnhandledReceipt $onUnhandledReceipt'),
-        onConnect: (connection) =>
-            stompClient.subscribe(destination: '/queue/$thisDancerName', callback: stompMessageHandler),
+        onUnhandledFrame: (dynamic onUnhandledFrame) =>
+            print('onUnhandledFrame $onUnhandledFrame'),
+        onUnhandledMessage: (dynamic onUnhandledMessage) =>
+            print('onUnhandledMessage $onUnhandledMessage'),
+        onUnhandledReceipt: (dynamic onUnhandledReceipt) =>
+            print('onUnhandledReceipt $onUnhandledReceipt'),
+        onConnect: (connection) => stompClient.subscribe(
+            destination: queue, callback: stompMessageHandler),
         stompConnectHeaders: loginCode,
         webSocketConnectHeaders: loginCode,
-        onStompError: (dynamic error) => print("stomp error ${error.toString()}"),
+        onStompError: (dynamic error) =>
+            print("stomp error ${error.toString()}"),
         // onWebSocketError: (dynamic error) => print(error.toString()),
         // onDebugMessage: (dynamic message) => print('debug message $message'),
         // onWebSocketDone: () => print('web socket done'),

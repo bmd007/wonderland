@@ -8,7 +8,6 @@ COPY rabbitmq.conf /etc/rabbitmq/rabbitmq.conf
 
 RUN rabbitmq-plugins enable rabbitmq_web_stomp
 RUN rabbitmq-plugins enable rabbitmq_management
-RUN rabbitmq-plugins enable rabbitmq_web_mqtt
 
 COPY rabbitMqUserCreation.sh /etc/rabbitmq/rabbitMqUserCreation.sh
 #todo make the command above automaticaally executable

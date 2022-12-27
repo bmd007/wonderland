@@ -98,7 +98,7 @@ public class WiseSoulApplication {
         LOGGER.info("requesting creation of queue with name {}", email);
         messagePublisherClient
                 .post()
-                .uri("/create/queue/for/" + email)
+                .uri("/bindings/user/" + email)
                 .retrieve()
                 .bodyToMono(String.class)
                 .retry(2L)

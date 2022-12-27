@@ -37,7 +37,7 @@ public class ApiGatewayApplication {
                 .route(r -> r.path("/v1/chat/queues/user/*")
                         .filters(gatewayFilterSpec ->
                                 gatewayFilterSpec.rewritePath("/v1/chat/queues/user/(?<username>\\w+)",
-                                        "/create/queue/for/${username}")
+                                        "/bindings/user/${username}")
                         )
                         .uri("lb://message-publisher")
                 )
