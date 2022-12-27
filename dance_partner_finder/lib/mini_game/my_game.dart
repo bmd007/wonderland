@@ -68,6 +68,9 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
     add(Enemy(size / 2.5));
     add(Enemy(size / 2.5));
     add(Enemy(size / 2.5));
+    add(Enemy(size / 2.5));
+    add(Enemy(size / 2.5));
+    add(Enemy(size / 2.5));
     add(MyPlatform(size / 1.5));
     add(MyPlatform(size / 2.5));
 
@@ -77,7 +80,6 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
     add(Enemy(size / 2.1));
     add(MyPlatform(size / 1.05));
 
-    // camera.viewport = FixedResolutionViewport(Vector2.all(maxSide));
     var bottom = size.y;
     var right = size.x + 100;
     final Vector2 topLeft = Vector2.zero();
