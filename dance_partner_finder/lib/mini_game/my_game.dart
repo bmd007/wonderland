@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
@@ -7,10 +5,10 @@ import 'package:flame/palette.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/material.dart';
 
-import 'boundary_creator.dart';
 import 'enemy.dart';
 import 'my_girl.dart';
 import 'my_platform.dart';
+import 'wall.dart';
 
 class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
   late final JoystickComponent joystickComponent;
@@ -21,9 +19,6 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
   Future<void> onLoad() async {
     await super.onLoad();
     debugMode = false;
-
-    // camera.viewport = FixedResolutionViewport(Vector2.all(maxSide));
-    addAll(createBoundaries(size));
 
     final knobPaint = BasicPalette.red.withAlpha(200).paint();
     final backgroundPaint = BasicPalette.blue.withAlpha(100).paint();
@@ -63,6 +58,19 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
     add(Enemy(size / 2.1));
     add(MyPlatform(size / 1.05));
 
-    camera.followBodyComponent(myGirl, useCenterOfMass: false);
+
+    // camera.viewport = FixedResolutionViewport(Vector2.all(maxSide));
+    var bottom = size.y;
+    var right = size.x + 100;
+    final Vector2 topLeft = Vector2.zero();
+    final Vector2 bottomLeft = Vector2(0, bottom);
+    final Vector2 bottomRight = Vector2(right, bottom);
+    final Vector2 topRight = Vector2(right, 0);
+    add(Wall(topLeft, topRight));
+    add(Wall(topRight, bottomRight));
+    add(Wall(bottomLeft, topLeft));
+    add(Wall(bottomRight, bottomLeft));
+    camera.followBodyComponent(myGirl, useCenterOfMass: true);
+    camera.worldBounds = Rect.fromLTRB(0, 0, right, bottom);
   }
 }

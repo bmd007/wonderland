@@ -114,6 +114,7 @@ class MyGirl extends BodyComponent with ContactCallbacks {
 
     component = SpriteAnimationComponent()
       ..animation = idleAnimation
+      ..anchor = Anchor.center
       ..size = Vector2.all(6)
       ..anchor = Anchor.center;
     add(component);

@@ -41,7 +41,7 @@ class Enemy extends BodyComponent with ContactCallbacks {
       }
       lookingTowardRight = false;
       if (body.linearVelocity.y == 0) {
-        body.linearVelocity = Vector2(-speed, body.linearVelocity.y);
+        body.linearVelocity = Vector2(relativeDelta.x * -speed, body.linearVelocity.y);
       }
       component.animation = runningAnimation;
     } else if (direction == JoystickDirection.downRight || direction == JoystickDirection.right) {
@@ -50,12 +50,12 @@ class Enemy extends BodyComponent with ContactCallbacks {
       }
       lookingTowardRight = true;
       if (body.linearVelocity.y == 0) {
-        body.linearVelocity = Vector2(speed, body.linearVelocity.y);
+        body.linearVelocity = Vector2(relativeDelta.x * speed, body.linearVelocity.y);
       }
       component.animation = runningAnimation;
     } else if (direction == JoystickDirection.up && landedSinceLastElevation) {
       landedSinceLastElevation = false;
-      body.applyLinearImpulse(Vector2(0, -800));
+      body.applyLinearImpulse(Vector2(0, relativeDelta.x * -50));
     } else if (direction == JoystickDirection.upLeft && landedSinceLastElevation) {
       if (lookingTowardRight) {
         component.flipHorizontally();
@@ -63,7 +63,7 @@ class Enemy extends BodyComponent with ContactCallbacks {
       lookingTowardRight = false;
       landedSinceLastElevation = false;
       body.linearVelocity.x = 0;
-      body.applyLinearImpulse(Vector2(relativeDelta.x * 800, relativeDelta.y * 800));
+      body.applyLinearImpulse(Vector2(relativeDelta.x * 50, relativeDelta.y * 50));
     } else if (direction == JoystickDirection.upRight && landedSinceLastElevation) {
       if (!lookingTowardRight) {
         component.flipHorizontally();
@@ -71,12 +71,30 @@ class Enemy extends BodyComponent with ContactCallbacks {
       lookingTowardRight = true;
       body.linearVelocity.x = 0;
       landedSinceLastElevation = false;
-      body.applyLinearImpulse(Vector2(relativeDelta.x * 800, relativeDelta.y * 800));
+      body.applyLinearImpulse(Vector2(relativeDelta.x * 50, relativeDelta.y * 50));
     }
   }
 
   List<JoystickDirection> directions = [
     JoystickDirection.upLeft,
+    JoystickDirection.upRight,
+    JoystickDirection.upRight,
+    JoystickDirection.upRight,
+    JoystickDirection.upRight,
+    JoystickDirection.upRight,
+    JoystickDirection.upRight,
+    JoystickDirection.upRight,
+    JoystickDirection.upRight,
+    JoystickDirection.upRight,
+    JoystickDirection.upRight,
+    JoystickDirection.upRight,
+    JoystickDirection.upRight,
+    JoystickDirection.upRight,
+    JoystickDirection.upRight,
+    JoystickDirection.upRight,
+    JoystickDirection.upRight,
+    JoystickDirection.upRight,
+    JoystickDirection.upRight,
     JoystickDirection.upRight,
     JoystickDirection.downRight,
     JoystickDirection.downLeft,
@@ -92,10 +110,11 @@ class Enemy extends BodyComponent with ContactCallbacks {
     } else if (body.linearVelocity.y != 0) {
       component.animation = jumpingAnimation;
     }
-    if (dt.ceil() % 5 == 0) {
-      var direction = directions[Random.secure().nextInt(4)];
-      move(dt, direction, Vector2(10000, 10000));
-    } else if (landedSinceLastElevation) {
+    // if (dt.ceil() % 2 == 0) {
+      var direction = directions[Random.secure().nextInt(directions.length)];
+      move(dt, direction, Vector2(10, 10));
+    // } else
+      if (landedSinceLastElevation) {
       body.linearVelocity.x = 0;
     }
   }
@@ -127,7 +146,7 @@ class Enemy extends BodyComponent with ContactCallbacks {
   @override
   Body createBody() {
     final shape = CircleShape()..radius = 2.5;
-    final fixtureDefinition = FixtureDef(shape, density: 1, restitution: 0.5, friction: 1);
+    final fixtureDefinition = FixtureDef(shape, density: 1, restitution: 0.5, friction: 2);
     final bodyDefinition = BodyDef(position: initialPosition, type: BodyType.dynamic)
       ..fixedRotation = true
       ..userData = this;
