@@ -33,14 +33,14 @@ public class RabbitMqBindingResource {
         rabbitAdmin.declareBinding(binding);
         LOGGER.info("queue {} created", queue);
 
-        var webrtcQueue = new Queue("webrtc/" + email, true, false, false);
-        var webrtcBinding = new Binding("webrtc/" + email, Binding.DestinationType.QUEUE, RABBIT_WEBRTC_MESSAGES_EXCHANGE, email, null);
+        var webrtcQueue = new Queue(email + "_webrtc", true, false, false);
+        var webrtcBinding = new Binding(email + "_webrtc", Binding.DestinationType.QUEUE, RABBIT_WEBRTC_MESSAGES_EXCHANGE, email, null);
         rabbitAdmin.declareQueue(webrtcQueue);
         rabbitAdmin.declareBinding(webrtcBinding);
         LOGGER.info("queue {} created", webrtcQueue);
 
-        var gameQueue = new Queue("game/" + email, true, false, false);
-        var gameBinding = new Binding("game/" + email, Binding.DestinationType.QUEUE, RABBIT_GAME_MESSAGES_EXCHANGE, email, null);
+        var gameQueue = new Queue(email + "_game", true, false, false);
+        var gameBinding = new Binding(email + "_game", Binding.DestinationType.QUEUE, RABBIT_GAME_MESSAGES_EXCHANGE, email, null);
         rabbitAdmin.declareQueue(gameQueue);
         rabbitAdmin.declareBinding(gameBinding);
         LOGGER.info("queue {} created", gameQueue);

@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:dance_partner_finder/client/api_gateway_client_holder.dart';
+import 'package:dance_partner_finder/client/client_holder.dart';
 import 'package:location/location.dart';
 import 'package:rxdart/rxdart.dart';
 

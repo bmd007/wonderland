@@ -109,7 +109,7 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
     });
 
     chatClient = RabbitMqWebSocketStompChatClient(
-        "/queue/webrtc/$thisDancerName", (StompFrame stompFrame) {
+        "/queue/${thisDancerName}_webrtc", (StompFrame stompFrame) {
       String body = stompFrame.body!;
       if (stompFrame.headers.containsKey("type")) {
         if (stompFrame.headers["type"] == "WebRtcAnswer") {

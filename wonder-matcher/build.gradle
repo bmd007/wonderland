@@ -16,8 +16,8 @@ hibernate {
 }
 
 java {
-    sourceCompatibility = 17
-    targetCompatibility = 17
+    sourceCompatibility = 19
+    targetCompatibility = 19
 }
 
 configurations {

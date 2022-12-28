@@ -7,8 +7,8 @@ plugins {
 }
 
 java {
-    sourceCompatibility = 17
-    targetCompatibility = 17
+    sourceCompatibility = 19
+    targetCompatibility = 19
 }
 
 configurations {
@@ -44,7 +44,6 @@ ext {
 }
 
 dependencies {
-
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     implementation 'org.springframework.cloud:spring-cloud-starter'
     implementation 'org.springframework.boot:spring-boot-starter'
