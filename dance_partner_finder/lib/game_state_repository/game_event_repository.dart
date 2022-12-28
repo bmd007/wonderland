@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dance_partner_finder/client/client_holder.dart';
 import 'package:dance_partner_finder/client/rabbitmq_websocket_stomp_chat_client.dart';
 import 'package:dance_partner_finder/game_state_repository/observer.dart';
@@ -26,21 +28,17 @@ class GameEventRepository {
   }
 
   void sendJoystickEvent(JoystickMovedEvent event) async {
-    await ClientHolder.apiGatewayHttpClient
-        .post('/v1/game/messages', data: {
-          "headers": {"type", "game.input.joystick"},
-          "sender": thisPlayerName,
-          "receiver": thisPlayerName,
-          "content": {
-            "direction": event.direction.name,
-            "relativeDeltaX": event.relativeDelta.x,
-            "relativeDeltaY": event.relativeDelta.y,
-          }
-        })
-        .asStream()
-        .where((event) => event.statusCode == 200)
-        .forEach((element) {
-          print(element);
-        });
+    String joystickData = jsonEncode({
+      "direction": event.direction.name,
+      "relativeDeltaX": event.relativeDelta.x,
+      "relativeDeltaY": event.relativeDelta.y,
+    });
+    String body = jsonEncode({
+      "type": "game.input.joystick",
+      "sender": thisPlayerName,
+      "receiver": thisPlayerName,
+      "content": joystickData
+    });
+    ClientHolder.apiGatewayHttpClient.post('/v1/game/messages', data: body);
   }
 }

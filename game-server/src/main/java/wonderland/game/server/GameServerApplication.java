@@ -36,7 +36,7 @@ public class GameServerApplication {
     //todo:
 	//microservice match-maker:
 		//create a match making controller that is backed by a SET of players as activeSession
-		//wrap active sessions a database table
+		//wrap active sessions in a database table
 		//when a session is ready to lunch: run a game engine process and let players in the session know about it
 
 	//microservice game engine (this app):

@@ -37,9 +37,8 @@ class JoystickMovedMessageReceivedEvent extends GameEvent {
   }
 
   static JoystickMovedMessageReceivedEvent fromJson(String jsonString) {
-    print(jsonString);
     Map<String, dynamic> keyValueMap = jsonDecode(jsonString);
-    return JoystickMovedMessageReceivedEvent(keyValueMap["directionString"],
+    return JoystickMovedMessageReceivedEvent(keyValueMap["direction"],
         keyValueMap["relativeDeltaX"], keyValueMap["relativeDeltaY"]);
   }
 

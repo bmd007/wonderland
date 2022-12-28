@@ -83,7 +83,7 @@ public class ChatResource {
         messageProperties.setReceivedExchange(RABBIT_WEBRTC_MESSAGES_EXCHANGE);
         var message = new Message(requestBody.content().getBytes(StandardCharsets.UTF_8), messageProperties);
         rabbitTemplate.send(RABBIT_WEBRTC_MESSAGES_EXCHANGE, requestBody.receiver(), message);
-        LOGGER.info("offer {} sent to {} from {}", requestBody.content(), requestBody.receiver(), requestBody.sender());
+        LOGGER.info("signaling {} sent to {} from {}", requestBody.content(), requestBody.receiver(), requestBody.sender());
         return requestBody.content() + " sent to " + requestBody.receiver() + " at " + LocalDateTime.now();
     }
 
@@ -92,8 +92,8 @@ public class ChatResource {
         MessageProperties messageProperties = basicMessageProperties(requestBody);
         messageProperties.setReceivedExchange(RABBIT_GAME_MESSAGES_EXCHANGE);
         var message = new Message(requestBody.content().getBytes(StandardCharsets.UTF_8), messageProperties);
-        rabbitTemplate.send(RABBIT_WEBRTC_MESSAGES_EXCHANGE, requestBody.receiver(), message);
-        LOGGER.info("offer {} sent to {} from {}", requestBody.content(), requestBody.receiver(), requestBody.sender());
+        rabbitTemplate.send(RABBIT_GAME_MESSAGES_EXCHANGE, requestBody.receiver(), message);
+        LOGGER.info("game message {} sent to {} from {}", requestBody.content(), requestBody.receiver(), requestBody.sender());
         return requestBody.content() + " sent to " + requestBody.receiver() + " at " + LocalDateTime.now();
     }
 }

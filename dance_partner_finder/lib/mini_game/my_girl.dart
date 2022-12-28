@@ -84,6 +84,7 @@ class MyGirl<MyForge2DFlameGame> extends BodyComponent with ContactCallbacks imp
     }
   }
 
+  @override
   void notifyGameEvent(GameEvent event) {
     if (event is JoystickMovedMessageReceivedEvent) {
       move(event.direction, event.relativeDelta);

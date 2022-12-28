@@ -13,7 +13,7 @@ class RabbitMqWebSocketStompChatClient {
     };
     //ssl port in rabbitmq: 15673 (check gcp/vm/*)
     var config = StompConfig(
-        url: 'ws://192.168.10.179:15674/ws',
+        url: 'ws://192.168.1.188:15674/ws',
         // beforeConnect: () async => print("before connect"),
         onUnhandledFrame: (dynamic onUnhandledFrame) =>
             print('onUnhandledFrame $onUnhandledFrame'),
@@ -27,7 +27,7 @@ class RabbitMqWebSocketStompChatClient {
         webSocketConnectHeaders: loginCode,
         onStompError: (dynamic error) =>
             print("stomp error ${error.toString()}"),
-        // onWebSocketError: (dynamic error) => print(error.toString()),
+        onWebSocketError: (dynamic error) => print(error.toString()),
         // onDebugMessage: (dynamic message) => print('debug message $message'),
         // onWebSocketDone: () => print('web socket done'),
         onDisconnect: (dynamic stopFrame) => print('disconnected $stopFrame'));

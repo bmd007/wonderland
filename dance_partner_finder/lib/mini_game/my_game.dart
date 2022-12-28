@@ -17,8 +17,7 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
   late final MyGirl myGirl;
   late final HudButtonComponent shapeButton;
   late final TextComponent playerLifeIndicator;
-  final GameEventRepository gameEventRepository =
-      GameEventRepository("bmd579@gmail.com");
+  final GameEventRepository gameEventRepository = GameEventRepository("mm7amini@gmail.com");
 
   @override
   Future<void> onLoad() async {
