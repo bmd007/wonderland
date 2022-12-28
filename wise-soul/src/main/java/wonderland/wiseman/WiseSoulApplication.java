@@ -16,6 +16,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 @SpringBootApplication
@@ -107,10 +108,11 @@ public class WiseSoulApplication {
     }
 
     private void sendMessage(String from, String to, String message) {
+        var body = new SendMessageRequestBody(from, to, message, Map.of("type", "MessageIsSentToYouEvent"));
         messagePublisherClient
                 .post()
-                .uri("/send/message/" + from + "/" + to)
-                .bodyValue(message)
+                .uri("/v1/chat/messages")
+                .bodyValue(body)
                 .retrieve()
                 .bodyToMono(String.class)
                 .retry(2L)

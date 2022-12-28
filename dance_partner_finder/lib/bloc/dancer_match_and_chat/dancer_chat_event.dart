@@ -35,10 +35,10 @@ class MessageReceivedEvent extends DancerChatAndMatchEvent {
   List<Object?> get props => [massage];
 }
 
-class DancerSendMessageEvent extends DancerChatAndMatchEvent {
+class DancerWantsToSendMessageEvent extends DancerChatAndMatchEvent {
   final ChatMessage massage;
 
-  const DancerSendMessageEvent(this.massage);
+  const DancerWantsToSendMessageEvent(this.massage);
 
   @override
   List<Object?> get props => [massage];

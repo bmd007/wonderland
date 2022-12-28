@@ -137,7 +137,7 @@ class DancerChatWidget extends StatelessWidget {
                 FloatingActionButton(
                   onPressed: () {
                     if (chatBloc.state.lastTextInTextBox.isNotEmpty) {
-                      chatBloc.add(DancerSendMessageEvent(ChatMessage(
+                      chatBloc.add(DancerWantsToSendMessageEvent(ChatMessage(
                           chatBloc.state.lastTextInTextBox, MessageType.sent, chatBloc.state.currentlyChattingWith)));
                     }
                   },

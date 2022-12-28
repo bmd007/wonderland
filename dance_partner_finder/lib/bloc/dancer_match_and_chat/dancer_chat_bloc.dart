@@ -35,10 +35,10 @@ class DancerMatchAndChatBloc
     on<TextTypedEvent>((event, emit) {
       emit(state.typing(event.text));
     });
-    on<DancerSendMessageEvent>((event, emit) async {
-      //todo some sort of refactoring here if possible!?
+    on<DancerWantsToSendMessageEvent>((event, emit) async {
       await ClientHolder.apiGatewayHttpClient
           .post('/v1/chat/messages', data: {
+            "type": "MessageIsSentToYouEvent",
             "sender": thisDancerName,
             "receiver": event.massage.participantName,
             "content": event.massage.text

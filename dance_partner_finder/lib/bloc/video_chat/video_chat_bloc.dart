@@ -26,7 +26,8 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
       await _peerConnection.setLocalDescription(description);
       printWithTime('local description before sending offer');
       await ClientHolder.apiGatewayHttpClient
-          .post('/v1/video/chat/offer', data: {
+          .post('/v1/chat/video/signaling', data: {
+            "type": "WebRtcOffer",
             "sender": thisDancerName,
             "receiver": chatParty,
             "content": offerString
@@ -40,7 +41,8 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
 
     on<CandidatePropagationRequestedEvent>((event, emit) async {
       await ClientHolder.apiGatewayHttpClient
-          .post('/v1/video/chat/candidate', data: {
+          .post('/v1/chat/video/signaling', data: {
+            "type": "WebRtcCandidate",
             "sender": thisDancerName,
             "receiver": chatParty,
             "content": event.candidate
@@ -60,7 +62,8 @@ class VideoChatBloc extends Bloc<VideoChatEvent, VideoChatState> {
       await _peerConnection.setLocalDescription(description);
       printWithTime('local description before sending answer');
       await ClientHolder.apiGatewayHttpClient
-          .post('/v1/video/chat/answer', data: {
+          .post('/v1/chat/video/signaling', data: {
+            "type": "WebRtcAnswer",
             "sender": thisDancerName,
             "receiver": chatParty,
             "content": answerString
