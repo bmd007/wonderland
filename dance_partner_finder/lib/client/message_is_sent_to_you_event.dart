@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 class MessageIsSentToYouEvent {
@@ -11,5 +10,4 @@ class MessageIsSentToYouEvent {
     Map<String, dynamic> keyValueMap = jsonDecode(jsonString);
     return MessageIsSentToYouEvent(keyValueMap["content"], keyValueMap["sender"]);
   }
-
 }

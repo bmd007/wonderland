@@ -1,3 +1,5 @@
+import 'package:dance_partner_finder/game_state_repository/game_event.dart';
+import 'package:dance_partner_finder/game_state_repository/game_event_repository.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
@@ -15,6 +17,8 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
   late final MyGirl myGirl;
   late final HudButtonComponent shapeButton;
   late final TextComponent playerLifeIndicator;
+  final GameEventRepository gameEventRepository =
+      GameEventRepository("bmd579@gmail.com");
 
   @override
   Future<void> onLoad() async {
@@ -30,8 +34,9 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
     )..positionType = PositionType.viewport;
     await add(joystickComponent);
 
-    myGirl = MyGirl(joystickComponent, size / 2);
+    myGirl = MyGirl(size / 2);
     await add(myGirl);
+    gameEventRepository.observers.add(myGirl);
 
     final shootButton = HudButtonComponent(
         button: CircleComponent(radius: 20),
@@ -54,31 +59,33 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
       ..positionType = PositionType.viewport
       ..anchor = Anchor.bottomCenter
       ..position = Vector2(size.x, size.y)
-      ..textRenderer = TextPaint(style: TextStyle(color: BasicPalette.white.color, fontSize: 20));
+      ..textRenderer = TextPaint(
+          style: TextStyle(color: BasicPalette.white.color, fontSize: 20));
     await add(playerLifeIndicator);
-    myGirl.playerLife.addListener(() => playerLifeIndicator.text = "lives: ${myGirl.playerLife.value}");
+    myGirl.playerLife.addListener(
+        () => playerLifeIndicator.text = "lives: ${myGirl.playerLife.value}");
 
-    add(Enemy(size / 1.47));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(MyPlatform(size / 1.5));
-    add(MyPlatform(size / 2.5));
-
-    add(Enemy(size / 1.3));
-    add(MyPlatform(size / 1.3));
-
-    add(Enemy(size / 2.1));
-    add(MyPlatform(size / 1.05));
+    // add(Enemy(size / 1.47));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(MyPlatform(size / 1.5));
+    // add(MyPlatform(size / 2.5));
+    //
+    // add(Enemy(size / 1.3));
+    // add(MyPlatform(size / 1.3));
+    //
+    // add(Enemy(size / 2.1));
+    // add(MyPlatform(size / 1.05));
 
     var bottom = size.y;
     var right = size.x + 100;
@@ -92,5 +99,15 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
     add(Wall(bottomRight, bottomLeft));
     camera.followBodyComponent(myGirl, useCenterOfMass: true);
     camera.worldBounds = Rect.fromLTRB(0, 0, right, bottom);
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    if (!joystickComponent.delta.isZero()) {
+      var event = JoystickMovedEvent(
+          joystickComponent.direction, joystickComponent.relativeDelta);
+      gameEventRepository.sendJoystickEvent(event);
+    }
   }
 }

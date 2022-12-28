@@ -1,5 +1,7 @@
 import 'dart:collection';
 
+import 'package:dance_partner_finder/game_state_repository/game_event.dart';
+import 'package:dance_partner_finder/game_state_repository/observer.dart';
 import 'package:flame/components.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/foundation.dart';
@@ -7,15 +9,15 @@ import 'package:flutter/foundation.dart';
 import 'bullet.dart';
 import 'my_girl_kanui.dart';
 
-class MyGirl<MyForge2DFlameGame> extends BodyComponent with ContactCallbacks {
-  SpriteAnimationData glidingAnimationData =
-      SpriteAnimationData.sequenced(amount: 9, stepTime: 0.03, textureSize: Vector2(152.0, 142.0));
-  SpriteAnimationData runningAnimationDate =
-      SpriteAnimationData.sequenced(amount: 9, stepTime: 0.03, textureSize: Vector2(375.0, 520.0));
-  SpriteAnimationData idleAnimationData =
-      SpriteAnimationData.sequenced(amount: 9, stepTime: 0.03, textureSize: Vector2(290.0, 500.0));
-  SpriteAnimationData jumpingAnimationData =
-      SpriteAnimationData.sequenced(amount: 9, stepTime: 0.03, textureSize: Vector2(399.0, 543.0));
+class MyGirl<MyForge2DFlameGame> extends BodyComponent with ContactCallbacks implements Observer{
+  SpriteAnimationData glidingAnimationData = SpriteAnimationData.sequenced(
+      amount: 9, stepTime: 0.03, textureSize: Vector2(152.0, 142.0));
+  SpriteAnimationData runningAnimationDate = SpriteAnimationData.sequenced(
+      amount: 9, stepTime: 0.03, textureSize: Vector2(375.0, 520.0));
+  SpriteAnimationData idleAnimationData = SpriteAnimationData.sequenced(
+      amount: 9, stepTime: 0.03, textureSize: Vector2(290.0, 500.0));
+  SpriteAnimationData jumpingAnimationData = SpriteAnimationData.sequenced(
+      amount: 9, stepTime: 0.03, textureSize: Vector2(399.0, 543.0));
   late SpriteAnimation glidingAnimation;
   late SpriteAnimation runningAnimation;
   late SpriteAnimation idleAnimation;
@@ -23,22 +25,21 @@ class MyGirl<MyForge2DFlameGame> extends BodyComponent with ContactCallbacks {
   bool lookingTowardRight = true;
   bool landedSinceLastElevation = false;
   final double speed = 20;
-  final JoystickComponent joystick;
   final Vector2 initialPosition;
   late SpriteAnimationComponent component;
   Queue<MyGirlKanui> kanuies = Queue<MyGirlKanui>();
   final playerLife = ValueNotifier<int>(100);
 
-  MyGirl(this.joystick, this.initialPosition);
+  MyGirl(this.initialPosition);
 
-  void move(double dt) {
-    var direction = joystick.direction;
+  void move(JoystickDirection direction, Vector2 joystickRelativeDelta) {
     if (direction == JoystickDirection.down) {
       component.animation = idleAnimation;
       if (landedSinceLastElevation) {
         body.linearVelocity.x = 0;
       }
-    } else if (direction == JoystickDirection.downLeft || direction == JoystickDirection.left) {
+    } else if (direction == JoystickDirection.downLeft ||
+        direction == JoystickDirection.left) {
       if (lookingTowardRight) {
         component.flipHorizontally();
       }
@@ -47,7 +48,8 @@ class MyGirl<MyForge2DFlameGame> extends BodyComponent with ContactCallbacks {
         body.linearVelocity = Vector2(-speed, body.linearVelocity.y);
       }
       component.animation = runningAnimation;
-    } else if (direction == JoystickDirection.downRight || direction == JoystickDirection.right) {
+    } else if (direction == JoystickDirection.downRight ||
+        direction == JoystickDirection.right) {
       if (!lookingTowardRight) {
         component.flipHorizontally();
       }
@@ -59,22 +61,32 @@ class MyGirl<MyForge2DFlameGame> extends BodyComponent with ContactCallbacks {
     } else if (direction == JoystickDirection.up && landedSinceLastElevation) {
       landedSinceLastElevation = false;
       body.applyLinearImpulse(Vector2(0, -1000));
-    } else if (direction == JoystickDirection.upLeft && landedSinceLastElevation) {
+    } else if (direction == JoystickDirection.upLeft &&
+        landedSinceLastElevation) {
       if (lookingTowardRight) {
         component.flipHorizontally();
       }
       lookingTowardRight = false;
       landedSinceLastElevation = false;
       body.linearVelocity.x = 0;
-      body.applyLinearImpulse(Vector2(joystick.relativeDelta.x * 1000, joystick.relativeDelta.y * 1000));
-    } else if (direction == JoystickDirection.upRight && landedSinceLastElevation) {
+      body.applyLinearImpulse(Vector2(
+          joystickRelativeDelta.x * 1000, joystickRelativeDelta.y * 1000));
+    } else if (direction == JoystickDirection.upRight &&
+        landedSinceLastElevation) {
       if (!lookingTowardRight) {
         component.flipHorizontally();
       }
       lookingTowardRight = true;
       body.linearVelocity.x = 0;
       landedSinceLastElevation = false;
-      body.applyLinearImpulse(Vector2(joystick.relativeDelta.x * 1000, joystick.relativeDelta.y * 1000));
+      body.applyLinearImpulse(Vector2(
+          joystickRelativeDelta.x * 1000, joystickRelativeDelta.y * 1000));
+    }
+  }
+
+  void notifyGameEvent(GameEvent event) {
+    if (event is JoystickMovedMessageReceivedEvent) {
+      move(event.direction, event.relativeDelta);
     }
   }
 
@@ -93,9 +105,7 @@ class MyGirl<MyForge2DFlameGame> extends BodyComponent with ContactCallbacks {
     } else if (body.linearVelocity.y > 5) {
       component.animation = glidingAnimation;
     }
-    if (!joystick.delta.isZero()) {
-      move(dt);
-    } else if (landedSinceLastElevation) {
+    if (landedSinceLastElevation) {
       body.linearVelocity.x = 0;
     }
   }
