@@ -27,18 +27,7 @@ class GameEventRepository {
     });
   }
 
-  void sendJoystickEvent(JoystickMovedEvent event) async {
-    String joystickData = jsonEncode({
-      "direction": event.direction.name,
-      "relativeDeltaX": event.relativeDelta.x,
-      "relativeDeltaY": event.relativeDelta.y,
-    });
-    String body = jsonEncode({
-      "type": "game.input.joystick",
-      "sender": thisPlayerName,
-      "receiver": thisPlayerName,
-      "content": joystickData
-    });
-    ClientHolder.apiGatewayHttpClient.post('/v1/game/messages', data: body);
+  void sendJoystickEvent(JoystickMovedEvent event) {
+
   }
 }

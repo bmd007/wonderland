@@ -51,7 +51,7 @@ class DancerMatchAndChatBloc
             emit(state.typing(""));
           });
     });
-    ClientHolder.client
+    ClientHolder.rsocketClient
         .matchStreams(thisDancerName)
         .forEach((match) => add(MatchFoundEvent(match!)));
 

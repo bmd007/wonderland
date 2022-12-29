@@ -33,7 +33,7 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
     )..positionType = PositionType.viewport;
     await add(joystickComponent);
 
-    myGirl = MyGirl(size / 2);
+    myGirl = MyGirl(size / 2, joystickComponent);
     await add(myGirl);
     gameEventRepository.observers.add(myGirl);
 
@@ -64,27 +64,27 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
     myGirl.playerLife.addListener(
         () => playerLifeIndicator.text = "lives: ${myGirl.playerLife.value}");
 
-    // add(Enemy(size / 1.47));
-    // add(Enemy(size / 2.5));
-    // add(Enemy(size / 2.5));
-    // add(Enemy(size / 2.5));
-    // add(Enemy(size / 2.5));
-    // add(Enemy(size / 2.5));
-    // add(Enemy(size / 2.5));
-    // add(Enemy(size / 2.5));
-    // add(Enemy(size / 2.5));
-    // add(Enemy(size / 2.5));
-    // add(Enemy(size / 2.5));
-    // add(Enemy(size / 2.5));
-    // add(Enemy(size / 2.5));
-    // add(MyPlatform(size / 1.5));
-    // add(MyPlatform(size / 2.5));
-    //
-    // add(Enemy(size / 1.3));
-    // add(MyPlatform(size / 1.3));
-    //
-    // add(Enemy(size / 2.1));
-    // add(MyPlatform(size / 1.05));
+    add(Enemy(size / 1.47));
+    add(Enemy(size / 2.5));
+    add(Enemy(size / 2.5));
+    add(Enemy(size / 2.5));
+    add(Enemy(size / 2.5));
+    add(Enemy(size / 2.5));
+    add(Enemy(size / 2.5));
+    add(Enemy(size / 2.5));
+    add(Enemy(size / 2.5));
+    add(Enemy(size / 2.5));
+    add(Enemy(size / 2.5));
+    add(Enemy(size / 2.5));
+    add(Enemy(size / 2.5));
+    add(MyPlatform(size / 1.5));
+    add(MyPlatform(size / 2.5));
+
+    add(Enemy(size / 1.3));
+    add(MyPlatform(size / 1.3));
+
+    add(Enemy(size / 2.1));
+    add(MyPlatform(size / 1.05));
 
     var bottom = size.y;
     var right = size.x + 100;

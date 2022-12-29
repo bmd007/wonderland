@@ -29,8 +29,9 @@ class MyGirl<MyForge2DFlameGame> extends BodyComponent with ContactCallbacks imp
   late SpriteAnimationComponent component;
   Queue<MyGirlKanui> kanuies = Queue<MyGirlKanui>();
   final playerLife = ValueNotifier<int>(100);
+  final JoystickComponent joystickComponent;
 
-  MyGirl(this.initialPosition);
+  MyGirl(this.initialPosition, this.joystickComponent);
 
   void move(JoystickDirection direction, Vector2 joystickRelativeDelta) {
     if (direction == JoystickDirection.down) {
@@ -85,13 +86,6 @@ class MyGirl<MyForge2DFlameGame> extends BodyComponent with ContactCallbacks imp
   }
 
   @override
-  void notifyGameEvent(GameEvent event) {
-    if (event is JoystickMovedMessageReceivedEvent) {
-      move(event.direction, event.relativeDelta);
-    }
-  }
-
-  @override
   void update(double dt) {
     super.update(dt);
     if (playerLife.value <= 0) {
@@ -106,7 +100,9 @@ class MyGirl<MyForge2DFlameGame> extends BodyComponent with ContactCallbacks imp
     } else if (body.linearVelocity.y > 5) {
       component.animation = glidingAnimation;
     }
-    if (landedSinceLastElevation) {
+    if (!joystickComponent.relativeDelta.isZero()) {
+      move(joystickComponent.direction, joystickComponent.relativeDelta);
+    } else if (landedSinceLastElevation) {
       body.linearVelocity.x = 0;
     }
   }
@@ -181,6 +177,18 @@ class MyGirl<MyForge2DFlameGame> extends BodyComponent with ContactCallbacks imp
   void beginContact(Object other, Contact contact) {
     if (other is Bullet) {
       playerLife.value = playerLife.value - 1;
+    }
+  }
+
+  @override
+  void notifyGameState(String direction) {
+    print("${gameRef.world.stepDt} : $direction");
+  }
+
+  @override
+  void notifyGameEvent(GameEvent event) {
+    if (event is JoystickMovedMessageReceivedEvent) {
+
     }
   }
 }

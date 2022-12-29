@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 public class HiRestResource {
 
     @GetMapping("/rest/hi")
-    public Mono<String> disLikeADancer() {
+    public Mono<String> hi() {
         return Mono.just("hi rest");
     }
 }

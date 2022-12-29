@@ -26,9 +26,9 @@ class DancePartnerFinderBloc extends Bloc<DancePartnerFinderEvent, DancePartnerF
       emit(state.setSearchingRadius(event.searchingRadius));
 
       getCurrentLocation()
-          .doOnData((location) => ClientHolder.client
+          .doOnData((location) => ClientHolder.rsocketClient
               .introduceAsDancePartnerSeeker(thisDancerName, location.latitude!, location.longitude!))
-          .asyncExpand((location) => ClientHolder.client
+          .asyncExpand((location) => ClientHolder.rsocketClient
               .fetchDancePartnerSeekersNames(thisDancerName, location.latitude!, location.longitude!, event.searchingRadius))
           .forEach((potentialDancePartner) =>
               add(PotentialDancerPartnerFoundEvent(potentialDancePartner!)));
@@ -40,14 +40,14 @@ class DancePartnerFinderBloc extends Bloc<DancePartnerFinderEvent, DancePartnerF
       emit(state.addPotentialDancer(event.potentialDancePartnerName));
     });
     on<DancerLikedEvent>((event, emit) {
-      ClientHolder.client.likeADancer(thisDancerName, event.dancerName).forEach((element) {});
+      ClientHolder.rsocketClient.likeADancer(thisDancerName, event.dancerName).forEach((element) {});
       emit(state.moveToNextDancer());
       if (state.isRunningOutOfDancers()) {
         add(SearchingRadiusEnteredEvent(state.searchingRadius));
       }
     });
     on<DancerDislikedEvent>((event, emit) {
-      ClientHolder.client.disLikeADancer(thisDancerName, event.dancerName).forEach((element) {});
+      ClientHolder.rsocketClient.disLikeADancer(thisDancerName, event.dancerName).forEach((element) {});
       emit(state.moveToNextDancer());
       if (state.isRunningOutOfDancers()) {
         add(SearchingRadiusEnteredEvent(state.searchingRadius));

@@ -5,7 +5,7 @@ import 'api_gateway_rsocket_client.dart';
 
 //todo is this really a right pattern? or singleton is better?!
 class ClientHolder {
-  static final ApiGatewayRSocketClient client = ApiGatewayRSocketClient();
+  static final ApiGatewayRSocketClient rsocketClient = ApiGatewayRSocketClient();
   static final Dio apiGatewayHttpClient = Dio(BaseOptions(
     baseUrl: 'http://192.168.1.188:9591',
     contentType: ContentType.parse('application/json').value,
