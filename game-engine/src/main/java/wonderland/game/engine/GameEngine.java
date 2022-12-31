@@ -15,8 +15,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
-import wonderland.game.engine.dto.GameState;
+import reactor.core.publisher.Mono;
 import wonderland.game.engine.dto.JoystickInputEvent;
+import wonderland.game.engine.dto.Movable;
 
 import java.time.Duration;
 import java.util.UUID;
@@ -51,14 +52,33 @@ public class GameEngine {
 
     @EventListener(ApplicationReadyEvent.class)
     public void start() {
+        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
+        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
+        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
+        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
+        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
+        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
+        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
+        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
+        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
+        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
+        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
+        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
         Flux.interval(Duration.ofMillis(100))
-                .flatMapIterable(tick -> JOYSTICK_EVENTS.stream().limit(10).toList())
-                .scan(GameState.createState(0).addNinjaInitially(), (state, joystickInputEvent) -> state)
-                .doOnNext(state -> publishGameState("mm7amini@gmail.com", state))
+                .flatMap(tick -> {
+                    return Flux.range(0, 5)
+                            .log()
+                            .map(subTick -> JOYSTICK_EVENTS.remove())
+                            .onErrorResume(throwable -> Mono.empty())
+                            .defaultIfEmpty(new JoystickInputEvent(11, 11, "up"))
+                            .scan(Movable.randomNina(), (movable, joystickInputEvent) -> movable)
+                            .doOnNext(movable -> publishGameState("mm7amini@gmail.com", movable));
+                })
                 .subscribe();
+
     }
 
-    public void publishGameState(String receiver, GameState state) {
+    public void publishGameState(String receiver, Movable movable) {
         var messageProperties = new MessageProperties();
         messageProperties.setHeader("type", "game_state");
         messageProperties.setHeader("version", "1");
@@ -70,14 +90,14 @@ public class GameEngine {
         messageProperties.setDeliveryMode(MessageDeliveryMode.NON_PERSISTENT);
         messageProperties.setReceivedDeliveryMode(MessageDeliveryMode.NON_PERSISTENT);
         messageProperties.setReceivedExchange(RABBIT_GAME_MESSAGES_EXCHANGE);
-        Message message = null;
         try {
-            message = new Message(objectMapper.writeValueAsBytes(state), messageProperties);
+            var body = objectMapper.writeValueAsBytes(movable);
+            Message message = new Message(body, messageProperties);
+            rabbitTemplate.send(RABBIT_GAME_MESSAGES_EXCHANGE, receiver, message);
+            log.info("{} sent to {}", new String(body), receiver);
         } catch (JsonProcessingException e) {
             log.error("problem writeValueAsBytes state", e);
         }
-        rabbitTemplate.send(RABBIT_GAME_MESSAGES_EXCHANGE, receiver, message);
-        log.info("game state {} sent to {}", state, receiver);
     }
 
     @EventListener(org.springframework.context.event.ContextClosedEvent.class)

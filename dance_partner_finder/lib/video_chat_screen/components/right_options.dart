@@ -21,6 +21,7 @@ class _RightOptionsState extends State<RightOptions> {
         children: [
           AnimatedPositioned(
             bottom: isExpanded ? 65 : 0,
+            duration: const Duration(milliseconds: 300),
             child: CircleAvatar(
               radius: 28,
               backgroundColor: Colors.white,
@@ -32,10 +33,10 @@ class _RightOptionsState extends State<RightOptions> {
                 color: Colors.red,
               ),
             ),
-            duration: const Duration(milliseconds: 300),
           ),
           AnimatedPositioned(
             bottom: isExpanded ? 130 : 0,
+            duration: const Duration(milliseconds: 300),
             child: CircleAvatar(
               radius: 28,
               backgroundColor: Colors.white,
@@ -47,7 +48,6 @@ class _RightOptionsState extends State<RightOptions> {
                 color: Colors.red,
               ),
             ),
-            duration: const Duration(milliseconds: 300),
           ),
           GestureDetector(
             onTap: () {

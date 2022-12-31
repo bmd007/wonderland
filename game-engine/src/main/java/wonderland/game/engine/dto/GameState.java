@@ -26,7 +26,7 @@ public class GameState {
                 .id("ninja")
                 .positionX(10)
                 .positionY(10)
-                .velocityX(111)
+                .velocityX(11100)
                 .velocityY(-111)
                 .build();
         movables.add(ninja);

@@ -1,7 +1,7 @@
 import 'dart:collection';
 
+import 'package:dance_partner_finder/game_state_repository/movable.dart';
 import 'package:dance_partner_finder/game_state_repository/observer.dart';
-import 'package:dance_partner_finder/game_state_repository/remote_game_state.dart';
 import 'package:flame/components.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/foundation.dart';
@@ -137,11 +137,8 @@ class MyGreenGirl<MyForge2DFlameGame> extends BodyComponent
   }
 
   @override
-  void notifyGameState(RemoteGameState remoteGameState) {
-    Movable ninja = remoteGameState.movables!
-        .where((element) => element.id == "ninja")
-        .first;
-    body.linearVelocity.x = ninja.velocityX!;
-    body.linearVelocity.y = ninja.velocityY!;
+  void notifyGameState(Movable ninja) {
+    body.linearVelocity.x = ninja.velocityX;
+    body.linearVelocity.y = ninja.velocityY;
   }
 }
