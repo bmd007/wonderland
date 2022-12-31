@@ -1,4 +1,4 @@
-package wonderland.api.gateway.dto.game;
+package wonderland.game.engine.dto;
 
 import lombok.Builder;
 import lombok.Data;

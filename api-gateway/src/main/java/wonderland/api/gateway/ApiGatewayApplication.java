@@ -43,7 +43,7 @@ public class ApiGatewayApplication {
                 )
                 .route(r -> r.path("/v1/chat/messages").uri("lb://message-publisher"))
                 .route(r -> r.path("/v1/chat/video/signaling").uri("lb://message-publisher"))
-                .route(r -> r.path("/v1/game/messages").uri("lb://message-publisher"))
+                .route(r -> r.path("/v1/game/report/input/joystick").uri("lb://game-engine"))
                 .build();
     }
 }

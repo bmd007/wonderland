@@ -86,14 +86,4 @@ public class ChatResource {
         LOGGER.info("signaling {} sent to {} from {}", requestBody.content(), requestBody.receiver(), requestBody.sender());
         return requestBody.content() + " sent to " + requestBody.receiver() + " at " + LocalDateTime.now();
     }
-
-    @PostMapping("/v1/game/messages")
-    public String sendGamingMessage(@RequestBody SendMessageRequestBody requestBody) {
-        MessageProperties messageProperties = basicMessageProperties(requestBody);
-        messageProperties.setReceivedExchange(RABBIT_GAME_MESSAGES_EXCHANGE);
-        var message = new Message(requestBody.content().getBytes(StandardCharsets.UTF_8), messageProperties);
-        rabbitTemplate.send(RABBIT_GAME_MESSAGES_EXCHANGE, requestBody.receiver(), message);
-        LOGGER.info("game message {} sent to {} from {}", requestBody.content(), requestBody.receiver(), requestBody.sender());
-        return requestBody.content() + " sent to " + requestBody.receiver() + " at " + LocalDateTime.now();
-    }
 }

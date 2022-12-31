@@ -47,14 +47,12 @@ dependencies {
     implementation "org.springframework.cloud:spring-cloud-starter-consul-config"
     implementation "org.springframework.cloud:spring-cloud-starter-consul-discovery"
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
-    testImplementation 'org.springframework.kafka:spring-kafka-test'
     testImplementation 'org.mockito:mockito-junit-jupiter'
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testImplementation 'io.projectreactor:reactor-test'
