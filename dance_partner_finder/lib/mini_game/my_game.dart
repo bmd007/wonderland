@@ -39,7 +39,7 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
     await add(myGirl);
 
     myGreenGirl = MyGreenGirl(size / 2);
-    await add(myGirl);
+    await add(myGreenGirl);
     gameEventRepository.observers.add(myGreenGirl);
 
     final shootButton = HudButtonComponent(
