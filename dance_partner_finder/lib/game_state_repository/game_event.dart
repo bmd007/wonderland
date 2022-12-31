@@ -23,38 +23,3 @@ class ShootButtonPushedEvent extends GameEvent {
   @override
   List<Object?> get props => [];
 }
-
-class JoystickMovedMessageReceivedEvent extends GameEvent {
-  late final Vector2 relativeDelta;
-  late final JoystickDirection direction;
-
-  JoystickMovedMessageReceivedEvent(
-      String directionString, double relativeDeltaX, relativeDeltaY) {
-    direction = JoystickDirection.values
-        .where((element) => element.name == directionString)
-        .first;
-    relativeDelta = Vector2(relativeDeltaX, relativeDeltaY);
-  }
-
-  static JoystickMovedMessageReceivedEvent fromJson(String jsonString) {
-    Map<String, dynamic> keyValueMap = jsonDecode(jsonString);
-    return JoystickMovedMessageReceivedEvent(keyValueMap["direction"],
-        keyValueMap["relativeDeltaX"], keyValueMap["relativeDeltaY"]);
-  }
-
-  @override
-  List<Object?> get props => [relativeDelta, direction];
-}
-
-class ShootButtonPushedMessageReceivedEvent extends GameEvent {
-
-  const ShootButtonPushedMessageReceivedEvent();
-
-  @override
-  List<Object?> get props => [];
-}
-
-class StompConnectionReadyEvent extends GameEvent {
-  @override
-  List<Object?> get props => ['ignore'];
-}

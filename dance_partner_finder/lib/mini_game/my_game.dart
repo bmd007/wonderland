@@ -9,12 +9,14 @@ import 'package:flutter/material.dart';
 
 import 'enemy.dart';
 import 'my_girl.dart';
+import 'my_green_girl.dart';
 import 'my_platform.dart';
 import 'wall.dart';
 
 class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
   late final JoystickComponent joystickComponent;
   late final MyGirl myGirl;
+  late final MyGreenGirl myGreenGirl;
   late final HudButtonComponent shapeButton;
   late final TextComponent playerLifeIndicator;
   final GameEventRepository gameEventRepository = GameEventRepository("mm7amini@gmail.com");
@@ -35,7 +37,10 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
 
     myGirl = MyGirl(size / 2, joystickComponent);
     await add(myGirl);
-    gameEventRepository.observers.add(myGirl);
+
+    myGreenGirl = MyGreenGirl(size / 2);
+    await add(myGirl);
+    gameEventRepository.observers.add(myGreenGirl);
 
     final shootButton = HudButtonComponent(
         button: CircleComponent(radius: 20),
@@ -64,19 +69,19 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
     myGirl.playerLife.addListener(
         () => playerLifeIndicator.text = "lives: ${myGirl.playerLife.value}");
 
-    add(Enemy(size / 1.47));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
+    // add(Enemy(size / 1.47));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
     add(MyPlatform(size / 1.5));
     add(MyPlatform(size / 2.5));
 

@@ -1,5 +1,7 @@
 import 'dart:collection';
 
+import 'package:dance_partner_finder/game_state_repository/observer.dart';
+import 'package:dance_partner_finder/game_state_repository/remote_game_state.dart';
 import 'package:flame/components.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/foundation.dart';
@@ -7,7 +9,9 @@ import 'package:flutter/foundation.dart';
 import 'bullet.dart';
 import 'my_girl_kanui.dart';
 
-class MyGirl<MyForge2DFlameGame> extends BodyComponent with ContactCallbacks {
+class MyGreenGirl<MyForge2DFlameGame> extends BodyComponent
+    with ContactCallbacks
+    implements Observer {
   SpriteAnimationData glidingAnimationData = SpriteAnimationData.sequenced(
       amount: 9, stepTime: 0.03, textureSize: Vector2(152.0, 142.0));
   SpriteAnimationData runningAnimationDate = SpriteAnimationData.sequenced(
@@ -27,61 +31,8 @@ class MyGirl<MyForge2DFlameGame> extends BodyComponent with ContactCallbacks {
   late SpriteAnimationComponent component;
   Queue<MyGirlKanui> kanuies = Queue<MyGirlKanui>();
   final playerLife = ValueNotifier<int>(100);
-  final JoystickComponent joystickComponent;
 
-  MyGirl(this.initialPosition, this.joystickComponent);
-
-  void move(JoystickDirection direction, Vector2 joystickRelativeDelta) {
-    if (direction == JoystickDirection.down) {
-      component.animation = idleAnimation;
-      if (landedSinceLastElevation) {
-        body.linearVelocity.x = 0;
-      }
-    } else if (direction == JoystickDirection.downLeft ||
-        direction == JoystickDirection.left) {
-      if (lookingTowardRight) {
-        component.flipHorizontally();
-      }
-      lookingTowardRight = false;
-      if (body.linearVelocity.y == 0) {
-        body.linearVelocity = Vector2(-speed, body.linearVelocity.y);
-      }
-      component.animation = runningAnimation;
-    } else if (direction == JoystickDirection.downRight ||
-        direction == JoystickDirection.right) {
-      if (!lookingTowardRight) {
-        component.flipHorizontally();
-      }
-      lookingTowardRight = true;
-      if (body.linearVelocity.y == 0) {
-        body.linearVelocity = Vector2(speed, body.linearVelocity.y);
-      }
-      component.animation = runningAnimation;
-    } else if (direction == JoystickDirection.up && landedSinceLastElevation) {
-      landedSinceLastElevation = false;
-      body.applyLinearImpulse(Vector2(0, -1000));
-    } else if (direction == JoystickDirection.upLeft &&
-        landedSinceLastElevation) {
-      if (lookingTowardRight) {
-        component.flipHorizontally();
-      }
-      lookingTowardRight = false;
-      landedSinceLastElevation = false;
-      body.linearVelocity.x = 0;
-      body.applyLinearImpulse(Vector2(
-          joystickRelativeDelta.x * 1000, joystickRelativeDelta.y * 1000));
-    } else if (direction == JoystickDirection.upRight &&
-        landedSinceLastElevation) {
-      if (!lookingTowardRight) {
-        component.flipHorizontally();
-      }
-      lookingTowardRight = true;
-      body.linearVelocity.x = 0;
-      landedSinceLastElevation = false;
-      body.applyLinearImpulse(Vector2(
-          joystickRelativeDelta.x * 1000, joystickRelativeDelta.y * 1000));
-    }
-  }
+  MyGreenGirl(this.initialPosition);
 
   @override
   void update(double dt) {
@@ -98,9 +49,8 @@ class MyGirl<MyForge2DFlameGame> extends BodyComponent with ContactCallbacks {
     } else if (body.linearVelocity.y > 5) {
       component.animation = glidingAnimation;
     }
-    if (!joystickComponent.relativeDelta.isZero()) {
-      move(joystickComponent.direction, joystickComponent.relativeDelta);
-    } else if (landedSinceLastElevation) {
+
+    if (landedSinceLastElevation) {
       body.linearVelocity.x = 0;
     }
   }
@@ -109,10 +59,14 @@ class MyGirl<MyForge2DFlameGame> extends BodyComponent with ContactCallbacks {
   Future<void> onLoad() async {
     await super.onLoad();
     renderBody = false;
-    glidingAnimation = await gameRef.loadSpriteAnimation("red_girl/gliding_spriteSheet.png", glidingAnimationData);
-    runningAnimation = await gameRef.loadSpriteAnimation("red_girl/running_spriteSheet.png", runningAnimationDate);
-    idleAnimation = await gameRef.loadSpriteAnimation("red_girl/idle_spriteSheet.png", idleAnimationData);
-    jumpingAnimation = await gameRef.loadSpriteAnimation("red_girl/jumping_spriteSheet.png", jumpingAnimationData);
+    glidingAnimation = await gameRef.loadSpriteAnimation(
+        "green_girl/gliding_spriteSheet.png", glidingAnimationData);
+    runningAnimation = await gameRef.loadSpriteAnimation(
+        "green_girl/running_spriteSheet.png", runningAnimationDate);
+    idleAnimation = await gameRef.loadSpriteAnimation(
+        "green_girl/idle_spriteSheet.png", idleAnimationData);
+    jumpingAnimation = await gameRef.loadSpriteAnimation(
+        "green_girl/jumping_spriteSheet.png", jumpingAnimationData);
 
     component = SpriteAnimationComponent()
       ..animation = idleAnimation
@@ -150,17 +104,21 @@ class MyGirl<MyForge2DFlameGame> extends BodyComponent with ContactCallbacks {
   @override
   Body createBody() {
     final shape = CircleShape()..radius = 3;
-    final fixtureDefinition = FixtureDef(shape, density: 2, restitution: 0.1, friction: 2);
-    final bodyDefinition = BodyDef(position: initialPosition, type: BodyType.dynamic)
-      ..fixedRotation = true
-      ..userData = this;
+    final fixtureDefinition =
+        FixtureDef(shape, density: 2, restitution: 0.1, friction: 2);
+    final bodyDefinition =
+        BodyDef(position: initialPosition, type: BodyType.dynamic)
+          ..fixedRotation = true
+          ..userData = this;
     return world.createBody(bodyDefinition)..createFixture(fixtureDefinition);
   }
 
   throwKanui() async {
     if (kanuies.isNotEmpty) {
       var kanui = kanuies.removeFirst();
-      var positionDelta = lookingTowardRight ? Vector2(component.x + 5, 0) : Vector2(-component.x - 5, 0);
+      var positionDelta = lookingTowardRight
+          ? Vector2(component.x + 5, 0)
+          : Vector2(-component.x - 5, 0);
       kanui.initialPosition = body.position + positionDelta;
       await parent?.add(kanui);
       if (!lookingTowardRight) {
@@ -176,5 +134,14 @@ class MyGirl<MyForge2DFlameGame> extends BodyComponent with ContactCallbacks {
     if (other is Bullet) {
       playerLife.value = playerLife.value - 1;
     }
+  }
+
+  @override
+  void notifyGameState(RemoteGameState remoteGameState) {
+    Movable ninja = remoteGameState.movables!
+        .where((element) => element.id == "ninja")
+        .first;
+    body.linearVelocity.x = ninja.velocityX!;
+    body.linearVelocity.y = ninja.velocityY!;
   }
 }

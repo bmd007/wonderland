@@ -1,6 +1,5 @@
-import 'game_event.dart';
+import 'package:dance_partner_finder/game_state_repository/remote_game_state.dart';
 
 class Observer {
-  void notifyGameEvent(GameEvent event) => print(event);
-  void notifyGameState(String direction) => print(direction);
+  void notifyGameState(RemoteGameState state) => print(state);
 }
