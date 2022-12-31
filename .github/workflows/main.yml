@@ -6,7 +6,6 @@ on:
     paths:
         - 'dance_partner_finder/**'
 
-
 jobs:
   build:
     runs-on: ubuntu-latest

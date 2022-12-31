@@ -1,0 +1,25 @@
+management:
+  server:
+    port: 0
+
+logging:
+  level:
+    org.springframework.jdbc: INFO
+    org.springframework.web: INFO
+    org.springframework.kafka: WARN
+    org.apache.kafka: WARN
+    kafka: WARN
+
+spring:
+  zipkin.enabled: false
+  sleuth.enabled: false
+  
+  kafka:
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
+
+kafka:
+  topic:
+    config:
+      event: '1:1'
+      changelog: '1:1'
+
