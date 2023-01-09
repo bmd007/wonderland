@@ -50,6 +50,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+    implementation 'org.jbox2d:jbox2d:2.2.1.1'
+    implementation 'org.jbox2d:jbox2d-library:2.2.1.1'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
@@ -58,6 +60,9 @@ dependencies {
     testImplementation 'io.projectreactor:reactor-test'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     testImplementation 'org.springframework.amqp:spring-rabbit-test'
+    testImplementation 'org.jbox2d:jbox2d-testbed:2.2.1.1'
+    testImplementation 'org.jbox2d:jbox2d-testbed-jogl:1.0.1'
+    testImplementation 'org.jbox2d:jbox2d-serialization:1.1.0'
 }
 
 dependencyManagement {

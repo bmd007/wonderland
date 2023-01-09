@@ -71,7 +71,8 @@ public class GameEngine {
                             .map(subTick -> JOYSTICK_EVENTS.remove())
                             .onErrorResume(throwable -> Mono.empty())
                             .defaultIfEmpty(new JoystickInputEvent(11, 11, "up"))
-                            .scan(Movable.randomNina(), (movable, joystickInputEvent) -> movable)
+                            .scan(Movable.randomNinja(), (movable, joystickInputEvent) -> movable)
+//                            .scan(Game.setup(), (game, joystickInputEvent) -> game.applyInput(joystickInputEvent) || game.update(xxx))
                             .doOnNext(movable -> publishGameState("mm7amini@gmail.com", movable));
                 })
                 .subscribe();

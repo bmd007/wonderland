@@ -13,7 +13,7 @@ public class Movable {
     private double velocityY;
     private double angel;
 
-    public static Movable randomNina() {
+    public static Movable randomNinja() {
         return builder().velocityY(-10000).velocityX(10000).id("ninja").positionY(111.1).positionX(222.2).angel(22.2).build();
     }
 }
