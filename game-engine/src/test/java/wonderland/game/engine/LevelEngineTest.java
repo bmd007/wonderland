@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 ////        Stores.MOVER_IN_MEMORY_STATE_STORE + "-" + "stateful-geofencing-faas-changelog",
 ////        "change_log"
 //})
-class GameEngineTest {
+class LevelEngineTest {
 
     @BeforeEach
     void setUp() {

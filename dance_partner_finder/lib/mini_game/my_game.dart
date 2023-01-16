@@ -27,31 +27,52 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
     await super.onLoad();
     debugMode = false;
 
+    camera.viewport = FixedResolutionViewport(Vector2(1366, 768));
+    var right = size.x + 100;
+    var bottom = size.y;
+    final Vector2 topLeft = Vector2.zero() + Vector2(5, 5);
+    final Vector2 topRight = Vector2(right, 0) + Vector2(-5, 5);
+    final Vector2 bottomLeft = Vector2(0, bottom) + Vector2(5, -5);
+    final Vector2 bottomRight = Vector2(right, bottom) + Vector2(-5, -5);
+    add(Wall(topLeft, topRight));
+    add(Wall(topRight, bottomRight));
+    add(Wall(bottomLeft, topLeft));
+    add(Wall(bottomRight, bottomLeft));
+    camera.worldBounds = Rect.fromLTRB(0, 0, right, bottom);
+
+    SpriteComponent background = SpriteComponent()
+      ..sprite = await loadSprite("background.jpeg")
+      ..position = Vector2(5, 5)
+      ..size = Vector2(right - 10, bottom - 10)
+      ..anchor = Anchor.topLeft;
+    add(background);
+
     final knobPaint = BasicPalette.red.withAlpha(200).paint();
     final backgroundPaint = BasicPalette.blue.withAlpha(100).paint();
     joystickComponent = JoystickComponent(
-      knob: CircleComponent(radius: 20, paint: knobPaint),
-      background: CircleComponent(radius: 60, paint: backgroundPaint),
-      margin: const EdgeInsets.only(left: 30, bottom: 20),
+      knob: CircleComponent(radius: 30, paint: knobPaint),
+      background: CircleComponent(radius: 70, paint: backgroundPaint),
+      margin: const EdgeInsets.only(left: 50, bottom: 100),
     )..positionType = PositionType.viewport;
     await add(joystickComponent);
 
     myGirl = MyGirl(size / 2, joystickComponent);
     await add(myGirl);
+    camera.followBodyComponent(myGirl, useCenterOfMass: true);
 
     myGreenGirl = MyGreenGirl(size / 2);
     await add(myGreenGirl);
     gameEventRepository.observers.add(myGreenGirl);
 
     final shootButton = HudButtonComponent(
-        button: CircleComponent(radius: 20),
+        button: CircleComponent(radius: 30),
         buttonDown: RectangleComponent(
-          size: Vector2(10, 10),
+          size: Vector2(100, 100),
           paint: BasicPalette.blue.paint(),
         ),
         margin: const EdgeInsets.only(
-          right: 80,
-          bottom: 80,
+          right: 50,
+          bottom: 130,
         ),
         onPressed: () async {
           await myGirl.throwKanui();
@@ -91,19 +112,6 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
 
     add(Enemy(size / 2.1));
     add(MyPlatform(size / 1.05));
-
-    var bottom = size.y;
-    var right = size.x + 100;
-    final Vector2 topLeft = Vector2.zero();
-    final Vector2 bottomLeft = Vector2(0, bottom);
-    final Vector2 bottomRight = Vector2(right, bottom);
-    final Vector2 topRight = Vector2(right, 0);
-    add(Wall(topLeft, topRight));
-    add(Wall(topRight, bottomRight));
-    add(Wall(bottomLeft, topLeft));
-    add(Wall(bottomRight, bottomLeft));
-    camera.followBodyComponent(myGirl, useCenterOfMass: true);
-    camera.worldBounds = Rect.fromLTRB(0, 0, right, bottom);
   }
 
   @override
