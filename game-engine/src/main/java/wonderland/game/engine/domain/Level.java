@@ -7,22 +7,23 @@ import org.jbox2d.dynamics.World;
 import reactor.core.publisher.Flux;
 import wonderland.game.engine.domain.physics.SimulationComponent;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Level extends World implements SimulationComponent {
 
+    private final String name;
     private final static Vec2 SIZE = new Vec2(1366, 768);
     ConcurrentHashMap<String, BodyComponent> bodyComponents = new ConcurrentHashMap<>();
 
-    public Level(float farRight, float farBottom) {
+    public Level(float farRight, float farBottom, String name) {
         super(new Vec2(0, -10));
+        this.name = name;
         setupWallsAsLevelBoundaries(farRight, farBottom, 5);
     }
 
-    public Level() {
+    public Level(String name) {
         super(new Vec2(0, -10));
+        this.name = name;
         var right = SIZE.x + 100;
         var bottom = SIZE.y;
         setupWallsAsLevelBoundaries(right, bottom, 5);
