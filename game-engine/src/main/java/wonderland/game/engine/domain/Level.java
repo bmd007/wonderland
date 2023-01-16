@@ -11,9 +11,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Level extends World implements SimulationComponent {
 
+    private static final Vec2 SIZE = new Vec2(1366, 768);
+
+    private final ConcurrentHashMap<String, BodyComponent> bodyComponents = new ConcurrentHashMap<>();
     private final String name;
-    private final static Vec2 SIZE = new Vec2(1366, 768);
-    ConcurrentHashMap<String, BodyComponent> bodyComponents = new ConcurrentHashMap<>();
+
 
     public Level(float farRight, float farBottom, String name) {
         super(new Vec2(0, -10));
