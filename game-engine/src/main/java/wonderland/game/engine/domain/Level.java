@@ -16,6 +16,11 @@ public class Level extends World implements SimulationComponent {
     private final static Vec2 SIZE = new Vec2(1366, 768);
     ConcurrentHashMap<String, BodyComponent> bodyComponents = new ConcurrentHashMap<>();
 
+    public Level(float farRight, float farBottom) {
+        super(new Vec2(0, -10));
+        setupWallsAsLevelBoundaries(farRight, farBottom, 5);
+    }
+
     public Level() {
         super(new Vec2(0, -10));
         var right = SIZE.x + 100;
