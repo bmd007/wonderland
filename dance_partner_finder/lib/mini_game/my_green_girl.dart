@@ -138,7 +138,7 @@ class MyGreenGirl<MyForge2DFlameGame> extends BodyComponent
 
   @override
   void notifyGameState(Movable ninja) {
-    body.linearVelocity.x = ninja.velocityX;
-    body.linearVelocity.y = ninja.velocityY;
+    body.linearVelocity.x = ninja.linearVelocityX;
+    body.linearVelocity.y = ninja.linearVelocityY;
   }
 }

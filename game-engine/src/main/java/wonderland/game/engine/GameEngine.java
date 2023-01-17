@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import wonderland.game.engine.domain.Level;
-import wonderland.game.engine.domain.PhysicalComponent;
 import wonderland.game.engine.dto.JoystickInputEvent;
 
 import java.time.Duration;
@@ -53,31 +51,12 @@ public class GameEngine {
 
     @EventListener(ApplicationReadyEvent.class)
     public void start() {
-        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
-        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
-        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
-        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
-        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
-        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
-        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
-        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
-        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
-        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
-        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
-        JOYSTICK_EVENTS.add(new JoystickInputEvent(11, 11, "up"));
         Flux.interval(Duration.ofMillis(100))
-                .flatMap(tick -> {
-                    return Flux.range(0, 5)
-                            .log()
-                            .map(subTick -> JOYSTICK_EVENTS.remove())
-                            .onErrorResume(throwable -> Mono.empty())
-                            .defaultIfEmpty(new JoystickInputEvent(0, 0, "down"))
-                            .scan(Level.level1(), (level, joystickInputEvent) -> level.applyInput(joystickInputEvent))
-//                            .scan(Game.setup(), (game, joystickInputEvent) -> game.applyInput(joystickInputEvent) || game.update(xxx))
-                            .doOnNext(level -> publishGameState("mm7amini@gmail.com", level));
-                })
+                .flatMap(tick -> Flux.range(0, 5)
+                        .mapNotNull(subTick -> JOYSTICK_EVENTS.poll())
+                        .scan(Level.level1(), Level::applyInput)
+                        .doOnNext(level -> publishGameState("mm7amini@gmail.com", level)))
                 .subscribe();
-
     }
 
     public void publishGameState(String receiver, Level level) {
@@ -92,8 +71,8 @@ public class GameEngine {
         messageProperties.setDeliveryMode(MessageDeliveryMode.NON_PERSISTENT);
         messageProperties.setReceivedDeliveryMode(MessageDeliveryMode.NON_PERSISTENT);
         messageProperties.setReceivedExchange(RABBIT_GAME_MESSAGES_EXCHANGE);
-        Flux.fromIterable(level.getChildren().values())
-                .map(PhysicalComponent::toMovable)
+        Flux.fromStream(level.getMovables())
+                .filter(movable -> movable.linearVelocityX() != 0 && movable.linearVelocityY() != 0)
                 .mapNotNull(movable -> {
                     try {
                         var body = objectMapper.writeValueAsBytes(movable);

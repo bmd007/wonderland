@@ -91,35 +91,34 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
     myGirl.playerLife.addListener(
         () => playerLifeIndicator.text = "lives: ${myGirl.playerLife.value}");
 
-    add(Enemy(size / 1.47));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(Enemy(size / 2.5));
-    add(MyPlatform(size / 1.5));
-    add(MyPlatform(size / 2.5));
-
-    add(Enemy(size / 1.3));
-    add(MyPlatform(size / 1.3));
-
-    add(Enemy(size / 2.1));
-    add(MyPlatform(size / 1.05));
+    // add(Enemy(size / 1.47));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(Enemy(size / 2.5));
+    // add(MyPlatform(size / 1.5));
+    // add(MyPlatform(size / 2.5));
+    //
+    // add(Enemy(size / 1.3));
+    // add(MyPlatform(size / 1.3));
+    //
+    // add(Enemy(size / 2.1));
+    // add(MyPlatform(size / 1.05));
   }
 
   @override
   void update(double dt) {
     super.update(dt);
     if (!joystickComponent.delta.isZero()) {
-      var event = JoystickMovedEvent(
-          joystickComponent.direction, joystickComponent.relativeDelta);
+      var event = JoystickMovedEvent(joystickComponent.direction, joystickComponent.relativeDelta);
       gameEventRepository.sendJoystickEvent(event);
     }
   }

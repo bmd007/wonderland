@@ -2,6 +2,10 @@ package wonderland.game.engine.domain;
 
 import org.jbox2d.common.Vec2;
 import wonderland.game.engine.dto.JoystickInputEvent;
+import wonderland.game.engine.dto.Movable;
+
+import java.util.Set;
+import java.util.stream.Stream;
 
 public class Level extends PhysicalComponent {
 
@@ -41,9 +45,14 @@ public class Level extends PhysicalComponent {
 
     //synchronized?
     public Level applyInput(JoystickInputEvent joystickInputEvent) {
-        var ninja = (Ninja) children.remove("ninja");
-        ninja.applyJoystickInputEvent(joystickInputEvent);
-        children.put(ninja.getId(), ninja);
+        ((Ninja)children.get("ninja")).applyJoystickInputEvent(joystickInputEvent);
         return this;
+    }
+
+    public Stream<Movable> getMovables() {
+        return children.values()
+                .stream()
+                .filter(component -> component.getId().equals("ninja"))
+                .map(PhysicalComponent::toMovable);
     }
 }
