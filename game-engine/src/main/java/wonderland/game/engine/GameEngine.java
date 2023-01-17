@@ -16,8 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import wonderland.game.engine.domain.Level;
+import wonderland.game.engine.domain.PhysicalComponent;
 import wonderland.game.engine.dto.JoystickInputEvent;
-import wonderland.game.engine.dto.Movable;
 
 import java.time.Duration;
 import java.util.UUID;
@@ -70,16 +71,16 @@ public class GameEngine {
                             .log()
                             .map(subTick -> JOYSTICK_EVENTS.remove())
                             .onErrorResume(throwable -> Mono.empty())
-                            .defaultIfEmpty(new JoystickInputEvent(11, 11, "up"))
-                            .scan(Movable.randomNinja(), (movable, joystickInputEvent) -> movable)
+                            .defaultIfEmpty(new JoystickInputEvent(0, 0, "down"))
+                            .scan(Level.level1(), (level, joystickInputEvent) -> level.applyInput(joystickInputEvent))
 //                            .scan(Game.setup(), (game, joystickInputEvent) -> game.applyInput(joystickInputEvent) || game.update(xxx))
-                            .doOnNext(movable -> publishGameState("mm7amini@gmail.com", movable));
+                            .doOnNext(level -> publishGameState("mm7amini@gmail.com", level));
                 })
                 .subscribe();
 
     }
 
-    public void publishGameState(String receiver, Movable movable) {
+    public void publishGameState(String receiver, Level level) {
         var messageProperties = new MessageProperties();
         messageProperties.setHeader("type", "game_state");
         messageProperties.setHeader("version", "1");
@@ -91,14 +92,20 @@ public class GameEngine {
         messageProperties.setDeliveryMode(MessageDeliveryMode.NON_PERSISTENT);
         messageProperties.setReceivedDeliveryMode(MessageDeliveryMode.NON_PERSISTENT);
         messageProperties.setReceivedExchange(RABBIT_GAME_MESSAGES_EXCHANGE);
-        try {
-            var body = objectMapper.writeValueAsBytes(movable);
-            Message message = new Message(body, messageProperties);
-            rabbitTemplate.send(RABBIT_GAME_MESSAGES_EXCHANGE, receiver, message);
-            log.info("{} sent to {}", new String(body), receiver);
-        } catch (JsonProcessingException e) {
-            log.error("problem writeValueAsBytes state", e);
-        }
+        Flux.fromIterable(level.getChildren().values())
+                .map(PhysicalComponent::toMovable)
+                .mapNotNull(movable -> {
+                    try {
+                        var body = objectMapper.writeValueAsBytes(movable);
+                        return new Message(body, messageProperties);
+                    } catch (JsonProcessingException e) {
+                        log.error("problem writeValueAsBytes state", e);
+                        return null;
+                    }
+                })
+                .doOnNext(message -> rabbitTemplate.send(RABBIT_GAME_MESSAGES_EXCHANGE, receiver, message))
+                .doOnNext(message -> log.info("{} sent to {}", new String(message.getBody()), receiver))
+                .subscribe();
     }
 
     @EventListener(org.springframework.context.event.ContextClosedEvent.class)

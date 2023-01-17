@@ -1,34 +1,31 @@
 package wonderland.game.engine.domain;
 
 import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.Fixture;
-import org.jbox2d.dynamics.World;
-import reactor.core.publisher.Flux;
-import wonderland.game.engine.domain.physics.SimulationComponent;
+import wonderland.game.engine.dto.JoystickInputEvent;
 
-import java.util.concurrent.ConcurrentHashMap;
-
-public class Level extends World implements SimulationComponent {
+public class Level extends PhysicalComponent {
 
     private static final Vec2 SIZE = new Vec2(1366, 768);
 
-    private final ConcurrentHashMap<String, BodyComponent> bodyComponents = new ConcurrentHashMap<>();
     private final String name;
 
+    public static Level level1() {
+        return new Level("GodBless");
+    }
 
-    public Level(float farRight, float farBottom, String name) {
-        super(new Vec2(0, -10));
+    public Level(float farRight, float farBottom, String name, String id) {
+        super(id);
         this.name = name;
         setupWallsAsLevelBoundaries(farRight, farBottom, 5);
     }
 
     public Level(String name) {
-        super(new Vec2(0, -10));
+        super();
         this.name = name;
         var right = SIZE.x + 100;
         var bottom = SIZE.y;
         setupWallsAsLevelBoundaries(right, bottom, 5);
+        add(new Ninja(new Vec2(SIZE.x / 2, SIZE.y / 2), 0));
     }
 
     public void setupWallsAsLevelBoundaries(float farRight, float farBottom, float margin) {
@@ -42,29 +39,11 @@ public class Level extends World implements SimulationComponent {
         add(new Wall(bottomRight, bottomLeft));
     }
 
-    public void add(BodyComponent bodyComponent){
-        Body body = createBody(bodyComponent.getBodyDefinition());
-        Fixture fixture = body.createFixture(bodyComponent.getFixtureDefinition());
-        bodyComponent.setBody(body);
-        bodyComponent.setFixture(fixture);
-    }
-
-    @Override
-    public void create() {
-
-
-        Flux.fromIterable(bodyComponents.values())
-                .doOnNext(BodyComponent::create)
-                .subscribe();
-    }
-
-    @Override
-    public void simulate() {
-
-
-        Flux.fromIterable(bodyComponents.values())
-                .doOnNext(BodyComponent::simulate)
-                .subscribe();
+    //synchronized?
+    public Level applyInput(JoystickInputEvent joystickInputEvent) {
+        var ninja = (Ninja) children.remove("ninja");
+        ninja.applyJoystickInputEvent(joystickInputEvent);
+        children.put(ninja.getId(), ninja);
+        return this;
     }
 }
-

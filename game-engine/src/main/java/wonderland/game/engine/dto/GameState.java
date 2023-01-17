@@ -24,8 +24,8 @@ public class GameState {
         Movable ninja = Movable.builder()
                 .angel(0)
                 .id("ninja")
-                .positionX(10)
-                .positionY(10)
+                .initialPositionX(10)
+                .initialPositionY(10)
                 .velocityX(11100)
                 .velocityY(-111)
                 .build();
