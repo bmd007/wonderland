@@ -5,8 +5,8 @@ import 'package:equatable/equatable.dart';
 class Movable extends Equatable {
   final String id;
   final double linearVelocityX;
-  final double angularVelocity;
   final double linearVelocityY;
+  final double angularVelocity;
 
   const Movable(this.id, this.linearVelocityX, this.linearVelocityY,
       this.angularVelocity);

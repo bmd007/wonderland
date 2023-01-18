@@ -25,7 +25,6 @@ class MyGreenGirl<MyForge2DFlameGame> extends BodyComponent
   late SpriteAnimation idleAnimation;
   late SpriteAnimation jumpingAnimation;
   bool lookingTowardRight = true;
-  bool landedSinceLastElevation = false;
   final double speed = 20;
   final Vector2 initialPosition;
   late SpriteAnimationComponent component;
@@ -40,21 +39,17 @@ class MyGreenGirl<MyForge2DFlameGame> extends BodyComponent
     if (playerLife.value <= 0) {
       removeFromParent();
     }
-    // landedSinceLastElevation = body.linearVelocity.y == 0;
 
     if (body.linearVelocity.y == 0) {
       component.animation = idleAnimation;
+      if (body.linearVelocity.x != 0) {
+        component.animation = runningAnimation;
+      }
     } else if (body.linearVelocity.y < -5) {
       component.animation = jumpingAnimation;
     } else if (body.linearVelocity.y > 5) {
       component.animation = glidingAnimation;
     }
-
-    if (landedSinceLastElevation) {
-      // body.linearVelocity.x = 0;
-    }
-
-    print(body.isAwake);
   }
 
   @override

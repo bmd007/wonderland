@@ -21,7 +21,6 @@ import wonderland.game.engine.dto.Movable;
 
 import java.time.Duration;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 @Slf4j
@@ -35,7 +34,6 @@ public class GameEngine {
 
     private static final String APP_ID = "wonderland.message-publisher";
     private static final String RABBIT_GAME_MESSAGES_EXCHANGE = "messages/game";
-    private static final ConcurrentLinkedQueue<JoystickInputEvent> JOYSTICK_EVENTS = new ConcurrentLinkedQueue<>();
 
     private final AmqpTemplate rabbitTemplate;
     private final ObjectMapper objectMapper;
@@ -47,7 +45,7 @@ public class GameEngine {
 
     @PostMapping("/v1/game/report/input/joystick")
     public void reportGameInput(@RequestBody JoystickInputEvent joystickInputEvent) {
-        JOYSTICK_EVENTS.add(joystickInputEvent);
+        Level.JOYSTICK_EVENTS.add(joystickInputEvent);
     }
 
     @PostMapping("/v1/game/state/echo")
@@ -59,8 +57,7 @@ public class GameEngine {
     public void start() {
         Flux.interval(Duration.ofMillis(100))
                 .flatMap(tick -> Flux.range(0, 5)
-                        .mapNotNull(subTick -> JOYSTICK_EVENTS.poll())
-                        .scan(Level.level1(), Level::applyInput)
+                        .scan(Level.level1(), Level::update)
                         .flatMapSequential(level -> Flux.fromStream(level.getMovables()))
                         .doOnNext(movable -> publishGameState("mm7amini@gmail.com", movable)))
                 .subscribe();
@@ -79,13 +76,12 @@ public class GameEngine {
         messageProperties.setReceivedDeliveryMode(MessageDeliveryMode.NON_PERSISTENT);
         messageProperties.setReceivedExchange(RABBIT_GAME_MESSAGES_EXCHANGE);
         if (movable.linearVelocityX() == 0 && movable.linearVelocityY() == 0) {
-            return;
+//            return;
         }
         try {
             var body = objectMapper.writeValueAsBytes(movable);
             var message = new Message(body, messageProperties);
             rabbitTemplate.send(RABBIT_GAME_MESSAGES_EXCHANGE, receiver, message);
-            log.info("{} sent to {}", new String(message.getBody()), receiver);
         } catch (JsonProcessingException e) {
             log.error("problem writeValueAsBytes state", e);
         }

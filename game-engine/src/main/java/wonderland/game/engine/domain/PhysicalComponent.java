@@ -75,9 +75,9 @@ public class PhysicalComponent {
 //                .subscribe();
 //    }
 //
-//    public void onSimulate() {
+//    public void onUpdate() {
 //        Flux.fromIterable(children.values())
-//                .doOnNext(PhysicalComponent::onSimulate)
+//                .doOnNext(PhysicalComponent::onUpdate)
 //                .subscribe();
 //    }
 //
@@ -88,6 +88,6 @@ public class PhysicalComponent {
 //    }
 
     public Movable toMovable(){
-        return new Movable(id, body.m_angularVelocity, body.m_linearVelocity.x, body.m_linearVelocity.y);
+        return new Movable(id,  body.m_linearVelocity.x, body.m_linearVelocity.y, body.m_angularVelocity);
     }
 }

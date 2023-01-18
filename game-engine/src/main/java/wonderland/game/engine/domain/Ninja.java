@@ -1,10 +1,12 @@
 package wonderland.game.engine.domain;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.BodyType;
 import wonderland.game.engine.dto.JoystickInputEvent;
 
+@Slf4j
 public class Ninja extends PhysicalComponent {
     private boolean landedSinceLastElevation = false;
     private boolean lookingTowardRight = true;
@@ -25,6 +27,7 @@ public class Ninja extends PhysicalComponent {
     }
 
     public void applyJoystickInputEvent(JoystickInputEvent joystickInputEvent) {
+        log.info("ninja landed {}, velocity {}", landedSinceLastElevation, body.m_linearVelocity);
         landedSinceLastElevation = body.m_linearVelocity.y == 0;
         if (joystickInputEvent.direction().equals("down")) {
             if (landedSinceLastElevation) {
@@ -66,9 +69,6 @@ public class Ninja extends PhysicalComponent {
             landedSinceLastElevation = false;
             body.applyLinearImpulse(new Vec2(joystickInputEvent.relativeDeltaX() * 1000f, joystickInputEvent.relativeDeltaY() * 1000f), body.getWorldCenter());
         }
-        //        if (landedSinceLastElevation) {
-//            body.m_linearVelocity.x = 0;
-//        }
     }
 
 }

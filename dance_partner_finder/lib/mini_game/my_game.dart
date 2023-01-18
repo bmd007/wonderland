@@ -1,3 +1,4 @@
+import 'package:dance_partner_finder/game_state_repository/game_event.dart';
 import 'package:dance_partner_finder/game_state_repository/game_event_repository.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
@@ -57,9 +58,9 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
     await add(myGirl);
     camera.followBodyComponent(myGirl, useCenterOfMass: true);
 
-    myGreenGirl = MyGreenGirl(size / 2);
+    myGreenGirl = MyGreenGirl(size / 2 + Vector2(30, 0));
     await add(myGreenGirl);
-    // gameEventRepository.observers.add(myGreenGirl);
+    gameEventRepository.observers.add(myGreenGirl);
 
     final shootButton = HudButtonComponent(
         button: CircleComponent(radius: 30),
@@ -114,11 +115,11 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
   @override
   void update(double dt) {
     super.update(dt);
-    // if (!joystickComponent.delta.isZero()) {
-    //   var event = JoystickMovedEvent(
-    //       joystickComponent.direction, joystickComponent.relativeDelta);
-    //   gameEventRepository.sendJoystickEvent(event);
-    // }
-    myGreenGirl.body.linearVelocity = myGirl.body.linearVelocity;
+    if (!joystickComponent.delta.isZero()) {
+      var event = JoystickMovedEvent(
+          joystickComponent.direction, joystickComponent.relativeDelta);
+      gameEventRepository.sendJoystickEvent(event);
+    }
+    // myGreenGirl.body.linearVelocity = myGirl.body.linearVelocity;
   }
 }

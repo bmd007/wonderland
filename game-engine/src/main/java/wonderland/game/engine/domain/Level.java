@@ -4,11 +4,13 @@ import org.jbox2d.common.Vec2;
 import wonderland.game.engine.dto.JoystickInputEvent;
 import wonderland.game.engine.dto.Movable;
 
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Stream;
 
 public class Level extends PhysicalComponent {
-
+    public static final ConcurrentLinkedQueue<JoystickInputEvent> JOYSTICK_EVENTS = new ConcurrentLinkedQueue<>();
     private static final Vec2 SIZE = new Vec2(1366, 768);
 
     private final String name;
@@ -43,9 +45,14 @@ public class Level extends PhysicalComponent {
         add(new Wall(bottomRight, bottomLeft));
     }
 
-    //synchronized?
-    public Level applyInput(JoystickInputEvent joystickInputEvent) {
+    private Level applyInput(JoystickInputEvent joystickInputEvent) {
         ((Ninja)children.get("ninja")).applyJoystickInputEvent(joystickInputEvent);
+        return this;
+    }
+
+    //synchronized?
+    public Level update(int subTick) {
+        Optional.ofNullable(JOYSTICK_EVENTS.poll()).ifPresent(this::applyInput);
         return this;
     }
 
