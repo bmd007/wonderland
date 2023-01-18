@@ -33,8 +33,25 @@ class GameEventRepository {
         })
         .asStream()
         .where((event) => event.statusCode == 200)
-        .forEach((element) {
-          // print('joystick event $event sent');
-        });
+        .forEach((element) {});
+  }
+
+  void sendNinjaLocationToBeEchoedBack(
+    final String id,
+    final double linearVelocityX,
+    final double linearVelocityY,
+    final double angularVelocity,
+  ) async {
+    var body = {
+      "id": id,
+      "linearVelocityX": linearVelocityX,
+      "linearVelocityY": linearVelocityY,
+      "angularVelocity": angularVelocity
+    };
+    ClientHolder.apiGatewayHttpClient
+        .post('/v1/game/state/echo', data: body)
+        .asStream()
+        .where((event) => event.statusCode == 200)
+        .forEach((element) {});
   }
 }

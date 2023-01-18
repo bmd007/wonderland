@@ -26,14 +26,6 @@ public class Ninja extends PhysicalComponent {
 
     public void applyJoystickInputEvent(JoystickInputEvent joystickInputEvent) {
         landedSinceLastElevation = body.m_linearVelocity.y == 0;
-        if (joystickInputEvent.relativeDeltaX() != 0 || joystickInputEvent.relativeDeltaY() != 0) {
-            move(joystickInputEvent);
-        } else if (landedSinceLastElevation) {
-            body.m_linearVelocity.x = 0;
-        }
-    }
-
-    private void move(JoystickInputEvent joystickInputEvent) {
         if (joystickInputEvent.direction().equals("down")) {
             if (landedSinceLastElevation) {
                 body.m_linearVelocity.x = 0;
@@ -74,7 +66,9 @@ public class Ninja extends PhysicalComponent {
             landedSinceLastElevation = false;
             body.applyLinearImpulse(new Vec2(joystickInputEvent.relativeDeltaX() * 1000f, joystickInputEvent.relativeDeltaY() * 1000f), body.getWorldCenter());
         }
+        //        if (landedSinceLastElevation) {
+//            body.m_linearVelocity.x = 0;
+//        }
     }
-
 
 }

@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:dance_partner_finder/game_state_repository/game_event_repository.dart';
 import 'package:flame/components.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/foundation.dart';
@@ -28,8 +29,9 @@ class MyGirl<MyForge2DFlameGame> extends BodyComponent with ContactCallbacks {
   Queue<MyGirlKanui> kanuies = Queue<MyGirlKanui>();
   final playerLife = ValueNotifier<int>(100);
   final JoystickComponent joystickComponent;
+  final GameEventRepository gameEventRepository;
 
-  MyGirl(this.initialPosition, this.joystickComponent);
+  MyGirl(this.initialPosition, this.joystickComponent, this.gameEventRepository);
 
   void move(JoystickDirection direction, Vector2 joystickRelativeDelta) {
     if (direction == JoystickDirection.down) {
@@ -103,6 +105,12 @@ class MyGirl<MyForge2DFlameGame> extends BodyComponent with ContactCallbacks {
     } else if (landedSinceLastElevation) {
       body.linearVelocity.x = 0;
     }
+
+    gameEventRepository.sendNinjaLocationToBeEchoedBack(
+        "ninja",
+        body.linearVelocity.x,
+        body.linearVelocity.y,
+        body.angularVelocity);
   }
 
   @override

@@ -1,4 +1,3 @@
-import 'package:dance_partner_finder/game_state_repository/game_event.dart';
 import 'package:dance_partner_finder/game_state_repository/game_event_repository.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
@@ -7,10 +6,8 @@ import 'package:flame/palette.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/material.dart';
 
-import 'enemy.dart';
 import 'my_girl.dart';
 import 'my_green_girl.dart';
-import 'my_platform.dart';
 import 'wall.dart';
 
 class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
@@ -56,7 +53,7 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
     )..positionType = PositionType.viewport;
     await add(joystickComponent);
 
-    myGirl = MyGirl(size / 2, joystickComponent);
+    myGirl = MyGirl(size / 2, joystickComponent, gameEventRepository);
     await add(myGirl);
     camera.followBodyComponent(myGirl, useCenterOfMass: true);
 
@@ -114,12 +111,13 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
     // add(MyPlatform(size / 1.05));
   }
 
-  @override
-  void update(double dt) {
-    super.update(dt);
-    if (!joystickComponent.delta.isZero()) {
-      var event = JoystickMovedEvent(joystickComponent.direction, joystickComponent.relativeDelta);
-      gameEventRepository.sendJoystickEvent(event);
-    }
-  }
+  // @override
+  // void update(double dt) {
+  //   super.update(dt);
+    // if (!joystickComponent.delta.isZero()) {
+    //   var event = JoystickMovedEvent(
+    //       joystickComponent.direction, joystickComponent.relativeDelta);
+    //   gameEventRepository.sendJoystickEvent(event);
+    // }
+  // }
 }

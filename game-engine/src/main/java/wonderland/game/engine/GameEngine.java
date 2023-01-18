@@ -50,6 +50,11 @@ public class GameEngine {
         JOYSTICK_EVENTS.add(joystickInputEvent);
     }
 
+    @PostMapping("/v1/game/state/echo")
+    public void reportGameInput(@RequestBody Movable movable) {
+        publishGameState("mm7amini@gmail.com", movable);
+    }
+
     @EventListener(ApplicationReadyEvent.class)
     public void start() {
         Flux.interval(Duration.ofMillis(100))

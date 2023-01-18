@@ -8,15 +8,13 @@ class Movable extends Equatable {
   final double angularVelocity;
   final double linearVelocityY;
 
-  Movable(this.id, this.linearVelocityX, this.angularVelocity, this.linearVelocityY);
+  const Movable(this.id, this.linearVelocityX, this.linearVelocityY,
+      this.angularVelocity);
 
   static Movable fromJson(String jsonString) {
     var decodedMap = json.decode(jsonString);
-    return Movable(
-        decodedMap['id'],
-        decodedMap['angularVelocity'],
-        decodedMap['linearVelocityX'],
-        decodedMap['linearVelocityY']);
+    return Movable(decodedMap['id'], decodedMap['linearVelocityX'],
+        decodedMap['linearVelocityY'], decodedMap['angularVelocity']);
   }
 
   @override
