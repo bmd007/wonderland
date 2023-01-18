@@ -59,7 +59,7 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
 
     myGreenGirl = MyGreenGirl(size / 2);
     await add(myGreenGirl);
-    gameEventRepository.observers.add(myGreenGirl);
+    // gameEventRepository.observers.add(myGreenGirl);
 
     final shootButton = HudButtonComponent(
         button: CircleComponent(radius: 30),
@@ -111,13 +111,14 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
     // add(MyPlatform(size / 1.05));
   }
 
-  // @override
-  // void update(double dt) {
-  //   super.update(dt);
+  @override
+  void update(double dt) {
+    super.update(dt);
     // if (!joystickComponent.delta.isZero()) {
     //   var event = JoystickMovedEvent(
     //       joystickComponent.direction, joystickComponent.relativeDelta);
     //   gameEventRepository.sendJoystickEvent(event);
     // }
-  // }
+    myGreenGirl.body.linearVelocity = myGirl.body.linearVelocity;
+  }
 }

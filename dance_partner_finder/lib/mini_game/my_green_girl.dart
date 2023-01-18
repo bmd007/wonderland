@@ -40,7 +40,7 @@ class MyGreenGirl<MyForge2DFlameGame> extends BodyComponent
     if (playerLife.value <= 0) {
       removeFromParent();
     }
-    landedSinceLastElevation = body.linearVelocity.y == 0;
+    // landedSinceLastElevation = body.linearVelocity.y == 0;
 
     if (body.linearVelocity.y == 0) {
       component.animation = idleAnimation;
@@ -51,8 +51,10 @@ class MyGreenGirl<MyForge2DFlameGame> extends BodyComponent
     }
 
     if (landedSinceLastElevation) {
-      body.linearVelocity.x = 0;
+      // body.linearVelocity.x = 0;
     }
+
+    print(body.isAwake);
   }
 
   @override

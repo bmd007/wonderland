@@ -106,11 +106,11 @@ class MyGirl<MyForge2DFlameGame> extends BodyComponent with ContactCallbacks {
       body.linearVelocity.x = 0;
     }
 
-    gameEventRepository.sendNinjaLocationToBeEchoedBack(
-        "ninja",
-        body.linearVelocity.x,
-        body.linearVelocity.y,
-        body.angularVelocity);
+    // gameEventRepository.sendNinjaLocationToBeEchoedBack(
+    //     "ninja",
+    //     body.linearVelocity.x,
+    //     body.linearVelocity.y,
+    //     body.angularVelocity);
   }
 
   @override
