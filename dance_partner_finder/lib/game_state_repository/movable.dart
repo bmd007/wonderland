@@ -5,19 +5,33 @@ import 'package:equatable/equatable.dart';
 class Movable extends Equatable {
   final String id;
   final double linearVelocityX;
+  final double initialPositionX;
+  final double initialPositionY;
+  final double initialAngel;
   final double linearVelocityY;
   final double angularVelocity;
 
-  const Movable(this.id, this.linearVelocityX, this.linearVelocityY,
+  const Movable(
+      this.id,
+      this.initialPositionX,
+      this.initialPositionY,
+      this.initialAngel,
+      this.linearVelocityX,
+      this.linearVelocityY,
       this.angularVelocity);
 
   static Movable fromJson(String jsonString) {
     var decodedMap = json.decode(jsonString);
-    return Movable(decodedMap['id'], decodedMap['linearVelocityX'],
-        decodedMap['linearVelocityY'], decodedMap['angularVelocity']);
+    return Movable(decodedMap['id'],
+        decodedMap['initialPositionX'],
+        decodedMap['initialPositionY'],
+        decodedMap['initialAngel'],
+        decodedMap['linearVelocityX'],
+        decodedMap['linearVelocityY'],
+        decodedMap['angularVelocity']);
   }
 
   @override
   List<Object?> get props =>
-      [id, linearVelocityY, angularVelocity, linearVelocityX];
+      [id, initialPositionX, initialPositionY, initialAngel, linearVelocityX, linearVelocityY,angularVelocity];
 }

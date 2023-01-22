@@ -8,6 +8,7 @@ import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.BodyType;
 import wonderland.game.engine.dto.JoystickInputEvent;
+import wonderland.game.engine.dto.Movable;
 
 @Slf4j
 @Data
@@ -16,10 +17,12 @@ import wonderland.game.engine.dto.JoystickInputEvent;
 public class Ninja extends PhysicalComponent {
     private boolean landedSinceLastElevation = false;
     private boolean lookingTowardRight = true;
+    private Vec2 initialPosition;
     final float speed = 20;
 
     public Ninja(Vec2 initialPosition, float initialAngle) {
         super("ninja", "ninja");
+        this.initialPosition = initialPosition;
         final CircleShape shape = new CircleShape();
         shape.m_radius = 3;
         fixtureDefinition.shape = shape;
@@ -75,5 +78,10 @@ public class Ninja extends PhysicalComponent {
             landedSinceLastElevation = false;
             body.applyLinearImpulse(new Vec2(joystickInputEvent.relativeDeltaX() * 1000f, joystickInputEvent.relativeDeltaY() * 1000f), body.getWorldCenter());
         }
+    }
+
+    public Movable toMovable() {
+        return new Movable(super.getId(), initialPosition.x, initialPosition.y, 0,
+                body.m_linearVelocity.x, body.m_linearVelocity.y, body.m_angularVelocity);
     }
 }

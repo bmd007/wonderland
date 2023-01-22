@@ -59,8 +59,4 @@ public class PhysicalComponent {
         body = WORLD.createBody(bodyDefinition);
         fixture = body.createFixture(fixtureDefinition);
     }
-
-    public Movable toMovable(){
-        return new Movable(id,  body.m_linearVelocity.x, body.m_linearVelocity.y, body.m_angularVelocity);
-    }
 }

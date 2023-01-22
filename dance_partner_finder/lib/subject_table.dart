@@ -1,5 +1,6 @@
 import 'package:dance_partner_finder/dance_partner_select_widget.dart';
 import 'package:dance_partner_finder/dancer_profile_edit_widget.dart';
+import 'package:dance_partner_finder/just_frontend_game/just_frontend_game.dart';
 import 'package:dance_partner_finder/mini_game/my_game.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
@@ -110,6 +111,41 @@ class SubjectTableWidget extends StatelessWidget {
                             children: const [
                               Text(
                                 'play a game',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Card(
+              child: GestureDetector(
+                onTap: () =>
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => GameWidget(game: JustFrontendGame()))),
+                child: Container(
+                  height: 300,
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
+                  margin: const EdgeInsets.all(5),
+                  padding: const EdgeInsets.all(5),
+                  child: Stack(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: Image.asset('assets/images/Glide_007.png'),
+                          ),
+                          Row(
+                            children: const [
+                              Text(
+                                'just front end game',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 15,

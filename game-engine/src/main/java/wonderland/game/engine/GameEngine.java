@@ -3,10 +3,13 @@ package wonderland.game.engine;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.core.Queue;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -40,10 +43,12 @@ public class GameEngine {
     private static final String RABBIT_GAME_MESSAGES_EXCHANGE = "messages/game";
 
     private final AmqpTemplate rabbitTemplate;
+    private final AmqpAdmin amqpAdmin;
     private final ObjectMapper objectMapper;
 
-    public GameEngine(AmqpTemplate rabbitTemplate, ObjectMapper objectMapper) {
+    public GameEngine(AmqpTemplate rabbitTemplate, AmqpAdmin amqpAdmin, ObjectMapper objectMapper) {
         this.rabbitTemplate = rabbitTemplate;
+        this.amqpAdmin = amqpAdmin;
         this.objectMapper = objectMapper;
     }
 
@@ -59,13 +64,14 @@ public class GameEngine {
 
     @EventListener(ApplicationReadyEvent.class)
     public void start() {
+        amqpAdmin.purgeQueue("mm7amini@gmail.com");
+
         double drawInterval = 1000000000.0 / FPS;
         double delta = 0;
         long lastTime = System.nanoTime();
         long currentTime;
         long timer = 0;
         int drawCount = 0;
-
 
         Level level1 = Level.level1();
 

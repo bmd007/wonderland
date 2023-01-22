@@ -1,5 +1,6 @@
 import 'package:dance_partner_finder/game_state_repository/game_event.dart';
 import 'package:dance_partner_finder/game_state_repository/game_event_repository.dart';
+import 'package:dance_partner_finder/game_state_repository/movable.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
@@ -7,18 +8,15 @@ import 'package:flame/palette.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/material.dart';
 
-import 'my_girl.dart';
 import 'my_green_girl.dart';
 import 'wall.dart';
 
-class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
-
+class JustFrontendGame extends Forge2DGame with HasDraggables, HasTappables {
   late final JoystickComponent joystickComponent;
-  late final MyGirl myGirl;
   late final MyGreenGirl myGreenGirl;
   late final HudButtonComponent shapeButton;
   late final TextComponent playerLifeIndicator;
-  final GameEventRepository gameEventRepository = GameEventRepository("mm7amini@gmail.com");
+  final gameEventRepository = GameEventRepository("mm7amini@gmail.com");
 
   @override
   Future<void> onLoad() async {
@@ -54,72 +52,35 @@ class MyForge2DFlameGame extends Forge2DGame with HasDraggables, HasTappables {
     )..positionType = PositionType.viewport;
     await add(joystickComponent);
 
-    myGirl = MyGirl(size / 2, joystickComponent, gameEventRepository);
-    await add(myGirl);
-    camera.followBodyComponent(myGirl, useCenterOfMass: true);
-
-    myGreenGirl = MyGreenGirl(size / 2 + Vector2(30, 0));
-    await add(myGreenGirl);
-    // gameEventRepository.observers.add(myGreenGirl);
-
-    final shootButton = HudButtonComponent(
-        button: CircleComponent(radius: 30),
-        buttonDown: RectangleComponent(
-          size: Vector2(100, 100),
-          paint: BasicPalette.blue.paint(),
-        ),
-        margin: const EdgeInsets.only(
-          right: 50,
-          bottom: 130,
-        ),
-        onPressed: () async {
-          await myGirl.throwKanui();
-        })
-      ..positionType = PositionType.viewport;
-    add(shootButton);
-
-    playerLifeIndicator = TextComponent()
-      ..size = Vector2(0.1, 0.1)
-      ..positionType = PositionType.viewport
-      ..anchor = Anchor.bottomCenter
-      ..position = Vector2(size.x, size.y)
-      ..textRenderer = TextPaint(
-          style: TextStyle(color: BasicPalette.white.color, fontSize: 20));
-    await add(playerLifeIndicator);
-    myGirl.playerLife.addListener(
-        () => playerLifeIndicator.text = "lives: ${myGirl.playerLife.value}");
-
-    // add(Enemy(size / 1.47));
-    // add(Enemy(size / 2.5));
-    // add(Enemy(size / 2.5));
-    // add(Enemy(size / 2.5));
-    // add(Enemy(size / 2.5));
-    // add(Enemy(size / 2.5));
-    // add(Enemy(size / 2.5));
-    // add(Enemy(size / 2.5));
-    // add(Enemy(size / 2.5));
-    // add(Enemy(size / 2.5));
-    // add(Enemy(size / 2.5));
-    // add(Enemy(size / 2.5));
-    // add(Enemy(size / 2.5));
-    // add(MyPlatform(size / 1.5));
-    // add(MyPlatform(size / 2.5));
-    //
-    // add(Enemy(size / 1.3));
-    // add(MyPlatform(size / 1.3));
-    //
-    // add(Enemy(size / 2.1));
-    // add(MyPlatform(size / 1.05));
+    myGreenGirl = MyGreenGirl(size / 2, "ninja");
   }
 
   @override
-  void update(double dt) {
+  void update(double dt) async {
     super.update(dt);
     if (!joystickComponent.delta.isZero()) {
       var event = JoystickMovedEvent(
           joystickComponent.direction, joystickComponent.relativeDelta);
       gameEventRepository.sendJoystickEvent(event);
     }
-    // myGreenGirl.body.linearVelocity = myGirl.body.linearVelocity;
+
+    if (gameEventRepository.movables.isNotEmpty) {
+      await notifyGameState(gameEventRepository.movables.removeFirst());
+    }
+  }
+
+  Future<void> notifyGameState(Movable ninja) async {
+    print("coming ninja $ninja");
+    if (myGreenGirl.parent == null) {
+      await add(myGreenGirl);
+      camera.followBodyComponent(myGreenGirl);
+      // myGreenGirl.body.position.x = ninja.initialPositionX;
+      // myGreenGirl.body.position.y = ninja.initialPositionY;
+      print("ninja added");
+    } else {
+      myGreenGirl.body.linearVelocity =
+          Vector2(ninja.linearVelocityX, ninja.linearVelocityY);
+      myGreenGirl.body.angularVelocity = ninja.angularVelocity;
+    }
   }
 }

@@ -9,6 +9,7 @@ import wonderland.game.engine.dto.JoystickInputEvent;
 import wonderland.game.engine.dto.Movable;
 
 import java.util.Optional;
+import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Stream;
@@ -18,7 +19,7 @@ import java.util.stream.Stream;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class Level extends PhysicalComponent {
-    public static final ConcurrentLinkedQueue<JoystickInputEvent> JOYSTICK_EVENTS = new ConcurrentLinkedQueue<>();
+    public static final Queue<JoystickInputEvent> JOYSTICK_EVENTS = new ConcurrentLinkedQueue<>();
     private static final Vec2 SIZE = new Vec2(1366, 768);
 
     private float farRight;
@@ -63,14 +64,7 @@ public class Level extends PhysicalComponent {
     //synchronized?
     public void update(Double delta) {
         Optional.ofNullable(JOYSTICK_EVENTS.poll()).ifPresent(this::applyInput);
-        WORLD.step(delta.floatValue(), 1, 1);
+        WORLD.step(delta.floatValue(), 10, 10);
         log.info("subTick {} :: ninja: {}:{}", delta, ninja.body.getPosition(), ninja.body.m_linearVelocity);
-    }
-
-    public Stream<Movable> getMovables() {
-        return children.values()
-                .stream()
-                .filter(component -> component.getId().equals("ninja"))
-                .map(PhysicalComponent::toMovable);
     }
 }
