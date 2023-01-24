@@ -18,7 +18,7 @@ public class Ninja extends PhysicalComponent {
     private boolean landedSinceLastElevation = false;
     private boolean lookingTowardRight = true;
     private Vec2 initialPosition;
-    final float speed = 20;
+    private static final float SPEED = 20;
 
     public Ninja(Vec2 initialPosition, float initialAngle) {
         super("ninja", "ninja");
@@ -48,7 +48,7 @@ public class Ninja extends PhysicalComponent {
 //            }
             lookingTowardRight = false;
             if (body.m_linearVelocity.y == 0) {
-                body.m_linearVelocity.x = -speed;
+                body.m_linearVelocity.x = -SPEED;
             }
         } else if (joystickInputEvent.direction().equals("downRight") || joystickInputEvent.direction().equals("right")) {
 //            if (!lookingTowardRight) {
@@ -56,7 +56,7 @@ public class Ninja extends PhysicalComponent {
 //            }
             lookingTowardRight = true;
             if (body.m_linearVelocity.y == 0) {
-                body.m_linearVelocity.x = speed;
+                body.m_linearVelocity.x = SPEED;
             }
         } else if (joystickInputEvent.direction().equals("up") && landedSinceLastElevation) {
             landedSinceLastElevation = false;

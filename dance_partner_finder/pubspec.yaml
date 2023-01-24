@@ -36,26 +36,26 @@ dependencies:
   location: ^4.4.0
   http: ^0.13.5
   dio: ^4.0.6
-  web_socket_channel: ^2.2.0
+  web_socket_channel: ^2.3.0
   universal_io: ^2.0.4
   stomp_dart_client: ^0.4.4
   rsocket:
     git:
       url: git@github.com:rsocket/rsocket-dart.git
       ref: master
-  firebase_auth: ^4.2.3
-  google_sign_in: ^5.4.2
+  firebase_auth: ^4.2.5
+  google_sign_in: ^5.4.3
   google_fonts: ^3.0.1
   font_awesome_flutter: ^10.3.0
-  firebase_core: ^2.4.0
-  firebase_storage: ^11.0.9
-  firebase_app_check: ^0.1.1+7
-  file_picker: ^5.2.4
-  flutter_webrtc: ^0.9.18
+  firebase_core: ^2.4.1
+  firebase_storage: ^11.0.10
+  firebase_app_check: ^0.1.1+8
+  file_picker: ^5.2.5
+  flutter_webrtc: ^0.9.19
   sdp_transform: ^0.3.2
   flutter_svg: ^1.1.6
-  flame: ^1.5.0
-  flame_forge2d: ^0.12.4
+  flame: ^1.6.0
+  flame_forge2d: ^0.12.5
 
 dev_dependencies:
   flutter_test:

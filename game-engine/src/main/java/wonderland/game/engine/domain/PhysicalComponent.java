@@ -2,27 +2,32 @@ package wonderland.game.engine.domain;
 
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.World;
-import wonderland.game.engine.dto.Movable;
+import org.jbox2d.testbed.framework.TestbedController;
+import org.jbox2d.testbed.framework.TestbedFrame;
+import org.jbox2d.testbed.framework.TestbedModel;
+import org.jbox2d.testbed.framework.j2d.DebugDrawJ2D;
+import org.jbox2d.testbed.framework.j2d.TestPanelJ2D;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Objects.requireNonNull;
 
-
+@Slf4j
 @Data
 public class PhysicalComponent {
     public static final World WORLD = new World(new Vec2(0, -10));
-    static {
-        WORLD.drawDebugData();
-    }
+
     private final String id;
     private final String name;
     public BodyDef bodyDefinition = new BodyDef();

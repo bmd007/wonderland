@@ -3,28 +3,44 @@ package wonderland.game.engine;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.World;
+import org.jbox2d.testbed.framework.TestbedController;
+import org.jbox2d.testbed.framework.TestbedModel;
+import org.jbox2d.testbed.framework.j2d.DebugDrawJ2D;
+import org.jbox2d.testbed.framework.j2d.TestPanelJ2D;
+import org.jbox2d.testbed.framework.j2d.TestbedSidePanel;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.amqp.core.MessageProperties;
-import org.springframework.amqp.core.Queue;
-import org.springframework.boot.SpringApplication;
+import org.springframework.boot.Banner;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Flux;
-import reactor.core.scheduler.Schedulers;
 import wonderland.game.engine.domain.Level;
+import wonderland.game.engine.domain.Ninja;
+import wonderland.game.engine.domain.PhysicalComponent;
 import wonderland.game.engine.dto.JoystickInputEvent;
 import wonderland.game.engine.dto.Movable;
 
-import java.time.Duration;
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
+import java.awt.*;
 import java.util.UUID;
+
+import static java.util.Objects.requireNonNull;
+import static org.jbox2d.callbacks.DebugDraw.e_aabbBit;
+import static org.jbox2d.callbacks.DebugDraw.e_jointBit;
+import static org.jbox2d.callbacks.DebugDraw.e_shapeBit;
+import static wonderland.game.engine.domain.PhysicalComponent.WORLD;
 
 
 @SuppressWarnings("InfiniteLoopStatement")
@@ -36,10 +52,14 @@ public class GameEngine {
     private static final int FPS = 60;
 
     public static void main(String[] args) {
-        SpringApplication.run(GameEngine.class, args);
+        new SpringApplicationBuilder(GameEngine.class)
+                .web(WebApplicationType.REACTIVE)
+                .headless(false)
+                .bannerMode(Banner.Mode.OFF)
+                .run(args);
     }
 
-    private static final String APP_ID = "wonderland.message-publisher";
+    private static final String APP_ID = "wonderland.game-engine";
     private static final String RABBIT_GAME_MESSAGES_EXCHANGE = "messages/game";
 
     private final AmqpTemplate rabbitTemplate;
@@ -62,9 +82,10 @@ public class GameEngine {
         publishGameState("mm7amini@gmail.com", movable);
     }
 
+
     @EventListener(ApplicationReadyEvent.class)
-    public void start() {
-        amqpAdmin.purgeQueue("mm7amini@gmail.com");
+    public void start() throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+        amqpAdmin.purgeQueue("mm7amini@gmail.com_game");
 
         double drawInterval = 1000000000.0 / FPS;
         double delta = 0;
@@ -73,12 +94,33 @@ public class GameEngine {
         long timer = 0;
         int drawCount = 0;
 
-        Level level1 = Level.level1();
+        World world = new World(new Vec2(0, -10));
+        TestbedModel model = new TestbedModel();
+        MyTestPanelJ2D panel = new MyTestPanelJ2D(model);
+        model.setDebugDraw(panel.getDebugDraw());
+        world.setDebugDraw(model.getDebugDraw());
 
-        Flux.interval(Duration.ofMillis(50))
-                .subscribeOn(Schedulers.boundedElastic())
-                .doOnNext(ignore -> publishGameState("mm7amini@gmail.com", level1.getNinja().toMovable()))
-                .subscribe();
+        JFrame frame = new JFrame();
+        frame.setSize(new Dimension(Float.valueOf(Level.SIZE.x).intValue(), Float.valueOf(Level.SIZE.y).intValue()));
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setTitle("GAME ENGINE");
+        frame.setLayout(new BorderLayout());
+        frame.add(panel, BorderLayout.CENTER);
+        frame.setVisible(true);
+
+        var level1 = Level.level1();
+        for(PhysicalComponent physicalComponent : level1.getPhysicalComponents()) {
+            var body = world.createBody(physicalComponent.bodyDefinition);
+            body.createFixture(physicalComponent.fixtureDefinition);
+        }
+        var ninja = new Ninja(new Vec2(Level.SIZE.x / 2, Level.SIZE.y / 2), 0);
+        var body = world.createBody(ninja.bodyDefinition);
+        body.createFixture(ninja.fixtureDefinition);
+
+//        Flux.interval(Duration.ofMillis(50))
+//                .subscribeOn(Schedulers.boundedElastic())
+//                .doOnNext(ignore -> publishGameState("mm7amini@gmail.com", level1.getNinja().toMovable()))
+//                .subscribe();
 
         while (true) {
             currentTime = System.nanoTime();
@@ -86,13 +128,17 @@ public class GameEngine {
             timer += (currentTime - lastTime);
             lastTime = currentTime;
             if (delta >= 1) {
-                level1.update(delta);
+                world.step(Double.valueOf(delta).floatValue(), 8, 3);
+                if(panel.render()) {
+                    world.drawDebugData();
+                    panel.paintScreen();
+                }
                 delta--;
                 drawCount++;
             }
 
             if (timer > 1_000_000_000) {
-                log.info("FPS: " + drawCount);
+//                log.info("FPS: " + drawCount);
                 drawCount = 0;
                 timer = 0;
             }
