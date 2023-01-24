@@ -49,6 +49,7 @@ void main(List<String> args) async {
   addWallToWorld(Wall(bottomLeft, topLeft), world);
   addWallToWorld(Wall(bottomRight, bottomLeft), world);
 
+  // todo create a ninja class kinda like the wall class
   final shape = CircleShape()..radius = 3;
   final fixtureDefinition =
       FixtureDef(shape, density: 2, restitution: 0.1, friction: 2);
@@ -88,3 +89,49 @@ Future<void> sendGameState(Exchange exchange, Movable movable) async {
     ..headers = {"type": "game_state"};
   exchange.publish(movable.toJson(), "mm7amini@gmail.com", properties: messageProperties);
 }
+
+// TODO add flip state to movable DTO and keep track of it in Ninja class
+// TODO move this logic to ninja class
+// void move(String direction, Vector2 joystickRelativeDelta) {
+//   if (direction == "down" ) {
+//     if (landedSinceLastElevation) {
+//       body.linearVelocity.x = 0;
+//     }
+//   } else if (direction == "downLeft" || direction == "left" ) {
+//     if (lookingTowardRight) {
+//       component.flipHorizontally();
+//     }
+//     lookingTowardRight = false;
+//     if (body.linearVelocity.y == 0) {
+//       body.linearVelocity = Vector2(-speed, body.linearVelocity.y);
+//     }
+//   } else if (direction == "downRight" || direction == "right" ) {
+//     if (!lookingTowardRight) {
+//       component.flipHorizontally();
+//     }
+//     lookingTowardRight = true;
+//     if (body.linearVelocity.y == 0) {
+//       body.linearVelocity = Vector2(speed, body.linearVelocity.y);
+//     }
+//   } else if (direction == "up" && landedSinceLastElevation ) {
+//     landedSinceLastElevation = false;
+//     body.applyLinearImpulse(Vector2(0, -1000));
+//   } else if (direction == "upLeft" && landedSinceLastElevation) {
+//     if (lookingTowardRight) {
+//       component.flipHorizontally();
+//     }
+//     lookingTowardRight = false;
+//     landedSinceLastElevation = false;
+//     body.linearVelocity.x = 0;
+//     body.applyLinearImpulse(Vector2(joystickRelativeDelta.x * 1000, joystickRelativeDelta.y * 1000));
+//   } else if (direction == "upRight" && landedSinceLastElevation) {
+//     if (!lookingTowardRight) {
+//       component.flipHorizontally();
+//     }
+//     lookingTowardRight = true;
+//     body.linearVelocity.x = 0;
+//     landedSinceLastElevation = false;
+//     body.applyLinearImpulse(Vector2(joystickRelativeDelta.x * 1000, joystickRelativeDelta.y * 1000));
+//   }
+// }
+
