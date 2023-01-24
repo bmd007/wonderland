@@ -25,28 +25,15 @@ class GameEventRepository {
 
   void sendJoystickEvent(JoystickMovedEvent event) async {
     await ClientHolder.apiGatewayHttpClient
-        .post('/v1/game/report/input/joystick', data: {
-      "relativeDeltaX": event.relativeDelta.x,
-      "relativeDeltaY": event.relativeDelta.y,
-      "direction": event.direction.name
-    })
+        .post('/v1/game/report/input/joystick', data: event.toJson())
         .asStream()
         .where((event) => event.statusCode == 200)
         .forEach((element) {});
   }
 
-  void sendNinjaLocationToBeEchoedBack(final String id,
-      final double linearVelocityX,
-      final double linearVelocityY,
-      final double angularVelocity,) async {
-    var body = {
-      "id": id,
-      "linearVelocityX": linearVelocityX,
-      "linearVelocityY": linearVelocityY,
-      "angularVelocity": angularVelocity
-    };
+  void sendNinjaLocationToBeEchoedBack(Movable movable) async {
     ClientHolder.apiGatewayHttpClient
-        .post('/v1/game/state/echo', data: body)
+        .post('/v1/game/state/echo', data: movable.toJson())
         .asStream()
         .where((event) => event.statusCode == 200)
         .forEach((element) {});

@@ -22,7 +22,8 @@ class Movable extends Equatable {
 
   static Movable fromJson(String jsonString) {
     var decodedMap = json.decode(jsonString);
-    return Movable(decodedMap['id'],
+    return Movable(
+        decodedMap['id'],
         decodedMap['initialPositionX'],
         decodedMap['initialPositionY'],
         decodedMap['initialAngel'],
@@ -31,7 +32,24 @@ class Movable extends Equatable {
         decodedMap['angularVelocity']);
   }
 
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "initialPositionX": initialPositionX,
+        "initialPositionY": initialPositionY,
+        "initialAngel": initialAngel,
+        "linearVelocityX": linearVelocityX,
+        "linearVelocityY": linearVelocityY,
+        "angularVelocity": angularVelocity
+      };
+
   @override
-  List<Object?> get props =>
-      [id, initialPositionX, initialPositionY, initialAngel, linearVelocityX, linearVelocityY,angularVelocity];
+  List<Object?> get props => [
+        id,
+        initialPositionX,
+        initialPositionY,
+        initialAngel,
+        linearVelocityX,
+        linearVelocityY,
+        angularVelocity
+      ];
 }
