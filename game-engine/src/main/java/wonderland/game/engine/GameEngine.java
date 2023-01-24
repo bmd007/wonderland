@@ -4,12 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.World;
-import org.jbox2d.testbed.framework.TestbedController;
 import org.jbox2d.testbed.framework.TestbedModel;
-import org.jbox2d.testbed.framework.j2d.DebugDrawJ2D;
-import org.jbox2d.testbed.framework.j2d.TestPanelJ2D;
-import org.jbox2d.testbed.framework.j2d.TestbedSidePanel;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Message;
@@ -24,6 +21,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
 import wonderland.game.engine.domain.Level;
 import wonderland.game.engine.domain.Ninja;
 import wonderland.game.engine.domain.PhysicalComponent;
@@ -31,16 +30,9 @@ import wonderland.game.engine.dto.JoystickInputEvent;
 import wonderland.game.engine.dto.Movable;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EtchedBorder;
 import java.awt.*;
+import java.time.Duration;
 import java.util.UUID;
-
-import static java.util.Objects.requireNonNull;
-import static org.jbox2d.callbacks.DebugDraw.e_aabbBit;
-import static org.jbox2d.callbacks.DebugDraw.e_jointBit;
-import static org.jbox2d.callbacks.DebugDraw.e_shapeBit;
-import static wonderland.game.engine.domain.PhysicalComponent.WORLD;
 
 
 @SuppressWarnings("InfiniteLoopStatement")
@@ -54,7 +46,7 @@ public class GameEngine {
     public static void main(String[] args) {
         new SpringApplicationBuilder(GameEngine.class)
                 .web(WebApplicationType.REACTIVE)
-                .headless(false)
+//                .headless(false)
                 .bannerMode(Banner.Mode.OFF)
                 .run(args);
     }
@@ -77,10 +69,10 @@ public class GameEngine {
         Level.JOYSTICK_EVENTS.add(joystickInputEvent);
     }
 
-    @PostMapping("/v1/game/state/echo")
-    public void reportGameInput(@RequestBody Movable movable) {
-        publishGameState("mm7amini@gmail.com", movable);
-    }
+//    @PostMapping("/v1/game/state/echo")
+//    public void reportGameInput(@RequestBody Movable movable) {
+//        publishGameState("mm7amini@gmail.com", movable);
+//    }
 
 
     @EventListener(ApplicationReadyEvent.class)
@@ -94,33 +86,28 @@ public class GameEngine {
         long timer = 0;
         int drawCount = 0;
 
-        World world = new World(new Vec2(0, -10));
-        TestbedModel model = new TestbedModel();
-        MyTestPanelJ2D panel = new MyTestPanelJ2D(model);
-        model.setDebugDraw(panel.getDebugDraw());
-        world.setDebugDraw(model.getDebugDraw());
+        World world = new World(new Vec2(0, 10));
+//        TestbedModel model = new TestbedModel();
+//        MyTestPanelJ2D panel = new MyTestPanelJ2D(model);
+//        model.setDebugDraw(panel.getDebugDraw());
+//        world.setDebugDraw(model.getDebugDraw());
 
-        JFrame frame = new JFrame();
-        frame.setSize(new Dimension(Float.valueOf(Level.SIZE.x).intValue(), Float.valueOf(Level.SIZE.y).intValue()));
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setTitle("GAME ENGINE");
-        frame.setLayout(new BorderLayout());
-        frame.add(panel, BorderLayout.CENTER);
-        frame.setVisible(true);
+//        JFrame frame = new JFrame();
+//        frame.setSize(new Dimension(Float.valueOf(Level.SIZE.x).intValue(), Float.valueOf(Level.SIZE.y).intValue()));
+//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        frame.setTitle("GAME ENGINE");
+//        frame.setLayout(new BorderLayout());
+//        frame.add(panel, BorderLayout.CENTER);
+//        frame.setVisible(true);
 
         var level1 = Level.level1();
-        for(PhysicalComponent physicalComponent : level1.getPhysicalComponents()) {
+        for (PhysicalComponent physicalComponent : level1.getPhysicalComponents()) {
             var body = world.createBody(physicalComponent.bodyDefinition);
             body.createFixture(physicalComponent.fixtureDefinition);
         }
         var ninja = new Ninja(new Vec2(Level.SIZE.x / 2, Level.SIZE.y / 2), 0);
         var body = world.createBody(ninja.bodyDefinition);
         body.createFixture(ninja.fixtureDefinition);
-
-//        Flux.interval(Duration.ofMillis(50))
-//                .subscribeOn(Schedulers.boundedElastic())
-//                .doOnNext(ignore -> publishGameState("mm7amini@gmail.com", level1.getNinja().toMovable()))
-//                .subscribe();
 
         while (true) {
             currentTime = System.nanoTime();
@@ -129,10 +116,11 @@ public class GameEngine {
             lastTime = currentTime;
             if (delta >= 1) {
                 world.step(Double.valueOf(delta).floatValue(), 8, 3);
-                if(panel.render()) {
-                    world.drawDebugData();
-                    panel.paintScreen();
-                }
+//                if (panel.render()) {
+//                    world.drawDebugData();
+//                    panel.paintScreen();
+//                }
+                publishGameState("mm7amini@gmail.com", body);
                 delta--;
                 drawCount++;
             }
@@ -145,7 +133,7 @@ public class GameEngine {
         }
     }
 
-    public void publishGameState(String receiver, Movable movable) {
+    public void publishGameState(String receiver, Body body) {
         var messageProperties = new MessageProperties();
         messageProperties.setHeader("type", "game_state");
         messageProperties.setHeader("version", "1");
@@ -158,8 +146,10 @@ public class GameEngine {
         messageProperties.setReceivedDeliveryMode(MessageDeliveryMode.NON_PERSISTENT);
         messageProperties.setReceivedExchange(RABBIT_GAME_MESSAGES_EXCHANGE);
         try {
-            var body = objectMapper.writeValueAsBytes(movable);
-            var message = new Message(body, messageProperties);
+            var movable = new Movable("ninja",body.getPosition().x, body.getPosition().y, 0,
+                    body.m_linearVelocity.x, body.m_linearVelocity.y, body.m_angularVelocity);
+            var bytes = objectMapper.writeValueAsBytes(movable);
+            var message = new Message(bytes, messageProperties);
             rabbitTemplate.send(RABBIT_GAME_MESSAGES_EXCHANGE, receiver, message);
         } catch (JsonProcessingException e) {
             log.error("problem writeValueAsBytes state", e);

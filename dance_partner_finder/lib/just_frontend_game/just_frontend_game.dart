@@ -9,9 +9,8 @@ import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/material.dart';
 
 import 'my_green_girl.dart';
-import 'wall.dart';
 
-class JustFrontendGame extends Forge2DGame with HasDraggables, HasTappables {
+class JustFrontendGame extends FlameGame with HasDraggables, HasTappables {
   late final JoystickComponent joystickComponent;
   late final MyGreenGirl myGreenGirl;
   late final HudButtonComponent shapeButton;
@@ -26,14 +25,6 @@ class JustFrontendGame extends Forge2DGame with HasDraggables, HasTappables {
     camera.viewport = FixedResolutionViewport(Vector2(1366, 768));
     var right = size.x + 100;
     var bottom = size.y;
-    final Vector2 topLeft = Vector2.zero() + Vector2(5, 5);
-    final Vector2 topRight = Vector2(right, 0) + Vector2(-5, 5);
-    final Vector2 bottomLeft = Vector2(0, bottom) + Vector2(5, -5);
-    final Vector2 bottomRight = Vector2(right, bottom) + Vector2(-5, -5);
-    add(Wall(topLeft, topRight));
-    add(Wall(topRight, bottomRight));
-    add(Wall(bottomLeft, topLeft));
-    add(Wall(bottomRight, bottomLeft));
     camera.worldBounds = Rect.fromLTRB(0, 0, right, bottom);
 
     SpriteComponent background = SpriteComponent()
@@ -73,14 +64,9 @@ class JustFrontendGame extends Forge2DGame with HasDraggables, HasTappables {
     print("coming ninja $ninja");
     if (myGreenGirl.parent == null) {
       await add(myGreenGirl);
-      camera.followBodyComponent(myGreenGirl);
-      // myGreenGirl.body.position.x = ninja.initialPositionX;
-      // myGreenGirl.body.position.y = ninja.initialPositionY;
+      camera.followComponent(myGreenGirl);
       print("ninja added");
-    } else {
-      myGreenGirl.body.linearVelocity =
-          Vector2(ninja.linearVelocityX, ninja.linearVelocityY);
-      myGreenGirl.body.angularVelocity = ninja.angularVelocity;
     }
+    myGreenGirl.handleMovable(ninja);
   }
 }
