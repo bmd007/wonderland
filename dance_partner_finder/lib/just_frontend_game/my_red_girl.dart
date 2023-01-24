@@ -3,7 +3,7 @@ import 'package:dance_partner_finder/just_frontend_game/just_frontend_game.dart'
 import 'package:flame/components.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 
-class MyGreenGirl extends SpriteAnimationComponent
+class MyRedGirl extends SpriteAnimationComponent
     with ContactCallbacks, HasGameRef<JustFrontendGame> {
   SpriteAnimationData glidingAnimationData = SpriteAnimationData.sequenced(
       amount: 9, stepTime: 0.03, textureSize: Vector2(152.0, 142.0));
@@ -18,30 +18,30 @@ class MyGreenGirl extends SpriteAnimationComponent
   late SpriteAnimation idleAnimation;
   late SpriteAnimation jumpingAnimation;
   bool lookingTowardRight = true;
-  final String id = "green";
+  final String id = "red";
   final Vector2 initialPosition;
 
-  MyGreenGirl(this.initialPosition);
+  MyRedGirl(this.initialPosition);
 
 
   @override
   Future<void> onLoad() async {
     await super.onLoad();
     glidingAnimation = await gameRef.loadSpriteAnimation(
-        "green_girl/gliding_spriteSheet.png", glidingAnimationData);
+        "red_girl/gliding_spriteSheet.png", glidingAnimationData);
     runningAnimation = await gameRef.loadSpriteAnimation(
-        "green_girl/running_spriteSheet.png", runningAnimationDate);
+        "red_girl/running_spriteSheet.png", runningAnimationDate);
     idleAnimation = await gameRef.loadSpriteAnimation(
-        "green_girl/idle_spriteSheet.png", idleAnimationData);
+        "red_girl/idle_spriteSheet.png", idleAnimationData);
     jumpingAnimation = await gameRef.loadSpriteAnimation(
-        "green_girl/jumping_spriteSheet.png", jumpingAnimationData);
+        "red_girl/jumping_spriteSheet.png", jumpingAnimationData);
 
     animation = idleAnimation;
     anchor = Anchor.center;
     size = Vector2(100, 100);
   }
 
-  void handleMovable(Movable movable) async {
+  void handleMovable(Movable movable) {
     if (movable.linearVelocityY == 0) {
       animation = idleAnimation;
       if (movable.linearVelocityX != 0) {
