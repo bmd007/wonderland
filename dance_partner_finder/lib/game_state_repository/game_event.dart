@@ -1,6 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:flame/components.dart';
 
-class JoystickMovedEvent {
+class JoystickMovedEvent extends Equatable{
   final Vector2 relativeDelta;
   final JoystickDirection direction;
 
