@@ -135,8 +135,7 @@ class MyGirl<MyForge2DFlameGame> extends BodyComponent with ContactCallbacks {
   void beginContact(Object other, Contact contact) {}
 
   void notifyGameState(Movable movable) {
-    body.linearVelocity =
-        Vector2(movable.linearVelocityX, movable.linearVelocityY);
+    body.linearVelocity = Vector2(movable.linearVelocityX, movable.linearVelocityY);
     body.angularVelocity = movable.angularVelocity;
   }
 }

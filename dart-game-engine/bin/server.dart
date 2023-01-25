@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import "package:dart_amqp/dart_amqp.dart";
 import 'package:dart_game_engine/game_loop.dart';
 import 'package:dart_game_engine/movable.dart';
@@ -50,31 +48,35 @@ void main(List<String> args) async {
   Wall(topRight, bottomRight, world);
   Wall(bottomLeft, topLeft, world);
   Wall(bottomRight, bottomLeft, world);
-  var ninja = Ninja(world,"green", size/6).body;
+  var green = Ninja(world, "green", size / 6);
+  var red = Ninja(world, "red", size / 5);
 
   final loop = GameLoop(onTick: (tick) {
     world.stepDt(tick);
-    // print("${ninja.linearVelocity} : ${ninja.position}");
-    sendGameState(
-        exchange,
-        Movable(
-            "green",
-            ninja.position.x,
-            ninja.position.y,
-            ninja.angle,
-            ninja.linearVelocity.x,
-            ninja.linearVelocity.y,
-            ninja.angularVelocity));
+    sendGameState(exchange, red);
+    sendGameState(exchange, green);
   });
   loop.play();
 
   // client.close();
 }
 
-Future<void> sendGameState(Exchange exchange, Movable movable) async {
+Future<void> sendGameState(Exchange exchange, Ninja ninja) async {
+  if (!ninja.body.isAwake) {
+    return;
+  }
+  var movable = Movable(
+      ninja.id,
+      ninja.body.position.x,
+      ninja.body.position.y,
+      ninja.body.angle,
+      ninja.body.linearVelocity.x,
+      ninja.body.linearVelocity.y,
+      ninja.body.angularVelocity);
   var messageProperties = MessageProperties.persistentMessage()
     ..appId = "wonderland.message-publisher"
     ..headers = {"type": "game_state"};
-  exchange.publish(movable.toJson(), "mm7amini@gmail.com", properties: messageProperties);
+  exchange.publish(movable.toJson(), "mm7amini@gmail.com",
+      properties: messageProperties);
 }
 // TODO add flip state to movable DTO and keep track of it in Ninja class

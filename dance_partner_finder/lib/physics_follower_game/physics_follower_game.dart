@@ -51,8 +51,7 @@ class PhysicsFollowerGame extends Forge2DGame with HasDraggables, HasTappables {
     )..positionType = PositionType.viewport;
     await add(joystickComponent);
 
-    red = MyGirl(
-        (size / 6) + Vector2(20, 0), joystickComponent, gameEventRepository);
+    red = MyGirl((size / 5), joystickComponent, gameEventRepository);
     green = MyGreenGirl(size / 6);
   }
 
@@ -78,15 +77,14 @@ class PhysicsFollowerGame extends Forge2DGame with HasDraggables, HasTappables {
       if (green.isMounted) {
         green.notifyGameState(movable);
       }
+    } else if (movable.id == "red") {
+      if (red.parent == null) {
+        await add(red);
+        print("red added");
+      }
+      if (red.isMounted) {
+        red.notifyGameState(movable);
+      }
     }
-    // else if (movable.id == "red") {
-    //   if (red.parent == null) {
-    //     await add(red);
-    //     print("red added");
-    //   }
-    //   if (red.isMounted) {
-    //     red.notifyGameState(movable);
-    //   }
-    // }
   }
 }
