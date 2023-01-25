@@ -3,6 +3,7 @@ import 'dart:convert';
 import "package:dart_amqp/dart_amqp.dart";
 import 'package:dart_game_engine/game_loop.dart';
 import 'package:dart_game_engine/movable.dart';
+import 'package:dart_game_engine/ninja.dart';
 import 'package:dart_game_engine/wall.dart';
 import 'package:forge2d/forge2d.dart';
 import 'package:shelf/shelf.dart';
@@ -44,20 +45,12 @@ void main(List<String> args) async {
   final Vector2 topRight = Vector2(right, 0) + Vector2(-5, 5);
   final Vector2 bottomLeft = Vector2(0, bottom) + Vector2(5, -5);
   final Vector2 bottomRight = Vector2(right, bottom) + Vector2(-5, -5);
-  addWallToWorld(Wall(topLeft, topRight), world);
-  addWallToWorld(Wall(topRight, bottomRight), world);
-  addWallToWorld(Wall(bottomLeft, topLeft), world);
-  addWallToWorld(Wall(bottomRight, bottomLeft), world);
 
-  // todo create a ninja class kinda like the wall class
-  final shape = CircleShape()..radius = 3;
-  final fixtureDefinition =
-      FixtureDef(shape, density: 2, restitution: 0.1, friction: 2);
-  final bodyDefinition = BodyDef(position: size / 6, type: BodyType.dynamic)
-    ..fixedRotation = true
-    ..userData = "green";
-  final ninja = world.createBody(bodyDefinition);
-  ninja.createFixture(fixtureDefinition);
+  Wall(topLeft, topRight, world);
+  Wall(topRight, bottomRight, world);
+  Wall(bottomLeft, topLeft, world);
+  Wall(bottomRight, bottomLeft, world);
+  var ninja = Ninja(world,"green", size/6).body;
 
   final loop = GameLoop(onTick: (tick) {
     world.stepDt(tick);
@@ -75,12 +68,7 @@ void main(List<String> args) async {
   });
   loop.play();
 
-
   // client.close();
-}
-
-void addWallToWorld(Wall wall, World world) {
-  wall.createBody(world);
 }
 
 Future<void> sendGameState(Exchange exchange, Movable movable) async {
@@ -89,49 +77,4 @@ Future<void> sendGameState(Exchange exchange, Movable movable) async {
     ..headers = {"type": "game_state"};
   exchange.publish(movable.toJson(), "mm7amini@gmail.com", properties: messageProperties);
 }
-
 // TODO add flip state to movable DTO and keep track of it in Ninja class
-// TODO move this logic to ninja class
-// void move(String direction, Vector2 joystickRelativeDelta) {
-//   if (direction == "down" ) {
-//     if (landedSinceLastElevation) {
-//       body.linearVelocity.x = 0;
-//     }
-//   } else if (direction == "downLeft" || direction == "left" ) {
-//     if (lookingTowardRight) {
-//       component.flipHorizontally();
-//     }
-//     lookingTowardRight = false;
-//     if (body.linearVelocity.y == 0) {
-//       body.linearVelocity = Vector2(-speed, body.linearVelocity.y);
-//     }
-//   } else if (direction == "downRight" || direction == "right" ) {
-//     if (!lookingTowardRight) {
-//       component.flipHorizontally();
-//     }
-//     lookingTowardRight = true;
-//     if (body.linearVelocity.y == 0) {
-//       body.linearVelocity = Vector2(speed, body.linearVelocity.y);
-//     }
-//   } else if (direction == "up" && landedSinceLastElevation ) {
-//     landedSinceLastElevation = false;
-//     body.applyLinearImpulse(Vector2(0, -1000));
-//   } else if (direction == "upLeft" && landedSinceLastElevation) {
-//     if (lookingTowardRight) {
-//       component.flipHorizontally();
-//     }
-//     lookingTowardRight = false;
-//     landedSinceLastElevation = false;
-//     body.linearVelocity.x = 0;
-//     body.applyLinearImpulse(Vector2(joystickRelativeDelta.x * 1000, joystickRelativeDelta.y * 1000));
-//   } else if (direction == "upRight" && landedSinceLastElevation) {
-//     if (!lookingTowardRight) {
-//       component.flipHorizontally();
-//     }
-//     lookingTowardRight = true;
-//     body.linearVelocity.x = 0;
-//     landedSinceLastElevation = false;
-//     body.applyLinearImpulse(Vector2(joystickRelativeDelta.x * 1000, joystickRelativeDelta.y * 1000));
-//   }
-// }
-
