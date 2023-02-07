@@ -53,7 +53,7 @@ dependencies:
   file_picker: ^5.2.5
   flutter_webrtc: ^0.9.19
   sdp_transform: ^0.3.2
-  flutter_svg: ^1.1.6
+  flutter_svg: ^2.0.0
   flame: ^1.6.0
   flame_forge2d: ^0.12.5
 
