@@ -24,14 +24,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  audioplayers: ^2.0.0
+  audioplayers: ^3.0.0
   cupertino_icons: ^1.0.5
   mocktail: ^0.3.0
   bloc: ^8.1.0
   equatable: ^2.0.5
   bloc_test: ^9.1.0
   flutter_bloc: ^8.1.1
-  rx_bloc: ^3.3.1
+  rx_bloc: ^4.0.0
   rxdart: ^0.27.7
   location: ^4.4.0
   http: ^0.13.5
@@ -45,7 +45,7 @@ dependencies:
       ref: master
   firebase_auth: ^4.2.5
   google_sign_in: ^5.4.3
-  google_fonts: ^3.0.1
+  google_fonts: ^4.0.0
   font_awesome_flutter: ^10.3.0
   firebase_core: ^2.4.1
   firebase_storage: ^11.0.10
@@ -53,7 +53,7 @@ dependencies:
   file_picker: ^5.2.5
   flutter_webrtc: ^0.9.19
   sdp_transform: ^0.3.2
-  flutter_svg: ^1.1.6
+  flutter_svg: ^2.0.0
   flame: ^1.6.0
   flame_forge2d: ^0.12.5
 
