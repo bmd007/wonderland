@@ -21,6 +21,6 @@ jobs:
         java-version: '19'
         distribution: 'corretto'
 
-    - name: Build game-engine
-      working-directory: ./game-engine
+    - name: Build api-gateway
+      working-directory: ./api-gateway
       run: ./gradlew clean test build
