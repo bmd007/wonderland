@@ -4,7 +4,7 @@ import 'package:location/location.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'dance_partner_finder_event.dart';
-import 'dance_partner_finder_state.dart';
+import  'dance_partner_finder_state.dart';
 
 Stream<LocationData> getCurrentLocation() {
   Location location = Location();
