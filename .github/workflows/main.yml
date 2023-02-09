@@ -27,12 +27,12 @@ jobs:
 #        run: flutter doctor
 #
       - name: flutter pub get
-        working-directory: ./dance_partner_finder
+#        working-directory: ./dance_partner_finder
         run: flutter pub get
 #
-      - name: flutter build web
-        working-directory: ./dance_partner_finder
-        run: flutter build web --release
+#      - name: flutter build web
+#        working-directory: ./dance_partner_finder
+#        run: flutter build web --release
 #
 #      - name: copy from flutter build to firebase folder
 #        run: |
