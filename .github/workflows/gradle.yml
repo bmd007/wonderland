@@ -23,4 +23,4 @@ jobs:
 
     - name: Build api-gateway
       working-directory: ./api-gateway
-      run: ./gradlew clean test build
+      run: ./gradlew clean build
