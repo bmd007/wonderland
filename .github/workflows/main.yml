@@ -15,10 +15,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.3.10'
-          channel: 'stable'
+#      - uses: subosito/flutter-action@v2
+#        with:
+#          flutter-version: '3.3.10'
+#          channel: 'stable'
 #
 #      - name: flutter version
 #        run: flutter --version
