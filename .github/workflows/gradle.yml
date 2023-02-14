@@ -6,14 +6,19 @@ on:
   pull_request:
     branches: [ master ]
 
-permissions:
-  contents: read
+#permissions:
+#  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+
+    - name: purge-cache
+      uses: MyAlbum/purge-cache
+      with:
+      token: '${{ secrets.GITHUB_TOKEN }}'
 
     - name: Set up JDK
       uses: actions/setup-java@v3
