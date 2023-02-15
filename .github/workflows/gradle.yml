@@ -15,11 +15,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: purge-cache
-      uses: MyAlbum/purge-cache@v1
-      with:
-        token: '${{ secrets.GITHUB_TOKEN }}'
-        debug: true
+#    - name: purge-cache
+#      uses: MyAlbum/purge-cache@v1
+#      with:
+#        token: '${{ secrets.GITHUB_TOKEN }}'
+#        debug: true
 
     - name: Set up JDK
       uses: actions/setup-java@v3
