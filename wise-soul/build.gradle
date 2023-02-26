@@ -62,7 +62,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     implementation('com.github.javafaker:javafaker:1.0.2') { exclude module: 'snakeyaml' }
-    implementation 'org.yaml:snakeyaml:1.33'
+    implementation 'org.yaml:snakeyaml:2.0'
 
 }
 
