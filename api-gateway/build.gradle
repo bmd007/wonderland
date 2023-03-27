@@ -7,7 +7,7 @@ plugins {
 
 java {
     sourceCompatibility = 19
-   targetCompatibility = 19
+    targetCompatibility = 19
 }
 
 group = 'wonderland'

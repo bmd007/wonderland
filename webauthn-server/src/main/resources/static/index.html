@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>${artifactId}</title>
+</head>
+<body>
+<h1>Welcome to ${artifactId}</h1>
+<table border="0">
+  <tr>
+    <th colspan="2" style="text-align: center"><h3>Endpoints</h3></th>
+  </tr>
+  <tr>
+    <td><a href="/docs/swagger-ui.html">Swagger UI Console</a></td>
+    <td>API documentation.</td>
+  </tr>
+  <tr>
+    <td><a href="/v3/api-docs">/v3/api-docs</a></td>
+    <td>Raw API info in Swagger3 JSON-format.</td>
+  </tr>
+  <tr>
+    <td><a href="/ping">/ping</a></td>
+    <td>Responds with "pong".</td>
+  </tr>
+  <tr>
+    <td><a href="/spring-boot/health">/spring-boot/health</a></td>
+    <td>Health checks.</td>
+  </tr>
+  <tr>
+    <td><a href="/spring-boot/metrics">/spring-boot/metrics</a></td>
+    <td>Metrics snapshots.</td>
+  </tr>
+  <tr>
+    <td><a href="/togglz-console">/togglz-console</a></td>
+    <td>Feature toggles</td>
+  </tr>
+  <tr>
+    <td><a href="/spring-boot">/spring-boot</a></td>
+    <td>Spring Boot actuator endpoints.</td>
+  </tr>
+  <tr>
+    <th colspan="2" style="text-align: center"><h3>Resources</h3></th>
+  </tr>
+  <tr>
+    <td><a href="https://jenkins.prod.nordnet.se/job/LA/job/${parent.parent.artifactId}/job/master/"
+           target="_blank">Jenkins</a>
+    </td>
+    <td>Build pipe</td>
+  </tr>
+  <tr>
+    <td><a href="https://scm.prod.nordnet.se/projects/LA/repos/${parent.parent.artifactId}/browse" target="_blank">BitBucket</a>
+    </td>
+    <td>Source control system</td>
+  </tr>
+  <tr>
+    <td>
+      <a href="https://grafana-cd.prod.nordnet.se/d/QjGIrMqWz/spring-boot-watch?var-app=${artifactId}&var-hosts=All"
+         target="_blank">Grafana</a>
+    </td>
+    <td>Monitor recorded metrics over time</td>
+  </tr>
+  <tr>
+    <td>Applogs</td>
+    <td>
+      <a href="https://applogs.test.nordnet.se/app/kibana#/discover
+?_a=(
+columns:!(message,level),
+filters:!((query:(match:(application:(query:${artifactId},type:phrase))))),
+query:(language:kuery,query:%27not (tags:%22access%22 and level: %22INFO%22)%27)
+)&_g=(
+refreshInterval:(pause:!f,value:60000),
+time:(from:now-15m,to:now)
+)" target="_blank">
+        test
+      </a>,
+      <a href="https://applogs.prod.nordnet.se/app/kibana#/discover
+?_a=(
+columns:!(message,level),
+filters:!((query:(match:(application:(query:${artifactId},type:phrase))))),
+query:(language:kuery,query:%27not (tags:%22access%22 and level: %22INFO%22)%27)
+)&_g=(
+refreshInterval:(pause:!f,value:60000),
+time:(from:now-15m,to:now)
+)" target="_blank">
+        prod
+      </a>
+    </td>
+  </tr>
+</table>
+
+<div style="position: absolute; bottom: 0; left: 0">Build ${version.build}</div>
+
+</body>
+</html>

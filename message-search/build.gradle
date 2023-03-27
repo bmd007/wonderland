@@ -84,12 +84,6 @@ test {
     useJUnitPlatform {}
 }
 
-jacocoTestReport {
-    reports {
-        html.enabled = true
-    }
-}
-
 tasks.named('wrapper') {
     distributionType = Wrapper.DistributionType.ALL
 }
