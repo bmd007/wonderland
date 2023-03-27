@@ -1,4 +1,4 @@
-package wonderland.webauthn.webauthnserver;
+package wonderland.webauthn.webauthnserver.repository;
 
 import com.yubico.webauthn.AssertionResult;
 import com.yubico.webauthn.CredentialRepository;

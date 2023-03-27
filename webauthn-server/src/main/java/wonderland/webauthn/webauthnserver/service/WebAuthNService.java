@@ -1,4 +1,4 @@
-package wonderland.webauthn.webauthnserver;
+package wonderland.webauthn.webauthnserver.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.Cache;
@@ -18,7 +18,6 @@ import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.RelyingPartyIdentity;
 import com.yubico.webauthn.data.ResidentKeyRequirement;
 import com.yubico.webauthn.data.UserIdentity;
-import com.yubico.webauthn.exception.AssertionFailedException;
 import com.yubico.webauthn.exception.RegistrationFailedException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +31,7 @@ import wonderland.webauthn.webauthnserver.dto.RegistrationRequest;
 import wonderland.webauthn.webauthnserver.dto.RegistrationResponse;
 import wonderland.webauthn.webauthnserver.dto.SuccessfulAuthenticationResult;
 import wonderland.webauthn.webauthnserver.dto.SuccessfulRegistrationResult;
+import wonderland.webauthn.webauthnserver.repository.InMemoryRegistrationStorage;
 import yubico.webauthn.attestation.Attestation;
 import yubico.webauthn.attestation.YubicoJsonMetadataService;
 
