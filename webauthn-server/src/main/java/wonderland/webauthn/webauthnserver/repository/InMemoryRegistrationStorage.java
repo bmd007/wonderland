@@ -142,6 +142,6 @@ public class InMemoryRegistrationStorage implements CredentialRepository {
     }
 
     public boolean userExists(String username) {
-        return !getRegistrationsByUsername(username).isEmpty();
+        return Optional.ofNullable(getRegistrationsByUsername(username)).isPresent();
     }
 }

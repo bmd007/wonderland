@@ -39,6 +39,7 @@
         }
 
         function rejectIfNotSuccess(response) {
+            console.log(response);
             if (response.success) {
                 return response;
             } else {
