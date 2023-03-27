@@ -7,7 +7,7 @@ import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import wonderland.webauthn.webauthnserver.data.CredentialRegistration;
+import wonderland.webauthn.webauthnserver.dto.CredentialRegistration;
 
 import java.util.Collection;
 import java.util.HashMap;

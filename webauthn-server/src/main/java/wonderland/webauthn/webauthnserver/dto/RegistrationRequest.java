@@ -22,32 +22,20 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package wonderland.webauthn.webauthnserver.data;
+package wonderland.webauthn.webauthnserver.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yubico.webauthn.data.ByteArray;
-import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
-import lombok.NonNull;
+import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 import java.util.Optional;
 
 @Value
-public class AssertionRequestWrapper {
-
-  @NonNull private final ByteArray requestId;
-
-  @NonNull private final PublicKeyCredentialRequestOptions publicKeyCredentialRequestOptions;
-
-  @NonNull private final Optional<String> username;
-
-  @NonNull @JsonIgnore private final transient com.yubico.webauthn.AssertionRequest request;
-
-  public AssertionRequestWrapper(
-      @NonNull ByteArray requestId, @NonNull com.yubico.webauthn.AssertionRequest request) {
-    this.requestId = requestId;
-    this.publicKeyCredentialRequestOptions = request.getPublicKeyCredentialRequestOptions();
-    this.username = request.getUsername();
-    this.request = request;
-  }
+@EqualsAndHashCode(callSuper = false)
+public class RegistrationRequest {
+  String username;
+  Optional<String> credentialNickname;
+  ByteArray requestId;
+  PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions;
 }

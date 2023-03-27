@@ -22,42 +22,32 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package wonderland.webauthn.webauthnserver.data;
+package wonderland.webauthn.webauthnserver.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.yubico.webauthn.RegisteredCredential;
-import com.yubico.webauthn.data.AuthenticatorTransport;
-import com.yubico.webauthn.data.UserIdentity;
-import lombok.Builder;
+import com.yubico.webauthn.data.ByteArray;
+import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
+import lombok.NonNull;
 import lombok.Value;
-import lombok.With;
-import yubico.webauthn.attestation.Attestation;
 
-import java.time.Instant;
 import java.util.Optional;
-import java.util.SortedSet;
 
 @Value
-@Builder
-@With
-public class CredentialRegistration {
+public class AssertionRequestWrapper {
 
-  UserIdentity userIdentity;
-  Optional<String> credentialNickname;
-  SortedSet<AuthenticatorTransport> transports;
+  @NonNull private final ByteArray requestId;
 
-  @JsonIgnore Instant registrationTime;
-  RegisteredCredential credential;
+  @NonNull private final PublicKeyCredentialRequestOptions publicKeyCredentialRequestOptions;
 
-  Optional<Attestation> attestationMetadata;
+  @NonNull private final Optional<String> username;
 
-  @JsonProperty("registrationTime")
-  public String getRegistrationTimestamp() {
-    return registrationTime.toString();
-  }
+  @NonNull @JsonIgnore private final transient com.yubico.webauthn.AssertionRequest request;
 
-  public String getUsername() {
-    return userIdentity.getName();
+  public AssertionRequestWrapper(
+      @NonNull ByteArray requestId, @NonNull com.yubico.webauthn.AssertionRequest request) {
+    this.requestId = requestId;
+    this.publicKeyCredentialRequestOptions = request.getPublicKeyCredentialRequestOptions();
+    this.username = request.getUsername();
+    this.request = request;
   }
 }

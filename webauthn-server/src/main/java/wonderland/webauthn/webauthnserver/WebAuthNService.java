@@ -1,26 +1,40 @@
 package wonderland.webauthn.webauthnserver;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.yubico.webauthn.FinishRegistrationOptions;
+import com.yubico.webauthn.RegisteredCredential;
+import com.yubico.webauthn.RegistrationResult;
 import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.StartRegistrationOptions;
 import com.yubico.webauthn.data.AttestationConveyancePreference;
 import com.yubico.webauthn.data.AuthenticatorSelectionCriteria;
+import com.yubico.webauthn.data.AuthenticatorTransport;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.RelyingPartyIdentity;
 import com.yubico.webauthn.data.ResidentKeyRequirement;
 import com.yubico.webauthn.data.UserIdentity;
+import com.yubico.webauthn.exception.RegistrationFailedException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import wonderland.webauthn.webauthnserver.data.AssertionRequestWrapper;
-import wonderland.webauthn.webauthnserver.data.CredentialRegistration;
-import wonderland.webauthn.webauthnserver.data.RegistrationRequest;
+import org.springframework.web.server.ResponseStatusException;
+import wonderland.webauthn.webauthnserver.dto.AssertionRequestWrapper;
+import wonderland.webauthn.webauthnserver.dto.CredentialRegistration;
+import wonderland.webauthn.webauthnserver.dto.RegistrationRequest;
+import wonderland.webauthn.webauthnserver.dto.RegistrationResponse;
+import wonderland.webauthn.webauthnserver.dto.SuccessfulRegistrationResult;
+import yubico.webauthn.attestation.Attestation;
 import yubico.webauthn.attestation.YubicoJsonMetadataService;
 
 import java.nio.ByteBuffer;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -33,6 +47,7 @@ public class WebAuthNService {
     private final YubicoJsonMetadataService metadataService = new YubicoJsonMetadataService();
     private final Cache<ByteArray, AssertionRequestWrapper> assertRequestStorage = newCache();
     private final Cache<ByteArray, RegistrationRequest> registerRequestStorage = newCache();
+    private final ObjectMapper objectMapper;
 
     private static final RelyingPartyIdentity DEFAULT_RP_ID = RelyingPartyIdentity
             .builder().id("localhost").name("Yubico WebAuthn demo").build();
@@ -46,8 +61,9 @@ public class WebAuthNService {
                 .build();
     }
 
-    public WebAuthNService(InMemoryRegistrationStorage userStorage) {
+    public WebAuthNService(InMemoryRegistrationStorage userStorage, ObjectMapper objectMapper) {
         this.userStorage = userStorage;
+        this.objectMapper = objectMapper;
         //todo make bean
         rp = RelyingParty.builder()
                 .identity(DEFAULT_RP_ID)
@@ -99,6 +115,81 @@ public class WebAuthNService {
                 rp.startRegistration(startRegistrationOptions));
         registerRequestStorage.put(registrationRequest.getRequestId(), registrationRequest);
         return registrationRequest;
+    }
+
+
+    public SuccessfulRegistrationResult finishRegistration(RegistrationResponse registrationResponse) {
+        var registrationRequest =
+                Optional.ofNullable(registerRequestStorage.getIfPresent(registrationResponse.requestId()))
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "registration request not found"));
+        registerRequestStorage.invalidate(registrationRequest.getRequestId());
+
+        try {
+            var registrationResult = rp.finishRegistration(
+                    FinishRegistrationOptions.builder()
+                            .request(registrationRequest.getPublicKeyCredentialCreationOptions())
+                            .response(registrationResponse.credential())
+                            .build()
+            );
+
+
+            var credentialsRegistration = addRegistration(
+                    registrationRequest.getPublicKeyCredentialCreationOptions().getUser(),
+                    registrationRequest.getCredentialNickname(),
+                    registrationResult);
+
+            return new SuccessfulRegistrationResult(
+                    registrationRequest,
+                    registrationResponse,
+                    credentialsRegistration,
+                    registrationResult.isAttestationTrusted());
+        } catch (RegistrationFailedException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+    }
+
+    private CredentialRegistration addRegistration(
+            UserIdentity userIdentity,
+            Optional<String> nickname,
+            RegistrationResult result) {
+        var registeredCredential = RegisteredCredential.builder()
+                .credentialId(result.getKeyId().getId())
+                .userHandle(userIdentity.getId())
+                .publicKeyCose(result.getPublicKeyCose())
+                .signatureCount(result.getSignatureCount())
+                .build();
+        SortedSet<AuthenticatorTransport> transports = result.getKeyId().getTransports().orElseGet(TreeSet::new);
+        Optional<Attestation> attestationMetadata = result.getAttestationTrustPath()
+                .flatMap(x5c -> x5c.stream().findFirst())
+                .flatMap(metadataService::findMetadata);
+        return addRegistration(
+                userIdentity,
+                nickname,
+                registeredCredential,
+                transports,
+                attestationMetadata);
+    }
+
+    private CredentialRegistration addRegistration(
+            UserIdentity userIdentity,
+            Optional<String> nickname,
+            RegisteredCredential credential,
+            SortedSet<AuthenticatorTransport> transports,
+            Optional<Attestation> attestationMetadata) {
+        CredentialRegistration reg = CredentialRegistration.builder()
+                .userIdentity(userIdentity)
+                .credentialNickname(nickname)
+                .registrationTime(Instant.now())
+                .credential(credential)
+                .transports(transports)
+                .attestationMetadata(attestationMetadata)
+                .build();
+        log.debug("Adding registration: user: {}, nickname: {}, credential: {}",
+                userIdentity,
+                nickname,
+                credential);
+        userStorage.addRegistrationByUsername(userIdentity.getName(), reg);
+        return reg;
     }
 
 }

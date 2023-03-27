@@ -22,30 +22,42 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package wonderland.webauthn.webauthnserver.data;
+package wonderland.webauthn.webauthnserver.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.yubico.webauthn.data.AuthenticatorAssertionResponse;
-import com.yubico.webauthn.data.ByteArray;
-import com.yubico.webauthn.data.ClientAssertionExtensionOutputs;
-import com.yubico.webauthn.data.PublicKeyCredential;
+import com.yubico.webauthn.RegisteredCredential;
+import com.yubico.webauthn.data.AuthenticatorTransport;
+import com.yubico.webauthn.data.UserIdentity;
+import lombok.Builder;
 import lombok.Value;
+import lombok.With;
+import yubico.webauthn.attestation.Attestation;
+
+import java.time.Instant;
+import java.util.Optional;
+import java.util.SortedSet;
 
 @Value
-@JsonIgnoreProperties({"sessionToken"})
-public class AssertionResponse {
+@Builder
+@With
+public class CredentialRegistration {
 
-  private final ByteArray requestId;
-  private final PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs>
-      credential;
+  UserIdentity userIdentity;
+  Optional<String> credentialNickname;
+  SortedSet<AuthenticatorTransport> transports;
 
-  public AssertionResponse(
-      @JsonProperty("requestId") ByteArray requestId,
-      @JsonProperty("credential")
-          PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs>
-              credential) {
-    this.requestId = requestId;
-    this.credential = credential;
+  @JsonIgnore Instant registrationTime;
+  RegisteredCredential credential;
+
+  Optional<Attestation> attestationMetadata;
+
+  @JsonProperty("registrationTime")
+  public String getRegistrationTimestamp() {
+    return registrationTime.toString();
+  }
+
+  public String getUsername() {
+    return userIdentity.getName();
   }
 }
