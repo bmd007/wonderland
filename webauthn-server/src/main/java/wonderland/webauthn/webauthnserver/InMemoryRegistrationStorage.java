@@ -7,7 +7,7 @@ import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import wonderland.webauthn.webauthnserver.dto.CredentialRegistration;
+import wonderland.webauthn.webauthnserver.domain.CredentialRegistration;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -115,14 +115,13 @@ public class InMemoryRegistrationStorage implements CredentialRepository {
                                                         "Credential \"%s\" is not registered to user \"%s\"",
                                                         result.getCredential().getCredentialId(), result.getUsername())));
 
-        Set<CredentialRegistration> regs = storage.get(result.getUsername());
-        regs.remove(registration);
-        regs.add(registration.withCredential(
-                registration.getCredential()
-                        .toBuilder()
-                        .signatureCount(result.getSignatureCount())
-                        .build())
-        );
+        var credentialRegistrations = storage.get(result.getUsername());
+        credentialRegistrations.remove(registration);
+        var registeredCredential = registration.getCredential()
+                .toBuilder()
+                .signatureCount(result.getSignatureCount())
+                .build();
+        credentialRegistrations.add(registration.withCredential(registeredCredential));
     }
 
     public Optional<CredentialRegistration> getRegistrationByUsernameAndCredentialId(String username, ByteArray id) {

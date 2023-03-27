@@ -3,10 +3,13 @@ package wonderland.webauthn.webauthnserver;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.yubico.webauthn.AssertionResult;
+import com.yubico.webauthn.FinishAssertionOptions;
 import com.yubico.webauthn.FinishRegistrationOptions;
 import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.RegistrationResult;
 import com.yubico.webauthn.RelyingParty;
+import com.yubico.webauthn.StartAssertionOptions;
 import com.yubico.webauthn.StartRegistrationOptions;
 import com.yubico.webauthn.data.AttestationConveyancePreference;
 import com.yubico.webauthn.data.AuthenticatorSelectionCriteria;
@@ -15,16 +18,19 @@ import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.RelyingPartyIdentity;
 import com.yubico.webauthn.data.ResidentKeyRequirement;
 import com.yubico.webauthn.data.UserIdentity;
+import com.yubico.webauthn.exception.AssertionFailedException;
 import com.yubico.webauthn.exception.RegistrationFailedException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import wonderland.webauthn.webauthnserver.domain.CredentialRegistration;
 import wonderland.webauthn.webauthnserver.dto.AssertionRequestWrapper;
-import wonderland.webauthn.webauthnserver.dto.CredentialRegistration;
+import wonderland.webauthn.webauthnserver.dto.AssertionResponse;
 import wonderland.webauthn.webauthnserver.dto.RegistrationRequest;
 import wonderland.webauthn.webauthnserver.dto.RegistrationResponse;
+import wonderland.webauthn.webauthnserver.dto.SuccessfulAuthenticationResult;
 import wonderland.webauthn.webauthnserver.dto.SuccessfulRegistrationResult;
 import yubico.webauthn.attestation.Attestation;
 import yubico.webauthn.attestation.YubicoJsonMetadataService;
@@ -132,7 +138,6 @@ public class WebAuthNService {
                             .build()
             );
 
-
             var credentialsRegistration = addRegistration(
                     registrationRequest.getPublicKeyCredentialCreationOptions().getUser(),
                     registrationRequest.getCredentialNickname(),
@@ -190,6 +195,63 @@ public class WebAuthNService {
                 credential);
         userStorage.addRegistrationByUsername(userIdentity.getName(), reg);
         return reg;
+    }
+
+    public AssertionRequestWrapper startAuthentication(String username) {
+        log.trace("startAuthentication username: {}", username);
+
+        if (!userStorage.userExists(username)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user not registered");
+        } else {
+            var startAssertionOptions = StartAssertionOptions.builder().username(username).build();
+            var assertionRequestWrapper = new AssertionRequestWrapper(
+                    randomUUIDByteArray(), rp.startAssertion(startAssertionOptions));
+
+            assertRequestStorage.put(assertionRequestWrapper.getRequestId(), assertionRequestWrapper);
+
+            return assertionRequestWrapper;
+        }
+    }
+
+
+    public SuccessfulAuthenticationResult finishAuthentication(AssertionResponse assertionResponse) {
+        AssertionRequestWrapper request =
+                Optional.ofNullable(assertRequestStorage.getIfPresent(assertionResponse.getRequestId()))
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "assertion request not found"));
+        assertRequestStorage.invalidate(assertionResponse.getRequestId());
+        try {
+            var finishAssertionOptions = FinishAssertionOptions.builder()
+                    .request(request.getRequest())
+                    .response(assertionResponse.getCredential())
+                    .build();
+            var assertionResult = rp.finishAssertion(finishAssertionOptions);
+            if (assertionResult.isSuccess()) {
+                updateSignatureCountForUser(assertionResponse, assertionResult);
+                var registrationsByUsername = userStorage.getRegistrationsByUsername(assertionResult.getUsername());
+                return new SuccessfulAuthenticationResult(
+                        request,
+                        assertionResponse,
+                        registrationsByUsername,
+                        assertionResult.getUsername());
+            } else {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Assertion failed.");
+            }
+        } catch (Exception e) {
+            log.error("Assertion failed", e);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Assertion failed unexpectedly; this is likely a bug.");
+        }
+    }
+
+    private void updateSignatureCountForUser(AssertionResponse assertionResponse, AssertionResult assertionResult) {
+        try {
+            userStorage.updateSignatureCount(assertionResult);
+        } catch (Exception e) {
+            log.error(
+                    "Failed to update signature count for user \"{}\", credential \"{}\"",
+                    assertionResult.getUsername(),
+                    assertionResponse.getCredential().getId(),
+                    e);
+        }
     }
 
 }

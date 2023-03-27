@@ -13,7 +13,7 @@ public class StartRegistrationResponse {
     }
 
     class StartRegistrationActions {
-        URL finish = new URL("http://localhost:9568/finish");
+        URL finish = new URL("http://localhost:9568/register/finish");
         StartRegistrationActions() throws MalformedURLException {
         }
     }

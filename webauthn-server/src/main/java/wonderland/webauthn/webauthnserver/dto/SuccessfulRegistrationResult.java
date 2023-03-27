@@ -7,6 +7,7 @@ import com.yubico.webauthn.data.ByteArray;
 import demo.webauthn.WebAuthnServer;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import wonderland.webauthn.webauthnserver.domain.CredentialRegistration;
 
 import java.io.IOException;
 import java.util.Optional;
