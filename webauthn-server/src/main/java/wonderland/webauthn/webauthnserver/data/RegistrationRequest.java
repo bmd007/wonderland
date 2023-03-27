@@ -38,5 +38,4 @@ public class RegistrationRequest {
   Optional<String> credentialNickname;
   ByteArray requestId;
   PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions;
-  Optional<ByteArray> sessionToken;
 }
