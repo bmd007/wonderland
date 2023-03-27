@@ -26,7 +26,9 @@ public class InMemoryRegistrationStorage implements CredentialRepository {
 
     @Override
     public Set<PublicKeyCredentialDescriptor> getCredentialIdsForUsername(String username) {
-        return getRegistrationsByUsername(username).stream()
+        return Optional.ofNullable(getRegistrationsByUsername(username))
+                .stream()
+                .flatMap(Collection::stream)
                 .map(registration ->
                         PublicKeyCredentialDescriptor.builder()
                                 .id(registration.getCredential().getCredentialId())

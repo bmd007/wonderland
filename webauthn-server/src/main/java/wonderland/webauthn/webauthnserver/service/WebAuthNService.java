@@ -36,6 +36,8 @@ import yubico.webauthn.attestation.YubicoJsonMetadataService;
 
 import java.nio.ByteBuffer;
 import java.time.Instant;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
@@ -92,10 +94,12 @@ public class WebAuthNService {
                                                  @NonNull String displayName,
                                                  Optional<String> credentialNickname,
                                                  ResidentKeyRequirement residentKeyRequirement) {
-        log.trace("startRegistration username: {}, credentialNickname: {}", username, credentialNickname);
+        log.info("startRegistration username: {}, credentialNickname: {}", username, credentialNickname);
 
-        final Set<CredentialRegistration> registrations = userStorage.getRegistrationsByUsername(username);
-        final UserIdentity registrationUserId = registrations.stream()
+        final UserIdentity userIdentity =
+                Optional.ofNullable(userStorage.getRegistrationsByUsername(username))
+                .stream()
+                .flatMap(Collection::stream)
                 .findAny()
                 .map(CredentialRegistration::getUserIdentity)
                 .orElseGet(() -> UserIdentity.builder()
@@ -109,7 +113,7 @@ public class WebAuthNService {
                 .residentKey(residentKeyRequirement)
                 .build();
         var startRegistrationOptions = StartRegistrationOptions.builder()
-                .user(registrationUserId)
+                .user(userIdentity)
                 .authenticatorSelection(authenticatorSelectionCriteria)
                 .build();
         var registrationRequest = new RegistrationRequest(username, credentialNickname,
@@ -185,7 +189,7 @@ public class WebAuthNService {
                 .transports(transports)
                 .attestationMetadata(attestationMetadata)
                 .build();
-        log.debug("Adding registration: user: {}, nickname: {}, credential: {}",
+        log.info("Adding registration: user: {}, nickname: {}, credential: {}",
                 userIdentity,
                 nickname,
                 credential);
@@ -194,7 +198,7 @@ public class WebAuthNService {
     }
 
     public AssertionRequestWrapper startAuthentication(String username) {
-        log.trace("startAuthentication username: {}", username);
+        log.info("startAuthentication username: {}", username);
 
         if (!userStorage.userExists(username)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user not registered");

@@ -86,21 +86,21 @@ public class WebAuthNResource {
 
     @PostMapping("register/finish")
     public SuccessfulRegistrationResult finishRegistration(@NotBlank RegistrationResponse registrationResponse) {
-        log.trace("finishRegistration responseJson: {}", registrationResponse);
+        log.info("finishRegistration responseJson: {}", registrationResponse);
         return server.finishRegistration(registrationResponse);
     }
 
 
     @PostMapping(value = "authenticate", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public StartAuthenticationResponse startAuthentication(@NotBlank @RequestParam("username") String username) throws MalformedURLException {
-        log.trace("startAuthentication username: {}", username);
+        log.info("startAuthentication username: {}", username);
         var assertionRequestWrapper = server.startAuthentication(username);
         return new StartAuthenticationResponse(assertionRequestWrapper);
     }
 
     @PostMapping("authenticate/finish")
     public SuccessfulAuthenticationResult finishAuthentication(@NonNull AssertionResponse assertionResponse) {
-        log.trace("finishAuthentication assertionResponse: {}", assertionResponse);
+        log.info("finishAuthentication assertionResponse: {}", assertionResponse);
         return server.finishAuthentication(assertionResponse);
     }
 }
