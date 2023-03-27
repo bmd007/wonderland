@@ -142,7 +142,7 @@
                     username,
                     displayName: displayName || username,
                     credentialNickname,
-                    requireResidentKey
+                    requireResidentKey: requireResidentKey || "preferred"
                 }),
                 method: 'POST',
             })
@@ -230,7 +230,7 @@
         }
 
         function registerResidentKey(event) {
-            return register(event, true);
+            return register(event, 'required');
         }
 
         async function register(event, requireResidentKey) {

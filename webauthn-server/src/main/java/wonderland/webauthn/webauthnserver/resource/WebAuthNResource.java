@@ -70,16 +70,16 @@ public class WebAuthNResource {
 
     @PostMapping(value = "register", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public StartRegistrationResponse startRegistration(
-            @RequestParam("username") String username,
-            @RequestParam("displayName") String displayName,
-            @RequestParam("credentialNickname") String credentialNickname,
-            @RequestParam(value = "requireResidentKey", required = false) boolean requireResidentKey)
+            @NotBlank @RequestParam("username") String username,
+            @NotBlank @RequestParam("displayName") String displayName,
+            @NotBlank @RequestParam("credentialNickname") String credentialNickname,
+            @RequestParam(value = "requireResidentKey", required = false, defaultValue = "required") String requireResidentKey)
             throws MalformedURLException {
         var registrationRequest = server.startRegistration(
                 username,
                 displayName,
                 Optional.ofNullable(credentialNickname),
-                requireResidentKey ? ResidentKeyRequirement.REQUIRED : ResidentKeyRequirement.DISCOURAGED
+                requireResidentKey.equals("required") ? ResidentKeyRequirement.REQUIRED : ResidentKeyRequirement.PREFERRED
         );
         return new StartRegistrationResponse(registrationRequest);
     }
