@@ -1,29 +1,3 @@
-<!--
-Copyright (c) 2018, Yubico AB
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice, this
-   list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice,
-   this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--->
-
 <html>
 <head>
   <meta charset="utf-8"/>
@@ -58,8 +32,6 @@ input[type="text"] {
 import * as webauthnJson from "./lib/webauthn-json-0.6.1/dist/esm/webauthn-json.js";
 
 let ceremonyState = {};
-let session = {
-};
 
 function extend(obj, more) {
   return Object.assign({}, obj, more);
@@ -70,43 +42,6 @@ function rejectIfNotSuccess(response) {
     return response;
   } else {
     return new Promise((resolve, reject) => reject(response));
-  }
-}
-
-function updateSession(response) {
-  if (response.sessionToken) {
-     session.sessionToken = response.sessionToken;
-  }
-  if (response.username) {
-    session.username = response.username;
-  }
-  updateSessionBox();
-  updateRegisterButtons();
-  return response;
-}
-
-function logout() {
-  session = {};
-  updateSession({});
-}
-
-function updateSessionBox() {
-  if (session.username) {
-    document.getElementById('session').textContent = `Logged in as ${session.username}`;
-    document.getElementById('logoutButton').disabled = false;
-  } else {
-    document.getElementById('session').textContent = 'Not logged in.';
-    document.getElementById('logoutButton').disabled = true;
-  }
-}
-
-function updateRegisterButtons() {
-  if (session.sessionToken) {
-     document.getElementById('registerButton').textContent = 'Add credential';
-     document.getElementById('registerRkButton').textContent = 'Add resident credential';
-  } else {
-     document.getElementById('registerButton').textContent = 'Register new account';
-     document.getElementById('registerRkButton').textContent = 'Register new account with resident credential';
   }
 }
 
@@ -189,27 +124,24 @@ function resetDisplays() {
 }
 
 function getIndexActions() {
-  return fetch('api/v1/')
+  return fetch('')
     .then(response => response.json())
-    .then(data => data.actions)
-  ;
+    .then(data => data.actions);
 }
 
 function getRegisterRequest(urls, username, displayName, credentialNickname, requireResidentKey) {
-  return fetch(urls.register, {
+  return fetch("localhost:9568/register", {
     body: new URLSearchParams({
       username,
       displayName: displayName || username,
       credentialNickname,
-      requireResidentKey,
-      sessionToken: session.sessionToken || null,
+      requireResidentKey
     }),
     method: 'POST',
   })
     .then(response => response.json())
     .then(updateSession)
-    .then(rejectIfNotSuccess)
-  ;
+    .then(rejectIfNotSuccess);
 }
 
 function executeRegisterRequest(request) {
