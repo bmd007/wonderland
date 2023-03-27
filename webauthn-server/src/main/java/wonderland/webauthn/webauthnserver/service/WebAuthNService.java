@@ -1,6 +1,5 @@
 package wonderland.webauthn.webauthnserver.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.yubico.webauthn.AssertionResult;
@@ -53,7 +52,6 @@ public class WebAuthNService {
     private final YubicoJsonMetadataService metadataService = new YubicoJsonMetadataService();
     private final Cache<ByteArray, AssertionRequestWrapper> assertRequestStorage = newCache();
     private final Cache<ByteArray, RegistrationRequest> registerRequestStorage = newCache();
-    private final ObjectMapper objectMapper;
 
     private static final RelyingPartyIdentity DEFAULT_RP_ID = RelyingPartyIdentity
             .builder().id("localhost").name("Yubico WebAuthn demo").build();
@@ -67,10 +65,8 @@ public class WebAuthNService {
                 .build();
     }
 
-    public WebAuthNService(InMemoryRegistrationStorage userStorage, ObjectMapper objectMapper) {
+    public WebAuthNService(InMemoryRegistrationStorage userStorage) {
         this.userStorage = userStorage;
-        this.objectMapper = objectMapper;
-        //todo make bean
         rp = RelyingParty.builder()
                 .identity(DEFAULT_RP_ID)
                 .credentialRepository(this.userStorage)

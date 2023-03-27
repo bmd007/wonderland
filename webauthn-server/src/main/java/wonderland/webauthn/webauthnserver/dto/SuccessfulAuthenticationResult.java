@@ -2,8 +2,6 @@ package wonderland.webauthn.webauthnserver.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.yubico.webauthn.data.AuthenticatorData;
-import com.yubico.webauthn.data.ByteArray;
-import demo.webauthn.WebAuthnServer;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import wonderland.webauthn.webauthnserver.domain.CredentialRegistration;

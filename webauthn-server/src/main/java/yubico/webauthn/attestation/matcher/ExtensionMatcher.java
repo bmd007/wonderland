@@ -25,12 +25,12 @@
 package yubico.webauthn.attestation.matcher;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.yubico.webauthn.attestation.DeviceMatcher;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.exception.HexException;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.DEROctetString;
+import yubico.webauthn.attestation.DeviceMatcher;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

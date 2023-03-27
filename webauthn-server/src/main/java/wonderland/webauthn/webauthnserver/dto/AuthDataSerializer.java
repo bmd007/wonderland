@@ -9,15 +9,13 @@ import java.io.IOException;
 
 public class AuthDataSerializer extends JsonSerializer<AuthenticatorData> {
     @Override
-    public void serialize(
-            AuthenticatorData value, JsonGenerator gen, SerializerProvider serializers)
-            throws IOException {
+    public void serialize(AuthenticatorData value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
         gen.writeStartObject();
         gen.writeStringField("rpIdHash", value.getRpIdHash().getHex());
         gen.writeObjectField("flags", value.getFlags());
         gen.writeNumberField("signatureCounter", value.getSignatureCounter());
-        value
-                .getAttestedCredentialData()
+
+        value.getAttestedCredentialData()
                 .ifPresent(
                         acd -> {
                             try {
