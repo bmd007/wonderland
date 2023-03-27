@@ -44,7 +44,7 @@ dependencies:
       url: git@github.com:rsocket/rsocket-dart.git
       ref: master
   firebase_auth: ^4.2.5
-  google_sign_in: ^5.4.3
+  google_sign_in: ^6.0.0
   google_fonts: ^4.0.0
   font_awesome_flutter: ^10.3.0
   firebase_core: ^2.4.1
