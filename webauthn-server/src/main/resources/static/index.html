@@ -31,7 +31,7 @@
 
     <script type="module">
         import * as webauthnJson from "./lib/webauthn-json-0.6.1/dist/esm/webauthn-json.js";
-
+        console.log("webauthnJson.supported(): "+webauthnJson.supported())//hhhmmm todo why false
         let ceremonyState = {};
 
         function extend(obj, more) {
@@ -132,13 +132,13 @@
         }
 
         function getIndexActions() {
-            return fetch('http://localhost:9568/actions')
+            return fetch('http://local.next.test.nordnet.fi/actions')
                 .then(response => response.json())
                 .then(data => data.actions);
         }
 
         function getRegisterRequest(urls, username, displayName, credentialNickname, requireResidentKey) {
-            return fetch("http://localhost:9568/register", {
+            return fetch("http://local.next.test.nordnet.fi/register", {
                 body: new URLSearchParams({
                     username,
                     displayName: displayName || username,
@@ -153,20 +153,17 @@
 
         function executeRegisterRequest(request) {
             console.log('executeRegisterRequest', request);
-
             return webauthnJson.create({publicKey: request.publicKeyCredentialCreationOptions});
         }
 
         function submitResponse(url, request, response) {
             console.log('submitResponse', url, request, response);
-
             const body = {requestId: request.requestId, credential: response};
-
             return fetch(url, {
                 method: 'POST',
                 body: JSON.stringify(body),
             })
-            .then(response => response.json());
+                .then(response => response.json());
         }
 
         async function performCeremony(params) {
@@ -201,9 +198,7 @@
             };
 
             const webauthnResponse = await executeRequest(request);
-            const serverResponse = await finishCeremony(webauthnResponse);
-
-            return serverResponse;
+            return await finishCeremony(webauthnResponse);
         }
 
         async function finishCeremony(response) {
@@ -256,6 +251,7 @@
                     },
                 });
 
+                console.log("data after registration in backend: "+ data)
                 if (data.registration) {
                     const nicknameInfo = {
                         nickname: data.registration.credentialNickname,
@@ -276,8 +272,8 @@
                 }
 
             } catch (err) {
-                setStatus('Registration failed.');
                 console.error('Registration failed', err);
+                setStatus('Registration failed.');
 
                 if (err.name === 'NotAllowedError') {
                     if (request.publicKeyCredentialCreationOptions.excludeCredentials
@@ -309,7 +305,6 @@
 
         function executeAuthenticateRequest(request) {
             console.log('executeAuthenticateRequest', request);
-
             return webauthnJson.get({publicKey: request.publicKeyCredentialRequestOptions});
         }
 

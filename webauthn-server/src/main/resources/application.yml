@@ -1,4 +1,4 @@
-server.port: 9568
+server.port: 80
 
 management:
   server.port: 9569

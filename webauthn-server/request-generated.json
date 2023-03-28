@@ -1,0 +1,62 @@
+{
+  "username": "bmd579@gmail.com",
+  "credentialNickname": "mac-chrome-cred",
+  "requestId": "tKCCLxfPQKq6RgbyE8QK5A",
+  "publicKeyCredentialCreationOptions": {
+    "rp": {
+      "name": "Yubico WebAuthn demo",
+      "id": "localhost"
+    },
+    "user": {
+      "name": "bmd579@gmail.com",
+      "displayName": "mahdi",
+      "id": "kBg1jkDLS16FhxpoT5iD9g"
+    },
+    "challenge": "bjfX3yYYRNO3Cfc0oac8PxDuyIueD-2PTd3ZW3KmfnI",
+    "pubKeyCredParams": [
+      {
+        "alg": -7,
+        "type": "public-key"
+      },
+      {
+        "alg": -8,
+        "type": "public-key"
+      },
+      {
+        "alg": -35,
+        "type": "public-key"
+      },
+      {
+        "alg": -36,
+        "type": "public-key"
+      },
+      {
+        "alg": -257,
+        "type": "public-key"
+      },
+      {
+        "alg": -258,
+        "type": "public-key"
+      },
+      {
+        "alg": -259,
+        "type": "public-key"
+      }
+    ],
+    "timeout": null,
+    "excludeCredentials": [],
+    "authenticatorSelection": {
+      "authenticatorAttachment": null,
+      "requireResidentKey": false,
+      "residentKey": "preferred",
+      "userVerification": null
+    },
+    "attestation": "direct",
+    "extensions": {
+      "appidExclude": "https://localhost:8099",
+      "credProps": true,
+      "largeBlob": null,
+      "uvm": null
+    }
+  }
+}
