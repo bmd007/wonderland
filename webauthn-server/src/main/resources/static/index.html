@@ -27,11 +27,12 @@
     <script src="lib/text-encoding-0.7.0/encoding.js"></script>
     <script src="lib/text-encoding-0.7.0/encoding-indexes.js"></script>
     <script src="lib/base64js/base64js-1.3.0.min.js"></script>
+    <script src="lib/webauthn-json-0.6.1/dist/esm/webauthn-json.js"></script>
     <script src="js/base64url.js"></script>
 
     <script type="module">
-        import * as webauthnJson from "./lib/webauthn-json-0.6.1/dist/esm/webauthn-json.js";
-        console.log("webauthnJson.supported(): "+webauthnJson.supported())//hhhmmm todo why false
+        import * as webauthnJson from "./lib/webauthn-json-0.6.1/dist/esm/webauthn-json";
+        console.log("webauthnJson.supported(): "+webauthnJson)//hhhmmm todo why false
         let ceremonyState = {};
 
         function extend(obj, more) {
