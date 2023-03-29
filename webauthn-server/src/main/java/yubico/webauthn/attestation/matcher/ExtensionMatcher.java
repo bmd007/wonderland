@@ -82,7 +82,7 @@ public final class ExtensionMatcher implements DeviceMatcher {
       final String readValue = new String(((DEROctetString) value).getOctets(), CHARSET);
       return matchValue.asText().equals(readValue);
     } else {
-      log.debug("Expected text string value for extension {}, was: {}", matchKey, value);
+      log.info("Expected text string value for extension {}, was: {}", matchKey, value);
       return false;
     }
   }
@@ -116,11 +116,11 @@ public final class ExtensionMatcher implements DeviceMatcher {
       try {
         innerValue = ASN1Primitive.fromByteArray(((DEROctetString) value).getOctets());
       } catch (IOException e) {
-        log.debug("Failed to parse {} extension value as ASN1: {}", matchKey, value);
+        log.info("Failed to parse {} extension value as ASN1: {}", matchKey, value);
         return false;
       }
     } else {
-      log.debug("Expected nested bit string value for extension {}, was: {}", matchKey, value);
+      log.info("Expected nested bit string value for extension {}, was: {}", matchKey, value);
       return false;
     }
 
@@ -128,7 +128,7 @@ public final class ExtensionMatcher implements DeviceMatcher {
       final ByteArray readBytes = new ByteArray(((DEROctetString) innerValue).getOctets());
       return matchBytes.equals(readBytes);
     } else {
-      log.debug("Expected nested bit string value for extension {}, was: {}", matchKey, value);
+      log.info("Expected nested bit string value for extension {}, was: {}", matchKey, value);
       return false;
     }
   }

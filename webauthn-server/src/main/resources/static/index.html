@@ -1,574 +1,123 @@
-<!--
-Copyright (c) 2018, Yubico AB
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice, this
-   list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice,
-   this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--->
-
 <html>
 <head>
-  <meta charset="utf-8"/>
-  <title>WebAuthn Demo</title>
-  <link href="css/fonts.css" rel="stylesheet" />
-  <link href="css/bootstrap.min.css" rel="stylesheet" media="screen"/>
-  <link href="css/bootstrap-responsive.min.css" rel="stylesheet"/>
-  <link href="css/bootstrap-yubico.css" rel="stylesheet"/>
-  <style type="text/css">
+    <meta charset="utf-8"/>
+    <title>WebAuthn Demo</title>
+    <link href="css/fonts.css" rel="stylesheet"/>
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen"/>
+    <link href="css/bootstrap-responsive.min.css" rel="stylesheet"/>
+    <link href="css/bootstrap-yubico.css" rel="stylesheet"/>
+    <style>
 
-.row {
-  display: table-row;
-}
-.row > * {
-  display: table-cell;
-  padding: 0.2em;
-}
-
-input[type="text"] {
-  height: 2em;
-  margin: 0;
-}
-
-  </style>
-
-  <script src="lib/text-encoding-0.7.0/encoding.js"></script>
-  <script src="lib/text-encoding-0.7.0/encoding-indexes.js"></script>
-  <script src="lib/base64js/base64js-1.3.0.min.js"></script>
-  <script src="js/base64url.js"></script>
-
-  <script type="module">
-import * as webauthnJson from "./lib/webauthn-json-0.6.1/dist/esm/webauthn-json.js";
-
-let ceremonyState = {};
-let session = {
-};
-
-function extend(obj, more) {
-  return Object.assign({}, obj, more);
-}
-
-function rejectIfNotSuccess(response) {
-  if (response.success) {
-    return response;
-  } else {
-    return new Promise((resolve, reject) => reject(response));
-  }
-}
-
-function updateSession(response) {
-  if (response.sessionToken) {
-     session.sessionToken = response.sessionToken;
-  }
-  if (response.username) {
-    session.username = response.username;
-  }
-  updateSessionBox();
-  updateRegisterButtons();
-  return response;
-}
-
-function logout() {
-  session = {};
-  updateSession({});
-}
-
-function updateSessionBox() {
-  if (session.username) {
-    document.getElementById('session').textContent = `Logged in as ${session.username}`;
-    document.getElementById('logoutButton').disabled = false;
-  } else {
-    document.getElementById('session').textContent = 'Not logged in.';
-    document.getElementById('logoutButton').disabled = true;
-  }
-}
-
-function updateRegisterButtons() {
-  if (session.sessionToken) {
-     document.getElementById('registerButton').textContent = 'Add credential';
-     document.getElementById('registerRkButton').textContent = 'Add resident credential';
-  } else {
-     document.getElementById('registerButton').textContent = 'Register new account';
-     document.getElementById('registerRkButton').textContent = 'Register new account with resident credential';
-  }
-}
-
-function rejected(err) {
-  return new Promise((resolve, reject) => reject(err));
-}
-
-function setStatus(statusText) {
-  document.getElementById('status').textContent = statusText;
-}
-
-function addMessage(message) {
-  const el = document.getElementById('messages');
-  const p = document.createElement('p');
-  p.appendChild(document.createTextNode(message));
-  el.appendChild(p);
-}
-
-function addMessages(messages) {
-  messages.forEach(addMessage);
-}
-
-function clearMessages() {
-  const el = document.getElementById('messages');
-  while (el.firstChild) {
-    el.removeChild(el.firstChild);
-  }
-}
-
-function showJson(name, data) {
-  const el = document.getElementById(name)
-    .textContent = JSON.stringify(data, false, 2);
-}
-function showRequest(data) { return showJson('request', data); }
-function showAuthenticatorResponse(data) {
-  const clientDataJson = data && (data.response && data.response.clientDataJSON);
-  return showJson('authenticator-response', extend(
-    data, {
-    _clientDataJson: data && JSON.parse(new TextDecoder('utf-8').decode(base64url.toByteArray(clientDataJson))),
-  }));
-}
-function showServerResponse(data) {
-  if (data && data.messages) {
-    addMessages(data.messages);
-  }
-  return showJson('server-response', data);
-}
-
-function hideDeviceInfo() {
-  document.getElementById("device-info").style = "display: none";
-}
-function showDeviceInfo(params) {
-  document.getElementById("device-info").style = undefined;
-
-  if (params.displayName) {
-    document.getElementById("device-name-row").style = undefined;
-    document.getElementById("device-name").textContent = params.displayName;
-  } else {
-     document.getElementById("device-name-row").style = "display: none";
-  }
-
-  if (params.nickname) {
-    document.getElementById("device-nickname-row").style = undefined;
-    document.getElementById("device-nickname").textContent = params.nickname;
-  } else {
-     document.getElementById("device-nickname-row").style = "display: none";
-  }
-
-  if (params.imageUrl) {
-    document.getElementById("device-icon").src = params.imageUrl;
-  }
-}
-
-function resetDisplays() {
-  clearMessages();
-  showRequest(null);
-  showAuthenticatorResponse(null);
-  showServerResponse(null);
-  hideDeviceInfo();
-}
-
-function getIndexActions() {
-  return fetch('api/v1/')
-    .then(response => response.json())
-    .then(data => data.actions)
-  ;
-}
-
-function getRegisterRequest(urls, username, displayName, credentialNickname, requireResidentKey) {
-  return fetch(urls.register, {
-    body: new URLSearchParams({
-      username,
-      displayName: displayName || username,
-      credentialNickname,
-      requireResidentKey,
-      sessionToken: session.sessionToken || null,
-    }),
-    method: 'POST',
-  })
-    .then(response => response.json())
-    .then(updateSession)
-    .then(rejectIfNotSuccess)
-  ;
-}
-
-function executeRegisterRequest(request) {
-  console.log('executeRegisterRequest', request);
-
-  return webauthnJson.create({ publicKey: request.publicKeyCredentialCreationOptions });
-}
-
-function submitResponse(url, request, response) {
-  console.log('submitResponse', url, request, response);
-
-  const body = {
-    requestId: request.requestId,
-    credential: response,
-    sessionToken: request.sessionToken || session.sessionToken || null,
-  };
-
-  return fetch(url, {
-    method: 'POST',
-    body: JSON.stringify(body),
-  })
-    .then(response => response.json())
-    .then(updateSession)
-  ;
-}
-
-async function performCeremony(params) {
-  const callbacks = params.callbacks || {}; /* { init, authenticatorRequest, serverRequest } */
-  const getIndexActions = params.getIndexActions; /* function(): object */
-  const getRequest = params.getRequest; /* function(urls: object): { publicKeyCredentialCreationOptions: object } | { publicKeyCredentialRequestOptions: object } */
-  const statusStrings = params.statusStrings; /* { init, authenticatorRequest, serverRequest, success, } */
-  const executeRequest = params.executeRequest; /* function({ publicKeyCredentialCreationOptions: object } | { publicKeyCredentialRequestOptions: object }): Promise[PublicKeyCredential] */
-  const handleError = params.handleError; /* function(err): ? */
-
-  setStatus('Looking up API paths...');
-  resetDisplays();
-
-  const rootUrls = await getIndexActions();
-
-  setStatus(statusStrings.int);
-  if (callbacks.init) {
-    callbacks.init(rootUrls);
-  }
-  const { request, actions: urls } = await getRequest(rootUrls);
-
-  setStatus(statusStrings.authenticatorRequest);
-  if (callbacks.authenticatorRequest) {
-    callbacks.authenticatorRequest({ request, urls });
-  }
-  showRequest(request);
-  ceremonyState = {
-    callbacks,
-    request,
-    statusStrings,
-    urls,
-  };
-
-  const webauthnResponse = await executeRequest(request);
-  const serverResponse = await finishCeremony(webauthnResponse);
-
-  return serverResponse;
-}
-
-async function finishCeremony(response) {
-  const callbacks = ceremonyState.callbacks;
-  const request = ceremonyState.request;
-  const statusStrings = ceremonyState.statusStrings;
-  const urls = ceremonyState.urls;
-
-  setStatus(statusStrings.serverRequest || 'Sending response to server...');
-  if (callbacks.serverRequest) {
-    callbacks.serverRequest({ urls, request, response });
-  }
-  showAuthenticatorResponse(response);
-
-  const data = await submitResponse(urls.finish, request, response);
-
-  if (data && data.success) {
-    setStatus(statusStrings.success);
-  } else {
-    setStatus('Error!');
-  }
-  showServerResponse(data);
-
-  return data;
-}
-
-function registerResidentKey(event) {
-  return register(event, true);
-}
-async function register(event, requireResidentKey) {
-  const username = document.getElementById('username').value;
-  const displayName = document.getElementById('displayName').value;
-  const credentialNickname = document.getElementById('credentialNickname').value;
-
-  var request;
-
-  try {
-    const data = await performCeremony({
-      getIndexActions,
-      getRequest: urls => getRegisterRequest(urls, username, displayName, credentialNickname, requireResidentKey),
-      statusStrings: {
-        init: 'Initiating registration ceremony with server...',
-        authenticatorRequest: 'Asking authenticators to create credential...',
-        success: 'Registration successful!',
-      },
-      executeRequest: req => {
-        request = req;
-        return executeRegisterRequest(req);
-      },
-    });
-
-    if (data.registration) {
-      const nicknameInfo = {
-        nickname: data.registration.credentialNickname,
-      };
-
-      if (data.registration && data.registration.attestationMetadata) {
-        showDeviceInfo(extend(
-          data.registration.attestationMetadata.deviceProperties,
-          nicknameInfo
-        ));
-      } else {
-        showDeviceInfo(nicknameInfo);
-      }
-
-      if (!data.attestationTrusted) {
-        addMessage("Warning: Attestation is not trusted!");
-      }
-    }
-
-  } catch (err) {
-    setStatus('Registration failed.');
-    console.error('Registration failed', err);
-
-    if (err.name === 'NotAllowedError') {
-      if (request.publicKeyCredentialCreationOptions.excludeCredentials
-          && request.publicKeyCredentialCreationOptions.excludeCredentials.length > 0
-      ) {
-        addMessage('Credential creation failed, probably because an already registered credential is avaiable.');
-      } else {
-        addMessage('Credential creation failed for an unknown reason.');
-      }
-    } else if (err.name === 'InvalidStateError') {
-      addMessage(`This authenticator is already registered for the account "${username}". Please try again with a different authenticator.`)
-    } else if (err.message) {
-      addMessage(`${err.name}: ${err.message}`);
-    } else if (err.messages) {
-      addMessages(err.messages);
-    }
-    return rejected(err);
-  }
-}
-
-function getAuthenticateRequest(urls, username) {
-  return fetch(urls.authenticate, {
-    body: new URLSearchParams(username ? { username } : {}),
-    method: 'POST',
-  })
-    .then(response => response.json())
-    .then(updateSession)
-    .then(rejectIfNotSuccess)
-  ;
-}
-
-function executeAuthenticateRequest(request) {
-  console.log('executeAuthenticateRequest', request);
-
-  return webauthnJson.get({ publicKey: request.publicKeyCredentialRequestOptions });
-}
-
-function authenticateWithUsername(event) {
-  return authenticate(event, document.getElementById('username').value);
-}
-async function authenticate(event, username) {
-  try {
-    const data = await performCeremony({
-      getIndexActions,
-      getRequest: urls => getAuthenticateRequest(urls, username),
-      statusStrings: {
-        init: 'Initiating authentication ceremony with server...',
-        authenticatorRequest: 'Asking authenticators to perform assertion...',
-        success: 'Authentication successful!',
-      },
-      executeRequest: executeAuthenticateRequest,
-    });
-
-    if (data.registrations) {
-      addMessage(`Authenticated as: ${data.registrations[0].username}`);
-    }
-    return data;
-
-  } catch (err) {
-    setStatus('Authentication failed.');
-    if (err.name === 'InvalidStateError') {
-      addMessage(`This authenticator is not registered for the account "${username}". Please try again with a registered authenticator.`)
-    } else if (err.message) {
-      addMessage(`${err.name}: ${err.message}`);
-    } else if (err.messages) {
-      addMessages(err.messages);
-    }
-    console.error('Authentication failed', err);
-    return rejected(err);
-  }
-}
-
-function deregister() {
-  const credentialId = document.getElementById('deregisterCredentialId').value;
-  addMessage('Deregistering credential...');
-
-  return getIndexActions()
-    .then(urls =>
-      fetch(urls.deregister, {
-       body: new URLSearchParams({
-         credentialId,
-         sessionToken: session.sessionToken || null,
-       }),
-       method: 'POST',
-     })
-    )
-    .then(response => response.json())
-    .then(updateSession)
-    .then(rejectIfNotSuccess)
-    .then(data => {
-      if (data.success) {
-        if (data.droppedRegistration) {
-          addMessage(`Successfully deregistered credential: ${data.droppedRegistration.credentialNickname || credentialId}`);
-        } else {
-          addMessage(`Successfully deregistered credential: ${credentialId}`);
+        .row {
+            display: table-row;
         }
-        if (data.accountDeleted) {
-          addMessage('No credentials remain - account deleted.');
-          logout();
+
+        .row > * {
+            display: table-cell;
+            padding: 0.2em;
         }
-      } else {
-        addMessage('Credential deregistration failed.');
-      }
-    })
-    .catch((err) => {
-      setStatus('Credential deregistration failed.');
-      if (err.message) {
-        addMessage(`${err.name}: ${err.message}`);
-      } else if (err.messages) {
-        addMessages(err.messages);
-      }
-      console.error('Authentication failed', err);
-      return rejected(err);
-    });
-}
 
-function usernameChanged(event) {
-  const displayNameField = document.getElementById("displayName");
-  displayNameField.placeholder = event.target.value;
-}
+        input[type="text"] {
+            height: 2em;
+            margin: 0;
+        }
 
-function init() {
-  hideDeviceInfo();
+    </style>
 
-  document.getElementById("username").oninput = usernameChanged;
-  document.getElementById("registerButton").onclick = register;
-  document.getElementById("registerRkButton").onclick = registerResidentKey;
-  document.getElementById("authenticateWithUsernameButton").onclick = authenticateWithUsername;
-  document.getElementById("authenticateButton").onclick = authenticate;
-  document.getElementById("deregisterButton").onclick = deregister;
-  document.getElementById("logoutButton").onclick = logout;
-
-  return false;
-}
-
-window.onload = init;
-
-</script>
+    <script src="lib/text-encoding-0.7.0/encoding.js"></script>
+    <script src="lib/text-encoding-0.7.0/encoding-indexes.js"></script>
+    <script src="lib/base64js/base64js-1.3.0.min.js"></script>
+    <script src="lib/webauthn-json-0.6.1/dist/esm/webauthn-json.js"></script>
+    <script src="js/base64url.js"></script>
+    <script src="js/myScript.js"></script>
 
 </head>
 <body>
 
 <div class="base">
-  <div class="content">
+    <div class="content">
 
-    <div class="header-logo visible-desktop">
-      <a href="https://www.yubico.com/" title="Yubico">
-        <img src="img/yubico-logo.png"/>
-      </a>
+        <div class="header-logo visible-desktop">
+            <a href="https://www.yubico.com/" title="Yubico">
+                <img src="img/yubico-logo.png"/>
+            </a>
+        </div>
+
+        <h1> Test your WebAuthn device </h1>
+
+        <form class="horizontal">
+            <div class="row">
+                <label for="username">Username:</label>
+                <div><input type="text" id="username"/></div>
+            </div>
+            <div class="row">
+                <label for="displayName">Display name:</label>
+                <div><input type="text" id="displayName"/></div>
+            </div>
+
+            <div class="row">
+                <label for="credentialNickname">Credential nickname:</label>
+                <div><input type="text" id="credentialNickname"/></div>
+                <div>
+                    <button type="button" id="registerButton">
+                        Register new account
+                    </button>
+                </div>
+                <div>
+                    <button type="button" id="registerRkButton">
+                        Register new account with resident credential
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div></div>
+                <div></div>
+                <div>
+                    <button type="button" id="authenticateWithUsernameButton">
+                        Authenticate
+                    </button>
+                </div>
+                <div>
+                    <button type="button" id="authenticateButton">
+                        Authenticate without username
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <label for="deregisterCredentialId">Credential ID:</label>
+                <div><input type="text" id="deregisterCredentialId"/></div>
+                <div>
+                    <button type="button" id="deregisterButton">
+                        Deregister
+                    </button>
+                </div>
+            </div>
+        </form>
+
+
+        <p id="status"></p>
+        <div id="messages"></div>
+
+        <div id="device-info">
+            <div id="device-name-row" class="row">
+                <b>Device: </b><span id="device-name"></span>
+            </div>
+            <div id="device-nickname-row" class="row">
+                <b>Nickname: </b><span id="device-nickname"></span>
+            </div>
+            <img id="device-icon"/>
+        </div>
+
+        Server response:
+        <pre id="server-response"></pre>
+        Authenticator response:
+        <pre id="authenticator-response"></pre>
+        Request:
+        <pre id="request"></pre>
+
     </div>
-
-    <h1> Test your WebAuthn device </h1>
-
-    <form class="horizontal">
-      <div class="row">
-        <label for="username">Username:</label>
-        <div><input type="text" id="username" /></div>
-      </div>
-      <div class="row">
-        <label for="displayName">Display name:</label>
-        <div><input type="text" id="displayName"/></div>
-      </div>
-
-      <div class="row">
-        <label for="credentialNickname">Credential nickname:</label>
-        <div><input type="text" id="credentialNickname"/></div>
-        <div>
-          <button type="button" id="registerButton">
-            Register new account
-          </button>
-        </div>
-        <div>
-          <button type="button" id="registerRkButton">
-            Register new account with resident credential
-          </button>
-        </div>
-      </div>
-
-      <div class="row">
-        <div></div>
-        <div></div>
-        <div>
-          <button type="button" id="authenticateWithUsernameButton">
-            Authenticate
-          </button>
-        </div>
-        <div>
-          <button type="button" id="authenticateButton">
-            Authenticate without username
-          </button>
-        </div>
-      </div>
-
-      <div class="row">
-        <label for="deregisterCredentialId">Credential ID:</label>
-        <div><input type="text" id="deregisterCredentialId"/></div>
-        <div>
-          <button type="button" id="deregisterButton">
-            Deregister
-          </button>
-        </div>
-      </div>
-    </form>
-
-
-    <p id="session">Not logged in.</p>
-    <button id="logoutButton" disabled="disabled">Log out</button>
-    <p id="status"></p>
-    <div id="messages"></div>
-
-    <div id="device-info">
-      <div id="device-name-row" class="row">
-        <b>Device: </b><span id="device-name"></span>
-      </div>
-      <div id="device-nickname-row" class="row">
-        <b>Nickname: </b><span id="device-nickname"></span>
-      </div>
-      <img id="device-icon"/>
-    </div>
-
-    Server response: <pre id="server-response"></pre>
-    Authenticator response: <pre id="authenticator-response"></pre>
-    Request: <pre id="request"></pre>
-
-  </div>
 </div>
 
 </body>
