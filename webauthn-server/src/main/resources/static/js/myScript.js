@@ -1,4 +1,4 @@
-import * as webauthnJson from "../lib/webauthn-json-0.6.1/dist/esm/webauthn-json";
+const webauthnJson = require("../lib/webauthn-json-0.6.1/dist/esm/webauthn-json");
 
 console.log("webauthnJson.supported(): " + webauthnJson.supported())
 let ceremonyState = {};
