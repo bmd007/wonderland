@@ -14,10 +14,13 @@ import com.yubico.webauthn.data.AttestationConveyancePreference;
 import com.yubico.webauthn.data.AuthenticatorSelectionCriteria;
 import com.yubico.webauthn.data.AuthenticatorTransport;
 import com.yubico.webauthn.data.ByteArray;
+import com.yubico.webauthn.data.RegistrationExtensionInputs;
 import com.yubico.webauthn.data.RelyingPartyIdentity;
 import com.yubico.webauthn.data.ResidentKeyRequirement;
 import com.yubico.webauthn.data.UserIdentity;
 import com.yubico.webauthn.exception.RegistrationFailedException;
+import com.yubico.webauthn.extension.appid.AppId;
+import com.yubico.webauthn.extension.appid.InvalidAppIdException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -55,9 +58,11 @@ public class WebAuthNService {
     private final Cache<ByteArray, AssertionRequestWrapper> assertRequestStorage = newCache();
     private final Cache<ByteArray, RegistrationRequest> registerRequestStorage = newCache();
 
+    private static final String DEFAULT_ORIGIN = "http://local.next.test.nordnet.fi";
     private static final RelyingPartyIdentity DEFAULT_RP_ID = RelyingPartyIdentity
-            .builder().id("localhost").name("Yubico WebAuthn demo").build();
-    private static final String DEFAULT_ORIGIN = "https://localhost:9568";
+            .builder()
+            .id(DEFAULT_ORIGIN)
+            .name("Yubico WebAuthn demo").build();
 
     private static <K, V> Cache<K, V> newCache() {
         return CacheBuilder
@@ -93,7 +98,7 @@ public class WebAuthNService {
     public RegistrationRequest startRegistration(@NonNull String username,
                                                  @NonNull String displayName,
                                                  Optional<String> credentialNickname,
-                                                 ResidentKeyRequirement residentKeyRequirement) {
+                                                 ResidentKeyRequirement residentKeyRequirement) throws InvalidAppIdException {
         log.info("startRegistration username: {}, credentialNickname: {}", username, credentialNickname);
 
         final UserIdentity userIdentity =
@@ -112,9 +117,13 @@ public class WebAuthNService {
         var authenticatorSelectionCriteria = AuthenticatorSelectionCriteria.builder()
                 .residentKey(residentKeyRequirement)
                 .build();
+        var registrationExtensionInputs = RegistrationExtensionInputs.builder()
+                .appidExclude(new AppId("https://localhost:8099"))
+                .build();
         var startRegistrationOptions = StartRegistrationOptions.builder()
                 .user(userIdentity)
                 .authenticatorSelection(authenticatorSelectionCriteria)
+                .extensions(registrationExtensionInputs)
                 .build();
         var registrationRequest = new RegistrationRequest(username, credentialNickname,
                 randomUUIDByteArray(),

@@ -162,6 +162,7 @@ function createResponseToJSON(credential) {
   return convert(bufferToBase64url, publicKeyCredentialWithAttestation, credential);
 }
 async function create(requestJSON) {
+  console.log("about to call navigator.create")
   const credential = await navigator.credentials.create(createRequestFromJSON(requestJSON));
   return createResponseToJSON(credential);
 }
