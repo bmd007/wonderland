@@ -58,10 +58,10 @@ public class WebAuthNService {
     private final Cache<ByteArray, AssertionRequestWrapper> assertRequestStorage = newCache();
     private final Cache<ByteArray, RegistrationRequest> registerRequestStorage = newCache();
 
-    private static final String DEFAULT_ORIGIN = "http://local.next.test.nordnet.fi";
+    private static final String DEFAULT_ORIGIN = "http://local.next.test.nordnet.fi:9568";
     private static final RelyingPartyIdentity DEFAULT_RP_ID = RelyingPartyIdentity
             .builder()
-            .id(DEFAULT_ORIGIN)
+            .id("http://local.next.test.nordnet.fi:9568")
             .name("Yubico WebAuthn demo").build();
 
     private static <K, V> Cache<K, V> newCache() {
@@ -118,7 +118,7 @@ public class WebAuthNService {
                 .residentKey(residentKeyRequirement)
                 .build();
         var registrationExtensionInputs = RegistrationExtensionInputs.builder()
-                .appidExclude(new AppId("https://localhost:8099"))
+                .appidExclude(new AppId("http://local.next.test.nordnet.fi:9568"))
                 .build();
         var startRegistrationOptions = StartRegistrationOptions.builder()
                 .user(userIdentity)

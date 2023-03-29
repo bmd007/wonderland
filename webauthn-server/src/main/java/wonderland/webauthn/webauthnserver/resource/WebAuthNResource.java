@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wonderland.webauthn.webauthnserver.dto.AssertionResponse;
@@ -38,24 +39,27 @@ public class WebAuthNResource {
         public final URL deleteAccount;
         public final URL deregister;
         public final URL register;
+
         public Index() throws MalformedURLException {
-            authenticate = new URL("http://local.next.test.nordnet.fi/authenticate");
-            deleteAccount = new URL("http://local.next.test.nordnet.fi/delete-account");
-            deregister = new URL("http://local.next.test.nordnet.fi/action/deregister");
-            register = new URL("http://local.next.test.nordnet.fi/register");
+            authenticate = new URL("http://local.next.test.nordnet.fi:9568/authenticate");
+            deleteAccount = new URL("http://local.next.test.nordnet.fi:9568/delete-account");
+            deregister = new URL("http://local.next.test.nordnet.fi:9568/action/deregister");
+            register = new URL("http://local.next.test.nordnet.fi:9568/register");
         }
     }
 
     private static final class Info {
         public final URL version;
+
         public Info() throws MalformedURLException {
-            version = new URL("http://local.next.test.nordnet.fi/version");
+            version = new URL("http://local.next.test.nordnet.fi:9568/version");
         }
     }
 
     private static final class IndexResponse {
         public final Index actions = new Index();
         public final Info info = new Info();
+
         private IndexResponse() throws MalformedURLException {
         }
     }
@@ -71,7 +75,7 @@ public class WebAuthNResource {
             @NotBlank @RequestParam("displayName") String displayName,
             @NotBlank @RequestParam("credentialNickname") String credentialNickname,
             @RequestParam(value = "requireResidentKey", required = false, defaultValue = "required") String requireResidentKey)
-            throws MalformedURLException, InvalidAppIdException {
+            throws InvalidAppIdException {
         var registrationRequest = server.startRegistration(
                 username,
                 displayName,
@@ -79,6 +83,22 @@ public class WebAuthNResource {
                 requireResidentKey.equals("required") ? ResidentKeyRequirement.REQUIRED : ResidentKeyRequirement.PREFERRED
         );
         return new StartRegistrationResponse(registrationRequest);
+    }
+
+    record RegisterRequestBody(@NotBlank String username, @NotBlank String displayName, @NotBlank String credentialNickname, String requireResidentKey) { }
+
+    @PostMapping( "register/json")
+    public StartRegistrationResponse startRegistration(@RequestBody RegisterRequestBody requestBody) throws InvalidAppIdException, MalformedURLException {
+        ResidentKeyRequirement residentKeyRequirement = Optional.ofNullable(requestBody.requireResidentKey)
+                .filter(s -> s.equals("required"))
+                .map(s -> ResidentKeyRequirement.REQUIRED)
+                .orElseGet(() -> ResidentKeyRequirement.PREFERRED);
+        return startRegistration(
+                requestBody.username,
+                requestBody.displayName,
+                requestBody.credentialNickname,
+                residentKeyRequirement.getValue()
+        );
     }
 
     @PostMapping("register/finish")

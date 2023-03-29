@@ -5,7 +5,7 @@
   "publicKeyCredentialCreationOptions": {
     "rp": {
       "name": "Yubico WebAuthn demo",
-      "id": "localhost"
+      "id": "local.next.test.nordnet.fi:9568"
     },
     "user": {
       "name": "bmd579@gmail.com",
@@ -53,7 +53,7 @@
     },
     "attestation": "direct",
     "extensions": {
-      "appidExclude": "https://localhost:8099",
+      "appidExclude": "http://local.next.test.nordnet.fi:9568:8099",
       "credProps": true,
       "largeBlob": null,
       "uvm": null
