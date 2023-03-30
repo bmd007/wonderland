@@ -34,6 +34,7 @@ import wonderland.webauthn.webauthnserver.dto.RegistrationResponse;
 import wonderland.webauthn.webauthnserver.dto.SuccessfulAuthenticationResult;
 import wonderland.webauthn.webauthnserver.dto.SuccessfulRegistrationResult;
 import wonderland.webauthn.webauthnserver.repository.InMemoryRegistrationStorage;
+import wonderland.webauthn.webauthnserver.repository.SmallInMemoryRegistrationStorage;
 import yubico.webauthn.attestation.Attestation;
 import yubico.webauthn.attestation.YubicoJsonMetadataService;
 
@@ -52,7 +53,7 @@ import java.util.UUID;
 @Service
 public class WebAuthNService {
 
-    private final InMemoryRegistrationStorage userStorage;
+    private final SmallInMemoryRegistrationStorage userStorage;
     private final RelyingParty rp;
     private final YubicoJsonMetadataService metadataService = new YubicoJsonMetadataService();
     private final Map<ByteArray, AssertionRequestWrapper> assertRequestStorage = new HashMap<>();
@@ -66,7 +67,7 @@ public class WebAuthNService {
             .id("localhost.localdomain")
             .name("Yubico WebAuthn demo").build();
 
-    public WebAuthNService(InMemoryRegistrationStorage userStorage) {
+    public WebAuthNService(SmallInMemoryRegistrationStorage userStorage) {
         this.userStorage = userStorage;
         rp = RelyingParty.builder()
                 .identity(DEFAULT_RP_ID)
