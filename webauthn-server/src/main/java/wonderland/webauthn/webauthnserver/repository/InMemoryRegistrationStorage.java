@@ -92,7 +92,7 @@ public class InMemoryRegistrationStorage implements CredentialRepository {
     }
 
     public boolean addRegistrationByUsername(String username, CredentialRegistration reg) {
-        return storage.get(username).add(reg);
+        return storage.get(username).add(reg);//todo use a better storage model here. rewrite this class
     }
 
     public Set<CredentialRegistration> getRegistrationsByUsername(String username) {

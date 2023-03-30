@@ -133,9 +133,13 @@ function executeRegisterRequest (request) {
 function submitResponse (url, request, response) {
   console.log('submitResponse', url, request, response)
   const body = { requestId: request.requestId, credential: response }
-  return fetch(url, {
+  console.log("finish body: "+ JSON.stringify(body))
+  return fetch('https://localhost.localdomain/register/finish', {
     method: 'POST',
     body: JSON.stringify(body),
+    headers: {
+      'Content-Type': 'application/json',
+    }
   })
     .then(response => response.json())
 }

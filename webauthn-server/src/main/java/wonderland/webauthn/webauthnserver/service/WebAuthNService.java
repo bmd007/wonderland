@@ -1,7 +1,5 @@
 package wonderland.webauthn.webauthnserver.service;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.yubico.webauthn.AssertionResult;
 import com.yubico.webauthn.FinishAssertionOptions;
 import com.yubico.webauthn.FinishRegistrationOptions;
@@ -15,8 +13,6 @@ import com.yubico.webauthn.data.AuthenticatorAttachment;
 import com.yubico.webauthn.data.AuthenticatorSelectionCriteria;
 import com.yubico.webauthn.data.AuthenticatorTransport;
 import com.yubico.webauthn.data.ByteArray;
-import com.yubico.webauthn.data.Extensions;
-import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
 import com.yubico.webauthn.data.RegistrationExtensionInputs;
 import com.yubico.webauthn.data.RelyingPartyIdentity;
 import com.yubico.webauthn.data.ResidentKeyRequirement;
@@ -44,12 +40,13 @@ import yubico.webauthn.attestation.YubicoJsonMetadataService;
 import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -58,8 +55,8 @@ public class WebAuthNService {
     private final InMemoryRegistrationStorage userStorage;
     private final RelyingParty rp;
     private final YubicoJsonMetadataService metadataService = new YubicoJsonMetadataService();
-    private final Cache<ByteArray, AssertionRequestWrapper> assertRequestStorage = newCache();
-    private final Cache<ByteArray, RegistrationRequest> registerRequestStorage = newCache();
+    private final Map<ByteArray, AssertionRequestWrapper> assertRequestStorage = new HashMap<>();
+    private final Map<ByteArray, RegistrationRequest> registerRequestStorage = new HashMap<>();
 
     private static final String DEFAULT_ORIGIN = "https://localhost.localdomain";
     private static final String WEBAPP_NEXT = "https://local.next.test.nordnet.fi:8081";
@@ -68,14 +65,6 @@ public class WebAuthNService {
             .builder()
             .id("localhost.localdomain")
             .name("Yubico WebAuthn demo").build();
-
-    private static <K, V> Cache<K, V> newCache() {
-        return CacheBuilder
-                .newBuilder()
-                .maximumSize(100)
-                .expireAfterAccess(10, TimeUnit.MINUTES)
-                .build();
-    }
 
     public WebAuthNService(InMemoryRegistrationStorage userStorage) {
         this.userStorage = userStorage;
@@ -125,7 +114,7 @@ public class WebAuthNService {
                 .userVerification(UserVerificationRequirement.DISCOURAGED)
                 .build();
         var registrationExtensionInputs = RegistrationExtensionInputs.builder()
-                .appidExclude(new AppId("https://localhost.localdomain"))
+                .appidExclude(new AppId(DEFAULT_ORIGIN))
 //                .credProps()
 //                .uvm()
 //                .largeBlob(Extensions.LargeBlob.LargeBlobRegistrationInput.LargeBlobSupport.PREFERRED)
@@ -147,9 +136,9 @@ public class WebAuthNService {
 
     public SuccessfulRegistrationResult finishRegistration(RegistrationResponse registrationResponse) {
         var registrationRequest =
-                Optional.ofNullable(registerRequestStorage.getIfPresent(registrationResponse.requestId()))
+                Optional.ofNullable(registerRequestStorage.get(registrationResponse.requestId()))
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "registration request not found"));
-        registerRequestStorage.invalidate(registrationRequest.getRequestId());
+        registerRequestStorage.remove(registrationRequest.getRequestId());
 
         try {
             var registrationResult = rp.finishRegistration(
@@ -202,7 +191,7 @@ public class WebAuthNService {
             RegisteredCredential credential,
             SortedSet<AuthenticatorTransport> transports,
             Optional<Attestation> attestationMetadata) {
-        CredentialRegistration reg = CredentialRegistration.builder()
+        var credentialRegistration = CredentialRegistration.builder()
                 .userIdentity(userIdentity)
                 .credentialNickname(nickname)
                 .registrationTime(Instant.now())
@@ -214,8 +203,8 @@ public class WebAuthNService {
                 userIdentity,
                 nickname,
                 credential);
-        userStorage.addRegistrationByUsername(userIdentity.getName(), reg);
-        return reg;
+        userStorage.addRegistrationByUsername(userIdentity.getName(), credentialRegistration);
+        return credentialRegistration;
     }
 
     public AssertionRequestWrapper startAuthentication(String username) {
@@ -237,9 +226,9 @@ public class WebAuthNService {
 
     public SuccessfulAuthenticationResult finishAuthentication(AssertionResponse assertionResponse) {
         AssertionRequestWrapper request =
-                Optional.ofNullable(assertRequestStorage.getIfPresent(assertionResponse.getRequestId()))
+                Optional.ofNullable(assertRequestStorage.get(assertionResponse.getRequestId()))
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "assertion request not found"));
-        assertRequestStorage.invalidate(assertionResponse.getRequestId());
+        assertRequestStorage.remove(assertionResponse.getRequestId());
         try {
             var finishAssertionOptions = FinishAssertionOptions.builder()
                     .request(request.getRequest())
