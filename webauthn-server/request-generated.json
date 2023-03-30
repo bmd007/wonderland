@@ -5,7 +5,7 @@
   "publicKeyCredentialCreationOptions": {
     "rp": {
       "name": "Yubico WebAuthn demo",
-      "id": "wonderland.wonder"
+      "id": "localhost.localdomain"
     },
     "user": {
       "name": "sdf",
@@ -53,7 +53,7 @@
     },
     "attestation": "direct",
     "extensions": {
-      "appidExclude": "https://wonderland.wonder",
+      "appidExclude": "https://localhost.localdomain",
       "credProps": true,
       "largeBlob": null,
       "uvm": null

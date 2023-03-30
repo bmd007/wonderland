@@ -98,10 +98,10 @@ function resetDisplays () {
 }
 
 function getIndexActions () {
-  return fetch('https://wonderland.wonder/actions', {
+  return fetch('https://localhost.localdomain/actions', {
     headers: {
       'Content-Type': 'application/json',
-      // 'Origin': 'https://wonderland.wonder',
+      // 'Origin': 'https://localhost.localdomain',
     }
   })
     .then(response => response.json())
@@ -109,7 +109,7 @@ function getIndexActions () {
 }
 
 function getRegisterRequest (urls, username, displayName, credentialNickname, requireResidentKey) {
-  return fetch('https://wonderland.wonder/register', {
+  return fetch('https://localhost.localdomain/register', {
     body: new URLSearchParams({
       username,
       displayName: displayName || username,
@@ -118,7 +118,7 @@ function getRegisterRequest (urls, username, displayName, credentialNickname, re
     }),
     method: 'POST',
     // headers: {
-    //   'Origin': 'https://wonderland.wonder',
+    //   'Origin': 'https://localhost.localdomain',
     // }
   })
     .then(response => response.json())
@@ -215,7 +215,7 @@ async function registerPrefilledButton (event) {
         },
         pubKeyCredParams: [{ alg: -7, type: 'public-key' }],
         authenticatorSelection: {
-          authenticatorAttachment: 'platform',
+          authenticatorAttachment: 'cross-platform',
         },
         timeout: 60000,
         attestation: 'direct',

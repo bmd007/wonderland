@@ -4,5 +4,5 @@ import lombok.Value;
 
 @Value
 public class StartAuthenticationActions {
-    String finish = "https://wonderland.wonder/register/finish";
+    String finish = "https://localhost.localdomain/register/finish";
 }

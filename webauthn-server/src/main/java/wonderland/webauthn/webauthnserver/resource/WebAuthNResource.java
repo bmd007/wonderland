@@ -41,10 +41,10 @@ public class WebAuthNResource {
         public final URL register;
 
         public Index() throws MalformedURLException {
-            authenticate = new URL("https://wonderland.wonder/authenticate");
-            deleteAccount = new URL("https://wonderland.wonder/delete-account");
-            deregister = new URL("https://wonderland.wonder/action/deregister");
-            register = new URL("https://wonderland.wonder/register");
+            authenticate = new URL("https://localhost.localdomain/authenticate");
+            deleteAccount = new URL("https://localhost.localdomain/delete-account");
+            deregister = new URL("https://localhost.localdomain/action/deregister");
+            register = new URL("https://localhost.localdomain/register");
         }
     }
 
@@ -52,7 +52,7 @@ public class WebAuthNResource {
         public final URL version;
 
         public Info() throws MalformedURLException {
-            version = new URL("https://wonderland.wonder/version");
+            version = new URL("https://localhost.localdomain/version");
         }
     }
 

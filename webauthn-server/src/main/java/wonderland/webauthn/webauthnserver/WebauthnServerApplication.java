@@ -15,12 +15,12 @@ public class WebauthnServerApplication {
         SpringApplication.run(WebauthnServerApplication.class, args);
     }
 
-//    @Bean
+    @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(false);
         corsConfiguration.addAllowedHeader("*");
-//        corsConfiguration.setAllowedOriginPatterns(List.of("https://wonderland.wonder:[0-9]+"));
+//        corsConfiguration.setAllowedOriginPatterns(List.of("https://localhost.localdomain:[0-9]+"));
         corsConfiguration.addAllowedMethod("*");
         corsConfiguration.addAllowedOrigin("*");
         corsConfiguration.addExposedHeader(HttpHeaders.SET_COOKIE);

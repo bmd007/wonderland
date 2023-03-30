@@ -1,5 +1,5 @@
 server:
-  port: 443
+  port: 9568
 
 management:
   server.port: 9569
@@ -70,11 +70,16 @@ spring:
 
 server:
   ssl:
-    key-store: "classpath:wonderland-self-sgined-cert.p12"
-    key-store-password: ohpassword
-    keyStoreType: PKCS12
-    keyAlias: wonderland
-    enabled: true
+    certificate: "classpath:cert/public.crt"
+    certificate-private-key: "classpath:cert/private.key"
+    trust-certificate: "classpath:cert/ca.pem"
+    key-password: "nVPjjXEEfeN8yfkHI8zY0Onjv2WqreiXV8keS8q+nAw="
+  #    key-store: "classpath:springboot.p12"
+#    key-store-password: password
+#    keyStoreType: PKCS12
+#    keyAlias: springboot
+#    enabled: true
+  port: 443
 
 
 ---
