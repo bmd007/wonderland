@@ -120,15 +120,15 @@ public class WebAuthNService {
                         );
 
         var authenticatorSelectionCriteria = AuthenticatorSelectionCriteria.builder()
-                .residentKey(ResidentKeyRequirement.DISCOURAGED)
-                .authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM)
-                .userVerification(UserVerificationRequirement.PREFERRED)
+                .residentKey(residentKeyRequirement)
+                .authenticatorAttachment(AuthenticatorAttachment.PLATFORM)
+                .userVerification(UserVerificationRequirement.DISCOURAGED)
                 .build();
         var registrationExtensionInputs = RegistrationExtensionInputs.builder()
                 .appidExclude(new AppId("https://localhost.localdomain"))
-                .credProps()
-                .uvm()
-                .largeBlob(Extensions.LargeBlob.LargeBlobRegistrationInput.LargeBlobSupport.PREFERRED)
+//                .credProps()
+//                .uvm()
+//                .largeBlob(Extensions.LargeBlob.LargeBlobRegistrationInput.LargeBlobSupport.PREFERRED)
                 .build();
         var startRegistrationOptions = StartRegistrationOptions.builder()
                 .user(userIdentity)
