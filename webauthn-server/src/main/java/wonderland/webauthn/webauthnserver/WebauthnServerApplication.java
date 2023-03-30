@@ -9,19 +9,18 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
-@RestController
 @SpringBootApplication
 public class WebauthnServerApplication {
     public static void main(String[] args) {
         SpringApplication.run(WebauthnServerApplication.class, args);
     }
 
-    @Bean
+//    @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(false);
         corsConfiguration.addAllowedHeader("*");
-//        corsConfiguration.setAllowedOriginPatterns(List.of("http://local.next.test.nordnet.fi:[0-9]+"));
+//        corsConfiguration.setAllowedOriginPatterns(List.of("https://wonderland.wonder:[0-9]+"));
         corsConfiguration.addAllowedMethod("*");
         corsConfiguration.addAllowedOrigin("*");
         corsConfiguration.addExposedHeader(HttpHeaders.SET_COOKIE);

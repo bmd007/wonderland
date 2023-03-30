@@ -41,10 +41,10 @@ public class WebAuthNResource {
         public final URL register;
 
         public Index() throws MalformedURLException {
-            authenticate = new URL("http://local.next.test.nordnet.fi:9568/authenticate");
-            deleteAccount = new URL("http://local.next.test.nordnet.fi:9568/delete-account");
-            deregister = new URL("http://local.next.test.nordnet.fi:9568/action/deregister");
-            register = new URL("http://local.next.test.nordnet.fi:9568/register");
+            authenticate = new URL("https://wonderland.wonder/authenticate");
+            deleteAccount = new URL("https://wonderland.wonder/delete-account");
+            deregister = new URL("https://wonderland.wonder/action/deregister");
+            register = new URL("https://wonderland.wonder/register");
         }
     }
 
@@ -52,7 +52,7 @@ public class WebAuthNResource {
         public final URL version;
 
         public Info() throws MalformedURLException {
-            version = new URL("http://local.next.test.nordnet.fi:9568/version");
+            version = new URL("https://wonderland.wonder/version");
         }
     }
 
@@ -88,7 +88,7 @@ public class WebAuthNResource {
     record RegisterRequestBody(@NotBlank String username, @NotBlank String displayName, @NotBlank String credentialNickname, String requireResidentKey) { }
 
     @PostMapping( "register/json")
-    public StartRegistrationResponse startRegistration(@RequestBody RegisterRequestBody requestBody) throws InvalidAppIdException, MalformedURLException {
+    public StartRegistrationResponse startRegistration(@RequestBody RegisterRequestBody requestBody) throws InvalidAppIdException {
         ResidentKeyRequirement residentKeyRequirement = Optional.ofNullable(requestBody.requireResidentKey)
                 .filter(s -> s.equals("required"))
                 .map(s -> ResidentKeyRequirement.REQUIRED)
@@ -99,6 +99,11 @@ public class WebAuthNResource {
                 requestBody.credentialNickname,
                 residentKeyRequirement.getValue()
         );
+    }
+
+    @PostMapping("hi")
+    public RegistrationResponse hi(@NotBlank RegistrationResponse registrationResponse) {
+        return registrationResponse;
     }
 
     @PostMapping("register/finish")

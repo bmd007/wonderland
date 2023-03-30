@@ -11,13 +11,17 @@ import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.StartAssertionOptions;
 import com.yubico.webauthn.StartRegistrationOptions;
 import com.yubico.webauthn.data.AttestationConveyancePreference;
+import com.yubico.webauthn.data.AuthenticatorAttachment;
 import com.yubico.webauthn.data.AuthenticatorSelectionCriteria;
 import com.yubico.webauthn.data.AuthenticatorTransport;
 import com.yubico.webauthn.data.ByteArray;
+import com.yubico.webauthn.data.Extensions;
+import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
 import com.yubico.webauthn.data.RegistrationExtensionInputs;
 import com.yubico.webauthn.data.RelyingPartyIdentity;
 import com.yubico.webauthn.data.ResidentKeyRequirement;
 import com.yubico.webauthn.data.UserIdentity;
+import com.yubico.webauthn.data.UserVerificationRequirement;
 import com.yubico.webauthn.exception.RegistrationFailedException;
 import com.yubico.webauthn.extension.appid.AppId;
 import com.yubico.webauthn.extension.appid.InvalidAppIdException;
@@ -40,7 +44,6 @@ import yubico.webauthn.attestation.YubicoJsonMetadataService;
 import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
@@ -58,10 +61,12 @@ public class WebAuthNService {
     private final Cache<ByteArray, AssertionRequestWrapper> assertRequestStorage = newCache();
     private final Cache<ByteArray, RegistrationRequest> registerRequestStorage = newCache();
 
-    private static final String DEFAULT_ORIGIN = "http://local.next.test.nordnet.fi:9568";
+    private static final String DEFAULT_ORIGIN = "https://wonderland.wonder";
+    private static final String WEBAPP_NEXT = "https://local.next.test.nordnet.fi:8081";
+    private static final String WEBAPP_NEXT_DEV = "https://local.next.test.nordnet.fi:8080";
     private static final RelyingPartyIdentity DEFAULT_RP_ID = RelyingPartyIdentity
             .builder()
-            .id("http://local.next.test.nordnet.fi:9568")
+            .id("wonderland.wonder")
             .name("Yubico WebAuthn demo").build();
 
     private static <K, V> Cache<K, V> newCache() {
@@ -77,7 +82,7 @@ public class WebAuthNService {
         rp = RelyingParty.builder()
                 .identity(DEFAULT_RP_ID)
                 .credentialRepository(this.userStorage)
-                .origins(Set.of(DEFAULT_ORIGIN))
+                .origins(Set.of(DEFAULT_ORIGIN, WEBAPP_NEXT, WEBAPP_NEXT_DEV))
                 .attestationConveyancePreference(Optional.of(AttestationConveyancePreference.DIRECT))
                 .attestationTrustSource(metadataService)
                 .allowOriginPort(false)
@@ -103,31 +108,38 @@ public class WebAuthNService {
 
         final UserIdentity userIdentity =
                 Optional.ofNullable(userStorage.getRegistrationsByUsername(username))
-                .stream()
-                .flatMap(Collection::stream)
-                .findAny()
-                .map(CredentialRegistration::getUserIdentity)
-                .orElseGet(() -> UserIdentity.builder()
-                        .name(username)
-                        .displayName(displayName)
-                        .id(randomUUIDByteArray())
-                        .build()
-                );
+                        .stream()
+                        .flatMap(Collection::stream)
+                        .findAny()
+                        .map(CredentialRegistration::getUserIdentity)
+                        .orElseGet(() -> UserIdentity.builder()
+                                .name(username)
+                                .displayName(displayName)
+                                .id(randomUUIDByteArray())
+                                .build()
+                        );
 
         var authenticatorSelectionCriteria = AuthenticatorSelectionCriteria.builder()
-                .residentKey(residentKeyRequirement)
+                .residentKey(ResidentKeyRequirement.DISCOURAGED)
+                .authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM)
+                .userVerification(UserVerificationRequirement.PREFERRED)
                 .build();
         var registrationExtensionInputs = RegistrationExtensionInputs.builder()
-                .appidExclude(new AppId("http://local.next.test.nordnet.fi:9568"))
+                .appidExclude(new AppId("https://wonderland.wonder"))
+                .credProps()
+                .uvm()
+                .largeBlob(Extensions.LargeBlob.LargeBlobRegistrationInput.LargeBlobSupport.PREFERRED)
                 .build();
         var startRegistrationOptions = StartRegistrationOptions.builder()
                 .user(userIdentity)
                 .authenticatorSelection(authenticatorSelectionCriteria)
                 .extensions(registrationExtensionInputs)
                 .build();
-        var registrationRequest = new RegistrationRequest(username, credentialNickname,
+        var publicKeyCredentialCreationOptions = rp.startRegistration(startRegistrationOptions);
+        var registrationRequest = new RegistrationRequest(username,
+                credentialNickname,
                 randomUUIDByteArray(),
-                rp.startRegistration(startRegistrationOptions));
+                publicKeyCredentialCreationOptions);
         registerRequestStorage.put(registrationRequest.getRequestId(), registrationRequest);
         return registrationRequest;
     }

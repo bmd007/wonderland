@@ -1,18 +1,18 @@
 {
-  "username": "bmd579@gmail.com",
-  "credentialNickname": "mac-chrome-cred",
-  "requestId": "tKCCLxfPQKq6RgbyE8QK5A",
+  "username": "sdf",
+  "credentialNickname": "sdaf",
+  "requestId": "v1P0h_JwSJS2OHRMvlHlgQ",
   "publicKeyCredentialCreationOptions": {
     "rp": {
       "name": "Yubico WebAuthn demo",
-      "id": "local.next.test.nordnet.fi:9568"
+      "id": "wonderland.wonder"
     },
     "user": {
-      "name": "bmd579@gmail.com",
-      "displayName": "mahdi",
-      "id": "kBg1jkDLS16FhxpoT5iD9g"
+      "name": "sdf",
+      "displayName": "sdf",
+      "id": "5ri8cLtfSOSp1rPbmDF_6w"
     },
-    "challenge": "bjfX3yYYRNO3Cfc0oac8PxDuyIueD-2PTd3ZW3KmfnI",
+    "challenge": "bBF94T-oa-s7Hjgb4NfYlY9bNbZio9pJm4HSSwIa6sY",
     "pubKeyCredParams": [
       {
         "alg": -7,
@@ -46,14 +46,14 @@
     "timeout": null,
     "excludeCredentials": [],
     "authenticatorSelection": {
-      "authenticatorAttachment": null,
+      "authenticatorAttachment": "platform",
       "requireResidentKey": false,
       "residentKey": "preferred",
-      "userVerification": null
+      "userVerification": "preferred"
     },
     "attestation": "direct",
     "extensions": {
-      "appidExclude": "http://local.next.test.nordnet.fi:9568:8099",
+      "appidExclude": "https://wonderland.wonder",
       "credProps": true,
       "largeBlob": null,
       "uvm": null

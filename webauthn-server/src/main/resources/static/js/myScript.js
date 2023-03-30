@@ -98,13 +98,18 @@ function resetDisplays () {
 }
 
 function getIndexActions () {
-  return fetch('http://local.next.test.nordnet.fi:9568/actions')
+  return fetch('https://wonderland.wonder/actions', {
+    headers: {
+      'Content-Type': 'application/json',
+      // 'Origin': 'https://wonderland.wonder',
+    }
+  })
     .then(response => response.json())
     .then(data => data.actions)
 }
 
 function getRegisterRequest (urls, username, displayName, credentialNickname, requireResidentKey) {
-  return fetch('http://local.next.test.nordnet.fi:9568/register', {
+  return fetch('https://wonderland.wonder/register', {
     body: new URLSearchParams({
       username,
       displayName: displayName || username,
@@ -112,6 +117,9 @@ function getRegisterRequest (urls, username, displayName, credentialNickname, re
       requireResidentKey: requireResidentKey || 'preferred'
     }),
     method: 'POST',
+    // headers: {
+    //   'Origin': 'https://wonderland.wonder',
+    // }
   })
     .then(response => response.json())
     .then(rejectIfNotSuccess)
@@ -189,6 +197,34 @@ async function finishCeremony (response) {
   showServerResponse(data)
 
   return data
+}
+
+async function registerPrefilledButton (event) {
+  const authnRequestJson = {
+    publicKey:
+      {
+        challenge: Uint8Array.from('a challenge', c => c.charCodeAt(0)),
+        rp: {
+          name: 'LA@Nordnet',
+          // id: 'la@nordnet.se',
+        },
+        user: {
+          id: Uint8Array.from('e9a7b89d-1a2b-4f44-87ac-698c89bc7e11', c => c.charCodeAt(0)),
+          name: 'robsan@nordnet.se',
+          displayName: 'Robin',
+        },
+        pubKeyCredParams: [{ alg: -7, type: 'public-key' }],
+        authenticatorSelection: {
+          authenticatorAttachment: 'platform',
+        },
+        timeout: 60000,
+        attestation: 'direct',
+      }
+  }
+
+  const credential = await navigator.credentials.get(authnRequestJson)
+  const webAuthNRespose = getResponseToJSON(credential)
+  console.log(webAuthNRespose)
 }
 
 function registerResidentKey (event) {
@@ -360,6 +396,7 @@ function init () {
   document.getElementById('username').oninput = usernameChanged
   document.getElementById('registerButton').onclick = register
   document.getElementById('registerRkButton').onclick = registerResidentKey
+  document.getElementById('registerPrefilledButton').onclick = registerPrefilledButton
   document.getElementById('authenticateWithUsernameButton').onclick = authenticateWithUsername
   document.getElementById('authenticateButton').onclick = authenticate
   document.getElementById('deregisterButton').onclick = deregister

@@ -1,5 +1,5 @@
 server:
-  port: 9568
+  port: 443
 
 management:
   server.port: 9569
@@ -68,12 +68,14 @@ spring:
     streams:
       replication-factor: 1
 
-#server:
-#  ssl:
-#    key-store: "classpath:keystore.p12"
-#    key-store-password: ohpassword
-#    keyStoreType: PKCS12
-#    keyAlias: tomcat
+server:
+  ssl:
+    key-store: "classpath:wonderland-self-sgined-cert.p12"
+    key-store-password: ohpassword
+    keyStoreType: PKCS12
+    keyAlias: wonderland
+    enabled: true
+
 
 ---
 spring:

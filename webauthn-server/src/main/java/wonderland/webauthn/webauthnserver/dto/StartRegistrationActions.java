@@ -4,5 +4,5 @@ import lombok.Value;
 
 @Value
 public class StartRegistrationActions {
-    String finish = "http://local.next.test.nordnet.fi:9568/register/finish";
+    String finish = "https://wonderland.wonder/register/finish";
 }

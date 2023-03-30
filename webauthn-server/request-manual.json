@@ -1,5 +1,4 @@
 {
-  publicKey:  {
     challenge: Uint8Array.from('a challenge', c => c.charCodeAt(0)),
     rp: {
       name: 'LA@Nordnet',
@@ -16,5 +15,4 @@
     },
     timeout: 60000,
     attestation: 'direct',
-  }
 }
