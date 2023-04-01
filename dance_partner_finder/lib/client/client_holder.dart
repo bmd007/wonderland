@@ -9,7 +9,7 @@ class ClientHolder {
   static final Dio apiGatewayHttpClient = Dio(BaseOptions(
     baseUrl: 'http://192.168.10.179:9591',
     contentType: ContentType.parse('application/json').value,
-    connectTimeout: 15000,
-    receiveTimeout: 13000,
+    connectTimeout: const Duration(milliseconds: 15000),
+    receiveTimeout: const Duration(milliseconds: 13000),
   ));
 }

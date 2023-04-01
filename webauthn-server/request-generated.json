@@ -1,62 +1,68 @@
 {
-  "username": "sdf",
-  "credentialNickname": "sdaf",
-  "requestId": "v1P0h_JwSJS2OHRMvlHlgQ",
-  "publicKeyCredentialCreationOptions": {
-    "rp": {
-      "name": "Yubico WebAuthn demo",
-      "id": "localhost.localdomain"
-    },
-    "user": {
-      "name": "sdf",
-      "displayName": "sdf",
-      "id": "5ri8cLtfSOSp1rPbmDF_6w"
-    },
-    "challenge": "bBF94T-oa-s7Hjgb4NfYlY9bNbZio9pJm4HSSwIa6sY",
-    "pubKeyCredParams": [
-      {
-        "alg": -7,
-        "type": "public-key"
+  "success": true,
+  "request": {
+    "username": "robsan",
+    "credentialNickname": "robsan-cred",
+    "requestId": "6x76QEbaRuKwsSiqSRMA9g",
+    "publicKeyCredentialCreationOptions": {
+      "rp": {
+        "name": "Yubico WebAuthn demo",
+        "id": "localhost.localdomain"
       },
-      {
-        "alg": -8,
-        "type": "public-key"
+      "user": {
+        "name": "robsan",
+        "displayName": "robsan",
+        "id": "Nkrj3dHJTRG23cI5JrWmCg"
       },
-      {
-        "alg": -35,
-        "type": "public-key"
+      "challenge": "Fh-S_V1A1H1HJTHvYhVR4V_XuaExmb3WPzUtxqpLTyA",
+      "pubKeyCredParams": [
+        {
+          "alg": -7,
+          "type": "public-key"
+        },
+        {
+          "alg": -8,
+          "type": "public-key"
+        },
+        {
+          "alg": -35,
+          "type": "public-key"
+        },
+        {
+          "alg": -36,
+          "type": "public-key"
+        },
+        {
+          "alg": -257,
+          "type": "public-key"
+        },
+        {
+          "alg": -258,
+          "type": "public-key"
+        },
+        {
+          "alg": -259,
+          "type": "public-key"
+        }
+      ],
+      "timeout": null,
+      "excludeCredentials": [],
+      "authenticatorSelection": {
+        "authenticatorAttachment": "platform",
+        "requireResidentKey": true,
+        "residentKey": "required",
+        "userVerification": "discouraged"
       },
-      {
-        "alg": -36,
-        "type": "public-key"
-      },
-      {
-        "alg": -257,
-        "type": "public-key"
-      },
-      {
-        "alg": -258,
-        "type": "public-key"
-      },
-      {
-        "alg": -259,
-        "type": "public-key"
+      "attestation": "direct",
+      "extensions": {
+        "appidExclude": "https://localhost.localdomain",
+        "credProps": true,
+        "largeBlob": null,
+        "uvm": null
       }
-    ],
-    "timeout": null,
-    "excludeCredentials": [],
-    "authenticatorSelection": {
-      "authenticatorAttachment": "platform",
-      "requireResidentKey": false,
-      "residentKey": "preferred",
-      "userVerification": "preferred"
-    },
-    "attestation": "direct",
-    "extensions": {
-      "appidExclude": "https://localhost.localdomain",
-      "credProps": true,
-      "largeBlob": null,
-      "uvm": null
     }
+  },
+  "actions": {
+    "finish": "https://localhost.localdomain/register/finish"
   }
 }

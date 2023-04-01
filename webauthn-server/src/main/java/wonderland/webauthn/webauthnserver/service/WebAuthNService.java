@@ -8,6 +8,7 @@ import com.yubico.webauthn.RegistrationResult;
 import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.StartAssertionOptions;
 import com.yubico.webauthn.StartRegistrationOptions;
+import com.yubico.webauthn.data.AssertionExtensionInputs;
 import com.yubico.webauthn.data.AttestationConveyancePreference;
 import com.yubico.webauthn.data.AuthenticatorAttachment;
 import com.yubico.webauthn.data.AuthenticatorSelectionCriteria;
@@ -61,6 +62,7 @@ public class WebAuthNService {
 
     private static final String DEFAULT_ORIGIN = "https://localhost.localdomain";
     private static final String WEBAPP_NEXT = "https://local.next.test.nordnet.fi:8081";
+    private static final String WEBAPP_NEXT_LOCAL = "https://localhost.localdomain:8080";
     private static final String WEBAPP_NEXT_DEV = "https://local.next.test.nordnet.fi:8080";
     private static final RelyingPartyIdentity DEFAULT_RP_ID = RelyingPartyIdentity
             .builder()
@@ -72,7 +74,7 @@ public class WebAuthNService {
         rp = RelyingParty.builder()
                 .identity(DEFAULT_RP_ID)
                 .credentialRepository(this.userStorage)
-                .origins(Set.of(DEFAULT_ORIGIN, WEBAPP_NEXT, WEBAPP_NEXT_DEV))
+                .origins(Set.of(DEFAULT_ORIGIN, WEBAPP_NEXT_LOCAL, WEBAPP_NEXT, WEBAPP_NEXT_DEV))
                 .attestationConveyancePreference(Optional.of(AttestationConveyancePreference.DIRECT))
                 .attestationTrustSource(metadataService)
                 .allowOriginPort(false)
@@ -208,18 +210,22 @@ public class WebAuthNService {
         return credentialRegistration;
     }
 
-    public AssertionRequestWrapper startAuthentication(String username) {
+    public AssertionRequestWrapper startAuthentication(String username) throws InvalidAppIdException {
         log.info("startAuthentication username: {}", username);
-
         if (!userStorage.userExists(username)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user not registered");
         } else {
-            var startAssertionOptions = StartAssertionOptions.builder().username(username).build();
-            var assertionRequestWrapper = new AssertionRequestWrapper(
-                    randomUUIDByteArray(), rp.startAssertion(startAssertionOptions));
-
+            var assertionExtensionInputs = AssertionExtensionInputs.builder()
+                    .appid(new AppId(DEFAULT_ORIGIN))
+                    .build();
+            var startAssertionOptions = StartAssertionOptions.builder()
+                    .userVerification(UserVerificationRequirement.DISCOURAGED)
+                    .extensions(assertionExtensionInputs)
+                    .username(username)
+                    .build();
+            var assertionRequestWrapper = new AssertionRequestWrapper(randomUUIDByteArray(),
+                    rp.startAssertion(startAssertionOptions));
             assertRequestStorage.put(assertionRequestWrapper.getRequestId(), assertionRequestWrapper);
-
             return assertionRequestWrapper;
         }
     }
@@ -228,7 +234,8 @@ public class WebAuthNService {
     public SuccessfulAuthenticationResult finishAuthentication(AssertionResponse assertionResponse) {
         AssertionRequestWrapper request =
                 Optional.ofNullable(assertRequestStorage.get(assertionResponse.getRequestId()))
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "assertion request not found"));
+                        .orElseThrow(() ->
+                                new ResponseStatusException(HttpStatus.NOT_FOUND, "assertion request not found"));
         assertRequestStorage.remove(assertionResponse.getRequestId());
         try {
             var finishAssertionOptions = FinishAssertionOptions.builder()

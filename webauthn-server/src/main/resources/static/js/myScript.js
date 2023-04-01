@@ -109,7 +109,7 @@ function getIndexActions () {
 }
 
 function getRegisterRequest (urls, username, displayName, credentialNickname, requireResidentKey) {
-  return fetch('https://localhost.localdomain/register', {
+  return fetch(urls.register, {
     body: new URLSearchParams({
       username,
       displayName: displayName || username,
@@ -134,14 +134,14 @@ function submitResponse (url, request, response) {
   console.log('submitResponse', url, request, response)
   const body = { requestId: request.requestId, credential: response }
   console.log("finish body: "+ JSON.stringify(body))
-  return fetch('https://localhost.localdomain/register/finish', {
+  return fetch(url, {
     method: 'POST',
     body: JSON.stringify(body),
     headers: {
       'Content-Type': 'application/json',
     }
   })
-    .then(response => response.json())
+  .then(response => response.json())
 }
 
 async function performCeremony (params) {

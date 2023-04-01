@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +25,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 
+@CrossOrigin(origins = {"https://localhost.localdomain:8080", "https://localhost.localdomain"})
 @Slf4j
 @RestController
 public class WebAuthNResource {
@@ -71,23 +73,28 @@ public class WebAuthNResource {
 
     @PostMapping(value = "register", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public StartRegistrationResponse startRegistration(
-            @NotBlank @RequestParam("username") String username,
-            @NotBlank @RequestParam("displayName") String displayName,
-            @NotBlank @RequestParam("credentialNickname") String credentialNickname,
-            @RequestParam(value = "requireResidentKey", required = false, defaultValue = "required") String requireResidentKey)
+            @NotBlank @RequestParam String username,
+            @NotBlank @RequestParam String displayName,
+            @NotBlank @RequestParam(required = false) String credentialNickname,
+            @RequestParam(required = false, defaultValue = "required") String requireResidentKey)
             throws InvalidAppIdException {
         var registrationRequest = server.startRegistration(
                 username,
                 displayName,
                 Optional.ofNullable(credentialNickname),
-                requireResidentKey.equals("required") ? ResidentKeyRequirement.REQUIRED : ResidentKeyRequirement.PREFERRED
+                requireResidentKey.equals("required") ?
+                        ResidentKeyRequirement.REQUIRED : ResidentKeyRequirement.PREFERRED
         );
         return new StartRegistrationResponse(registrationRequest);
     }
 
-    record RegisterRequestBody(@NotBlank String username, @NotBlank String displayName, @NotBlank String credentialNickname, String requireResidentKey) { }
+    record RegisterRequestBody(@NotBlank String username,
+                               @NotBlank String displayName,
+                               @NotBlank String credentialNickname,
+                               String requireResidentKey) {
+    }
 
-    @PostMapping( "register/json")
+    @PostMapping("register/json")
     public StartRegistrationResponse startRegistration(@RequestBody RegisterRequestBody requestBody) throws InvalidAppIdException {
         ResidentKeyRequirement residentKeyRequirement = Optional.ofNullable(requestBody.requireResidentKey)
                 .filter(s -> s.equals("required"))
@@ -108,14 +115,14 @@ public class WebAuthNResource {
     }
 
     @PostMapping(value = "authenticate", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public StartAuthenticationResponse startAuthentication(@NotBlank @RequestParam("username") String username) {
+    public StartAuthenticationResponse startAuthentication(@NotBlank @RequestParam("username") String username) throws InvalidAppIdException {
         log.info("startAuthentication username: {}", username);
         var assertionRequestWrapper = server.startAuthentication(username);
         return new StartAuthenticationResponse(assertionRequestWrapper);
     }
 
     @PostMapping("authenticate/finish")
-    public SuccessfulAuthenticationResult finishAuthentication(@NonNull AssertionResponse assertionResponse) {
+    public SuccessfulAuthenticationResult finishAuthentication(@NonNull @RequestBody AssertionResponse assertionResponse) {
         log.info("finishAuthentication assertionResponse: {}", assertionResponse);
         return server.finishAuthentication(assertionResponse);
     }
