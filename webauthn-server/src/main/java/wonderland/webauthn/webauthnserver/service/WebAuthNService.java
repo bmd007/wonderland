@@ -34,7 +34,6 @@ import wonderland.webauthn.webauthnserver.dto.RegistrationRequest;
 import wonderland.webauthn.webauthnserver.dto.RegistrationResponse;
 import wonderland.webauthn.webauthnserver.dto.SuccessfulAuthenticationResult;
 import wonderland.webauthn.webauthnserver.dto.SuccessfulRegistrationResult;
-import wonderland.webauthn.webauthnserver.repository.InMemoryRegistrationStorage;
 import wonderland.webauthn.webauthnserver.repository.SmallInMemoryRegistrationStorage;
 import yubico.webauthn.attestation.Attestation;
 import yubico.webauthn.attestation.YubicoJsonMetadataService;
@@ -233,14 +232,14 @@ public class WebAuthNService {
 
     public SuccessfulAuthenticationResult finishAuthentication(AssertionResponse assertionResponse) {
         AssertionRequestWrapper request =
-                Optional.ofNullable(assertRequestStorage.get(assertionResponse.getRequestId()))
+                Optional.ofNullable(assertRequestStorage.get(assertionResponse.requestId()))
                         .orElseThrow(() ->
                                 new ResponseStatusException(HttpStatus.NOT_FOUND, "assertion request not found"));
-        assertRequestStorage.remove(assertionResponse.getRequestId());
+        assertRequestStorage.remove(assertionResponse.requestId());
         try {
             var finishAssertionOptions = FinishAssertionOptions.builder()
                     .request(request.getRequest())
-                    .response(assertionResponse.getCredential())
+                    .response(assertionResponse.credential())
                     .build();
             var assertionResult = rp.finishAssertion(finishAssertionOptions);
             if (assertionResult.isSuccess()) {
@@ -267,7 +266,7 @@ public class WebAuthNService {
             log.error(
                     "Failed to update signature count for user \"{}\", credential \"{}\"",
                     assertionResult.getUsername(),
-                    assertionResponse.getCredential().getId(),
+                    assertionResponse.credential().getId(),
                     e);
         }
     }
