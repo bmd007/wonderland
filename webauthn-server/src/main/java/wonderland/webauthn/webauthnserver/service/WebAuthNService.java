@@ -68,7 +68,7 @@ public class WebAuthNService {
             .id("localhost.localdomain")
             .name("Yubico WebAuthn demo").build();
 
-    public WebAuthNService(SmallInMemoryRegistrationStorage userStorage) {
+    public WebAuthNService(SmallInMemoryRegistrationStorage userStorage) throws InvalidAppIdException {
         this.userStorage = userStorage;
         rp = RelyingParty.builder()
                 .identity(DEFAULT_RP_ID)
@@ -80,6 +80,7 @@ public class WebAuthNService {
                 .allowOriginSubdomain(false)
                 .allowUntrustedAttestation(true)
                 .validateSignatureCounter(true)
+                .appId(new AppId(DEFAULT_ORIGIN))
                 .build();
     }
 
@@ -94,7 +95,7 @@ public class WebAuthNService {
     public RegistrationRequest startRegistration(@NonNull String username,
                                                  @NonNull String displayName,
                                                  Optional<String> credentialNickname,
-                                                 ResidentKeyRequirement residentKeyRequirement) throws InvalidAppIdException {
+                                                 ResidentKeyRequirement residentKeyRequirement) {
         log.info("startRegistration username: {}, credentialNickname: {}", username, credentialNickname);
 
         final UserIdentity userIdentity =
@@ -116,7 +117,7 @@ public class WebAuthNService {
                 .userVerification(UserVerificationRequirement.DISCOURAGED)
                 .build();
         var registrationExtensionInputs = RegistrationExtensionInputs.builder()
-                .appidExclude(new AppId(DEFAULT_ORIGIN))
+//                .appidExclude()
 //                .credProps()
 //                .uvm()
 //                .largeBlob(Extensions.LargeBlob.LargeBlobRegistrationInput.LargeBlobSupport.PREFERRED)
@@ -209,14 +210,12 @@ public class WebAuthNService {
         return credentialRegistration;
     }
 
-    public AssertionRequestWrapper startAuthentication(String username) throws InvalidAppIdException {
+    public AssertionRequestWrapper startAuthentication(String username) {
         log.info("startAuthentication username: {}", username);
         if (!userStorage.userExists(username)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user not registered");
         } else {
-            var assertionExtensionInputs = AssertionExtensionInputs.builder()
-                    .appid(new AppId(DEFAULT_ORIGIN))
-                    .build();
+            var assertionExtensionInputs = AssertionExtensionInputs.builder().build();
             var startAssertionOptions = StartAssertionOptions.builder()
                     .userVerification(UserVerificationRequirement.DISCOURAGED)
                     .extensions(assertionExtensionInputs)
