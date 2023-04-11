@@ -34,7 +34,6 @@ import wonderland.webauthn.webauthnserver.dto.RegistrationRequest;
 import wonderland.webauthn.webauthnserver.dto.RegistrationResponse;
 import wonderland.webauthn.webauthnserver.dto.SuccessfulAuthenticationResult;
 import wonderland.webauthn.webauthnserver.dto.SuccessfulRegistrationResult;
-import wonderland.webauthn.webauthnserver.repository.InMemoryRegistrationStorage;
 import wonderland.webauthn.webauthnserver.repository.SmallInMemoryRegistrationStorage;
 import yubico.webauthn.attestation.Attestation;
 import yubico.webauthn.attestation.YubicoJsonMetadataService;
@@ -69,7 +68,7 @@ public class WebAuthNService {
             .id("localhost.localdomain")
             .name("Yubico WebAuthn demo").build();
 
-    public WebAuthNService(SmallInMemoryRegistrationStorage userStorage) {
+    public WebAuthNService(SmallInMemoryRegistrationStorage userStorage) throws InvalidAppIdException {
         this.userStorage = userStorage;
         rp = RelyingParty.builder()
                 .identity(DEFAULT_RP_ID)
@@ -81,6 +80,7 @@ public class WebAuthNService {
                 .allowOriginSubdomain(false)
                 .allowUntrustedAttestation(true)
                 .validateSignatureCounter(true)
+                .appId(new AppId(DEFAULT_ORIGIN))
                 .build();
     }
 
@@ -95,7 +95,7 @@ public class WebAuthNService {
     public RegistrationRequest startRegistration(@NonNull String username,
                                                  @NonNull String displayName,
                                                  Optional<String> credentialNickname,
-                                                 ResidentKeyRequirement residentKeyRequirement) throws InvalidAppIdException {
+                                                 ResidentKeyRequirement residentKeyRequirement) {
         log.info("startRegistration username: {}, credentialNickname: {}", username, credentialNickname);
 
         final UserIdentity userIdentity =
@@ -117,7 +117,7 @@ public class WebAuthNService {
                 .userVerification(UserVerificationRequirement.DISCOURAGED)
                 .build();
         var registrationExtensionInputs = RegistrationExtensionInputs.builder()
-                .appidExclude(new AppId(DEFAULT_ORIGIN))
+//                .appidExclude()
 //                .credProps()
 //                .uvm()
 //                .largeBlob(Extensions.LargeBlob.LargeBlobRegistrationInput.LargeBlobSupport.PREFERRED)
@@ -210,14 +210,12 @@ public class WebAuthNService {
         return credentialRegistration;
     }
 
-    public AssertionRequestWrapper startAuthentication(String username) throws InvalidAppIdException {
+    public AssertionRequestWrapper startAuthentication(String username) {
         log.info("startAuthentication username: {}", username);
         if (!userStorage.userExists(username)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user not registered");
         } else {
-            var assertionExtensionInputs = AssertionExtensionInputs.builder()
-                    .appid(new AppId(DEFAULT_ORIGIN))
-                    .build();
+            var assertionExtensionInputs = AssertionExtensionInputs.builder().build();
             var startAssertionOptions = StartAssertionOptions.builder()
                     .userVerification(UserVerificationRequirement.DISCOURAGED)
                     .extensions(assertionExtensionInputs)
@@ -233,14 +231,14 @@ public class WebAuthNService {
 
     public SuccessfulAuthenticationResult finishAuthentication(AssertionResponse assertionResponse) {
         AssertionRequestWrapper request =
-                Optional.ofNullable(assertRequestStorage.get(assertionResponse.getRequestId()))
+                Optional.ofNullable(assertRequestStorage.get(assertionResponse.requestId()))
                         .orElseThrow(() ->
                                 new ResponseStatusException(HttpStatus.NOT_FOUND, "assertion request not found"));
-        assertRequestStorage.remove(assertionResponse.getRequestId());
+        assertRequestStorage.remove(assertionResponse.requestId());
         try {
             var finishAssertionOptions = FinishAssertionOptions.builder()
                     .request(request.getRequest())
-                    .response(assertionResponse.getCredential())
+                    .response(assertionResponse.credential())
                     .build();
             var assertionResult = rp.finishAssertion(finishAssertionOptions);
             if (assertionResult.isSuccess()) {
@@ -267,7 +265,7 @@ public class WebAuthNService {
             log.error(
                     "Failed to update signature count for user \"{}\", credential \"{}\"",
                     assertionResult.getUsername(),
-                    assertionResponse.getCredential().getId(),
+                    assertionResponse.credential().getId(),
                     e);
         }
     }

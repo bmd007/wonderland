@@ -45,7 +45,6 @@ dependencies {
 	implementation 'io.micrometer:micrometer-registry-prometheus'
 	implementation "org.springframework.cloud:spring-cloud-starter-consul-config"
 	implementation "org.springframework.cloud:spring-cloud-starter-consul-discovery"
-	implementation 'org.springframework.boot:spring-boot-starter-groovy-templates'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
 	compileOnly 'org.projectlombok:lombok'

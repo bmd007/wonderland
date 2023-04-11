@@ -11,15 +11,15 @@ import java.util.Collection;
 @Value
 @AllArgsConstructor
 public class SuccessfulAuthenticationResult {
-    private final boolean success = true;
-    private final AssertionRequestWrapper request;
-    private final AssertionResponse response;
-    private final Collection<CredentialRegistration> registrations;
+    boolean success = true;
+    AssertionRequestWrapper request;
+    AssertionResponse response;
+    Collection<CredentialRegistration> registrations;
 
     @JsonSerialize(using = AuthDataSerializer.class)
     AuthenticatorData authData;
 
-    private final String username;
+    String username;
 
     public SuccessfulAuthenticationResult(
             AssertionRequestWrapper request,
@@ -30,7 +30,7 @@ public class SuccessfulAuthenticationResult {
                 request,
                 response,
                 registrations,
-                response.getCredential().getResponse().getParsedAuthenticatorData(),
+                response.credential().getResponse().getParsedAuthenticatorData(),
                 username);
     }
 }
