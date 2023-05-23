@@ -34,7 +34,7 @@ dependencies:
   rx_bloc: ^4.0.0
   rxdart: ^0.27.7
   location: ^4.4.0
-  http: ^0.13.5
+  http: ^1.0.0
   dio: ^5.1.0
   web_socket_channel: ^2.3.0
   universal_io: ^2.0.4
