@@ -51,7 +51,7 @@ dependencies {
 	implementation 'com.google.guava:guava:32.0.1-jre'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	annotationProcessor 'org.projectlombok:lombok'
-	implementation 'com.yubico:webauthn-server-core:2.4.1'
+	implementation 'com.yubico:webauthn-server-core:2.5.0'
 	implementation 'com.yubico:webauthn-server-attestation:2.4.1'
 	implementation 'com.yubico:yubico-util:2.4.1'
 	implementation 'com.upokecenter:cbor:4.5.2'
