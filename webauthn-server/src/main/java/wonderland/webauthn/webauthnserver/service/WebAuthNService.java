@@ -1,4 +1,3 @@
-package wonderland.webauthn.webauthnserver.service;
 
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.AssertionResult;
@@ -15,6 +14,7 @@ import com.yubico.webauthn.data.AuthenticatorAttachment;
 import com.yubico.webauthn.data.AuthenticatorSelectionCriteria;
 import com.yubico.webauthn.data.AuthenticatorTransport;
 import com.yubico.webauthn.data.ByteArray;
+import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
 import com.yubico.webauthn.data.RegistrationExtensionInputs;
 import com.yubico.webauthn.data.RelyingPartyIdentity;
 import com.yubico.webauthn.data.ResidentKeyRequirement;
@@ -47,6 +47,7 @@ import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -124,18 +125,11 @@ public class WebAuthNService {
         return new ByteArray(bb.array());
     }
 
-    public static ByteArray uUIDByteArray(String uuidString) {
-        UUID uuid = UUID.randomUUID();
-        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
-        bb.putLong(uuid.getMostSignificantBits());
-        bb.putLong(uuid.getLeastSignificantBits());
-        return new ByteArray(bb.array());
-    }
-
     public RegistrationRequest startRegistration(@NotBlank String username,
                                                  @NotBlank String displayName,
                                                  Optional<String> credentialNickname,
-                                                 String countryCode, AuthenticatorAttachment authenticatorAttachment) {
+                                                 String countryCode,
+                                                 AuthenticatorAttachment authenticatorAttachment) {
         final UserIdentity userIdentity =
                 Optional.ofNullable(userStorage.getRegistrationsByUsername(username))
                         .stream()
@@ -270,6 +264,30 @@ public class WebAuthNService {
         }
     }
 
+    public AssertionRequestWrapper startAuthentication(String countryCode) {
+        var assertionExtensionInputs = AssertionExtensionInputs.builder()
+                .uvm()
+                .build();
+        var startAssertionOptions = StartAssertionOptions.builder()
+                .userVerification(UserVerificationRequirement.PREFERRED)//NOPMD todo Does DISCOURAGED here have security issues?
+                //NOPMD todo also, discouraged worked once? or never worked? the yubikey gets confused about the key owner
+                .extensions(assertionExtensionInputs)
+                .timeout(999_999_999L)
+                .build();
+        AssertionRequest assertionRequest = getRelyingParty(countryCode).startAssertion(startAssertionOptions);
+        //remove that package and this commented code, once the library has the bug fixed
+        PublicKeyCredentialRequestOptions publicKeyOptionsWithAllowCredentials = assertionRequest.getPublicKeyCredentialRequestOptions()
+                .toBuilder()
+                .allowCredentials(List.of())
+                .build();
+        AssertionRequest improvedAssertionRequest = assertionRequest.toBuilder()
+                .publicKeyCredentialRequestOptions(publicKeyOptionsWithAllowCredentials)
+                .build();
+        var assertionRequestWrapper = new AssertionRequestWrapper(randomUUIDByteArray(), improvedAssertionRequest);
+        assertRequestStorage.put(assertionRequestWrapper.getRequestId(), assertionRequestWrapper);
+        return assertionRequestWrapper;
+    }
+
     public AssertionRequestWrapper startAuthentication(ByteArray userHandle, String countryCode) {
         Collection<CredentialRegistration> registrationsByUserHandle = userStorage.getRegistrationsByUserHandle(userHandle);
         if (registrationsByUserHandle.isEmpty()) {
@@ -279,7 +297,7 @@ public class WebAuthNService {
                 .uvm()
                 .build();
         var startAssertionOptions = StartAssertionOptions.builder()
-                .userVerification(UserVerificationRequirement.DISCOURAGED)//NOPMD todo Does DISCOURAGED here have security issues?
+                .userVerification(UserVerificationRequirement.PREFERRED)//NOPMD todo Does DISCOURAGED here have security issues?
                 //NOPMD todo also, discouraged worked once? or never worked? the yubikey gets confused about the key owner
                 .extensions(assertionExtensionInputs)
                 .userHandle(userHandle)

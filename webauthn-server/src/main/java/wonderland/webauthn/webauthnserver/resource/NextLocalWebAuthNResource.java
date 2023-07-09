@@ -1,4 +1,3 @@
-package se.nordnet.authentication.webauthn.resource;
 
 import com.yubico.webauthn.data.AuthenticatorAttachment;
 import com.yubico.webauthn.data.ByteArray;
@@ -25,16 +24,15 @@ import se.nordnet.jwt.annotation.NordnetJwt;
 import javax.validation.constraints.NotBlank;
 import java.util.Optional;
 
-@CrossOrigin(origins = {
-        "https://localhost.localdomain:8081",
+@CrossOrigin(origins = {"https://localhost.localdomain:8081",
         "https://localhost.localdomain:8080",
         "https://localhost.localdomain",
         "https://local.next.test.nordnet.se:8080",
         "https://local.next.test.nordnet.se:8081",
         "https://local.next.test.nordnet.dk:8081",
         "https://local.next.test.nordnet.fi:8081",
-        "https://local.next.test.nordnet.no:8081"
-})
+        "https://local.next.test.nordnet.no:8081"}
+        , originPatterns = {"https://*.zoo.test.nordnet.se/"})
 @Slf4j
 @RestController
 @RequestMapping("/v1/methods/webauthn/")
@@ -115,7 +113,9 @@ public class WebAuthNResource {
         return finishRegistration(registrationResponse, NordnetJWTClaims.builder().organizationCountry("se").build());
     }
 
-    record AuthenticateRequestBody(@Nullable String username, @NotBlank String countryCode, @Nullable ByteArray userHandle) {
+    record AuthenticateRequestBody(@Nullable String username,
+                                   @NotBlank String countryCode,
+                                   @Nullable ByteArray userHandle) {
     }
 
     @PostMapping(value = "authenticate")
@@ -123,7 +123,11 @@ public class WebAuthNResource {
         String countryCode = authenticateRequestBody.countryCode();
         return Optional.ofNullable(authenticateRequestBody.username())
                 .map(username -> server.startAuthentication(username, countryCode))
-                .orElseGet(() -> server.startAuthentication(authenticateRequestBody.userHandle, countryCode));
+                .orElseGet(() ->
+                        Optional.ofNullable(authenticateRequestBody.userHandle)
+                                .map(userHandle -> server.startAuthentication(userHandle, countryCode))
+                                .orElseGet(() -> server.startAuthentication(countryCode))
+                );
     }
 
     @PostMapping(value = "authenticate/finish")
