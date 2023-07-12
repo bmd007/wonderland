@@ -1,4 +1,20 @@
-import { create, get } from '@github/webauthn-json';
+
+const onISUVPAA = async () => {
+    if (window.PublicKeyCredential) {
+        if (PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) {
+            const result = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+            if (result) {
+                console.log('User Verifying Platform Authenticator is *available*.');
+            } else {
+                console.log('User Verifying Platform Authenticator is not available.');
+            }
+        } else {
+            console.log('IUVPAA function is not available.');
+        }
+    } else {
+        console.log('PublicKeyCredential is not availlable.');
+    }
+};
 
 async function webauthn_register_local() {
     const registrationRequest = await fetch(
@@ -74,6 +90,10 @@ async function webauthn_register_cross_platform_local() {
 }
 
 async function webauthn_authenticate_local() {
+    // todo think if it's needed to use userHandle here to avoid saving username on the machine.
+    // on MAC, so far, no browser can do this process without a username or userhandle
+    // on chrome, which at least does something, at the end, the response lacks userHandle. Well sometimes it does. Apparently, there is some flaky ness in my setup
+    // however, yubikey and android return userHandle in their auth response.
     const usernameSavedInLocalStorage = localStorage.getItem('WebAuthN-Username');
     if (!usernameSavedInLocalStorage || usernameSavedInLocalStorage.trim().length === 0) {
         alert(`no username, register first`);

@@ -22,12 +22,12 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package yubico.webauthn.attestation;
+package com.yubico.webauthn.attestation;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.security.cert.X509Certificate;
 
 public interface DeviceMatcher {
-  boolean matches(X509Certificate attestationCertificate, JsonNode parameters);
+    boolean matches(X509Certificate attestationCertificate, JsonNode parameters);
 }
