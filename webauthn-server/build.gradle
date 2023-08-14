@@ -48,7 +48,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
 	compileOnly 'org.projectlombok:lombok'
-	implementation 'com.google.guava:guava:32.0.1-jre'
+	implementation 'com.google.guava:guava:32.1.2-jre'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	annotationProcessor 'org.projectlombok:lombok'
 	implementation 'com.yubico:webauthn-server-core:2.5.0'
