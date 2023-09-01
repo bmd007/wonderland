@@ -67,7 +67,7 @@ dependencies {
         exclude group: 'com.zaxxer', module: 'HikariCP'
     }
 
-    implementation 'com.h2database:h2:2.2.220'//2.1.212'
+    implementation 'com.h2database:h2:2.2.222'//2.1.212'
     implementation 'org.locationtech.jts:jts-core:1.19.0' // not needed if h2gis got used
 
     implementation 'com.google.guava:guava:32.1.2-jre'
