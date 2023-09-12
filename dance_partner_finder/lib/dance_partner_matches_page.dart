@@ -19,7 +19,6 @@ class DancePartnerMatchesWidget extends StatelessWidget {
       create: (context) => DancerMatchAndChatBloc(loginCubit.state.email),
       child: BlocBuilder<DancerMatchAndChatBloc, DancerMatchAndChatState>(
         builder: (context, state) {
-
           if (state.isLoading) {
             return Image.asset('assets/images/wait.gif');
           } else if (state.isChattingWithSomeOne()) {
