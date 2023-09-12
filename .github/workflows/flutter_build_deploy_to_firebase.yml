@@ -1,4 +1,4 @@
-name: Flutter build for pages
+name: Flutter build for firebase
 
 on:
   push:
