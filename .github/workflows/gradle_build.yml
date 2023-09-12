@@ -6,8 +6,8 @@ on:
   pull_request:
     branches: [ master ]
 
-#permissions:
-#  contents: read
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -24,7 +24,7 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v3
       with:
-        java-version: '19'
+        java-version: '20'
         distribution: 'corretto'
 
     - name: Build api-gateway

@@ -1,0 +1,61 @@
+name: Flutter CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+        - 'dance_partner_finder/**'
+        - '.github/workflows/**'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+  pull-requests: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+        GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+   
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.13.1'
+          channel: 'stable'
+
+      - name: flutter pub get
+        working-directory: ./dance_partner_finder
+        run: flutter pub get
+
+      - name: flutter config --enable-web
+        working-directory: ./dance_partner_finder
+        run: flutter config --enable-web
+
+      - name: flutter build web
+        working-directory: ./dance_partner_finder
+        run: flutter build web --release --base-href /wonderland/
+
+      - name: copy from flutter build to public folder
+        run: |
+          cp -r ./dance_partner_finder/build/web/* ./deployment-to-github-pages/dance_partner_finder_github_pages_public/
+          ls ./public
+
+      - name: checkout to a temp branch
+        run: |
+          git config --global user.email "bmd579@gmail.com"
+          git config --global user.name "Mahdi"
+          git checkout main
+          git pull
+          git checkout -b deployment-to-github-pages
+          git add --all
+          git commit -m "deployment-to-github-pages"
+          git push origin HEAD:deployment-to-github-pages --force
+
+      - name: create pull request
+        run: gh pr merge --auto --rebase --delete-branch $(gh pr create -B main -H deployment-to-github-pages --title 'Merge deployment-to-github-pages into main for github pages' --body 'Created by Github action' --fill)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
