@@ -55,6 +55,6 @@ jobs:
           git push origin HEAD:deployment-to-github-pages --force
 
       - name: create pull request
-        run: gh pr merge --auto --merge --delete-branch $(gh pr create -B master -H deployment-to-github-pages --title 'Merge deployment-to-github-pages into master for github pages' --body 'Created by Github action' --fill)
+        run: gh pr merge --auto --rebase --delete-branch $(gh pr create -B master -H deployment-to-github-pages --title 'Merge deployment-to-github-pages into master for github pages' --body 'Created by Github action' --fill)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
