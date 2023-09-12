@@ -41,7 +41,7 @@ jobs:
 
       - name: copy from flutter build to public folder
         run: |
-          cp -r ./dance_partner_finder/build/web/* ./deployment-to-github-pages/dance_partner_finder_github_pages_public/
+          cp -r ./dance_partner_finder/build/web/* ./deployment/github_page/public/
           ls ./public
 
       - name: checkout to a temp branch

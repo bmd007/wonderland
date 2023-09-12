@@ -6,7 +6,7 @@ on:
   push:
     branches: ["master"]
     paths:
-      - 'dance_partner_finder_github_pages_public/**'
+      - 'deployment/github_page/public/**'
       - '.github/workflows/**'
 
   # Allows you to run this workflow manually from the Actions tab
@@ -40,7 +40,7 @@ jobs:
         uses: actions/upload-pages-artifact@v2
         with:
           # Upload entire repository
-          path: './dance_partner_finder_github_pages_public'
+          path: './deployment/github_page/public'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
