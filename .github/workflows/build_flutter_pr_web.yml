@@ -17,7 +17,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-        GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+        GITHUB_TOKEN: '${{ secrets.BMD_ACCESS_TOKEN_FOR_ACTIONS }}'
    
     steps:
       - uses: actions/checkout@v4
@@ -57,4 +57,4 @@ jobs:
       - name: create pull request
         run: gh pr merge --auto --rebase --delete-branch $(gh pr create -B master -H deployment-to-github-pages --title 'Merge deployment-to-github-pages into master for github pages' --body 'Created by Github action' --fill)
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.BMD_ACCESS_TOKEN_FOR_ACTIONS }}
