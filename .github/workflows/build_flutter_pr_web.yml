@@ -2,7 +2,7 @@ name: Flutter build for pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
     paths:
         - 'dance_partner_finder/**'
         - '.github/workflows/**'
