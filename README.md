@@ -3,7 +3,7 @@
 ### Scenario:
 After login, there will be plenty of activity (atm only dancing) to choose from.
 Choosing an activity means you are looking for a partner around yourself to carry the activity on together.
-Once two people has shown mutual interest toward each other, there are each other's match and can chat.
+Once two people have shown mutual interest toward each other, there are each other's match and can chat.
 
 Also, each user has a profile containing a name plus a photo.
 The name is the user's gmail and photo can be selected in the profile edit page.
