@@ -42,7 +42,7 @@ dependencies:
   rsocket: ^1.0.0
   firebase_auth: ^4.2.5
   google_sign_in: ^6.0.0
-  google_fonts: ^5.0.0
+  google_fonts: ^6.0.0
   font_awesome_flutter: ^10.3.0
   firebase_core: ^2.4.1
   firebase_storage: ^11.0.10
