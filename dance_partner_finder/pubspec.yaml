@@ -46,7 +46,7 @@ dependencies:
   font_awesome_flutter: ^10.3.0
   firebase_core: ^2.4.1
   firebase_storage: ^11.0.10
-  firebase_app_check: ^0.1.1+8
+  firebase_app_check: ^0.2.0
   file_picker: ^5.2.5
   flutter_webrtc: ^0.9.19
   sdp_transform: ^0.3.2
