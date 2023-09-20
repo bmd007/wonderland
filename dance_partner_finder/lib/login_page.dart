@@ -48,9 +48,9 @@ class LoginPage extends StatelessWidget {
                   onPressed: () => loginCubit.signInWithGoogle(),
                   color: Colors.blue,
                   textColor: Colors.white,
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const <Widget>[
+                    children: <Widget>[
                       Icon(FontAwesomeIcons.google),
                       SizedBox(width: 10),
                       Text('Sign-in using Google', style: TextStyle(color: Colors.white, fontSize: 16)),

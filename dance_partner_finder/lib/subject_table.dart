@@ -11,7 +11,8 @@ class SubjectTableWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: const Text("Welcome to AnyMatch")),
+      appBar:
+          AppBar(centerTitle: true, title: const Text("Welcome to AnyMatch")),
       body: Center(
         child: GridView.count(
           crossAxisCount: (MediaQuery.of(context).size.width ~/ 250).toInt(),
@@ -23,10 +24,14 @@ class SubjectTableWidget extends StatelessWidget {
           children: [
             Card(
               child: GestureDetector(
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => DanceProfileEditWidget())),
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => DanceProfileEditWidget())),
                 child: Container(
                   height: 300,
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(20)),
                   margin: const EdgeInsets.all(5),
                   padding: const EdgeInsets.all(5),
                   child: Stack(
@@ -35,10 +40,11 @@ class SubjectTableWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Expanded(
-                            child: Image.asset('assets/images/edit_profile.png'),
+                            child:
+                                Image.asset('assets/images/edit_profile.png'),
                           ),
-                          Row(
-                            children: const [
+                          const Row(
+                            children: [
                               Text(
                                 'Edit your profile',
                                 style: TextStyle(
@@ -57,11 +63,15 @@ class SubjectTableWidget extends StatelessWidget {
             ),
             Card(
               child: GestureDetector(
-                onTap: () =>
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const DancePartnerSelectWidget())),
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            const DancePartnerSelectWidget())),
                 child: Container(
                   height: 300,
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(20)),
                   margin: const EdgeInsets.all(5),
                   padding: const EdgeInsets.all(5),
                   child: Stack(
@@ -72,8 +82,8 @@ class SubjectTableWidget extends StatelessWidget {
                           Expanded(
                             child: Image.asset('assets/images/dancer2.png'),
                           ),
-                          Row(
-                            children: const [
+                          const Row(
+                            children: [
                               Text(
                                 'Find a dance partner',
                                 style: TextStyle(
@@ -92,11 +102,15 @@ class SubjectTableWidget extends StatelessWidget {
             ),
             Card(
               child: GestureDetector(
-                onTap: () =>
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => GameWidget(game: JustFrontendGame()))),
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            GameWidget(game: JustFrontendGame()))),
                 child: Container(
                   height: 300,
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(20)),
                   margin: const EdgeInsets.all(5),
                   padding: const EdgeInsets.all(5),
                   child: Stack(
@@ -107,8 +121,8 @@ class SubjectTableWidget extends StatelessWidget {
                           Expanded(
                             child: Image.asset('assets/images/Glide_007.png'),
                           ),
-                          Row(
-                            children: const [
+                          const Row(
+                            children: [
                               Text(
                                 'just front end game',
                                 style: TextStyle(
@@ -127,11 +141,15 @@ class SubjectTableWidget extends StatelessWidget {
             ),
             Card(
               child: GestureDetector(
-                onTap: () =>
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => GameWidget(game: PhysicsFollowerGame()))),
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            GameWidget(game: PhysicsFollowerGame()))),
                 child: Container(
                   height: 300,
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(20)),
                   margin: const EdgeInsets.all(5),
                   padding: const EdgeInsets.all(5),
                   child: Stack(
@@ -142,8 +160,8 @@ class SubjectTableWidget extends StatelessWidget {
                           Expanded(
                             child: Image.asset('assets/images/Glide_007.png'),
                           ),
-                          Row(
-                            children: const [
+                          const Row(
+                            children: [
                               Text(
                                 'front red, green back and front',
                                 style: TextStyle(

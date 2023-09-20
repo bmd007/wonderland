@@ -1,4 +1,4 @@
-import 'package:dance_partner_finder/bloc/login/login_cubit.dart';
+  import 'package:dance_partner_finder/bloc/login/login_cubit.dart';
 import 'package:dance_partner_finder/subject_table.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
