@@ -1,3 +1,4 @@
+package wonderland.webauthn.webauthnserver.service;
 
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.AssertionResult;
@@ -8,6 +9,7 @@ import com.yubico.webauthn.RegistrationResult;
 import com.yubico.webauthn.RelyingParty;
 import com.yubico.webauthn.StartAssertionOptions;
 import com.yubico.webauthn.StartRegistrationOptions;
+import com.yubico.webauthn.attestation.YubicoJsonMetadataService;
 import com.yubico.webauthn.data.AssertionExtensionInputs;
 import com.yubico.webauthn.data.AttestationConveyancePreference;
 import com.yubico.webauthn.data.AuthenticatorAttachment;
@@ -24,22 +26,15 @@ import com.yubico.webauthn.exception.AssertionFailedException;
 import com.yubico.webauthn.exception.RegistrationFailedException;
 import com.yubico.webauthn.extension.appid.AppId;
 import com.yubico.webauthn.extension.appid.InvalidAppIdException;
+import jakarta.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import se.nordnet.authentication.webauthn.domain.CredentialRegistration;
-import se.nordnet.authentication.webauthn.dto.AssertionRequestWrapper;
-import se.nordnet.authentication.webauthn.dto.AssertionResponse;
-import se.nordnet.authentication.webauthn.dto.RegistrationRequest;
-import se.nordnet.authentication.webauthn.dto.RegistrationResponse;
-import se.nordnet.authentication.webauthn.dto.SuccessfulAuthenticationResult;
-import se.nordnet.authentication.webauthn.dto.SuccessfulRegistrationResult;
-import se.nordnet.authentication.webauthn.repository.InMemoryRegistrationStorage;
-import yubico.webauthn.attestation.Attestation;
-import yubico.webauthn.attestation.YubicoJsonMetadataService;
+import wonderland.webauthn.webauthnserver.domain.CredentialRegistration;
+import wonderland.webauthn.webauthnserver.dto.*;
+import wonderland.webauthn.webauthnserver.repository.InMemoryRegistrationStorage;
 
-import javax.validation.constraints.NotBlank;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -60,8 +55,8 @@ import java.util.regex.Pattern;
 @Service
 public class WebAuthNService {
 
-    public static final RelyingPartyIdentity SWEDISH_RELYING_PARTY_IDENTITY = RelyingPartyIdentity.builder().id("nordnet.se").name("Nordnet WebAuthn se").build();
-    public static final RelyingPartyIdentity DANISH_RELYING_PARTY_IDENTITY = RelyingPartyIdentity.builder().id("nordnet.dk").name("Nordnet WebAuthn dk").build();
+    public static final RelyingPartyIdentity SWEDISH_RELYING_PARTY_IDENTITY = RelyingPartyIdentity.builder().id("wonderland.se").name("wonderland WebAuthn se").build();
+    public static final RelyingPartyIdentity DANISH_RELYING_PARTY_IDENTITY = RelyingPartyIdentity.builder().id("wonderland.dk").name("wonderland WebAuthn dk").build();
     private final InMemoryRegistrationStorage userStorage;
     private final RelyingParty swedishRelyingParty;
     private final RelyingParty danishRelyingParty;
@@ -70,11 +65,11 @@ public class WebAuthNService {
     private final Map<ByteArray, RegistrationRequest> registerRequestStorage = new HashMap<>();
 
     private static final String LOCAL_DOMAIN = "https://localhost.localdomain";
-    private static final String WEBAPP_NEXT_PROD_DK = "https://nordnet.dk";
-    private static final String WEBAPP_NEXT_PROD_NO = "https://nordnet.no";
-    private static final String WEBAPP_NEXT_PROD_SE = "https://nordnet.se";
-    private static final String WEBAPP_NEXT_PROD_FI = "https://nordnet.fi";
-    private static final String WEBAPP_NEXT_APPID_ORIGIN_PATTERN = "https:\\/\\/(?:[^\\/]*\\.)?(?:nordnet\\.(?:dk|no|fi)|test\\.nordnet\\.(?:dk|no|fi)|localhost\\.localdomain(?::808[01])?|local\\.next\\.test\\.nordnet\\.dk:808[01])".trim();
+    private static final String WEBAPP_NEXT_PROD_DK = "https://wonderland.dk";
+    private static final String WEBAPP_NEXT_PROD_NO = "https://wonderland.no";
+    private static final String WEBAPP_NEXT_PROD_SE = "https://wonderland.se";
+    private static final String WEBAPP_NEXT_PROD_FI = "https://wonderland.fi";
+    private static final String WEBAPP_NEXT_APPID_ORIGIN_PATTERN = "https:\\/\\/(?:[^\\/]*\\.)?(?:wonderland\\.(?:dk|no|fi)|test\\.wonderland\\.(?:dk|no|fi)|localhost\\.localdomain(?::808[01])?|local\\.next\\.test\\.wonderland\\.dk:808[01])".trim();
     private static final Pattern WEBAPP_NEXT_APPID_PATTERN = Pattern.compile(WEBAPP_NEXT_APPID_ORIGIN_PATTERN);
 
     public WebAuthNService(InMemoryRegistrationStorage userStorage) throws InvalidAppIdException {
@@ -211,9 +206,7 @@ public class WebAuthNService {
                 .signatureCount(result.getSignatureCount())
                 .build();
         SortedSet<AuthenticatorTransport> transports = result.getKeyId().getTransports().orElseGet(TreeSet::new);
-        Optional<Attestation> attestationMetadata = result.getAttestationTrustPath()
-                .flatMap(x5c -> x5c.stream().findFirst())
-                .flatMap(metadataService::findMetadata);
+        Optional<Object> attestationMetadata = metadataService.findEntries(result).stream().findAny();
         return addRegistration(
                 userIdentity,
                 nickname,
@@ -227,7 +220,7 @@ public class WebAuthNService {
             Optional<String> nickname,
             RegisteredCredential credential,
             SortedSet<AuthenticatorTransport> transports,
-            Optional<Attestation> attestationMetadata) {
+            Optional<Object> attestationMetadata) {
         var credentialRegistration = CredentialRegistration.builder()
                 .userIdentity(userIdentity)
                 .credentialNickname(nickname)
@@ -252,7 +245,7 @@ public class WebAuthNService {
                     .uvm()
                     .build();
             var startAssertionOptions = StartAssertionOptions.builder()
-                    .userVerification(UserVerificationRequirement.REQUIRED)//NOPMD TODO try it on a mac with finger print sensor and see if still asks for password
+                    .userVerification(UserVerificationRequirement.PREFERRED)
                     .extensions(assertionExtensionInputs)
                     .username(username)
                     .timeout(999_999_999L)
@@ -269,13 +262,13 @@ public class WebAuthNService {
                 .uvm()
                 .build();
         var startAssertionOptions = StartAssertionOptions.builder()
-                .userVerification(UserVerificationRequirement.PREFERRED)//NOPMD todo Does DISCOURAGED here have security issues?
-                //NOPMD todo also, discouraged worked once? or never worked? the yubikey gets confused about the key owner
+                .userVerification(UserVerificationRequirement.REQUIRED)//username less flow on chrome, require this to be REQUIRED
                 .extensions(assertionExtensionInputs)
                 .timeout(999_999_999L)
+                .username(Optional.empty())
+                .userHandle(Optional.empty())
                 .build();
         AssertionRequest assertionRequest = getRelyingParty(countryCode).startAssertion(startAssertionOptions);
-        //remove that package and this commented code, once the library has the bug fixed
         PublicKeyCredentialRequestOptions publicKeyOptionsWithAllowCredentials = assertionRequest.getPublicKeyCredentialRequestOptions()
                 .toBuilder()
                 .allowCredentials(List.of())
@@ -297,8 +290,7 @@ public class WebAuthNService {
                 .uvm()
                 .build();
         var startAssertionOptions = StartAssertionOptions.builder()
-                .userVerification(UserVerificationRequirement.PREFERRED)//NOPMD todo Does DISCOURAGED here have security issues?
-                //NOPMD todo also, discouraged worked once? or never worked? the yubikey gets confused about the key owner
+                .userVerification(UserVerificationRequirement.PREFERRED)
                 .extensions(assertionExtensionInputs)
                 .userHandle(userHandle)
                 .timeout(999_999_999L)

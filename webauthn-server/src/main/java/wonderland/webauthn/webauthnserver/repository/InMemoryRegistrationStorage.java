@@ -35,7 +35,7 @@ import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
-import se.nordnet.authentication.webauthn.domain.CredentialRegistration;
+import wonderland.webauthn.webauthnserver.domain.CredentialRegistration;
 
 import java.util.Collection;
 import java.util.HashSet;

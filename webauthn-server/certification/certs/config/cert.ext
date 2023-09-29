@@ -9,10 +9,6 @@ subjectAltName = @alternate_names
 DNS.1       = localhost
 DNS.2       = localhost.localdomain
 DNS.3       = 127.0.0.1
-DNS.4       = local.next.test.nordnet.se
-DNS.5       = local.next.test.nordnet.dk
-DNS.6       = local.next.test.nordnet.no
-DNS.7       = local.next.test.nordnet.fi
 DNS.8       = webapp-next.localhost
 
 # IPv6 localhost

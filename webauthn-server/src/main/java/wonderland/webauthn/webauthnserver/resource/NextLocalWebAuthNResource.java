@@ -1,350 +1,105 @@
+package wonderland.webauthn.webauthnserver.resource;
 
-import com.yubico.webauthn.AssertionRequest;
-import com.yubico.webauthn.AssertionResult;
-import com.yubico.webauthn.FinishAssertionOptions;
-import com.yubico.webauthn.FinishRegistrationOptions;
-import com.yubico.webauthn.RegisteredCredential;
-import com.yubico.webauthn.RegistrationResult;
-import com.yubico.webauthn.RelyingParty;
-import com.yubico.webauthn.StartAssertionOptions;
-import com.yubico.webauthn.StartRegistrationOptions;
-import com.yubico.webauthn.attestation.YubicoJsonMetadataService;
-import com.yubico.webauthn.data.AssertionExtensionInputs;
-import com.yubico.webauthn.data.AttestationConveyancePreference;
 import com.yubico.webauthn.data.AuthenticatorAttachment;
-import com.yubico.webauthn.data.AuthenticatorSelectionCriteria;
-import com.yubico.webauthn.data.AuthenticatorTransport;
 import com.yubico.webauthn.data.ByteArray;
-import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
-import com.yubico.webauthn.data.RegistrationExtensionInputs;
-import com.yubico.webauthn.data.RelyingPartyIdentity;
-import com.yubico.webauthn.data.ResidentKeyRequirement;
-import com.yubico.webauthn.data.UserIdentity;
-import com.yubico.webauthn.data.UserVerificationRequirement;
-import com.yubico.webauthn.exception.AssertionFailedException;
-import com.yubico.webauthn.exception.RegistrationFailedException;
-import com.yubico.webauthn.extension.appid.AppId;
-import com.yubico.webauthn.extension.appid.InvalidAppIdException;
 import jakarta.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-import se.nordnet.authentication.webauthn.domain.CredentialRegistration;
-import se.nordnet.authentication.webauthn.dto.AssertionRequestWrapper;
-import se.nordnet.authentication.webauthn.dto.AssertionResponse;
-import se.nordnet.authentication.webauthn.dto.RegistrationRequest;
-import se.nordnet.authentication.webauthn.dto.RegistrationResponse;
-import se.nordnet.authentication.webauthn.dto.SuccessfulAuthenticationResult;
-import se.nordnet.authentication.webauthn.dto.SuccessfulRegistrationResult;
-import se.nordnet.authentication.webauthn.repository.InMemoryRegistrationStorage;
+import org.springframework.lang.Nullable;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import wonderland.webauthn.webauthnserver.dto.*;
+import wonderland.webauthn.webauthnserver.service.WebAuthNService;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.nio.ByteBuffer;
-import java.time.Instant;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.UUID;
-import java.util.regex.Pattern;
 
+@CrossOrigin(origins = {"https://localhost.localdomain:8081",
+        "https://localhost.localdomain:8080",
+        "https://localhost.localdomain"}
+        , originPatterns = {"https://*.zoo.wonderland"})
 @Slf4j
-@Service
-public class NextLocalWebAuthNResource {
+@RestController
+@RequestMapping("/v1/methods/webauthn/")
+public class WebAuthNResource {
 
-    public static final RelyingPartyIdentity SWEDISH_RELYING_PARTY_IDENTITY = RelyingPartyIdentity.builder().id("nordnet.se").name("Nordnet WebAuthn se").build();
-    public static final RelyingPartyIdentity DANISH_RELYING_PARTY_IDENTITY = RelyingPartyIdentity.builder().id("nordnet.dk").name("Nordnet WebAuthn dk").build();
-    private final InMemoryRegistrationStorage userStorage;
-    private final RelyingParty swedishRelyingParty;
-    private final RelyingParty danishRelyingParty;
-    private final YubicoJsonMetadataService metadataService = new YubicoJsonMetadataService();
-    private final Map<ByteArray, AssertionRequestWrapper> assertRequestStorage = new HashMap<>();
-    private final Map<ByteArray, RegistrationRequest> registerRequestStorage = new HashMap<>();
+    private final WebAuthNService server;
 
-    private static final String LOCAL_DOMAIN = "https://localhost.localdomain";
-    private static final String WEBAPP_NEXT_PROD_DK = "https://nordnet.dk";
-    private static final String WEBAPP_NEXT_PROD_NO = "https://nordnet.no";
-    private static final String WEBAPP_NEXT_PROD_SE = "https://nordnet.se";
-    private static final String WEBAPP_NEXT_PROD_FI = "https://nordnet.fi";
-    private static final String WEBAPP_NEXT_APPID_ORIGIN_PATTERN = "https:\\/\\/(?:[^\\/]*\\.)?(?:nordnet\\.(?:dk|no|fi)|test\\.nordnet\\.(?:dk|no|fi)|localhost\\.localdomain(?::808[01])?|local\\.next\\.test\\.nordnet\\.dk:808[01])".trim();
-    private static final Pattern WEBAPP_NEXT_APPID_PATTERN = Pattern.compile(WEBAPP_NEXT_APPID_ORIGIN_PATTERN);
-
-    public WebAuthNService(InMemoryRegistrationStorage userStorage) throws InvalidAppIdException {
-        this.userStorage = userStorage;
-        swedishRelyingParty = RelyingParty.builder()
-                .identity(SWEDISH_RELYING_PARTY_IDENTITY)
-                .credentialRepository(this.userStorage)
-                .origins(Set.of(LOCAL_DOMAIN, WEBAPP_NEXT_PROD_SE))
-                .allowOriginPort(true)
-                .allowOriginSubdomain(true)
-                .attestationConveyancePreference(AttestationConveyancePreference.DIRECT)
-                .attestationTrustSource(metadataService)
-                .allowUntrustedAttestation(true)
-//                .validateSignatureCounter(true)
-                .appId(new AppId(WEBAPP_NEXT_PROD_SE))
-                .build();
-        danishRelyingParty = RelyingParty.builder()
-                .identity(DANISH_RELYING_PARTY_IDENTITY)
-                .credentialRepository(this.userStorage)
-                .origins(Set.of(LOCAL_DOMAIN, WEBAPP_NEXT_PROD_DK))
-                .allowOriginPort(true)
-                .allowOriginSubdomain(true)
-                .attestationConveyancePreference(AttestationConveyancePreference.DIRECT)
-                .attestationTrustSource(metadataService)
-                .allowUntrustedAttestation(true)
-//                .validateSignatureCounter(true)
-                .appId(new AppId(WEBAPP_NEXT_PROD_DK))
-                .build();
+    public WebAuthNResource(WebAuthNService server) {
+        this.server = server;
     }
 
-    public AppId getAppid(@NotBlank String origin) {
-        try {
-            if (WEBAPP_NEXT_APPID_PATTERN.matcher(origin).matches()) {
-                URL url = URI.create(origin).toURL();
-                return new AppId(url.toString());
-            }
-        } catch (MalformedURLException | InvalidAppIdException e) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "bad origin %s".formatted(origin), e);
-        }
-        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "bad origin %s".formatted(origin));
+    record RegisterRequestBody(@NotBlank String displayName, @NotBlank String credentialNickname) {
     }
 
-    public static ByteArray randomUUIDByteArray() {
-        UUID uuid = UUID.randomUUID();
-        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
-        bb.putLong(uuid.getMostSignificantBits());
-        bb.putLong(uuid.getLeastSignificantBits());
-        return new ByteArray(bb.array());
-    }
-
-    public RegistrationRequest startRegistration(@NotBlank String username,
-                                                 @NotBlank String displayName,
-                                                 Optional<String> credentialNickname,
-                                                 String countryCode,
-                                                 AuthenticatorAttachment authenticatorAttachment) {
-        final UserIdentity userIdentity =
-                Optional.ofNullable(userStorage.getRegistrationsByUsername(username))
-                        .stream()
-                        .flatMap(Collection::stream)
-                        .findAny()
-                        .map(CredentialRegistration::getUserIdentity)
-                        .orElseGet(() -> UserIdentity.builder()
-                                .name(username)
-                                .displayName(displayName)
-                                .id(randomUUIDByteArray())
-                                .build()
-                        );
-        var authenticatorSelectionCriteria = AuthenticatorSelectionCriteria.builder()
-                .residentKey(ResidentKeyRequirement.REQUIRED)
-                .authenticatorAttachment(authenticatorAttachment)
-                .userVerification(UserVerificationRequirement.PREFERRED)
-                .build();
-        var registrationExtensionInputs = RegistrationExtensionInputs.builder()
-                .credProps()
-                .uvm()
-                .build();
-        var startRegistrationOptions = StartRegistrationOptions.builder()
-                .user(userIdentity)
-                .authenticatorSelection(authenticatorSelectionCriteria)
-                .timeout(999_999_999L)
-                .extensions(registrationExtensionInputs)
-                .build();
-        var publicKeyCredentialCreationOptions = getRelyingParty(countryCode).startRegistration(startRegistrationOptions);
-        var registrationRequest = new RegistrationRequest(username,
-                credentialNickname,
-                randomUUIDByteArray(),
-                publicKeyCredentialCreationOptions);
-        registerRequestStorage.put(registrationRequest.getRequestId(), registrationRequest);
-        return registrationRequest;
-    }
-
-    private RelyingParty getRelyingParty(String countryCode) {
-        return switch (countryCode.toLowerCase()) {
-            case "dk" -> danishRelyingParty;
-            default -> swedishRelyingParty;
-        };
-    }
-
-    public SuccessfulRegistrationResult finishRegistration(RegistrationResponse registrationResponse, String countryCode) {
-        var registrationRequest =
-                Optional.ofNullable(registerRequestStorage.get(registrationResponse.requestId()))
-                        .orElseThrow(() ->
-                                new ResponseStatusException(HttpStatus.NOT_FOUND, "registration request not found"));
-        registerRequestStorage.remove(registrationRequest.getRequestId());
-        try {
-            var registrationResult = getRelyingParty(countryCode).finishRegistration(
-                    FinishRegistrationOptions.builder()
-                            .request(registrationRequest.getPublicKeyCredentialCreationOptions())
-                            .response(registrationResponse.credential())
-                            .build()
-            );
-            var credentialsRegistration = addRegistration(
-                    registrationRequest.getPublicKeyCredentialCreationOptions().getUser(),
-                    registrationRequest.getCredentialNickname(),
-                    registrationResult);
-            return new SuccessfulRegistrationResult(
-                    registrationRequest,
-                    registrationResponse,
-                    credentialsRegistration,
-                    registrationResult.isAttestationTrusted());
-        } catch (RegistrationFailedException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
-        }
-    }
-
-    private CredentialRegistration addRegistration(
-            UserIdentity userIdentity,
-            Optional<String> nickname,
-            RegistrationResult result) {
-        var registeredCredential = RegisteredCredential.builder()
-                .credentialId(result.getKeyId().getId())
-                .userHandle(userIdentity.getId())
-                .publicKeyCose(result.getPublicKeyCose())
-                .signatureCount(result.getSignatureCount())
-                .build();
-        SortedSet<AuthenticatorTransport> transports = result.getKeyId().getTransports().orElseGet(TreeSet::new);
-        Optional<Object> attestationMetadata = metadataService.findEntries(result).stream().findAny();
-        return addRegistration(
-                userIdentity,
-                nickname,
-                registeredCredential,
-                transports,
-                attestationMetadata);
-    }
-
-    private CredentialRegistration addRegistration(
-            UserIdentity userIdentity,
-            Optional<String> nickname,
-            RegisteredCredential credential,
-            SortedSet<AuthenticatorTransport> transports,
-            Optional<Object> attestationMetadata) {
-        var credentialRegistration = CredentialRegistration.builder()
-                .userIdentity(userIdentity)
-                .credentialNickname(nickname)
-                .registrationTime(Instant.now())
-                .credential(credential)
-                .transports(transports)
-                .attestationMetadata(attestationMetadata)
-                .build();
-        log.info("Adding registration: user: {}, nickname: {}, credential: {}",
-                userIdentity,
-                nickname,
-                credential);
-        userStorage.addRegistrationByUsername(userIdentity.getName(), credentialRegistration);
-        return credentialRegistration;
-    }
-
-    public AssertionRequestWrapper startAuthentication(String username, String countryCode) {
-        if (!userStorage.userExists(username)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user not registered");
-        } else {
-            var assertionExtensionInputs = AssertionExtensionInputs.builder()
-                    .uvm()
-                    .build();
-            var startAssertionOptions = StartAssertionOptions.builder()
-                    .userVerification(UserVerificationRequirement.PREFERRED)
-                    .extensions(assertionExtensionInputs)
-                    .username(username)
-                    .timeout(999_999_999L)
-                    .build();
-            AssertionRequest assertionRequest = getRelyingParty(countryCode).startAssertion(startAssertionOptions);
-            var assertionRequestWrapper = new AssertionRequestWrapper(randomUUIDByteArray(), assertionRequest);
-            assertRequestStorage.put(assertionRequestWrapper.getRequestId(), assertionRequestWrapper);
-            return assertionRequestWrapper;
-        }
-    }
-
-    public AssertionRequestWrapper startAuthentication(String countryCode) {
-        var assertionExtensionInputs = AssertionExtensionInputs.builder()
-                .uvm()
-                .build();
-        var startAssertionOptions = StartAssertionOptions.builder()
-                .userVerification(UserVerificationRequirement.REQUIRED)//username less flow on chrome, require this to be REQUIRED
-                .extensions(assertionExtensionInputs)
-                .timeout(999_999_999L)
-                .username(Optional.empty())
-                .userHandle(Optional.empty())
-                .build();
-        AssertionRequest assertionRequest = getRelyingParty(countryCode).startAssertion(startAssertionOptions);
-        PublicKeyCredentialRequestOptions publicKeyOptionsWithAllowCredentials = assertionRequest.getPublicKeyCredentialRequestOptions()
-                .toBuilder()
-                .allowCredentials(List.of())
-                .build();
-        AssertionRequest improvedAssertionRequest = assertionRequest.toBuilder()
-                .publicKeyCredentialRequestOptions(publicKeyOptionsWithAllowCredentials)
-                .build();
-        var assertionRequestWrapper = new AssertionRequestWrapper(randomUUIDByteArray(), improvedAssertionRequest);
-        assertRequestStorage.put(assertionRequestWrapper.getRequestId(), assertionRequestWrapper);
-        return assertionRequestWrapper;
-    }
-
-    public AssertionRequestWrapper startAuthentication(ByteArray userHandle, String countryCode) {
-        Collection<CredentialRegistration> registrationsByUserHandle = userStorage.getRegistrationsByUserHandle(userHandle);
-        if (registrationsByUserHandle.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "no registration found for handle " + userHandle);
-        }
-        var assertionExtensionInputs = AssertionExtensionInputs.builder()
-                .uvm()
-                .build();
-        var startAssertionOptions = StartAssertionOptions.builder()
-                .userVerification(UserVerificationRequirement.PREFERRED)
-                .extensions(assertionExtensionInputs)
-                .userHandle(userHandle)
-                .timeout(999_999_999L)
-                .build();
-        AssertionRequest assertionRequest = getRelyingParty(countryCode).startAssertion(startAssertionOptions);
-        var assertionRequestWrapper = new AssertionRequestWrapper(randomUUIDByteArray(), assertionRequest);
-        assertRequestStorage.put(assertionRequestWrapper.getRequestId(), assertionRequestWrapper);
-        return assertionRequestWrapper;
-    }
-
-    public SuccessfulAuthenticationResult finishAuthentication(AssertionResponse assertionResponse, String countryCode) {
-        AssertionRequestWrapper request =
-                Optional.ofNullable(assertRequestStorage.get(assertionResponse.requestId()))
-                        .orElseThrow(() ->
-                                new ResponseStatusException(HttpStatus.NOT_FOUND, "assertion request not found"));
-        assertRequestStorage.remove(assertionResponse.requestId());
-        try {
-            var finishAssertionOptions = FinishAssertionOptions.builder()
-                    .request(request.getRequest())
-                    .response(assertionResponse.credential())
-                    .build();
-            var assertionResult = getRelyingParty(countryCode).finishAssertion(finishAssertionOptions);
-            if (assertionResult.isSuccess()) {
-                updateSignatureCountForUser(assertionResponse, assertionResult);
-                var registrationsByUsername = userStorage.getRegistrationsByUsername(assertionResult.getUsername());
-                return new SuccessfulAuthenticationResult(
-                        request,
-                        assertionResponse,
-                        registrationsByUsername,
-                        assertionResult.getUsername());
-            } else {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Assertion failed.");
-            }
-        } catch (AssertionFailedException e) {
-            log.error("Assertion failed", e);
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Assertion failed unexpectedly; this is likely a bug.", e);
-        }
-    }
-
-    private void updateSignatureCountForUser(AssertionResponse assertionResponse, AssertionResult assertionResult) {
-        log.info(
-                "update signature count for user {}, credential {}",
-                assertionResult.getUsername(),
-                assertionResponse.credential().getId());
-        userStorage.updateSignatureCount(assertionResult);
-    }
-
+    @DeleteMapping
     public void deleteAll() {
-        userStorage.removeAll();
-        assertRequestStorage.clear();
-        registerRequestStorage.clear();
+        server.deleteAll();
+    }
+
+    @PostMapping("register")
+    public RegistrationRequest startRegistration(@RequestBody RegisterRequestBody registerRequest) {
+        return server.startRegistration(
+                username,
+                registerRequest.displayName,
+                Optional.ofNullable(registerRequest.credentialNickname),
+                country,
+                AuthenticatorAttachment.PLATFORM);
+    }
+
+    @PostMapping("register/cross-platform")
+    public RegistrationRequest startRegistrationCrossPlatform(@RequestBody RegisterRequestBody registerRequest) {
+        return server.startRegistration(
+                username,
+                registerRequest.displayName,
+                Optional.ofNullable(registerRequest.credentialNickname),
+                country,
+                AuthenticatorAttachment.CROSS_PLATFORM);
+    }
+
+    @PostMapping("register/local")
+    public RegistrationRequest startRegistrationLocal(@RequestBody RegisterRequestBody registerRequest) {
+        return startRegistration(registerRequest, hardcoded-username, hardcoded-country);
+    }
+
+    @PostMapping("register/local/cross-platform")
+    public RegistrationRequest startRegistrationLocalCrossPlatform(@RequestBody RegisterRequestBody registerRequest) {
+        return startRegistrationCrossPlatform(registerRequest, hardcoded-username, hardcoded-country);
+    }
+
+    @PostMapping("register/finish")
+    public SuccessfulRegistrationResult finishRegistration(@RequestBody RegistrationResponse registrationResponse) {
+        return server.finishRegistration(registrationResponse, country);
+    }
+
+    @PostMapping("register/finish/local")
+    public SuccessfulRegistrationResult finishRegistration(@RequestBody RegistrationResponse registrationResponse) {
+        return finishRegistration(registrationResponse, hardcoded-country);
+    }
+
+    record AuthenticateRequestBody(@Nullable String username,
+                                   @NotBlank String countryCode,
+                                   @Nullable ByteArray userHandle) {
+    }
+
+    @PostMapping(value = "authenticate")
+    public AssertionRequestWrapper startAuthentication(@RequestBody AuthenticateRequestBody authenticateRequestBody) {
+        String countryCode = authenticateRequestBody.countryCode();
+        return Optional.ofNullable(authenticateRequestBody.username())
+                .map(username -> server.startAuthentication(username, countryCode))
+                .orElseGet(() ->
+                        Optional.ofNullable(authenticateRequestBody.userHandle)
+                                .map(userHandle -> server.startAuthentication(userHandle, countryCode))
+                                .orElseGet(() -> server.startAuthentication(countryCode))
+                );
+    }
+
+    @PostMapping(value = "authenticate/finish")
+    public SuccessfulAuthenticationResult finishAuthentication(@RequestBody AssertionResponse assertionResponse,
+                                                               @RequestParam(name = "country") String countryCode) {
+        return server.finishAuthentication(assertionResponse, countryCode);
     }
 }
