@@ -33,7 +33,7 @@ android {
     ndkVersion flutter.ndkVersion
 
     dependencies {
-        implementation 'com.google.firebase:firebase-appcheck-debug:17.0.1'
+        implementation 'com.google.firebase:firebase-appcheck-debug:17.1.0'
     }
 
     compileOptions {
