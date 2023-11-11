@@ -1,0 +1,33 @@
+management:
+  health:
+    pubsub:
+      enabled: false
+
+external:
+  uris:
+    publicJwks: http://localhost:${wiremock.server.port}/.well-known/jwks.json
+
+spring:
+  cloud:
+    gcp:
+      trace:
+        enabled: false
+      sql:
+        enabled: false
+        jdbc:
+          enabled: false
+      project-id: dummy-project-id
+      config:
+        enabled: false
+      spanner:
+        enabled: false
+      core:
+        enabled: false
+      logging:
+        enabled: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${external.uris.publicJwks}
+          issuer-uri: "https://www.bmd007.io"
