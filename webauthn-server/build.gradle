@@ -52,7 +52,7 @@ dependencies {
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	annotationProcessor 'org.projectlombok:lombok'
 	implementation 'com.yubico:webauthn-server-core:2.5.0'
-	implementation 'com.yubico:webauthn-server-attestation:2.5.0'
+	implementation 'com.yubico:webauthn-server-attestation:2.5.1'
 	implementation 'com.yubico:yubico-util:2.5.0'
 	implementation 'com.upokecenter:cbor:4.5.3'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
