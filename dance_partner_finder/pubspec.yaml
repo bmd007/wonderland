@@ -24,7 +24,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  audioplayers: ^5.0.0
+  audioplayers: ^6.0.0
   cupertino_icons: ^1.0.5
   mocktail: ^1.0.0
   bloc: ^8.1.0
