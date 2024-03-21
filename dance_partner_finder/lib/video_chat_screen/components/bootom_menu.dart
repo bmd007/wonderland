@@ -6,7 +6,7 @@ import 'left_call_info.dart';
 import 'right_options.dart';
 
 class BottomMenu extends StatelessWidget {
-  const BottomMenu({Key? key}) : super(key: key);
+  const BottomMenu({super.key});
 
   @override
   Widget build(BuildContext context) {

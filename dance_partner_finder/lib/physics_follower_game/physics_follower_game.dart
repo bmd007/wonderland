@@ -2,7 +2,6 @@ import 'package:dance_partner_finder/game_state_repository/game_event.dart';
 import 'package:dance_partner_finder/game_state_repository/game_event_repository.dart';
 import 'package:dance_partner_finder/game_state_repository/movable.dart';
 import 'package:flame/components.dart';
-import 'package:flame/game.dart';
 import 'package:flame/palette.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/material.dart';

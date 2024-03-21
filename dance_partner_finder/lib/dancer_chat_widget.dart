@@ -10,7 +10,7 @@ import 'bloc/profile_bloc/profile_edit_bloc.dart';
 class DancerChatWidget extends StatelessWidget {
   final _messageTypingController = TextEditingController();
 
-  DancerChatWidget({Key? key}) : super(key: key);
+  DancerChatWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

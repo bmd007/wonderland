@@ -10,7 +10,7 @@ import 'dance_partner_matches_page.dart';
 
 
 class DancePartnerSelectWidget extends StatelessWidget {
-  const DancePartnerSelectWidget({Key? key}) : super(key: key);
+  const DancePartnerSelectWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -4,8 +4,7 @@ import 'package:flutter_svg/svg.dart';
 class CallScreenHeaderComponents extends StatefulWidget {
   final BuildContext ctx;
 
-  const CallScreenHeaderComponents({Key? key, required this.ctx})
-      : super(key: key);
+  const CallScreenHeaderComponents({super.key, required this.ctx});
 
   @override
   State<CallScreenHeaderComponents> createState() =>

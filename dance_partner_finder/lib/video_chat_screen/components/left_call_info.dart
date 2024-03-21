@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CallInfo extends StatelessWidget {
-  const CallInfo({Key? key}) : super(key: key);
+  const CallInfo({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +46,8 @@ class CallInfo extends StatelessWidget {
               borderRadius: BorderRadius.circular(50),
               color: Colors.white30,
             ),
-            child: Row(
-              children: const [
+            child: const Row(
+              children: [
                 CircleAvatar(
                   radius: 5,
                   backgroundColor: Colors.red,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class RightOptions extends StatefulWidget {
-  const RightOptions({Key? key}) : super(key: key);
+  const RightOptions({super.key});
 
   @override
   State<RightOptions> createState() => _RightOptionsState();
