@@ -32,12 +32,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import wonderland.webauthn.webauthnserver.domain.CredentialRegistration;
-import wonderland.webauthn.webauthnserver.dto.*;
+import wonderland.webauthn.webauthnserver.dto.AssertionRequestWrapper;
+import wonderland.webauthn.webauthnserver.dto.AssertionResponse;
+import wonderland.webauthn.webauthnserver.dto.RegistrationRequest;
+import wonderland.webauthn.webauthnserver.dto.RegistrationResponse;
+import wonderland.webauthn.webauthnserver.dto.SuccessfulAuthenticationResult;
+import wonderland.webauthn.webauthnserver.dto.SuccessfulRegistrationResult;
 import wonderland.webauthn.webauthnserver.repository.InMemoryRegistrationStorage;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.util.Collection;
@@ -49,67 +51,31 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 @Slf4j
 @Service
-public class WebAuthNService {
+public final class WebAuthNService {
 
-    public static final RelyingPartyIdentity SWEDISH_RELYING_PARTY_IDENTITY = RelyingPartyIdentity.builder().id("wonderland.se").name("wonderland WebAuthn se").build();
-    public static final RelyingPartyIdentity DANISH_RELYING_PARTY_IDENTITY = RelyingPartyIdentity.builder().id("wonderland.dk").name("wonderland WebAuthn dk").build();
     private final InMemoryRegistrationStorage userStorage;
     private final RelyingParty swedishRelyingParty;
-    private final RelyingParty danishRelyingParty;
     private final YubicoJsonMetadataService metadataService = new YubicoJsonMetadataService();
     private final Map<ByteArray, AssertionRequestWrapper> assertRequestStorage = new HashMap<>();
     private final Map<ByteArray, RegistrationRequest> registerRequestStorage = new HashMap<>();
 
-    private static final String LOCAL_DOMAIN = "https://localhost.localdomain";
-    private static final String WEBAPP_NEXT_PROD_DK = "https://wonderland.dk";
-    private static final String WEBAPP_NEXT_PROD_NO = "https://wonderland.no";
-    private static final String WEBAPP_NEXT_PROD_SE = "https://wonderland.se";
-    private static final String WEBAPP_NEXT_PROD_FI = "https://wonderland.fi";
-    private static final String WEBAPP_NEXT_APPID_ORIGIN_PATTERN = "https:\\/\\/(?:[^\\/]*\\.)?(?:wonderland\\.(?:dk|no|fi)|test\\.wonderland\\.(?:dk|no|fi)|localhost\\.localdomain(?::808[01])?|local\\.next\\.test\\.wonderland\\.dk:808[01])".trim();
-    private static final Pattern WEBAPP_NEXT_APPID_PATTERN = Pattern.compile(WEBAPP_NEXT_APPID_ORIGIN_PATTERN);
-
     public WebAuthNService(InMemoryRegistrationStorage userStorage) throws InvalidAppIdException {
         this.userStorage = userStorage;
         swedishRelyingParty = RelyingParty.builder()
-                .identity(SWEDISH_RELYING_PARTY_IDENTITY)
+                .identity(RelyingPartyIdentity.builder().id("wonderland-test.se").name("Wonderland WebAuthn SE").build())
                 .credentialRepository(this.userStorage)
-                .origins(Set.of(LOCAL_DOMAIN, WEBAPP_NEXT_PROD_SE))
+                .origins(Set.of("https://wonderland-test.se", "https://wonderland.se", "https://www.wonderland-local.se"))
                 .allowOriginPort(true)
                 .allowOriginSubdomain(true)
                 .attestationConveyancePreference(AttestationConveyancePreference.DIRECT)
                 .attestationTrustSource(metadataService)
                 .allowUntrustedAttestation(true)
 //                .validateSignatureCounter(true)
-                .appId(new AppId(WEBAPP_NEXT_PROD_SE))
+                .appId(new AppId("https://wonderland-test.se"))
                 .build();
-        danishRelyingParty = RelyingParty.builder()
-                .identity(DANISH_RELYING_PARTY_IDENTITY)
-                .credentialRepository(this.userStorage)
-                .origins(Set.of(LOCAL_DOMAIN, WEBAPP_NEXT_PROD_DK))
-                .allowOriginPort(true)
-                .allowOriginSubdomain(true)
-                .attestationConveyancePreference(AttestationConveyancePreference.DIRECT)
-                .attestationTrustSource(metadataService)
-                .allowUntrustedAttestation(true)
-//                .validateSignatureCounter(true)
-                .appId(new AppId(WEBAPP_NEXT_PROD_DK))
-                .build();
-    }
-
-    public AppId getAppid(@NotBlank String origin) {
-        try {
-            if (WEBAPP_NEXT_APPID_PATTERN.matcher(origin).matches()) {
-                URL url = URI.create(origin).toURL();
-                return new AppId(url.toString());
-            }
-        } catch (MalformedURLException | InvalidAppIdException e) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "bad origin %s".formatted(origin), e);
-        }
-        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "bad origin %s".formatted(origin));
     }
 
     public static ByteArray randomUUIDByteArray() {
@@ -123,7 +89,6 @@ public class WebAuthNService {
     public RegistrationRequest startRegistration(@NotBlank String username,
                                                  @NotBlank String displayName,
                                                  Optional<String> credentialNickname,
-                                                 String countryCode,
                                                  AuthenticatorAttachment authenticatorAttachment) {
         final UserIdentity userIdentity =
                 Optional.ofNullable(userStorage.getRegistrationsByUsername(username))
@@ -152,7 +117,7 @@ public class WebAuthNService {
                 .timeout(999_999_999L)
                 .extensions(registrationExtensionInputs)
                 .build();
-        var publicKeyCredentialCreationOptions = getRelyingParty(countryCode).startRegistration(startRegistrationOptions);
+        var publicKeyCredentialCreationOptions = swedishRelyingParty.startRegistration(startRegistrationOptions);
         var registrationRequest = new RegistrationRequest(username,
                 credentialNickname,
                 randomUUIDByteArray(),
@@ -161,21 +126,14 @@ public class WebAuthNService {
         return registrationRequest;
     }
 
-    private RelyingParty getRelyingParty(String countryCode) {
-        return switch (countryCode.toLowerCase()) {
-            case "dk" -> danishRelyingParty;
-            default -> swedishRelyingParty;
-        };
-    }
-
-    public SuccessfulRegistrationResult finishRegistration(RegistrationResponse registrationResponse, String countryCode) {
+    public SuccessfulRegistrationResult finishRegistration(RegistrationResponse registrationResponse) {
         var registrationRequest =
                 Optional.ofNullable(registerRequestStorage.get(registrationResponse.requestId()))
                         .orElseThrow(() ->
                                 new ResponseStatusException(HttpStatus.NOT_FOUND, "registration request not found"));
         registerRequestStorage.remove(registrationRequest.getRequestId());
         try {
-            var registrationResult = getRelyingParty(countryCode).finishRegistration(
+            var registrationResult = swedishRelyingParty.finishRegistration(
                     FinishRegistrationOptions.builder()
                             .request(registrationRequest.getPublicKeyCredentialCreationOptions())
                             .response(registrationResponse.credential())
@@ -237,7 +195,7 @@ public class WebAuthNService {
         return credentialRegistration;
     }
 
-    public AssertionRequestWrapper startAuthentication(String username, String countryCode) {
+    public AssertionRequestWrapper startAuthentication(String username) {
         if (!userStorage.userExists(username)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user not registered");
         } else {
@@ -250,25 +208,25 @@ public class WebAuthNService {
                     .username(username)
                     .timeout(999_999_999L)
                     .build();
-            AssertionRequest assertionRequest = getRelyingParty(countryCode).startAssertion(startAssertionOptions);
+            AssertionRequest assertionRequest = swedishRelyingParty.startAssertion(startAssertionOptions);
             var assertionRequestWrapper = new AssertionRequestWrapper(randomUUIDByteArray(), assertionRequest);
             assertRequestStorage.put(assertionRequestWrapper.getRequestId(), assertionRequestWrapper);
             return assertionRequestWrapper;
         }
     }
 
-    public AssertionRequestWrapper startAuthentication(String countryCode) {
+    public AssertionRequestWrapper startAuthentication() {
         var assertionExtensionInputs = AssertionExtensionInputs.builder()
                 .uvm()
                 .build();
         var startAssertionOptions = StartAssertionOptions.builder()
-                .userVerification(UserVerificationRequirement.REQUIRED)//username less flow on chrome, require this to be REQUIRED
+                .userVerification(UserVerificationRequirement.REQUIRED)//username less flow on chrome, needs this to be REQUIRED
                 .extensions(assertionExtensionInputs)
                 .timeout(999_999_999L)
                 .username(Optional.empty())
                 .userHandle(Optional.empty())
                 .build();
-        AssertionRequest assertionRequest = getRelyingParty(countryCode).startAssertion(startAssertionOptions);
+        AssertionRequest assertionRequest = swedishRelyingParty.startAssertion(startAssertionOptions);
         PublicKeyCredentialRequestOptions publicKeyOptionsWithAllowCredentials = assertionRequest.getPublicKeyCredentialRequestOptions()
                 .toBuilder()
                 .allowCredentials(List.of())
@@ -281,7 +239,7 @@ public class WebAuthNService {
         return assertionRequestWrapper;
     }
 
-    public AssertionRequestWrapper startAuthentication(ByteArray userHandle, String countryCode) {
+    public AssertionRequestWrapper startAuthentication(ByteArray userHandle) {
         Collection<CredentialRegistration> registrationsByUserHandle = userStorage.getRegistrationsByUserHandle(userHandle);
         if (registrationsByUserHandle.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "no registration found for handle " + userHandle);
@@ -295,13 +253,13 @@ public class WebAuthNService {
                 .userHandle(userHandle)
                 .timeout(999_999_999L)
                 .build();
-        AssertionRequest assertionRequest = getRelyingParty(countryCode).startAssertion(startAssertionOptions);
+        AssertionRequest assertionRequest = swedishRelyingParty.startAssertion(startAssertionOptions);
         var assertionRequestWrapper = new AssertionRequestWrapper(randomUUIDByteArray(), assertionRequest);
         assertRequestStorage.put(assertionRequestWrapper.getRequestId(), assertionRequestWrapper);
         return assertionRequestWrapper;
     }
 
-    public SuccessfulAuthenticationResult finishAuthentication(AssertionResponse assertionResponse, String countryCode) {
+    public SuccessfulAuthenticationResult finishAuthentication(AssertionResponse assertionResponse) {
         AssertionRequestWrapper request =
                 Optional.ofNullable(assertRequestStorage.get(assertionResponse.requestId()))
                         .orElseThrow(() ->
@@ -312,7 +270,7 @@ public class WebAuthNService {
                     .request(request.getRequest())
                     .response(assertionResponse.credential())
                     .build();
-            var assertionResult = getRelyingParty(countryCode).finishAssertion(finishAssertionOptions);
+            var assertionResult = swedishRelyingParty.finishAssertion(finishAssertionOptions);
             if (assertionResult.isSuccess()) {
                 updateSignatureCountForUser(assertionResponse, assertionResult);
                 var registrationsByUsername = userStorage.getRegistrationsByUsername(assertionResult.getUsername());

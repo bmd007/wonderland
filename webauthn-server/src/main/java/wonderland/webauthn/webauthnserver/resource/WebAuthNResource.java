@@ -12,15 +12,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import wonderland.webauthn.webauthnserver.dto.*;
+import wonderland.webauthn.webauthnserver.dto.AssertionRequestWrapper;
+import wonderland.webauthn.webauthnserver.dto.AssertionResponse;
+import wonderland.webauthn.webauthnserver.dto.RegistrationRequest;
+import wonderland.webauthn.webauthnserver.dto.RegistrationResponse;
+import wonderland.webauthn.webauthnserver.dto.SuccessfulAuthenticationResult;
+import wonderland.webauthn.webauthnserver.dto.SuccessfulRegistrationResult;
 import wonderland.webauthn.webauthnserver.service.WebAuthNService;
 
 import java.util.Optional;
 
-@CrossOrigin(origins = {"https://localhost.localdomain:8081",
-        "https://localhost.localdomain:8080",
-        "https://localhost.localdomain"}
-        , originPatterns = {"https://*.zoo.wonderland"})
+@CrossOrigin(origins = {
+        "https://localhost.localdomain",
+        "http://localhost",
+        "https://localhost",
+}
+        , originPatterns = {"https://*.staging.wonderland.se"})
 @Slf4j
 @RestController
 @RequestMapping("/v1/methods/webauthn/")
@@ -32,7 +39,7 @@ public class WebAuthNResource {
         this.server = server;
     }
 
-    record RegisterRequestBody(@NotBlank String displayName, @NotBlank String credentialNickname) {
+    public record RegisterRequestBody(@NotBlank String displayName, @NotBlank String credentialNickname) {
     }
 
     @DeleteMapping
@@ -41,65 +48,55 @@ public class WebAuthNResource {
     }
 
     @PostMapping("register")
-    public RegistrationRequest startRegistration(@RequestBody RegisterRequestBody registerRequest) {
+    public RegistrationRequest startRegistration(@RequestBody RegisterRequestBody registerRequest, String validatedUsername) {
         return server.startRegistration(
-                username,
+                validatedUsername,
                 registerRequest.displayName,
                 Optional.ofNullable(registerRequest.credentialNickname),
-                country,
                 AuthenticatorAttachment.PLATFORM);
     }
 
     @PostMapping("register/cross-platform")
-    public RegistrationRequest startRegistrationCrossPlatform(@RequestBody RegisterRequestBody registerRequest) {
+    public RegistrationRequest startRegistrationCrossPlatform(@RequestBody RegisterRequestBody registerRequest, String validatedUsername) {
         return server.startRegistration(
-                username,
+                validatedUsername,
                 registerRequest.displayName,
                 Optional.ofNullable(registerRequest.credentialNickname),
-                country,
                 AuthenticatorAttachment.CROSS_PLATFORM);
     }
 
     @PostMapping("register/local")
     public RegistrationRequest startRegistrationLocal(@RequestBody RegisterRequestBody registerRequest) {
-        return startRegistration(registerRequest, hardcoded-username, hardcoded-country);
+        return startRegistration(registerRequest, "007123e0-a0c3-4126-97d2-f7c7542a3228");
     }
 
     @PostMapping("register/local/cross-platform")
     public RegistrationRequest startRegistrationLocalCrossPlatform(@RequestBody RegisterRequestBody registerRequest) {
-        return startRegistrationCrossPlatform(registerRequest, hardcoded-username, hardcoded-country);
+        return startRegistrationCrossPlatform(registerRequest, "007123e0-a0c3-4126-97d2-f7c7542a3228");
     }
 
     @PostMapping("register/finish")
     public SuccessfulRegistrationResult finishRegistration(@RequestBody RegistrationResponse registrationResponse) {
-        return server.finishRegistration(registrationResponse, country);
+        return server.finishRegistration(registrationResponse);
     }
 
-    @PostMapping("register/finish/local")
-    public SuccessfulRegistrationResult finishRegistration(@RequestBody RegistrationResponse registrationResponse) {
-        return finishRegistration(registrationResponse, hardcoded-country);
-    }
-
-    record AuthenticateRequestBody(@Nullable String username,
-                                   @NotBlank String countryCode,
-                                   @Nullable ByteArray userHandle) {
+    public record AuthenticateRequestBody(@Nullable String username, @NotBlank String countryCode, @Nullable ByteArray userHandle) {
     }
 
     @PostMapping(value = "authenticate")
     public AssertionRequestWrapper startAuthentication(@RequestBody AuthenticateRequestBody authenticateRequestBody) {
-        String countryCode = authenticateRequestBody.countryCode();
         return Optional.ofNullable(authenticateRequestBody.username())
-                .map(username -> server.startAuthentication(username, countryCode))
+                .map(server::startAuthentication)
                 .orElseGet(() ->
                         Optional.ofNullable(authenticateRequestBody.userHandle)
-                                .map(userHandle -> server.startAuthentication(userHandle, countryCode))
-                                .orElseGet(() -> server.startAuthentication(countryCode))
+                                .map(server::startAuthentication)
+                                .orElseGet(server::startAuthentication)
                 );
     }
 
     @PostMapping(value = "authenticate/finish")
     public SuccessfulAuthenticationResult finishAuthentication(@RequestBody AssertionResponse assertionResponse,
                                                                @RequestParam(name = "country") String countryCode) {
-        return server.finishAuthentication(assertionResponse, countryCode);
+        return server.finishAuthentication(assertionResponse);
     }
 }
