@@ -6,8 +6,7 @@ plugins {
 }
 
 java {
-	sourceCompatibility = 20
-	targetCompatibility = 20
+	sourceCompatibility = 22
 }
 
 group = 'wonderland'
@@ -40,7 +39,6 @@ ext {
 
 dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter'
-	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'io.micrometer:micrometer-registry-prometheus'
 	implementation "org.springframework.cloud:spring-cloud-starter-consul-config"
@@ -51,9 +49,9 @@ dependencies {
 	implementation 'com.google.guava:guava:33.1.0-jre'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	annotationProcessor 'org.projectlombok:lombok'
-	implementation 'com.yubico:webauthn-server-core:2.5.1'
-	implementation 'com.yubico:webauthn-server-attestation:2.5.1'
-	implementation 'com.yubico:yubico-util:2.5.1'
+	implementation 'com.yubico:webauthn-server-core:2.6.0-alpha5'
+	implementation 'com.yubico:webauthn-server-attestation:2.6.0-alpha5'
+	implementation 'com.yubico:yubico-util:2.6.0-alpha5'
 	implementation 'com.upokecenter:cbor:4.5.3'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
@@ -78,5 +76,5 @@ tasks.named('wrapper') {
 
 bootBuildImage {
 	imageName = "bmd007/${project.name}"
-	environment = ["BP_JVM_VERSION": "20"]
+//	environment = ["BP_JVM_VERSION": "20"]
 }
