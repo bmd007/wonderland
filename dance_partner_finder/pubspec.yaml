@@ -33,7 +33,7 @@ dependencies:
   flutter_bloc: ^8.1.1
   rx_bloc: ^5.0.0
   rxdart: ^0.27.7
-  location: ^5.0.0
+  location: ^6.0.0
   http: ^1.0.0
   dio: ^5.1.0
   web_socket_channel: ^2.3.0
