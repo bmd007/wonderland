@@ -48,11 +48,11 @@ dependencies:
   firebase_storage: ^11.0.10
   firebase_app_check: ^0.2.0
   file_picker: ^8.0.0
-  flutter_webrtc: ^0.9.19
+  flutter_webrtc: ^0.10.0
   sdp_transform: ^0.3.2
   flutter_svg: ^2.0.0
   flame: ^1.6.0
-  flame_forge2d: ^0.17.0
+  flame_forge2d: ^0.18.0
 
 dev_dependencies:
   flutter_test:
