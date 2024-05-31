@@ -1,8 +1,8 @@
 plugins {
 	id 'java'
 	id 'idea'
-	id 'org.springframework.boot' version '3.2.5'
-	id 'io.spring.dependency-management' version '1.1.4'
+	id 'org.springframework.boot' version '3.3.0'
+	id 'io.spring.dependency-management' version '1.1.5'
 }
 
 java {
@@ -34,7 +34,7 @@ repositories {
 }
 
 ext {
-	set('springCloudVersion', "2023.0.1")
+	set('springCloudVersion', "2023.0.2")
 }
 
 dependencies {
@@ -46,13 +46,13 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
 	compileOnly 'org.projectlombok:lombok'
-	implementation 'com.google.guava:guava:33.1.0-jre'
+	implementation 'com.google.guava:guava:33.2.1-jre'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	annotationProcessor 'org.projectlombok:lombok'
 	implementation 'com.yubico:webauthn-server-core:2.6.0-alpha6'
 	implementation 'com.yubico:webauthn-server-attestation:2.6.0-alpha6'
 	implementation 'com.yubico:yubico-util:2.6.0-alpha6'
-	implementation 'com.upokecenter:cbor:4.5.3'
+	implementation 'com.upokecenter:cbor:4.5.4'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 	testImplementation 'org.mockito:mockito-junit-jupiter'
