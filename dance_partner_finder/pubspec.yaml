@@ -36,7 +36,7 @@ dependencies:
   location: ^6.0.0
   http: ^1.0.0
   dio: ^5.1.0
-  web_socket_channel: ^2.3.0
+  web_socket_channel: ^3.0.0
   universal_io: ^2.0.4
   stomp_dart_client: ^2.0.0
   rsocket: ^1.0.0
@@ -63,7 +63,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^3.0.0
+  flutter_lints: ^4.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

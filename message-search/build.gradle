@@ -1,8 +1,8 @@
 plugins {
     id 'java'
     id 'idea'
-    id 'org.springframework.boot' version '3.2.5'
-    id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.springframework.boot' version '3.3.0'
+    id 'io.spring.dependency-management' version '1.1.5'
     id "jacoco"
 }
 
@@ -38,7 +38,7 @@ repositories {
 }
 
 ext {
-    set('springCloudVersion', "2023.0.1")
+    set('springCloudVersion', "2023.0.2")
 }
 
 dependencies {
@@ -56,7 +56,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
 
     implementation 'org.springframework.kafka:spring-kafka'
-    implementation group: 'com.google.guava', name: 'guava', version: '33.1.0-jre'
+    implementation group: 'com.google.guava', name: 'guava', version: '33.2.1-jre'
     compileOnly 'org.projectlombok:lombok'
 
     annotationProcessor 'org.projectlombok:lombok'
