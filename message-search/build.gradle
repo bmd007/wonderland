@@ -68,8 +68,8 @@ dependencies {
     testImplementation 'org.mockito:mockito-junit-jupiter'
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-    testImplementation 'com.playtika.testcontainers:embedded-kafka:3.1.6'
-    testImplementation 'com.playtika.testcontainers:embedded-elasticsearch:3.1.6'
+    testImplementation 'com.playtika.testcontainers:embedded-kafka:3.1.7'
+    testImplementation 'com.playtika.testcontainers:embedded-elasticsearch:3.1.7'
 }
 
 
