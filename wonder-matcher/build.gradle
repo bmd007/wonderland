@@ -1,8 +1,8 @@
 plugins {
     id 'java'
     id 'idea'
-    id 'org.springframework.boot' version '3.3.0'
-    id 'io.spring.dependency-management' version '1.1.5'
+    id 'org.springframework.boot' version '3.3.2'
+    id 'io.spring.dependency-management' version '1.1.6'
     id 'org.hibernate.orm' version '6.5.2.Final'
     id "jacoco"
 }
@@ -36,7 +36,7 @@ repositories {
 }
 
 ext {
-    set('springCloudVersion', "2023.0.2")
+    set('springCloudVersion', "2023.0.3")
 }
 
 dependencies {
@@ -59,7 +59,7 @@ dependencies {
         exclude group: 'com.zaxxer', module: 'HikariCP'
     }
 
-    implementation 'com.h2database:h2:2.2.224'//2.1.212'
+    implementation 'com.h2database:h2:2.3.230'//2.1.212'
     implementation 'org.locationtech.jts:jts-core:1.19.0' // not needed if h2gis got used
 
     implementation 'com.google.guava:guava:33.2.1-jre'
