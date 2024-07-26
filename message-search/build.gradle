@@ -7,7 +7,7 @@ plugins {
 }
 
 java {
-    sourceCompatibility = 21
+    sourceCompatibility = 22
 }
 
 configurations {

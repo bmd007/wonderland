@@ -103,6 +103,7 @@ spring:
 server:
   ssl:
     enabled: false
+  port:
 ---
 spring:
   config:
