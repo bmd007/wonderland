@@ -1,9 +1,9 @@
 plugins {
     id 'java'
     id 'idea'
-    id 'org.springframework.boot' version '3.3.2'
-    id 'io.spring.dependency-management' version '1.1.6'
-    id 'org.hibernate.orm' version '6.6.0.Final'
+    id 'org.springframework.boot' version '3.5.0'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.hibernate.orm' version '7.0.0.Final'
     id "jacoco"
 }
 
@@ -36,7 +36,7 @@ repositories {
 }
 
 ext {
-    set('springCloudVersion', "2023.0.3")
+    set('springCloudVersion', "2025.0.0")
 }
 
 dependencies {
@@ -60,9 +60,9 @@ dependencies {
     }
 
     implementation 'com.h2database:h2:2.3.232'//2.1.212'
-    implementation 'org.locationtech.jts:jts-core:1.19.0' // not needed if h2gis got used
+    implementation 'org.locationtech.jts:jts-core:1.20.0' // not needed if h2gis got used
 
-    implementation 'com.google.guava:guava:33.3.0-jre'
+    implementation 'com.google.guava:guava:33.4.8-jre'
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -70,7 +70,7 @@ dependencies {
     testImplementation 'org.springframework.kafka:spring-kafka-test'
     testImplementation 'org.mockito:mockito-junit-jupiter'
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
-    testImplementation 'org.awaitility:awaitility:4.2.2'
+    testImplementation 'org.awaitility:awaitility:4.3.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 
