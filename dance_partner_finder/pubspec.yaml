@@ -41,7 +41,7 @@ dependencies:
   stomp_dart_client: ^2.0.0
   rsocket: ^1.0.0
   firebase_auth: ^5.0.0
-  google_sign_in: ^6.0.0
+  google_sign_in: ^7.0.0
   google_fonts: ^6.0.0
   font_awesome_flutter: ^10.3.0
   firebase_core: ^3.0.0
