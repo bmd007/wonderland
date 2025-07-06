@@ -14,7 +14,7 @@ services:
 
   kafka:
     #    https://github.com/confluentinc/cp-all-in-one/blob/7.3.0-post/cp-all-in-one-kraft/docker-compose.yml
-    image: confluentinc/cp-kafka:7.9.1
+    image: confluentinc/cp-kafka:8.0.0
     hostname: kafka
     container_name: kafka
     ports:
