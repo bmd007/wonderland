@@ -1,4 +1,7 @@
-# Wonderland https://wonderland-007.web.app
+# Wonderland
+
+- Match making: https://bmd007.github.io/wonderland/
+- Game: https://wonderland-007.web.app
 
 ### Scenario:
 After login, there will be plenty of activity (atm only dancing) to choose from.
