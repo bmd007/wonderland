@@ -18,40 +18,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class RestExceptionHandler {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(RestExceptionHandler.class);
-  private static final ObjectMapper objectMapper = new ObjectMapper();
-
-  @ExceptionHandler
-  public ResponseEntity<ErrorsDto> handleOrderTravelerProfileException(
-      OrderTravelerProfileException e) {
-    LOGGER.error("error", e);
-    return ResponseEntity.status(e.getStatus())
-        .body(ErrorsDto.builder().withErrors(e.getErrors()).build());
-  }
-
-  @ExceptionHandler(FeignException.class)
-  public void handleFeignException(HttpServletResponse response, FeignException e)
-      throws IOException {
-    writeError(response, e.status(), ErrorsDto.SERVICE_FAILED, e.getMessage());
-  }
-
-  @ExceptionHandler(HttpMessageNotReadableException.class)
-  public void handleHttpMessageNotReadableException(
-      HttpServletResponse response, HttpMessageNotReadableException e) throws IOException {
-    writeError(response, 400, ErrorsDto.MESSAGE_NOT_READABLE, e.getMessage());
-  }
-
   @ExceptionHandler(NotFoundException.class)
   public void handleNotFoundException(HttpServletResponse response, NotFoundException e)
       throws IOException {
     LOGGER.error("error", e);
     writeErrors(response, 404, e.getErrors());
-  }
-
-  @ExceptionHandler(ConflictException.class)
-  public void handleConflictException(HttpServletResponse response, ConflictException e)
-      throws IOException {
-    writeErrors(response, 409, e.getErrors());
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)

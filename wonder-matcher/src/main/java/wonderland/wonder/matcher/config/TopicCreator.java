@@ -29,7 +29,6 @@ public class TopicCreator {
         this.applicationName = applicationName;
         this.eventTopicDefinition = PartitionDef.parse(eventTopicDefinition);
         this.changeLogTopicDefinition = PartitionDef.parse(changeLogTopicDefinition);
-
     }
 
     @Bean

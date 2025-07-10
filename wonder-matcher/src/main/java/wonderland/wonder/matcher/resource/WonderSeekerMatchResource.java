@@ -22,13 +22,11 @@ public class WonderSeekerMatchResource {
         this.wonderSeekerMatchViewService = wonderSeekerMatchViewService;
     }
 
-
     //isHighLevelQuery query param is related to inter instance communication and it should be true in normal operations or not defined
     @GetMapping
     public Mono<WonderSeekersMatchesDto> getCounters(@RequestParam(required = false, value = ViewService.HIGH_LEVEL_QUERY_PARAM_NAME, defaultValue = "true") boolean isHighLevelQuery) {
         return wonderSeekerMatchViewService.getAll(isHighLevelQuery);
     }
-
 
     @GetMapping("/{wonderSeeker}")
     public Mono<WonderSeekerMatchesDto> getCounterByName(@PathVariable("wonderSeeker") String wonderSeeker) {
