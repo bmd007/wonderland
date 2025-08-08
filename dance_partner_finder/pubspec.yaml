@@ -40,15 +40,15 @@ dependencies:
   universal_io: ^2.0.4
   stomp_dart_client: ^2.0.0
   rsocket: ^1.0.0
-  firebase_auth: ^5.0.0
+  firebase_auth: ^6.0.0
   google_sign_in: ^7.0.0
   google_fonts: ^6.0.0
   font_awesome_flutter: ^10.3.0
-  firebase_core: ^3.0.0
-  firebase_storage: ^12.0.0
-  firebase_app_check: ^0.3.0
+  firebase_core: ^4.0.0
+  firebase_storage: ^13.0.0
+  firebase_app_check: ^0.4.0
   file_picker: ^10.0.0
-  flutter_webrtc: ^0.14.0
+  flutter_webrtc: ^1.0.0
   sdp_transform: ^0.3.2
   flutter_svg: ^2.0.0
   flame: ^1.6.0
