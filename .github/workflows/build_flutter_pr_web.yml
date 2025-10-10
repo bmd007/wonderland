@@ -20,7 +20,7 @@ jobs:
         GITHUB_TOKEN: '${{ secrets.BMD_ACCESS_TOKEN_FOR_ACTIONS }}'
    
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: subosito/flutter-action@v2
         with:
