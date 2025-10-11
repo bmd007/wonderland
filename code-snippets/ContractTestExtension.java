@@ -1,4 +1,3 @@
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.skyscreamer.jsonassert.Customization;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.skyscreamer.jsonassert.comparator.CustomComparator;
@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -47,40 +48,56 @@ public class ContractTestExtension implements AfterAllCallback {
         assertFalse(GENERATE_TEST_DATA);
     }
 
-    public void verifyAgainstOrUpdateApiContract(byte[] json, @NotNull String apiContractFileName) {
-        verifyAgainstOrUpdateApiContract(new String(json), apiContractFileName);
+    public void verifyAgainstOrUpdateApiContract(byte[] json,
+                                                 @NotNull String apiContractFileName,
+                                                 String... jsonPathsToIgnoreValue) {
+        verifyAgainstOrUpdateApiContract(new String(json), apiContractFileName, jsonPathsToIgnoreValue);
     }
 
-    public void verifyAgainstOrUpdateApiContract(@NotNull Object object, @NotNull String apiContractFileName) throws JsonProcessingException {
+    public void verifyAgainstOrUpdateApiContract(@NotNull Object object,
+                                                 @NotNull String apiContractFileName,
+                                                 String... jsonPathsToIgnoreValue) throws JsonProcessingException {
         var objectAsJsonString = objectMapper.writeValueAsString(object);
-        verifyAgainstOrUpdateApiContract(objectAsJsonString, apiContractFileName);
+        verifyAgainstOrUpdateApiContract(objectAsJsonString, apiContractFileName, jsonPathsToIgnoreValue);
     }
 
-    public void verifyAgainstOrUpdateApiContract(@NotNull String json, @NotNull String apiContractFileName) {
+    public void verifyAgainstOrUpdateApiContract(@NotNull String json,
+                                                 @NotNull String apiContractFileName,
+                                                 String... jsonPathsToIgnoreValue) {
         if (GENERATE_TEST_DATA) {
             writeToApiContracts(apiContractFileName, json);
         } else {
             String expected = getApiContract(apiContractFileName);
-            verify(expected, json);
+            verify(expected, json, jsonPathsToIgnoreValue);
         }
     }
 
-    private void verify(String expected, String actual) {
-        verify(List.of(expected), List.of(actual));
+    private void verify(final String expected, String actual, String... jsonPathsToIgnoreValue) {
+        verify(List.of(expected), List.of(actual), jsonPathsToIgnoreValue);
     }
 
-    private void verify(final List<String> expected, List<String> actual) {
+    private void verify(final List<String> expected,
+                        List<String> actual,
+                        String... jsonPathsToIgnoreValue) {
         //make sure expected and actual are in the same order
         final List<String> sortedExpected = sorted(expected);
         final List<String> sortedActual = sorted(actual);
+
+        final CustomComparator comparator;
+        if (jsonPathsToIgnoreValue.length > 0) {
+            var customizations = Arrays.stream(jsonPathsToIgnoreValue)
+                .map(field -> new Customization(field, (a, b) -> a != null && b != null))
+                .toArray(Customization[]::new);
+            comparator = new CustomComparator(JSONCompareMode.NON_EXTENSIBLE, customizations);
+        } else {
+            comparator = new CustomComparator(JSONCompareMode.STRICT);
+        }
 
         assertThat(sortedExpected).hasSameSizeAs(sortedActual);
         IntStream.range(0, sortedExpected.size())
             .forEach(i -> {
                 try {
-                    JSONAssert.assertEquals(sortedExpected.get(i),
-                        sortedActual.get(i),
-                        new CustomComparator(JSONCompareMode.STRICT));
+                    JSONAssert.assertEquals(sortedExpected.get(i), sortedActual.get(i), comparator);
                 } catch (AssertionError ae) {
                     log.info("Assertion msg: {}", ae.getMessage());
                     log.debug("orderedExpected {} {}", i, sortedExpected.get(i));
