@@ -27,45 +27,6 @@ class SubjectTableWidget extends StatelessWidget {
                 onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => DanceProfileEditWidget())),
-                child: Container(
-                  height: 300,
-                  decoration:
-                      BoxDecoration(borderRadius: BorderRadius.circular(20)),
-                  margin: const EdgeInsets.all(5),
-                  padding: const EdgeInsets.all(5),
-                  child: Stack(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            child:
-                                Image.asset('assets/images/edit_profile.png'),
-                          ),
-                          const Row(
-                            children: [
-                              Text(
-                                'Edit your profile',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                ),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Card(
-              child: GestureDetector(
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
                         builder: (context) =>
                             const DancePartnerSelectWidget())),
                 child: Container(

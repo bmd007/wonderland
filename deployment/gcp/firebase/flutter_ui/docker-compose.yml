@@ -1,5 +1,0 @@
-services:
-  flutter_ui:
-    image: bmd007/flutter_ui
-    ports:
-      - "80:80"
