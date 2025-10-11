@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   flutter_ui:
     image: bmd007/flutter_ui
