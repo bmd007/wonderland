@@ -1,11 +1,11 @@
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,18 +55,25 @@ public class ContractTestExtension implements AfterAllCallback {
         verifyAgainstOrUpdateApiContract(new String(json), apiContractFileName, jsonPathsToIgnoreValue);
     }
 
-    public void verifyAgainstOrUpdateApiContract(@NotNull Object object,
+    @SneakyThrows
+    public void verifyAgainstOrUpdateApiContract(@NotNull Supplier<List<String>> jsons,
                                                  @NotNull String apiContractFileName,
-                                                 String... jsonPathsToIgnoreValue) throws JsonProcessingException {
-        var objectAsJsonString = objectMapper.writeValueAsString(object);
-        verifyAgainstOrUpdateApiContract(objectAsJsonString, apiContractFileName, jsonPathsToIgnoreValue);
+                                                 String... jsonPathsToIgnoreValue) {
+        if (GENERATE_TEST_DATA) {
+            Thread.sleep(5000); // Give the application some time to generate all expected data
+            writeToApiContracts(apiContractFileName, jsons.get());
+        } else {
+            List<String> expected = getMultilineContract(apiContractFileName);
+            List<String> actual = jsons.get();
+            verify(expected, actual, jsonPathsToIgnoreValue);
+        }
     }
 
     public void verifyAgainstOrUpdateApiContract(@NotNull String json,
                                                  @NotNull String apiContractFileName,
                                                  String... jsonPathsToIgnoreValue) {
         if (GENERATE_TEST_DATA) {
-            writeToApiContracts(apiContractFileName, json);
+            writeToApiContracts(apiContractFileName, List.of(json));
         } else {
             String expected = getApiContract(apiContractFileName);
             verify(expected, json, jsonPathsToIgnoreValue);
@@ -93,7 +101,7 @@ public class ContractTestExtension implements AfterAllCallback {
             comparator = new CustomComparator(JSONCompareMode.STRICT);
         }
 
-        assertThat(sortedExpected).hasSameSizeAs(sortedActual);
+        assertThat(sortedActual).hasSameSizeAs(sortedExpected);
         IntStream.range(0, sortedExpected.size())
             .forEach(i -> {
                 try {
@@ -118,15 +126,32 @@ public class ContractTestExtension implements AfterAllCallback {
         }
     }
 
-    private void writeToApiContracts(String file, String data) {
+    private List<String> getMultilineContract(String apiContractFileName) {
         try {
-            String prettyData = objectMapper.writerWithDefaultPrettyPrinter()
-                .writeValueAsString(objectMapper.readTree(data));
+            return Files.readAllLines(Path.of(API_CONTRACTS_DIRECTORY_PATH + apiContractFileName));
+        } catch (IOException ioe) {
+            log.error("Error reading apiContract file {}", apiContractFileName, ioe);
+            return List.of();
+        }
+    }
+
+    private void writeToApiContracts(String file, List<String> data) {
+        try {
             Path path = Path.of(API_CONTRACTS_DIRECTORY_PATH + file);
-            Files.writeString(path, prettyData);
+            if (data.size() == 1 && file.endsWith(".json")) {
+                Files.writeString(path, formatted(data.getFirst()));
+            } else {
+                Files.write(path, data);
+            }
         } catch (IOException ioe) {
             throw new UncheckedIOException(ioe);
         }
+    }
+
+    @SneakyThrows
+    private String formatted(String d) {
+        return objectMapper.writerWithDefaultPrettyPrinter()
+            .writeValueAsString(objectMapper.readTree(d));
     }
 
     private List<String> sorted(List<String> data) {

@@ -14,7 +14,7 @@ public class JacksonConfig {
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
         return builder -> builder
-            .modules(new JavaTimeModule())
+            .modules(new JavaTimeModule(), new JDk8Module())
             .featuresToEnable(
                 MapperFeature.SORT_PROPERTIES_ALPHABETICALLY,
                 DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS,
