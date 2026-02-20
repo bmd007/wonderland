@@ -1,0 +1,16 @@
+logging.level:
+  se.bmd: DEBUG
+
+spring:
+  sleuth:
+    enabled: false
+  datasource:
+    url: jdbc:h2:mem:oracle;MODE=Oracle;DB_CLOSE_ON_EXIT=FALSE;INIT=CREATE SCHEMA IF NOT EXISTS myschema
+  cloud.gcp:
+    project-id: ${embedded.google.pubsub.project-id}
+    trace:
+      enabled: false
+    pubsub:
+      project-id: ${embedded.google.pubsub.project-id}
+      emulatorHost: ${embedded.google.pubsub.host}:${embedded.google.pubsub.port}
+  flyway.enabled: false

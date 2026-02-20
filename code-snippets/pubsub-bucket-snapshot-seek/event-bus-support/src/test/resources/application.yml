@@ -1,0 +1,21 @@
+logging.level:
+  se.bmd: DEBUG
+
+spring:
+  sleuth:
+    enabled: false
+  datasource:
+    url: jdbc:postgresql://${embedded.postgresql.host}:${embedded.postgresql.port}/${embedded.postgresql.schema}
+    username: ${embedded.postgresql.user}
+    password: ${embedded.postgresql.password}
+  cloud.gcp:
+    project-id: ${embedded.google.pubsub.project-id}
+    trace:
+      enabled: false
+    pubsub:
+      project-id: ${embedded.google.pubsub.project-id}
+      emulatorHost: ${embedded.google.pubsub.host}:${embedded.google.pubsub.port}
+
+subscription:
+  deleter:
+    active: false

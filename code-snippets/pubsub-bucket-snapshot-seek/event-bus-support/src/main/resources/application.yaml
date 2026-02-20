@@ -1,0 +1,14 @@
+spring:
+  cloud:
+      gcp:
+        pubsub:
+          health.timeout-millis: 10000
+          publisher:
+            batching:
+              element-count-threshold: 1000
+              request-byte-threshold: 200000
+              delay-threshold-seconds: 1
+              enabled: true
+              flow-control:
+                max-outstanding-request-bytes: 20000000
+                max-outstanding-element-count: 100000

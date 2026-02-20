@@ -1,0 +1,19 @@
+target
+.idea
+*.iml
+# Docker files in root are generated
+/Dockerfile
+/Dockerfile.build
+/docker-compose.yml
+.classpath
+.project
+.settings
+.terraform
+*.tfstate
+*.tfstate.backup
+.run
+/venv/
+/.java-version
+nohup.out
+.DS_Store
+.mvn

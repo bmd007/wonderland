@@ -1,0 +1,9 @@
+embedded.postgresql.dockerImage: europe-docker.pkg.dev/bmd-artifacts/docker-external/postgres:14
+
+spring.cloud.gcp.sql.enabled: false
+
+embedded.google.pubsub.dockerImage: europe-docker.pkg.dev/bmd-artifacts/docker-external/google.com/cloudsdktool/google-cloud-cli:530.0.0-emulators
+
+embedded.google.pubsub.topics-and-subscriptions[0].topic: instrument.v1.instruments
+embedded.google.pubsub.topics-and-subscriptions[0].subscription: instrument.v1.instruments_instrument-id-mapper
+embedded.google.pubsub.topics-and-subscriptions[1].topic: instrument.v1.instrument-mappings
