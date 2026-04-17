@@ -45,12 +45,12 @@ dependencies:
       ref: master
   firebase_auth: ^6.1.0
   google_sign_in: ^7.0.0
-  google_fonts: ^6.0.0
-  font_awesome_flutter: ^10.3.0
+  google_fonts: ^8.0.0
+  font_awesome_flutter: ^11.0.0
   firebase_core: ^4.1.1
   firebase_storage: ^13.0.2
   firebase_app_check: ^0.4.1
-  file_picker: ^10.0.0
+  file_picker: ^11.0.0
   flutter_webrtc: ^1.2.0
   sdp_transform: ^0.3.2
   flutter_svg: ^2.0.0
