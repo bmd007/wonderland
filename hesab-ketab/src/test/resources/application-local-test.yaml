@@ -1,0 +1,17 @@
+spring:
+  flyway:
+    placeholders:
+      role: "pg_monitor"
+  datasource:
+    url: "jdbc:postgresql://${embedded.postgresql.host}:${embedded.postgresql.port}/${embedded.postgresql.schema}"
+    username: ${embedded.postgresql.user}
+    password: ${embedded.postgresql.password}
+  cloud:
+    gcp:
+      sql:
+        enabled: false
+      project-id: ${embedded.google.pubsub.project-id}
+      pubsub:
+        emulator-host: ${embedded.google.pubsub.host}:${embedded.google.pubsub.port}
+
+wiremock-base-url: "http://localhost:${wiremock.server.port}"
