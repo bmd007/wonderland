@@ -9,8 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.postgresql.PGConnection;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.sql.DataSource;
+import java.lang.management.ManagementFactory;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
@@ -22,13 +24,14 @@ import java.util.concurrent.Executors;
 public class EventConsumer {
 
     private static final String CHANNEL = "domain_event";
-    private static final String CONSUMER_NAME = "main-consumer";
 
     private final DataSource dataSource;
     private final JdbcClient jdbc;
     private final EventStore eventStore;
     private final TaskService taskService;
+    private final TransactionTemplate transactionTemplate;
 
+    private final String consumerName = "consumer-" + ManagementFactory.getRuntimeMXBean().getName();
     private ExecutorService executor;
     private Connection listenConnection;
     private volatile boolean running = true;
@@ -36,6 +39,7 @@ public class EventConsumer {
 
     @PostConstruct
     void start() {
+        log.info("Starting event consumer '{}'", consumerName);
         executor = Executors.newSingleThreadExecutor(Thread.ofVirtual().name("event-consumer").factory());
         executor.submit(this::pollLoop);
     }
@@ -88,8 +92,10 @@ public class EventConsumer {
         long lastSequence = getLastProcessedSequence();
         var events = eventStore.loadUnprocessedEvents(lastSequence);
         for (var event : events) {
-            processEvent(event);
-            updateOffset(event.sequenceNumber());
+            transactionTemplate.executeWithoutResult(_ -> {
+                processEvent(event);
+                updateOffset(event.sequenceNumber());
+            });
         }
         if (!events.isEmpty()) {
             log.debug("Processed {} events, last sequence: {}", events.size(), events.getLast().sequenceNumber());
@@ -99,14 +105,14 @@ public class EventConsumer {
     private void processEvent(EventStore.StoredEvent event) {
         switch (event.eventType()) {
             case "MoneyDebited", "MoneyCredited" ->
-                taskService.scheduleBalanceCheck(event.aggregateId());
+                taskService.scheduleBalanceCheck(event.aggregateId(), event.sequenceNumber());
             default -> log.debug("Event: {} seq={}", event.eventType(), event.sequenceNumber());
         }
     }
 
     private long getLastProcessedSequence() {
         return jdbc.sql("SELECT last_sequence FROM event_consumer_offsets WHERE consumer_name = :name")
-            .param("name", CONSUMER_NAME)
+            .param("name", consumerName)
             .query(Long.class)
             .optional()
             .orElse(0L);
@@ -118,7 +124,7 @@ public class EventConsumer {
                 VALUES (:name, :seq, now())
                 ON CONFLICT (consumer_name) DO UPDATE SET last_sequence = :seq, updated_at = now()
                 """)
-            .param("name", CONSUMER_NAME)
+            .param("name", consumerName)
             .param("seq", sequence)
             .update();
     }

@@ -16,18 +16,16 @@ public class ScheduledTaskRepository {
 
     private final JdbcClient jdbc;
 
-    public ScheduledTask schedule(String taskType, String payload) {
-        var id = UUID.randomUUID();
-        return jdbc.sql("""
+    public void scheduleIdempotent(UUID id, String taskType, String payload) {
+        jdbc.sql("""
                 INSERT INTO scheduled_tasks (id, task_type, payload, status, scheduled_at)
                 VALUES (:id, :taskType, :payload::jsonb, 'PENDING', now())
-                RETURNING id, task_type, payload::text, status, scheduled_at, locked_at, completed_at, error_message
+                ON CONFLICT (id) DO NOTHING
                 """)
             .param("id", id)
             .param("taskType", taskType)
             .param("payload", payload)
-            .query(ScheduledTask.class)
-            .single();
+            .update();
     }
 
     // FOR UPDATE SKIP LOCKED: non-blocking concurrent task claiming

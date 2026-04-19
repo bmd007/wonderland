@@ -29,9 +29,10 @@ public class TaskService {
     private final ObjectMapper objectMapper;
 
     @Transactional
-    public void scheduleBalanceCheck(UUID accountId) {
+    public void scheduleBalanceCheck(UUID accountId, long eventSequence) {
         var payload = serialize(Map.of("accountId", accountId.toString()));
-        taskRepository.schedule("BALANCE_CHECK", payload);
+        var deterministicId = UUID.nameUUIDFromBytes(("BALANCE_CHECK:" + eventSequence).getBytes());
+        taskRepository.scheduleIdempotent(deterministicId, "BALANCE_CHECK", payload);
     }
 
     @Scheduled(fixedDelay = 1000)
@@ -50,9 +51,11 @@ public class TaskService {
 
     @Transactional
     public void triggerFullConsistencyCheck() {
+        var batchKey = UUID.randomUUID().toString();
         accountRepository.findAll().forEach(account -> {
             var payload = serialize(Map.of("accountId", account.id().toString()));
-            taskRepository.schedule("BALANCE_CHECK", payload);
+            var deterministicId = UUID.nameUUIDFromBytes(("BALANCE_CHECK:manual:" + batchKey + ":" + account.id()).getBytes());
+            taskRepository.scheduleIdempotent(deterministicId, "BALANCE_CHECK", payload);
         });
         log.info("Scheduled balance checks for all accounts");
     }
