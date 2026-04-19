@@ -1,48 +1,73 @@
 package io.github.bmd007.wonderland.hesab_ketab.service;
 
-import io.github.bmd007.wonderland.hesab_ketab.domain.CreateTransactionRequest;
-import io.github.bmd007.wonderland.hesab_ketab.domain.LedgerException;
-import io.github.bmd007.wonderland.hesab_ketab.domain.Transaction;
+import io.github.bmd007.wonderland.hesab_ketab.domain.*;
 import io.github.bmd007.wonderland.hesab_ketab.repository.AccountRepository;
-import io.github.bmd007.wonderland.hesab_ketab.repository.TransactionRepository;
+import io.github.bmd007.wonderland.hesab_ketab.repository.EventStore;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class LedgerService {
 
     private final AccountRepository accountRepository;
-    private final TransactionRepository transactionRepository;
+    private final EventStore eventStore;
 
-    public LedgerService(AccountRepository accountRepository, TransactionRepository transactionRepository) {
-        this.accountRepository = accountRepository;
-        this.transactionRepository = transactionRepository;
+    @Transactional
+    public Account openAccount(CreateAccountRequest request) {
+        var aggregate = AccountAggregate.open(request.name(), request.currency());
+        saveAggregate(aggregate);
+        return aggregate.toSnapshot();
     }
 
     @Transactional
-    public Transaction transfer(CreateTransactionRequest request) {
-        // Lock account rows to serialize concurrent transfers
-        var from = accountRepository.findByIdForUpdate(request.fromAccountId())
-            .orElseThrow(() -> new LedgerException.AccountNotFound(request.fromAccountId()));
-        var to = accountRepository.findByIdForUpdate(request.toAccountId())
-            .orElseThrow(() -> new LedgerException.AccountNotFound(request.toAccountId()));
+    public Account deposit(UUID accountId, BigDecimal amount) {
+        var aggregate = loadAggregate(accountId);
+        aggregate.deposit(amount);
+        saveAggregate(aggregate);
+        return aggregate.toSnapshot();
+    }
+
+    @Transactional
+    public Account transfer(CreateTransactionRequest request) {
+        var from = loadAggregate(request.fromAccountId());
+        var to = loadAggregate(request.toAccountId());
         if (!from.currency().equals(to.currency())) {
             throw new LedgerException.IncompatibleCurrencies(from.currency(), to.currency());
         }
-        // Validate against the event store (source of truth), not the projection
-        var fromBalance = transactionRepository.computeBalance(request.fromAccountId());
-        if (fromBalance.compareTo(request.amount()) < 0) {
-            throw new LedgerException.InsufficientBalance(from.id(), request.amount(), fromBalance);
-        }
-        // Append event — the trigger fires pg_notify, the listener updates the projection
-        return transactionRepository.create(request, from.currency());
+        var txnId = UUID.randomUUID();
+        from.debit(request.amount(), txnId);
+        to.credit(request.amount(), txnId);
+        saveAggregate(from);
+        saveAggregate(to);
+        return from.toSnapshot();
     }
 
     @Transactional(readOnly = true)
-    public List<Transaction> findTransactionsByAccountId(UUID accountId) {
-        return transactionRepository.findByAccountId(accountId);
+    public List<AccountEvent> getEventHistory(UUID accountId) {
+        return eventStore.loadEvents(accountId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<TransferRecord> findTransfersForAccount(UUID accountId) {
+        return eventStore.findTransfersForAccount(accountId);
+    }
+
+    private AccountAggregate loadAggregate(UUID id) {
+        var snapshot = accountRepository.findByIdForUpdate(id)
+            .orElseThrow(() -> new LedgerException.AccountNotFound(id));
+        return AccountAggregate.fromSnapshot(snapshot);
+    }
+
+    private void saveAggregate(AccountAggregate aggregate) {
+        long baseVersion = aggregate.version() - aggregate.uncommittedEvents().size();
+        eventStore.append(aggregate.id(), aggregate.uncommittedEvents(), baseVersion);
+        accountRepository.save(aggregate.toSnapshot());
+        aggregate.markEventsAsCommitted();
     }
 }

@@ -1,14 +1,15 @@
 package io.github.bmd007.wonderland.hesab_ketab.domain;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
+import lombok.Builder;
+import lombok.With;
 
 import java.time.Instant;
 import java.util.UUID;
 
-@Table("scheduled_tasks")
+@Builder
+@With
 public record ScheduledTask(
-    @Id UUID id,
+    UUID id,
     String taskType,
     String payload,
     TaskStatus status,

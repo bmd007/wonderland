@@ -1,19 +1,17 @@
 package io.github.bmd007.wonderland.hesab_ketab.domain;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
+import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
-@Table("transactions")
-public record Transaction(
-    @Id UUID id,
+@Builder
+public record TransferRecord(
+    UUID transactionId,
     UUID fromAccountId,
     UUID toAccountId,
     BigDecimal amount,
     String currency,
-    String description,
-    Instant createdAt) {
+    Instant occurredAt) {
 }

@@ -1,20 +1,18 @@
-CREATE OR REPLACE FUNCTION notify_new_transaction() RETURNS trigger AS $$
+CREATE OR REPLACE FUNCTION notify_domain_event() RETURNS trigger AS $$
 BEGIN
     PERFORM pg_notify(
-        'new_transaction',
+        'domain_event',
         json_build_object(
-            'id', NEW.id,
-            'from_account_id', NEW.from_account_id,
-            'to_account_id', NEW.to_account_id,
-            'amount', NEW.amount,
-            'currency', NEW.currency
+            'sequence_number', NEW.sequence_number,
+            'aggregate_id', NEW.aggregate_id,
+            'event_type', NEW.event_type
         )::text
     );
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_new_transaction
-    AFTER INSERT ON transactions
+CREATE TRIGGER trg_domain_event
+    AFTER INSERT ON domain_events
     FOR EACH ROW
-    EXECUTE FUNCTION notify_new_transaction();
+    EXECUTE FUNCTION notify_domain_event();

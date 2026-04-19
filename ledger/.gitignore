@@ -1,7 +1,0 @@
-target/
-.idea/
-.bsp/
-.metals/
-.vscode/
-*.class
-*.log

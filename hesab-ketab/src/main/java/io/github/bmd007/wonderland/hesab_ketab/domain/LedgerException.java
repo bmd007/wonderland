@@ -1,10 +1,13 @@
 package io.github.bmd007.wonderland.hesab_ketab.domain;
 
+import lombok.Getter;
+
 import java.math.BigDecimal;
 import java.util.UUID;
 
 public sealed class LedgerException extends RuntimeException {
 
+    @Getter
     public static final class AccountNotFound extends LedgerException {
         private final UUID accountId;
         public AccountNotFound(UUID accountId) {
@@ -16,6 +19,7 @@ public sealed class LedgerException extends RuntimeException {
         }
     }
 
+    @Getter
     public static final class InsufficientBalance extends LedgerException {
         private final UUID accountId;
         private final BigDecimal requested;
@@ -31,6 +35,7 @@ public sealed class LedgerException extends RuntimeException {
         }
     }
 
+    @Getter
     public static final class IncompatibleCurrencies extends LedgerException {
         private final String from;
         private final String to;

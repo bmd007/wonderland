@@ -29,7 +29,8 @@ class ApplicationTest {
             fail("Unmatched requests: " + WireMock.findUnmatchedRequests());
         }
         WireMock.reset();
-        jdbcClient.sql("DELETE FROM transactions").update();
+        jdbcClient.sql("DELETE FROM event_consumer_offsets").update();
+        jdbcClient.sql("DELETE FROM domain_events").update();
         jdbcClient.sql("DELETE FROM scheduled_tasks").update();
         jdbcClient.sql("DELETE FROM accounts").update();
     }
