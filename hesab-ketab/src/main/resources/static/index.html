@@ -190,12 +190,17 @@ async function selectAccount(id) {
     const name = nameFor(id);
     document.getElementById('events-title').textContent = `Event History - ${name}`;
     document.getElementById('transfers-title').textContent = `Transfers - ${name}`;
-    const [events, transfers] = await Promise.all([
-        api(`/api/accounts/${id}/events`),
-        api(`/api/transactions/account/${id}`)
-    ]);
-    renderEvents(events);
-    renderTransfers(transfers);
+    try {
+        const [events, transfers] = await Promise.all([
+            api(`/api/accounts/${id}/events`),
+            api(`/api/transactions/account/${id}`)
+        ]);
+        renderEvents(events);
+        renderTransfers(transfers);
+    } catch (e) {
+        console.error('Failed to load account details', e);
+        notify(e.detail ?? e.message ?? 'Failed to load account details', 'error');
+    }
 }
 
 
