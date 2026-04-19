@@ -2,6 +2,10 @@ package wonderland.api.gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.consul.discovery.reactive.ConsulReactiveDiscoveryClient;
+import org.springframework.cloud.gateway.discovery.DiscoveryClientRouteDefinitionLocator;
+import org.springframework.cloud.gateway.discovery.DiscoveryLocatorProperties;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
@@ -10,11 +14,12 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
+@EnableDiscoveryClient
 @SpringBootApplication
-public class ApiGatewayApplication {
+public class BankApiGatewayApplication {
 
     static void main(String[] args) {
-        SpringApplication.run(ApiGatewayApplication.class, args);
+        SpringApplication.run(BankApiGatewayApplication.class, args);
     }
 
     @Bean
@@ -43,8 +48,12 @@ public class ApiGatewayApplication {
                 )
                 .route(r -> r.path("/v1/chat/messages").uri("lb://message-publisher"))
                 .route(r -> r.path("/v1/chat/video/signaling").uri("lb://message-publisher"))
-//                .route(r -> r.path("/v1/game/report/input/joystick").uri("lb://game-engine"))
-//                .route(r -> r.path("/v1/game/state/echo").uri("lb://game-engine"))
                 .build();
+    }
+
+    @Bean
+    public DiscoveryClientRouteDefinitionLocator discoveryClientRouteLocator(ConsulReactiveDiscoveryClient discoveryClient,
+                                                                             DiscoveryLocatorProperties discoveryLocatorProperties) {
+        return new DiscoveryClientRouteDefinitionLocator(discoveryClient, discoveryLocatorProperties);
     }
 }

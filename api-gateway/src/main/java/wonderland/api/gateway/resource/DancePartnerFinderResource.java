@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
-@Controller
+//@Controller
 public class DancePartnerFinderResource {
 
     private final KafkaTemplate<String, Event> kafkaTemplate;

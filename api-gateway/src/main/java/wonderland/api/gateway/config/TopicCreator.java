@@ -17,8 +17,8 @@ import static org.apache.kafka.common.config.TopicConfig.RETENTION_MS_CONFIG;
 /**
  * Configuration class to automatically create the topics with the configured partitions and replication factor.
  */
-@Configuration
-@Profile("!test")
+//@Configuration
+//@Profile("!test")
 public class TopicCreator {
 
     private final PartitionDef eventsTopicDefinition;

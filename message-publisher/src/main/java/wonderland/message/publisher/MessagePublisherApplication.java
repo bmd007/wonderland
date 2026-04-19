@@ -9,14 +9,8 @@ import org.springframework.context.event.EventListener;
 
 @SpringBootApplication
 public class MessagePublisherApplication {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MessagePublisherApplication.class);
 
-//    @Bean
-//    public TimedAspect timedAspect(MeterRegistry registry) {
-//        return new TimedAspect(registry);
-//    }
-
-    public static void main(String[] args) {
+    static void main(String[] args) {
         SpringApplication.run(MessagePublisherApplication.class, args);
     }
 

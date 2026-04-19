@@ -1,10 +1,5 @@
 #!/bin/sh
 
-# Docker workaround: Remove check for KAFKA_ZOOKEEPER_CONNECT parameter
-sed -i '/KAFKA_ZOOKEEPER_CONNECT/d' /etc/confluent/docker/configure
-
-# Docker workaround: Ignore cub zk-ready
-sed -i 's/cub zk-ready/echo ignore zk-ready/' /etc/confluent/docker/ensure
-
-# KRaft required step: Format the storage directory with a new cluster ID
-echo "kafka-storage format --ignore-formatted -t $(kafka-storage random-uuid) -c /etc/kafka/kafka.properties" >> /etc/confluent/docker/ensure
+# This script is no longer needed for cp-kafka 8.2.0+.
+# ZooKeeper has been removed and KRaft is the default metadata mode.
+# Storage formatting is handled automatically via the CLUSTER_ID env var.

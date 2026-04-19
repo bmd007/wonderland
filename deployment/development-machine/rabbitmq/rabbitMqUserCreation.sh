@@ -1,6 +1,4 @@
-#!/bin/bash
-
-printenv
+#!/bin/sh
 
 rabbitmqctl add_user rabbit-mq-web-stomp-credentials rabbit-mq-web-stomp-credentials
 rabbitmqctl set_permissions -p / rabbit-mq-web-stomp-credentials ".*" ".*" ".*"
