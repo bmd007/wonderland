@@ -27,7 +27,6 @@ public class AccountController {
         return accountRepository.create(request);
     }
 
-    // Live balance from the view (always consistent)
     @GetMapping("/{id}")
     public AccountBalance findById(@PathVariable UUID id) {
         return accountRepository.findBalanceById(id)
@@ -37,16 +36,5 @@ public class AccountController {
     @GetMapping
     public List<AccountBalance> findAll() {
         return accountRepository.findAllBalances();
-    }
-
-    // Fast read from materialized view (eventually consistent)
-    @GetMapping("/cached")
-    public List<AccountBalance> findAllCached() {
-        return accountRepository.findAllBalancesCached();
-    }
-
-    @PostMapping("/refresh-cache")
-    public void refreshCache() {
-        accountRepository.refreshBalancesCache();
     }
 }

@@ -5,6 +5,7 @@ import io.github.bmd007.wonderland.hesab_ketab.domain.Transaction;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,6 +32,19 @@ public class TransactionRepository {
             .param("currency", currency)
             .param("description", request.description())
             .query(Transaction.class)
+            .single();
+    }
+
+    // Compute balance from the event store (source of truth) — used for write-path validation
+    public BigDecimal computeBalance(UUID accountId) {
+        return jdbc.sql("""
+                SELECT COALESCE(SUM(CASE WHEN to_account_id = :id THEN amount END), 0)
+                     - COALESCE(SUM(CASE WHEN from_account_id = :id THEN amount END), 0)
+                FROM transactions
+                WHERE from_account_id = :id OR to_account_id = :id
+                """)
+            .param("id", accountId)
+            .query(BigDecimal.class)
             .single();
     }
 

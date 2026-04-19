@@ -32,14 +32,12 @@ public class LedgerService {
         if (!from.currency().equals(to.currency())) {
             throw new LedgerException.IncompatibleCurrencies(from.currency(), to.currency());
         }
-        // Compute balance from transaction history (the source of truth)
-        var fromBalance = accountRepository.findBalanceById(request.fromAccountId())
-            .orElseThrow(() -> new LedgerException.AccountNotFound(request.fromAccountId()))
-            .balance();
+        // Validate against the event store (source of truth), not the projection
+        var fromBalance = transactionRepository.computeBalance(request.fromAccountId());
         if (fromBalance.compareTo(request.amount()) < 0) {
             throw new LedgerException.InsufficientBalance(from.id(), request.amount(), fromBalance);
         }
-        // Append the event — no balance mutation
+        // Append event — the trigger fires pg_notify, the listener updates the projection
         return transactionRepository.create(request, from.currency());
     }
 

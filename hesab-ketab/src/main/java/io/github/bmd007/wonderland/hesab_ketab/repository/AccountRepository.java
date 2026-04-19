@@ -6,6 +6,7 @@ import io.github.bmd007.wonderland.hesab_ketab.domain.CreateAccountRequest;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,16 +22,21 @@ public class AccountRepository {
 
     public Account create(CreateAccountRequest request) {
         var id = UUID.randomUUID();
-        return jdbc.sql("""
+        jdbc.sql("""
                 INSERT INTO accounts (id, name, currency)
                 VALUES (:id, :name, :currency)
-                RETURNING id, name, currency, created_at
                 """)
             .param("id", id)
             .param("name", request.name())
             .param("currency", request.currency())
-            .query(Account.class)
-            .single();
+            .update();
+        jdbc.sql("""
+                INSERT INTO account_balances (account_id, balance)
+                VALUES (:id, 0)
+                """)
+            .param("id", id)
+            .update();
+        return new Account(id, request.name(), request.currency(), null);
     }
 
     public Optional<Account> findById(UUID id) {
@@ -48,29 +54,38 @@ public class AccountRepository {
             .optional();
     }
 
-    // Balance from the live view (always consistent, computed from events)
+    // Read from projection table (eventually consistent, maintained by LISTEN/NOTIFY listener)
     public Optional<AccountBalance> findBalanceById(UUID id) {
-        return jdbc.sql("SELECT id, name, currency, created_at, balance FROM account_balances WHERE id = :id")
+        return jdbc.sql("""
+                SELECT a.id, a.name, a.currency, a.created_at, b.balance
+                FROM accounts a
+                JOIN account_balances b ON b.account_id = a.id
+                WHERE a.id = :id
+                """)
             .param("id", id)
             .query(AccountBalance.class)
             .optional();
     }
 
-    // All balances from the live view
     public List<AccountBalance> findAllBalances() {
-        return jdbc.sql("SELECT id, name, currency, created_at, balance FROM account_balances ORDER BY created_at DESC")
+        return jdbc.sql("""
+                SELECT a.id, a.name, a.currency, a.created_at, b.balance
+                FROM accounts a
+                JOIN account_balances b ON b.account_id = a.id
+                ORDER BY a.created_at DESC
+                """)
             .query(AccountBalance.class)
             .list();
     }
 
-    // Fast read from materialized view (eventually consistent)
-    public List<AccountBalance> findAllBalancesCached() {
-        return jdbc.sql("SELECT id, name, currency, created_at, balance FROM account_balances_cached ORDER BY created_at DESC")
-            .query(AccountBalance.class)
-            .list();
-    }
-
-    public void refreshBalancesCache() {
-        jdbc.sql("SELECT refresh_account_balances_cache()").query().optionalValue();
+    public void updateProjectedBalance(UUID accountId, BigDecimal delta) {
+        jdbc.sql("""
+                UPDATE account_balances
+                SET balance = balance + :delta, updated_at = now()
+                WHERE account_id = :accountId
+                """)
+            .param("delta", delta)
+            .param("accountId", accountId)
+            .update();
     }
 }
