@@ -7,7 +7,7 @@ plugins {
 }
 
 java {
-    sourceCompatibility = 22
+    sourceCompatibility = 26
 }
 
 configurations {
@@ -90,5 +90,5 @@ tasks.named('wrapper') {
 bootBuildImage {
 //	imageName = "bmd007/${project.name}:${project.version}"
     imageName = "bmd007/${project.name}"
-    environment = ["BP_JVM_VERSION": "20"]
+    environment = ["BP_JVM_VERSION": "26"]
 }

@@ -6,7 +6,7 @@ plugins {
 }
 
 java {
-    sourceCompatibility = 22 
+    sourceCompatibility = 26
 }
 
 group = 'wonderland'
@@ -77,5 +77,5 @@ tasks.named('wrapper') {
 
 bootBuildImage {
     imageName = "bmd007/${project.name}"
-//    environment = ["BP_JVM_VERSION": "22"]
+//    environment = ["BP_JVM_VERSION": "26"]
 }

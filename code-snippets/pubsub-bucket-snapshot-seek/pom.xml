@@ -10,7 +10,7 @@
     <version>4.0-SNAPSHOT</version>
 
     <properties>
-        <java.version>25</java.version>
+        <java.version>26</java.version>
     </properties>
 
     <dependencies>

@@ -69,3 +69,6 @@ libopenal.dylib
 /deployment/gcp/vm/rabbitmq/cert.pem
 /deployment/gcp/vm/rabbitmq/fullchain.pem
 /deployment/gcp/vm/rabbitmq/privkey.pem
+
+**/.bsp/**
+**/.scala-build/**
