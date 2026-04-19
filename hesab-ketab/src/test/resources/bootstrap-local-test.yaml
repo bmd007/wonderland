@@ -1,22 +1,3 @@
 embedded:
-  google:
-    pubsub:
-      docker-image: 'europe-docker.pkg.dev/nordnet-artifacts/docker-external/google.com/cloudsdktool/google-cloud-cli:530.0.0-emulators'
-      project-id: dummy-project
-      topics-and-subscriptions:
-        - topic: context-setup-test-topic
-          subscription: context-setup-test-subscription
-        - topic: instrument-screening.price-feed-from-onprem
-          subscription: instrument-screening.price-feed-from-onprem_etp-screener-loader
-        - topic: instrument.v2.instruments
-          subscription: instrument.v2.instruments_etp-screener-loader
-        - topic: instrument.v1.instrument-mappings
-          subscription: instrument.v1.instrument-mappings_etp-screener-loader
-    storage:
-      project-id: dummy-project
-      buckets:
-        - name: context-setup-test-bucket
-        - name: nordnet-dummy-project-v2-instruments-dump
-        - name: nordnet-dummy-project-v1-instrument-mappings-dump
   postgresql:
-    docker-image: postgres:14-alpine
+    docker-image: postgres:16-alpine
