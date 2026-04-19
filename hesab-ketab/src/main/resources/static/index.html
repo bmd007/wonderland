@@ -5,54 +5,96 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hesab Ketab</title>
     <style>
+        :root {
+            --bg: #f1f5f9; --bg-card: #fff; --bg-hover: #f8fafc; --bg-selected: #eff6ff;
+            --text: #1e293b; --text-secondary: #475569; --text-muted: #64748b; --text-dim: #94a3b8;
+            --border: #e2e8f0; --border-light: #f1f5f9;
+            --accent: #2563eb; --accent-hover: #1d4ed8; --accent-border: #2563eb;
+            --green: #059669; --red: #dc2626;
+            --input-border: #d1d5db; --input-bg: #fff;
+            --btn-secondary-bg: #e2e8f0; --btn-secondary-text: #475569; --btn-secondary-hover: #cbd5e1;
+            --shadow: rgba(0,0,0,0.1);
+            --event-open-bg: #dbeafe; --event-open-text: #1d4ed8;
+            --event-deposit-bg: #d1fae5; --event-deposit-text: #059669;
+            --event-debit-bg: #fee2e2; --event-debit-text: #dc2626;
+            --status-completed-bg: #d1fae5; --status-completed-text: #059669;
+            --status-pending-bg: #fef3c7; --status-pending-text: #d97706;
+            --status-running-bg: #dbeafe; --status-running-text: #2563eb;
+            --status-failed-bg: #fee2e2; --status-failed-text: #dc2626;
+            --notify-success-bg: #d1fae5; --notify-success-text: #065f46; --notify-success-border: #a7f3d0;
+            --notify-error-bg: #fee2e2; --notify-error-text: #991b1b; --notify-error-border: #fca5a5;
+            --header-bg: #1e293b; --header-text: #fff; --header-sub: #94a3b8;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0f172a; --bg-card: #1e293b; --bg-hover: #334155; --bg-selected: #1e3a5f;
+                --text: #e2e8f0; --text-secondary: #cbd5e1; --text-muted: #94a3b8; --text-dim: #64748b;
+                --border: #334155; --border-light: #1e293b;
+                --accent: #3b82f6; --accent-hover: #2563eb; --accent-border: #3b82f6;
+                --green: #34d399; --red: #f87171;
+                --input-border: #475569; --input-bg: #0f172a;
+                --btn-secondary-bg: #334155; --btn-secondary-text: #cbd5e1; --btn-secondary-hover: #475569;
+                --shadow: rgba(0,0,0,0.4);
+                --event-open-bg: #1e3a5f; --event-open-text: #93c5fd;
+                --event-deposit-bg: #064e3b; --event-deposit-text: #6ee7b7;
+                --event-debit-bg: #7f1d1d; --event-debit-text: #fca5a5;
+                --status-completed-bg: #064e3b; --status-completed-text: #6ee7b7;
+                --status-pending-bg: #78350f; --status-pending-text: #fcd34d;
+                --status-running-bg: #1e3a5f; --status-running-text: #93c5fd;
+                --status-failed-bg: #7f1d1d; --status-failed-text: #fca5a5;
+                --notify-success-bg: #064e3b; --notify-success-text: #6ee7b7; --notify-success-border: #065f46;
+                --notify-error-bg: #7f1d1d; --notify-error-text: #fca5a5; --notify-error-border: #991b1b;
+                --header-bg: #020617; --header-text: #f1f5f9; --header-sub: #64748b;
+            }
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: #f1f5f9; color: #1e293b; }
-        header { background: #1e293b; color: white; padding: 1rem 2rem; display: flex; align-items: center; gap: 1rem; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); }
+        header { background: var(--header-bg); color: var(--header-text); padding: 1rem 2rem; display: flex; align-items: center; gap: 1rem; }
         header h1 { font-size: 1.25rem; font-weight: 600; }
-        header span { font-size: 0.85rem; color: #94a3b8; }
+        header span { font-size: 0.85rem; color: var(--header-sub); }
         .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-        .card { background: white; border-radius: 0.5rem; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .card h2 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: #475569; }
+        .card { background: var(--bg-card); border-radius: 0.5rem; padding: 1.25rem; box-shadow: 0 1px 3px var(--shadow); }
+        .card h2 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-secondary); }
         .account-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-radius: 0.375rem; cursor: pointer; transition: background 0.15s; }
-        .account-item:hover { background: #f8fafc; }
-        .account-item.selected { background: #eff6ff; border-left: 3px solid #2563eb; }
+        .account-item:hover { background: var(--bg-hover); }
+        .account-item.selected { background: var(--bg-selected); border-left: 3px solid var(--accent-border); }
         .account-name { font-weight: 500; }
-        .account-balance { font-size: 1.1rem; font-weight: 600; color: #059669; }
-        .account-id { font-size: 0.7rem; color: #94a3b8; font-family: monospace; }
-        input, select { width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; margin-bottom: 0.75rem; }
-        input:focus, select:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
-        label { display: block; font-size: 0.8rem; font-weight: 500; color: #64748b; margin-bottom: 0.25rem; }
+        .account-balance { font-size: 1.1rem; font-weight: 600; color: var(--green); }
+        .account-id { font-size: 0.7rem; color: var(--text-dim); font-family: monospace; }
+        input, select { width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--input-border); border-radius: 0.375rem; font-size: 0.875rem; margin-bottom: 0.75rem; background: var(--input-bg); color: var(--text); }
+        input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
+        label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--text-muted); margin-bottom: 0.25rem; }
         button { padding: 0.5rem 1rem; border: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background 0.15s; }
-        .btn-primary { background: #2563eb; color: white; width: 100%; }
-        .btn-primary:hover { background: #1d4ed8; }
-        .btn-secondary { background: #e2e8f0; color: #475569; }
-        .btn-secondary:hover { background: #cbd5e1; }
+        .btn-primary { background: var(--accent); color: white; width: 100%; }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-secondary { background: var(--btn-secondary-bg); color: var(--btn-secondary-text); }
+        .btn-secondary:hover { background: var(--btn-secondary-hover); }
         .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
-        .form-section { margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid #f1f5f9; }
+        .form-section { margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border-light); }
         .form-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .form-section h3 { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.75rem; color: #334155; }
+        .form-section h3 { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text-secondary); }
         table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-        th { text-align: left; padding: 0.5rem; color: #64748b; font-weight: 500; border-bottom: 2px solid #e2e8f0; }
-        td { padding: 0.5rem; border-bottom: 1px solid #f1f5f9; }
+        th { text-align: left; padding: 0.5rem; color: var(--text-muted); font-weight: 500; border-bottom: 2px solid var(--border); }
+        td { padding: 0.5rem; border-bottom: 1px solid var(--border-light); }
         .event-type { display: inline-block; padding: 0.125rem 0.5rem; border-radius: 1rem; font-size: 0.7rem; font-weight: 500; }
-        .event-AccountOpened { background: #dbeafe; color: #1d4ed8; }
-        .event-MoneyDeposited { background: #d1fae5; color: #059669; }
-        .event-MoneyDebited { background: #fee2e2; color: #dc2626; }
-        .event-MoneyCredited { background: #d1fae5; color: #059669; }
+        .event-AccountOpened { background: var(--event-open-bg); color: var(--event-open-text); }
+        .event-MoneyDeposited { background: var(--event-deposit-bg); color: var(--event-deposit-text); }
+        .event-MoneyDebited { background: var(--event-debit-bg); color: var(--event-debit-text); }
+        .event-MoneyCredited { background: var(--event-deposit-bg); color: var(--event-deposit-text); }
         .status { display: inline-block; padding: 0.125rem 0.5rem; border-radius: 1rem; font-size: 0.7rem; font-weight: 500; }
-        .status-COMPLETED { background: #d1fae5; color: #059669; }
-        .status-PENDING { background: #fef3c7; color: #d97706; }
-        .status-RUNNING { background: #dbeafe; color: #2563eb; }
-        .status-FAILED { background: #fee2e2; color: #dc2626; }
+        .status-COMPLETED { background: var(--status-completed-bg); color: var(--status-completed-text); }
+        .status-PENDING { background: var(--status-pending-bg); color: var(--status-pending-text); }
+        .status-RUNNING { background: var(--status-running-bg); color: var(--status-running-text); }
+        .status-FAILED { background: var(--status-failed-bg); color: var(--status-failed-text); }
         .detail-section { margin-top: 1.5rem; }
         .notification { position: fixed; top: 1rem; right: 1rem; padding: 0.75rem 1rem; border-radius: 0.375rem; font-size: 0.85rem; z-index: 100; animation: fadeIn 0.2s; }
-        .notification.success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
-        .notification.error { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+        .notification.success { background: var(--notify-success-bg); color: var(--notify-success-text); border: 1px solid var(--notify-success-border); }
+        .notification.error { background: var(--notify-error-bg); color: var(--notify-error-text); border: 1px solid var(--notify-error-border); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-0.5rem); } to { opacity: 1; transform: translateY(0); } }
-        .empty { text-align: center; padding: 2rem; color: #94a3b8; font-size: 0.85rem; }
-        .amount-neg { color: #dc2626; }
-        .amount-pos { color: #059669; }
+        .empty { text-align: center; padding: 2rem; color: var(--text-dim); font-size: 0.85rem; }
+        .amount-neg { color: var(--red); }
+        .amount-pos { color: var(--green); }
         .task-header { display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
@@ -125,175 +167,275 @@
 let accounts = [];
 let selectedAccountId = null;
 
-const api = path => fetch(path).then(r => r.ok ? r.json() : r.json().then(e => Promise.reject(e)));
-const post = (path, body) => fetch(path, {
-    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)
-}).then(r => r.ok ? r.json() : r.json().then(e => Promise.reject(e)));
-
-function notify(msg, type = 'success') {
-    const el = document.createElement('div');
-    el.className = `notification ${type}`;
+function showNotification(msg, type) {
+    var el = document.createElement('div');
+    el.className = 'notification ' + type;
     el.textContent = msg;
     document.body.appendChild(el);
-    setTimeout(() => el.remove(), 3000);
+    setTimeout(function() { el.remove(); }, 3000);
 }
 
 function fmt(n) {
     return Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-function shortId(uuid) { return uuid?.substring(0, 8) ?? ''; }
-
-function nameFor(id) {
-    return accounts.find(a => a.id === id)?.name ?? shortId(id);
+function shortId(uuid) {
+    if (!uuid) return '';
+    return uuid.substring(0, 8);
 }
 
-function timeAgo(iso) {
+function nameFor(id) {
+    for (var i = 0; i < accounts.length; i++) {
+        if (accounts[i].id === id) return accounts[i].name;
+    }
+    return shortId(id);
+}
+
+function formatTime(iso) {
     if (!iso) return '';
-    const d = new Date(iso);
+    var d = new Date(iso);
     return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
 }
 
-async function loadAccounts() {
-    accounts = await api('/api/accounts');
-    renderAccounts();
-    updateDropdowns();
+function loadAccounts() {
+    fetch('/api/accounts')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            accounts = data;
+            renderAccounts();
+            updateDropdowns();
+        })
+        .catch(function(e) {
+            console.error('Failed to load accounts', e);
+        });
 }
 
 function renderAccounts() {
-    const el = document.getElementById('account-list');
+    var el = document.getElementById('account-list');
     if (accounts.length === 0) {
         el.innerHTML = '<div class="empty">No accounts yet</div>';
         return;
     }
-    el.innerHTML = accounts.map(a => `
-        <div class="account-item ${a.id === selectedAccountId ? 'selected' : ''}" onclick="selectAccount('${a.id}')">
-            <div>
-                <div class="account-name">${a.name}</div>
-                <div class="account-id">${shortId(a.id)}</div>
-            </div>
-            <div class="account-balance">${fmt(a.balance)}</div>
-        </div>
-    `).join('');
+    var html = '';
+    for (var i = 0; i < accounts.length; i++) {
+        var a = accounts[i];
+        var cls = a.id === selectedAccountId ? 'account-item selected' : 'account-item';
+        html += '<div class="' + cls + '" onclick="selectAccount(\'' + a.id + '\')">' +
+            '<div>' +
+            '<div class="account-name">' + a.name + '</div>' +
+            '<div class="account-id">' + shortId(a.id) + '</div>' +
+            '</div>' +
+            '<div class="account-balance">' + fmt(a.balance) + '</div>' +
+            '</div>';
+    }
+    el.innerHTML = html;
 }
 
 function updateDropdowns() {
-    const opts = accounts.map(a => `<option value="${a.id}">${a.name} (${fmt(a.balance)})</option>`).join('');
-    document.getElementById('deposit-account').innerHTML = opts;
-    document.getElementById('transfer-from').innerHTML = opts;
-    document.getElementById('transfer-to').innerHTML = opts;
+    var html = '';
+    for (var i = 0; i < accounts.length; i++) {
+        var a = accounts[i];
+        html += '<option value="' + a.id + '">' + a.name + ' (' + fmt(a.balance) + ')</option>';
+    }
+    document.getElementById('deposit-account').innerHTML = html;
+    document.getElementById('transfer-from').innerHTML = html;
+    document.getElementById('transfer-to').innerHTML = html;
 }
 
-async function selectAccount(id) {
+function selectAccount(id) {
     selectedAccountId = id;
     renderAccounts();
-    const name = nameFor(id);
-    document.getElementById('events-title').textContent = `Event History - ${name}`;
-    document.getElementById('transfers-title').textContent = `Transfers - ${name}`;
-    try {
-        const [events, transfers] = await Promise.all([
-            api(`/api/accounts/${id}/events`),
-            api(`/api/transactions/account/${id}`)
-        ]);
-        renderEvents(events);
-        renderTransfers(transfers);
-    } catch (e) {
-        console.error('Failed to load account details', e);
-        notify(e.detail ?? e.message ?? 'Failed to load account details', 'error');
-    }
-}
+    var name = nameFor(id);
+    document.getElementById('events-title').textContent = 'Event History - ' + name;
+    document.getElementById('transfers-title').textContent = 'Transfers - ' + name;
+    document.getElementById('events-panel').innerHTML = '<div class="empty">Loading events...</div>';
+    document.getElementById('transfers-panel').innerHTML = '<div class="empty">Loading transfers...</div>';
 
+    fetch('/api/accounts/' + id + '/events')
+        .then(function(r) {
+            if (!r.ok) throw new Error('Events API returned ' + r.status);
+            return r.json();
+        })
+        .then(function(events) {
+            renderEvents(events);
+        })
+        .catch(function(e) {
+            console.error('Failed to load events', e);
+            document.getElementById('events-panel').innerHTML = '<div class="empty">Error loading events: ' + e.message + '</div>';
+        });
 
-function renderTransfers(transfers) {
-    const el = document.getElementById('transfers-panel');
-    if (transfers.length === 0) { el.innerHTML = '<div class="empty">No transfers</div>'; return; }
-    const rows = transfers.map(t => {
-        const isOutgoing = t.fromAccountId === selectedAccountId;
-        return `<tr>
-            <td>${nameFor(t.fromAccountId)}</td>
-            <td>${nameFor(t.toAccountId)}</td>
-            <td class="${isOutgoing ? 'amount-neg' : 'amount-pos'}">${isOutgoing ? '-' : '+'}${fmt(t.amount)}</td>
-            <td>${timeAgo(t.occurredAt)}</td>
-        </tr>`;
-    });
-    el.innerHTML = `<table><thead><tr><th>From</th><th>To</th><th>Amount</th><th>When</th></tr></thead><tbody>${rows.join('')}</tbody></table>`;
-}
-
-async function loadTasks() {
-    const tasks = await api('/api/tasks');
-    const el = document.getElementById('tasks-panel');
-    if (tasks.length === 0) { el.innerHTML = '<div class="empty">No tasks</div>'; return; }
-    const rows = tasks.slice(0, 20).map(t => `<tr>
-        <td>${t.taskType}</td>
-        <td><span class="status status-${t.status}">${t.status}</span></td>
-        <td>${timeAgo(t.scheduledAt)}</td>
-        <td>${t.errorMessage ?? ''}</td>
-    </tr>`);
-    el.innerHTML = `<table><thead><tr><th>Type</th><th>Status</th><th>Scheduled</th><th>Error</th></tr></thead><tbody>${rows.join('')}</tbody></table>`;
-}
-
-async function createAccount() {
-    const name = document.getElementById('new-name').value.trim();
-    if (!name) { notify('Name is required', 'error'); return; }
-    try {
-        await post('/api/accounts', { name });
-        document.getElementById('new-name').value = '';
-        notify(`Account "${name}" created`);
-        await loadAccounts();
-    } catch (e) { notify(e.detail ?? 'Failed to create account', 'error'); }
-}
-
-async function deposit() {
-    const id = document.getElementById('deposit-account').value;
-    const amount = parseFloat(document.getElementById('deposit-amount').value);
-    if (!id || !amount || amount <= 0) { notify('Select account and enter amount', 'error'); return; }
-    try {
-        await post(`/api/accounts/${id}/deposit`, amount);
-        document.getElementById('deposit-amount').value = '';
-        notify(`Deposited ${fmt(amount)}`);
-        await loadAccounts();
-        if (selectedAccountId === id) selectAccount(id);
-    } catch (e) { notify(e.detail ?? 'Deposit failed', 'error'); }
-}
-
-async function transfer() {
-    const from = document.getElementById('transfer-from').value;
-    const to = document.getElementById('transfer-to').value;
-    const amount = parseFloat(document.getElementById('transfer-amount').value);
-    if (!from || !to || from === to) { notify('Select different accounts', 'error'); return; }
-    if (!amount || amount <= 0) { notify('Enter a valid amount', 'error'); return; }
-    try {
-        await post('/api/transactions', { fromAccountId: from, toAccountId: to, amount });
-        document.getElementById('transfer-amount').value = '';
-        notify(`Transferred ${fmt(amount)} from ${nameFor(from)} to ${nameFor(to)}`);
-        await loadAccounts();
-        if (selectedAccountId) selectAccount(selectedAccountId);
-        setTimeout(loadTasks, 1500);
-    } catch (e) { notify(e.detail ?? 'Transfer failed', 'error'); }
-}
-
-async function triggerConsistencyCheck() {
-    await fetch('/api/tasks/consistency-check', { method: 'POST' });
-    notify('Consistency check scheduled');
-    setTimeout(loadTasks, 2000);
+    fetch('/api/transactions/account/' + id)
+        .then(function(r) {
+            if (!r.ok) throw new Error('Transfers API returned ' + r.status);
+            return r.json();
+        })
+        .then(function(transfers) {
+            renderTransfers(transfers);
+        })
+        .catch(function(e) {
+            console.error('Failed to load transfers', e);
+            document.getElementById('transfers-panel').innerHTML = '<div class="empty">Error loading transfers: ' + e.message + '</div>';
+        });
 }
 
 function renderEvents(events) {
-    const el = document.getElementById('events-panel');
-    if (events.length === 0) { el.innerHTML = '<div class="empty">No events</div>'; return; }
-    const rows = events.map(e => {
-        const type = e['@type'] ?? 'Unknown';
-        let detail;
-        switch (type) {
-            case 'AccountOpened': detail = `<span class="event-type event-AccountOpened">${type}</span> ${e.name}`; break;
-            case 'MoneyDeposited': detail = `<span class="event-type event-MoneyDeposited">${type}</span> +${fmt(e.amount)}`; break;
-            case 'MoneyDebited': detail = `<span class="event-type event-MoneyDebited">${type}</span> -${fmt(e.amount)} (txn ${shortId(e.transactionId)})`; break;
-            case 'MoneyCredited': detail = `<span class="event-type event-MoneyCredited">${type}</span> +${fmt(e.amount)} (txn ${shortId(e.transactionId)})`; break;
-            default: detail = type;
+    var el = document.getElementById('events-panel');
+    if (!events || events.length === 0) {
+        el.innerHTML = '<div class="empty">No events</div>';
+        return;
+    }
+    var rows = '';
+    for (var i = 0; i < events.length; i++) {
+        var e = events[i];
+        var type = e['@type'] || 'Unknown';
+        var detail = '';
+        if (type === 'AccountOpened') {
+            detail = '<span class="event-type event-AccountOpened">' + type + '</span> ' + e.name;
+        } else if (type === 'MoneyDeposited') {
+            detail = '<span class="event-type event-MoneyDeposited">' + type + '</span> +' + fmt(e.amount);
+        } else if (type === 'MoneyDebited') {
+            detail = '<span class="event-type event-MoneyDebited">' + type + '</span> -' + fmt(e.amount) + ' (txn ' + shortId(e.transactionId) + ')';
+        } else if (type === 'MoneyCredited') {
+            detail = '<span class="event-type event-MoneyCredited">' + type + '</span> +' + fmt(e.amount) + ' (txn ' + shortId(e.transactionId) + ')';
+        } else {
+            detail = type;
         }
-        return `<tr><td>${timeAgo(e.occurredAt)}</td><td>${detail}</td></tr>`;
+        rows += '<tr><td>' + formatTime(e.occurredAt) + '</td><td>' + detail + '</td></tr>';
+    }
+    el.innerHTML = '<table><thead><tr><th>When</th><th>Detail</th></tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+function renderTransfers(transfers) {
+    var el = document.getElementById('transfers-panel');
+    if (!transfers || transfers.length === 0) {
+        el.innerHTML = '<div class="empty">No transfers</div>';
+        return;
+    }
+    var rows = '';
+    for (var i = 0; i < transfers.length; i++) {
+        var t = transfers[i];
+        var isOutgoing = t.fromAccountId === selectedAccountId;
+        var amtClass = isOutgoing ? 'amount-neg' : 'amount-pos';
+        var sign = isOutgoing ? '-' : '+';
+        rows += '<tr>' +
+            '<td>' + nameFor(t.fromAccountId) + '</td>' +
+            '<td>' + nameFor(t.toAccountId) + '</td>' +
+            '<td class="' + amtClass + '">' + sign + fmt(t.amount) + '</td>' +
+            '<td>' + formatTime(t.occurredAt) + '</td>' +
+            '</tr>';
+    }
+    el.innerHTML = '<table><thead><tr><th>From</th><th>To</th><th>Amount</th><th>When</th></tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+function loadTasks() {
+    fetch('/api/tasks')
+        .then(function(r) { return r.json(); })
+        .then(function(tasks) {
+            var el = document.getElementById('tasks-panel');
+            if (!tasks || tasks.length === 0) {
+                el.innerHTML = '<div class="empty">No tasks</div>';
+                return;
+            }
+            var rows = '';
+            var limit = Math.min(tasks.length, 20);
+            for (var i = 0; i < limit; i++) {
+                var t = tasks[i];
+                rows += '<tr>' +
+                    '<td>' + t.taskType + '</td>' +
+                    '<td><span class="status status-' + t.status + '">' + t.status + '</span></td>' +
+                    '<td>' + formatTime(t.scheduledAt) + '</td>' +
+                    '<td>' + (t.errorMessage || '') + '</td>' +
+                    '</tr>';
+            }
+            el.innerHTML = '<table><thead><tr><th>Type</th><th>Status</th><th>Scheduled</th><th>Error</th></tr></thead><tbody>' + rows + '</tbody></table>';
+        })
+        .catch(function(e) {
+            console.error('Failed to load tasks', e);
+        });
+}
+
+function createAccount() {
+    var name = document.getElementById('new-name').value.trim();
+    if (!name) { showNotification('Name is required', 'error'); return; }
+    fetch('/api/accounts', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ name: name })
+    })
+    .then(function(r) {
+        if (!r.ok) return r.json().then(function(e) { throw e; });
+        return r.json();
+    })
+    .then(function() {
+        document.getElementById('new-name').value = '';
+        showNotification('Account "' + name + '" created', 'success');
+        loadAccounts();
+    })
+    .catch(function(e) {
+        showNotification(e.detail || 'Failed to create account', 'error');
     });
-    el.innerHTML = `<table><thead><tr><th>When</th><th>Detail</th></tr></thead><tbody>${rows.join('')}</tbody></table>`;
+}
+
+function deposit() {
+    var id = document.getElementById('deposit-account').value;
+    var amount = parseFloat(document.getElementById('deposit-amount').value);
+    if (!id || !amount || amount <= 0) { showNotification('Select account and enter amount', 'error'); return; }
+    fetch('/api/accounts/' + id + '/deposit', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(amount)
+    })
+    .then(function(r) {
+        if (!r.ok) return r.json().then(function(e) { throw e; });
+        return r.json();
+    })
+    .then(function() {
+        document.getElementById('deposit-amount').value = '';
+        showNotification('Deposited ' + fmt(amount), 'success');
+        loadAccounts();
+        if (selectedAccountId === id) selectAccount(id);
+    })
+    .catch(function(e) {
+        showNotification(e.detail || 'Deposit failed', 'error');
+    });
+}
+
+function transfer() {
+    var from = document.getElementById('transfer-from').value;
+    var to = document.getElementById('transfer-to').value;
+    var amount = parseFloat(document.getElementById('transfer-amount').value);
+    if (!from || !to || from === to) { showNotification('Select different accounts', 'error'); return; }
+    if (!amount || amount <= 0) { showNotification('Enter a valid amount', 'error'); return; }
+    fetch('/api/transactions', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ fromAccountId: from, toAccountId: to, amount: amount })
+    })
+    .then(function(r) {
+        if (!r.ok) return r.json().then(function(e) { throw e; });
+        return r.json();
+    })
+    .then(function() {
+        document.getElementById('transfer-amount').value = '';
+        showNotification('Transferred ' + fmt(amount) + ' from ' + nameFor(from) + ' to ' + nameFor(to), 'success');
+        loadAccounts();
+        if (selectedAccountId) selectAccount(selectedAccountId);
+        setTimeout(loadTasks, 1500);
+    })
+    .catch(function(e) {
+        showNotification(e.detail || 'Transfer failed', 'error');
+    });
+}
+
+function triggerConsistencyCheck() {
+    fetch('/api/tasks/consistency-check', { method: 'POST' })
+    .then(function() {
+        showNotification('Consistency check scheduled', 'success');
+        setTimeout(loadTasks, 2000);
+    })
+    .catch(function() {
+        showNotification('Failed to trigger check', 'error');
+    });
 }
 
 loadAccounts();
