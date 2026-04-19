@@ -34,18 +34,4 @@ public sealed class LedgerException extends RuntimeException {
             return "Insufficient balance in %s: requested %s, available %s".formatted(accountId, requested, available);
         }
     }
-
-    @Getter
-    public static final class IncompatibleCurrencies extends LedgerException {
-        private final String from;
-        private final String to;
-        public IncompatibleCurrencies(String from, String to) {
-            this.from = from;
-            this.to = to;
-        }
-        @Override
-        public String getMessage() {
-            return "Cannot transfer between different currencies: %s and %s".formatted(from, to);
-        }
-    }
 }

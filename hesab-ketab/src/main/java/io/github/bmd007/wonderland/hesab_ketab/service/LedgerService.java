@@ -20,7 +20,7 @@ public class LedgerService {
 
     @Transactional
     public Account openAccount(CreateAccountRequest request) {
-        var aggregate = AccountAggregate.open(request.name(), request.currency());
+        var aggregate = AccountAggregate.open(request.name());
         saveAggregate(aggregate);
         return aggregate.toSnapshot();
     }
@@ -37,9 +37,6 @@ public class LedgerService {
     public Account transfer(CreateTransactionRequest request) {
         var from = loadAggregate(request.fromAccountId());
         var to = loadAggregate(request.toAccountId());
-        if (!from.currency().equals(to.currency())) {
-            throw new LedgerException.IncompatibleCurrencies(from.currency(), to.currency());
-        }
         var txnId = UUID.randomUUID();
         from.debit(request.amount(), txnId);
         to.credit(request.amount(), txnId);

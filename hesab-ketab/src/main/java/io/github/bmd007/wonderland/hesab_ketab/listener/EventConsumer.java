@@ -2,16 +2,19 @@ package io.github.bmd007.wonderland.hesab_ketab.listener;
 
 import io.github.bmd007.wonderland.hesab_ketab.repository.EventStore;
 import io.github.bmd007.wonderland.hesab_ketab.service.TaskService;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.postgresql.PGConnection;
 import org.springframework.jdbc.core.simple.JdbcClient;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Slf4j
 @Component
@@ -25,22 +28,50 @@ public class EventConsumer {
     private final JdbcClient jdbc;
     private final EventStore eventStore;
     private final TaskService taskService;
+
+    private ExecutorService executor;
     private Connection listenConnection;
+    private volatile boolean running = true;
     private boolean initialCatchUpDone = false;
 
-    @Scheduled(fixedDelay = 200)
-    public void poll() {
-        try {
-            boolean hasNotifications = drainNotifications();
-            if (hasNotifications || !initialCatchUpDone) {
-                catchUp();
-                initialCatchUpDone = true;
+    @PostConstruct
+    void start() {
+        executor = Executors.newSingleThreadExecutor(Thread.ofVirtual().name("event-consumer").factory());
+        executor.submit(this::pollLoop);
+    }
+
+    @PreDestroy
+    void shutdown() {
+        running = false;
+        executor.shutdown();
+        closeListenConnection();
+    }
+
+    private void pollLoop() {
+        while (running) {
+            try {
+                boolean hasNotifications = drainNotifications();
+                if (hasNotifications || !initialCatchUpDone) {
+                    catchUp();
+                    initialCatchUpDone = true;
+                }
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            } catch (Exception e) {
+                log.error("Error in event consumer", e);
+                closeListenConnection();
+                initialCatchUpDone = false;
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
             }
-        } catch (Exception e) {
-            log.error("Error in event consumer", e);
-            closeListenConnection();
-            initialCatchUpDone = false;
         }
+        log.info("Event consumer stopped");
     }
 
     private boolean drainNotifications() throws SQLException {

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hesab Ketab</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: #f1f5f9; color: #1e293b; }
+        header { background: #1e293b; color: white; padding: 1rem 2rem; display: flex; align-items: center; gap: 1rem; }
+        header h1 { font-size: 1.25rem; font-weight: 600; }
+        header span { font-size: 0.85rem; color: #94a3b8; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .card { background: white; border-radius: 0.5rem; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .card h2 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: #475569; }
+        .account-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-radius: 0.375rem; cursor: pointer; transition: background 0.15s; }
+        .account-item:hover { background: #f8fafc; }
+        .account-item.selected { background: #eff6ff; border-left: 3px solid #2563eb; }
+        .account-name { font-weight: 500; }
+        .account-balance { font-size: 1.1rem; font-weight: 600; color: #059669; }
+        .account-id { font-size: 0.7rem; color: #94a3b8; font-family: monospace; }
+        input, select { width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; margin-bottom: 0.75rem; }
+        input:focus, select:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
+        label { display: block; font-size: 0.8rem; font-weight: 500; color: #64748b; margin-bottom: 0.25rem; }
+        button { padding: 0.5rem 1rem; border: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+        .btn-primary { background: #2563eb; color: white; width: 100%; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-secondary { background: #e2e8f0; color: #475569; }
+        .btn-secondary:hover { background: #cbd5e1; }
+        .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
+        .form-section { margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid #f1f5f9; }
+        .form-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .form-section h3 { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.75rem; color: #334155; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        th { text-align: left; padding: 0.5rem; color: #64748b; font-weight: 500; border-bottom: 2px solid #e2e8f0; }
+        td { padding: 0.5rem; border-bottom: 1px solid #f1f5f9; }
+        .event-type { display: inline-block; padding: 0.125rem 0.5rem; border-radius: 1rem; font-size: 0.7rem; font-weight: 500; }
+        .event-AccountOpened { background: #dbeafe; color: #1d4ed8; }
+        .event-MoneyDeposited { background: #d1fae5; color: #059669; }
+        .event-MoneyDebited { background: #fee2e2; color: #dc2626; }
+        .event-MoneyCredited { background: #d1fae5; color: #059669; }
+        .status { display: inline-block; padding: 0.125rem 0.5rem; border-radius: 1rem; font-size: 0.7rem; font-weight: 500; }
+        .status-COMPLETED { background: #d1fae5; color: #059669; }
+        .status-PENDING { background: #fef3c7; color: #d97706; }
+        .status-RUNNING { background: #dbeafe; color: #2563eb; }
+        .status-FAILED { background: #fee2e2; color: #dc2626; }
+        .detail-section { margin-top: 1.5rem; }
+        .notification { position: fixed; top: 1rem; right: 1rem; padding: 0.75rem 1rem; border-radius: 0.375rem; font-size: 0.85rem; z-index: 100; animation: fadeIn 0.2s; }
+        .notification.success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .notification.error { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-0.5rem); } to { opacity: 1; transform: translateY(0); } }
+        .empty { text-align: center; padding: 2rem; color: #94a3b8; font-size: 0.85rem; }
+        .amount-neg { color: #dc2626; }
+        .amount-pos { color: #059669; }
+        .task-header { display: flex; justify-content: space-between; align-items: center; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Hesab Ketab</h1>
+        <span>Event Sourced Ledger</span>
+    </header>
+
+    <div class="container">
+        <div class="grid">
+            <div class="card">
+                <h2>Accounts</h2>
+                <div id="account-list"></div>
+            </div>
+
+            <div class="card">
+                <div class="form-section">
+                    <h3>Open Account</h3>
+                    <label for="new-name">Name</label>
+                    <input type="text" id="new-name" placeholder="Account holder name">
+                    <button class="btn-primary" onclick="createAccount()">Open Account</button>
+                </div>
+                <div class="form-section">
+                    <h3>Deposit</h3>
+                    <label for="deposit-account">Account</label>
+                    <select id="deposit-account"></select>
+                    <label for="deposit-amount">Amount</label>
+                    <input type="number" id="deposit-amount" placeholder="0.00" step="0.01" min="0">
+                    <button class="btn-primary" onclick="deposit()">Deposit</button>
+                </div>
+                <div class="form-section">
+                    <h3>Transfer</h3>
+                    <label for="transfer-from">From</label>
+                    <select id="transfer-from"></select>
+                    <label for="transfer-to">To</label>
+                    <select id="transfer-to"></select>
+                    <label for="transfer-amount">Amount</label>
+                    <input type="number" id="transfer-amount" placeholder="0.00" step="0.01" min="0">
+                    <button class="btn-primary" onclick="transfer()">Transfer</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <div class="grid">
+                <div class="card">
+                    <h2 id="events-title">Event History</h2>
+                    <div id="events-panel"><div class="empty">Select an account to view events</div></div>
+                </div>
+                <div class="card">
+                    <h2 id="transfers-title">Transfers</h2>
+                    <div id="transfers-panel"><div class="empty">Select an account to view transfers</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <div class="card">
+                <div class="task-header">
+                    <h2>Consistency Tasks</h2>
+                    <button class="btn-secondary btn-sm" onclick="triggerConsistencyCheck()">Run Check</button>
+                </div>
+                <div id="tasks-panel"><div class="empty">Loading...</div></div>
+            </div>
+        </div>
+    </div>
+
+<script>
+let accounts = [];
+let selectedAccountId = null;
+
+const api = path => fetch(path).then(r => r.ok ? r.json() : r.json().then(e => Promise.reject(e)));
+const post = (path, body) => fetch(path, {
+    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)
+}).then(r => r.ok ? r.json() : r.json().then(e => Promise.reject(e)));
+
+function notify(msg, type = 'success') {
+    const el = document.createElement('div');
+    el.className = `notification ${type}`;
+    el.textContent = msg;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 3000);
+}
+
+function fmt(n) {
+    return Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function shortId(uuid) { return uuid?.substring(0, 8) ?? ''; }
+
+function nameFor(id) {
+    return accounts.find(a => a.id === id)?.name ?? shortId(id);
+}
+
+function timeAgo(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+}
+
+async function loadAccounts() {
+    accounts = await api('/api/accounts');
+    renderAccounts();
+    updateDropdowns();
+}
+
+function renderAccounts() {
+    const el = document.getElementById('account-list');
+    if (accounts.length === 0) {
+        el.innerHTML = '<div class="empty">No accounts yet</div>';
+        return;
+    }
+    el.innerHTML = accounts.map(a => `
+        <div class="account-item ${a.id === selectedAccountId ? 'selected' : ''}" onclick="selectAccount('${a.id}')">
+            <div>
+                <div class="account-name">${a.name}</div>
+                <div class="account-id">${shortId(a.id)}</div>
+            </div>
+            <div class="account-balance">${fmt(a.balance)}</div>
+        </div>
+    `).join('');
+}
+
+function updateDropdowns() {
+    const opts = accounts.map(a => `<option value="${a.id}">${a.name} (${fmt(a.balance)})</option>`).join('');
+    document.getElementById('deposit-account').innerHTML = opts;
+    document.getElementById('transfer-from').innerHTML = opts;
+    document.getElementById('transfer-to').innerHTML = opts;
+}
+
+async function selectAccount(id) {
+    selectedAccountId = id;
+    renderAccounts();
+    const name = nameFor(id);
+    document.getElementById('events-title').textContent = `Event History - ${name}`;
+    document.getElementById('transfers-title').textContent = `Transfers - ${name}`;
+    const [events, transfers] = await Promise.all([
+        api(`/api/accounts/${id}/events`),
+        api(`/api/transactions/account/${id}`)
+    ]);
+    renderEvents(events);
+    renderTransfers(transfers);
+}
+
+
+function renderTransfers(transfers) {
+    const el = document.getElementById('transfers-panel');
+    if (transfers.length === 0) { el.innerHTML = '<div class="empty">No transfers</div>'; return; }
+    const rows = transfers.map(t => {
+        const isOutgoing = t.fromAccountId === selectedAccountId;
+        return `<tr>
+            <td>${nameFor(t.fromAccountId)}</td>
+            <td>${nameFor(t.toAccountId)}</td>
+            <td class="${isOutgoing ? 'amount-neg' : 'amount-pos'}">${isOutgoing ? '-' : '+'}${fmt(t.amount)}</td>
+            <td>${timeAgo(t.occurredAt)}</td>
+        </tr>`;
+    });
+    el.innerHTML = `<table><thead><tr><th>From</th><th>To</th><th>Amount</th><th>When</th></tr></thead><tbody>${rows.join('')}</tbody></table>`;
+}
+
+async function loadTasks() {
+    const tasks = await api('/api/tasks');
+    const el = document.getElementById('tasks-panel');
+    if (tasks.length === 0) { el.innerHTML = '<div class="empty">No tasks</div>'; return; }
+    const rows = tasks.slice(0, 20).map(t => `<tr>
+        <td>${t.taskType}</td>
+        <td><span class="status status-${t.status}">${t.status}</span></td>
+        <td>${timeAgo(t.scheduledAt)}</td>
+        <td>${t.errorMessage ?? ''}</td>
+    </tr>`);
+    el.innerHTML = `<table><thead><tr><th>Type</th><th>Status</th><th>Scheduled</th><th>Error</th></tr></thead><tbody>${rows.join('')}</tbody></table>`;
+}
+
+async function createAccount() {
+    const name = document.getElementById('new-name').value.trim();
+    if (!name) { notify('Name is required', 'error'); return; }
+    try {
+        await post('/api/accounts', { name });
+        document.getElementById('new-name').value = '';
+        notify(`Account "${name}" created`);
+        await loadAccounts();
+    } catch (e) { notify(e.detail ?? 'Failed to create account', 'error'); }
+}
+
+async function deposit() {
+    const id = document.getElementById('deposit-account').value;
+    const amount = parseFloat(document.getElementById('deposit-amount').value);
+    if (!id || !amount || amount <= 0) { notify('Select account and enter amount', 'error'); return; }
+    try {
+        await post(`/api/accounts/${id}/deposit`, amount);
+        document.getElementById('deposit-amount').value = '';
+        notify(`Deposited ${fmt(amount)}`);
+        await loadAccounts();
+        if (selectedAccountId === id) selectAccount(id);
+    } catch (e) { notify(e.detail ?? 'Deposit failed', 'error'); }
+}
+
+async function transfer() {
+    const from = document.getElementById('transfer-from').value;
+    const to = document.getElementById('transfer-to').value;
+    const amount = parseFloat(document.getElementById('transfer-amount').value);
+    if (!from || !to || from === to) { notify('Select different accounts', 'error'); return; }
+    if (!amount || amount <= 0) { notify('Enter a valid amount', 'error'); return; }
+    try {
+        await post('/api/transactions', { fromAccountId: from, toAccountId: to, amount });
+        document.getElementById('transfer-amount').value = '';
+        notify(`Transferred ${fmt(amount)} from ${nameFor(from)} to ${nameFor(to)}`);
+        await loadAccounts();
+        if (selectedAccountId) selectAccount(selectedAccountId);
+        setTimeout(loadTasks, 1500);
+    } catch (e) { notify(e.detail ?? 'Transfer failed', 'error'); }
+}
+
+async function triggerConsistencyCheck() {
+    await fetch('/api/tasks/consistency-check', { method: 'POST' });
+    notify('Consistency check scheduled');
+    setTimeout(loadTasks, 2000);
+}
+
+function renderEvents(events) {
+    const el = document.getElementById('events-panel');
+    if (events.length === 0) { el.innerHTML = '<div class="empty">No events</div>'; return; }
+    const rows = events.map(e => {
+        const type = e['@type'] ?? 'Unknown';
+        let detail;
+        switch (type) {
+            case 'AccountOpened': detail = `<span class="event-type event-AccountOpened">${type}</span> ${e.name}`; break;
+            case 'MoneyDeposited': detail = `<span class="event-type event-MoneyDeposited">${type}</span> +${fmt(e.amount)}`; break;
+            case 'MoneyDebited': detail = `<span class="event-type event-MoneyDebited">${type}</span> -${fmt(e.amount)} (txn ${shortId(e.transactionId)})`; break;
+            case 'MoneyCredited': detail = `<span class="event-type event-MoneyCredited">${type}</span> +${fmt(e.amount)} (txn ${shortId(e.transactionId)})`; break;
+            default: detail = type;
+        }
+        return `<tr><td>${timeAgo(e.occurredAt)}</td><td>${detail}</td></tr>`;
+    });
+    el.innerHTML = `<table><thead><tr><th>When</th><th>Detail</th></tr></thead><tbody>${rows.join('')}</tbody></table>`;
+}
+
+loadAccounts();
+loadTasks();
+</script>
+</body>
+</html>

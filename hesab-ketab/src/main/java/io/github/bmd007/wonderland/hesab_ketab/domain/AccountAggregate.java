@@ -15,14 +15,13 @@ public class AccountAggregate {
 
     private UUID id;
     private String name;
-    private String currency;
     private BigDecimal balance = BigDecimal.ZERO;
     private long version = 0;
     private final List<AccountEvent> uncommittedEvents = new ArrayList<>();
 
-    public static AccountAggregate open(String name, String currency) {
+    public static AccountAggregate open(String name) {
         var aggregate = new AccountAggregate();
-        aggregate.emit(new AccountEvent.AccountOpened(UUID.randomUUID(), name, currency, Instant.now()));
+        aggregate.emit(new AccountEvent.AccountOpened(UUID.randomUUID(), name, Instant.now()));
         return aggregate;
     }
 
@@ -36,7 +35,6 @@ public class AccountAggregate {
         var aggregate = new AccountAggregate();
         aggregate.id = snapshot.id();
         aggregate.name = snapshot.name();
-        aggregate.currency = snapshot.currency();
         aggregate.balance = snapshot.balance();
         aggregate.version = snapshot.version();
         return aggregate;
@@ -62,7 +60,6 @@ public class AccountAggregate {
             case AccountEvent.AccountOpened e -> {
                 this.id = e.accountId();
                 this.name = e.name();
-                this.currency = e.currency();
                 this.balance = BigDecimal.ZERO;
             }
             case AccountEvent.MoneyDeposited e -> this.balance = this.balance.add(e.amount());
@@ -85,7 +82,6 @@ public class AccountAggregate {
         return Account.builder()
             .id(id)
             .name(name)
-            .currency(currency)
             .balance(balance)
             .version(version)
             .build();

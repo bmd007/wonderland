@@ -36,15 +36,16 @@ public class TaskService {
 
     @Scheduled(fixedDelay = 1000)
     public void processNextTask() {
-        taskRepository.claimNext().ifPresent(task -> {
-            try {
-                execute(task);
-                taskRepository.complete(task.id());
-            } catch (Exception e) {
-                log.error("Task {} failed", task.id(), e);
-                taskRepository.fail(task.id(), e.getMessage());
-            }
-        });
+        taskRepository.claimNext()
+            .ifPresent(task -> {
+                try {
+                    execute(task);
+                    taskRepository.complete(task.id());
+                } catch (Exception e) {
+                    log.error("Task {} failed", task.id(), e);
+                    taskRepository.fail(task.id(), e.getMessage());
+                }
+            });
     }
 
     @Transactional
@@ -76,13 +77,14 @@ public class TaskService {
         var accountId = UUID.fromString(node.get("accountId").asText());
         var events = eventStore.loadEvents(accountId);
         var reconstituted = AccountAggregate.reconstitute(events);
-        accountRepository.findById(accountId).ifPresent(snapshot -> {
-            if (snapshot.balance().compareTo(reconstituted.balance()) != 0) {
-                log.warn("Balance mismatch for {}: snapshot={}, events={}. Repairing.",
-                    accountId, snapshot.balance(), reconstituted.balance());
-                accountRepository.save(reconstituted.toSnapshot());
-            }
-        });
+        accountRepository.findById(accountId)
+            .ifPresent(snapshot -> {
+                if (snapshot.balance().compareTo(reconstituted.balance()) != 0) {
+                    log.warn("Balance mismatch for {}: snapshot={}, events={}. Repairing.",
+                        accountId, snapshot.balance(), reconstituted.balance());
+                    accountRepository.save(reconstituted.toSnapshot());
+                }
+            });
     }
 
     private String serialize(Map<String, String> data) {

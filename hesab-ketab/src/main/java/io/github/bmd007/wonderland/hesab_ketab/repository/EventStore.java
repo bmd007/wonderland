@@ -68,13 +68,11 @@ public class EventStore {
                     debit.aggregate_id as from_account_id,
                     credit.aggregate_id as to_account_id,
                     (debit.payload->>'amount')::numeric as amount,
-                    a.currency,
                     debit.created_at as occurred_at
                 FROM domain_events debit
                 JOIN domain_events credit
                     ON debit.payload->>'transactionId' = credit.payload->>'transactionId'
                     AND credit.event_type = 'MoneyCredited'
-                JOIN accounts a ON a.id = debit.aggregate_id
                 WHERE debit.event_type = 'MoneyDebited'
                     AND (debit.aggregate_id = :accountId OR credit.aggregate_id = :accountId)
                 ORDER BY debit.created_at DESC

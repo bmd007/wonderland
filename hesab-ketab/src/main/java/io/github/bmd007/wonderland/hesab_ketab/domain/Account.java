@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Builder
 @With
-public record Account(UUID id, String name, String currency, BigDecimal balance, long version, Instant createdAt) {
+public record Account(UUID id, String name, BigDecimal balance, long version, Instant createdAt) {
 }

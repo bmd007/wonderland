@@ -18,9 +18,4 @@ public class LedgerExceptionHandler {
     public ProblemDetail handleInsufficientBalance(LedgerException.InsufficientBalance ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
     }
-
-    @ExceptionHandler(LedgerException.IncompatibleCurrencies.class)
-    public ProblemDetail handleIncompatibleCurrencies(LedgerException.IncompatibleCurrencies ex) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
-    }
 }

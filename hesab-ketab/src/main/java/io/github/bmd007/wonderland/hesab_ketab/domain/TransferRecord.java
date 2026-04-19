@@ -12,6 +12,5 @@ public record TransferRecord(
     UUID fromAccountId,
     UUID toAccountId,
     BigDecimal amount,
-    String currency,
     Instant occurredAt) {
 }
