@@ -5,10 +5,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.junit.jupiter.api.extension.AfterAllCallback;
@@ -17,7 +14,8 @@ import org.skyscreamer.jsonassert.Customization;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.skyscreamer.jsonassert.comparator.CustomComparator;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -31,19 +29,20 @@ import java.util.stream.IntStream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-@Slf4j
 public class ContractTestExtension implements AfterAllCallback {
+
+    private static final Logger log = LoggerFactory.getLogger(ContractTestExtension.class);
 
     public static final Boolean GENERATE_TEST_DATA = false;
     public static final String API_CONTRACTS_DIRECTORY_PATH = "src/test/resources/api_contracts/";
 
-    private final ObjectMapper objectMapper = new Jackson2ObjectMapperBuilder()
-        .modules(new Jdk8Module(), new JavaTimeModule())
+    private final ObjectMapper objectMapper = JsonMapper.builder()
+        .findAndAddModules()
         .serializationInclusion(JsonInclude.Include.NON_NULL)
-        .featuresToEnable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
-        .featuresToEnable(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN)
-        .featuresToEnable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS)
-        .featuresToDisable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+        .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
+        .enable(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN)
+        .enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS)
+        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
         .build();
 
     @Override
@@ -57,12 +56,11 @@ public class ContractTestExtension implements AfterAllCallback {
         verifyAgainstOrUpdateApiContract(new String(json), apiContractFileName, jsonPathsToIgnoreValue);
     }
 
-    @SneakyThrows
     public void verifyAgainstOrUpdateApiContract(@NotNull Supplier<List<String>> jsons,
                                                  @NotNull String apiContractFileName,
-                                                 String... jsonPathsToIgnoreValue) {
+                                                 String... jsonPathsToIgnoreValue) throws InterruptedException {
         if (GENERATE_TEST_DATA) {
-            Thread.sleep(5000); // Give the application some time to generate all expected data
+            Thread.sleep(5000);
             writeToApiContracts(apiContractFileName, jsons.get());
         } else {
             List<String> expected = getMultilineContract(apiContractFileName);
@@ -89,7 +87,6 @@ public class ContractTestExtension implements AfterAllCallback {
     private void verify(final List<String> expected,
                         List<String> actual,
                         String... jsonPathsToIgnoreValue) {
-        //make sure expected and actual are in the same order
         final List<String> sortedExpected = sorted(expected);
         final List<String> sortedActual = sorted(actual);
 
@@ -150,10 +147,13 @@ public class ContractTestExtension implements AfterAllCallback {
         }
     }
 
-    @SneakyThrows
     private String formatted(String d) {
-        return objectMapper.writerWithDefaultPrettyPrinter()
-            .writeValueAsString(objectMapper.readTree(d));
+        try {
+            return objectMapper.writerWithDefaultPrettyPrinter()
+                .writeValueAsString(objectMapper.readTree(d));
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     private List<String> sorted(List<String> data) {

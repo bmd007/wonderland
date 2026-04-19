@@ -19,7 +19,6 @@ configurations {
 
 repositories {
 	mavenCentral()
-	maven { url 'https://repo.spring.io/milestone' }
 }
 
 ext {
@@ -40,8 +39,9 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-flyway-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-jdbc-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-	testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
-	testImplementation 'com.playtika.testcontainers:embedded-postgresql:3.1.20'
+	testImplementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
+	testImplementation 'org.wiremock.integrations:wiremock-spring-boot:4.2.1'
+	testImplementation 'com.playtika.testcontainers:embedded-postgresql:3.1.19'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
