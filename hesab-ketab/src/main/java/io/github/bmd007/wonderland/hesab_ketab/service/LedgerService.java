@@ -99,9 +99,7 @@ public class LedgerService {
                     credit = e.amount();
                     yield "Transfer in (txn " + e.transactionId().toString().substring(0, 8) + ")";
                 }
-                case AccountEvent.AccountOpened _ -> {
-                    yield "Account opened";
-                }
+                case AccountEvent.AccountOpened _ -> "Account opened";
             };
             runningBalance = runningBalance.add(credit).subtract(debit);
             entries.add(new AccountStatement.StatementEntry(

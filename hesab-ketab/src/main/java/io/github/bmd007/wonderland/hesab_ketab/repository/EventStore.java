@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -22,6 +23,9 @@ public class EventStore {
     private final JdbcClient jdbc;
     private final ObjectMapper objectMapper;
 
+    //todo do we need to sort events by time before going through them and insert?
+    //todo what happens when two different threads/nodes call this on the same aggregateId with different events?
+    //  can that happen at all?
     public void append(UUID aggregateId, List<AccountEvent> events, long expectedVersion) {
         long version = expectedVersion;
         try {
@@ -31,7 +35,7 @@ public class EventStore {
                         INSERT INTO domain_events (id, aggregate_id, event_type, payload, version)
                         VALUES (:id, :aggregateId, :eventType, :payload::jsonb, :version)
                         """)
-                    .param("id", UUID.randomUUID())
+                    .param("id", UUID.randomUUID())//todo why don't we have this inside the domainEvents? factory methods
                     .param("aggregateId", aggregateId)
                     .param("eventType", event.getClass().getSimpleName())
                     .param("payload", serialize(event))
@@ -61,7 +65,7 @@ public class EventStore {
                 ORDER BY version
                 """)
             .param("aggregateId", aggregateId)
-            .param("asOf", asOf)
+            .param("asOf", Timestamp.from(asOf))
             .query((rs, _) -> deserialize(rs.getString("event_type"), rs.getString("payload")))
             .list();
     }
@@ -73,8 +77,8 @@ public class EventStore {
                 ORDER BY version
                 """)
             .param("aggregateId", aggregateId)
-            .param("from", from)
-            .param("to", to)
+            .param("from", Timestamp.from(from))
+            .param("to", Timestamp.from(to))
             .query((rs, _) -> deserialize(rs.getString("event_type"), rs.getString("payload")))
             .list();
     }

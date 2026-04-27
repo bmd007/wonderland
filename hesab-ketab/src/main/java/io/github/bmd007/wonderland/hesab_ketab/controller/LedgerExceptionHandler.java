@@ -21,6 +21,6 @@ public class LedgerExceptionHandler {
 
     @ExceptionHandler(LedgerException.InsufficientBalance.class)
     public ProblemDetail handleInsufficientBalance(LedgerException.InsufficientBalance ex) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_CONTENT, ex.getMessage());
     }
 }

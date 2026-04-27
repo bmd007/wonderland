@@ -1,7 +1,0 @@
-spring:
-  application:
-    name: hesabam
-
-  docker:
-    compose:
-      file: /Users/mohami/workspacce/personal-repositories/wonderland/hesabam/compose.yaml
