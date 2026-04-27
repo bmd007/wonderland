@@ -153,10 +153,35 @@
         </div>
 
         <div class="detail-section">
+            <div class="grid">
+                <div class="card">
+                    <h2>Time Travel Query</h2>
+                    <label for="temporal-account">Account</label>
+                    <select id="temporal-account"></select>
+                    <label for="temporal-date">Balance as of</label>
+                    <input type="datetime-local" id="temporal-date">
+                    <button class="btn-primary" onclick="queryBalanceAsOf()">Query</button>
+                    <div id="temporal-result"></div>
+                </div>
+                <div class="card">
+                    <h2>Account Statement</h2>
+                    <label for="statement-account">Account</label>
+                    <select id="statement-account"></select>
+                    <label for="statement-from">From</label>
+                    <input type="datetime-local" id="statement-from">
+                    <label for="statement-to">To</label>
+                    <input type="datetime-local" id="statement-to">
+                    <button class="btn-primary" onclick="queryStatement()">Generate</button>
+                    <div id="statement-result"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-section">
             <div class="card">
                 <div class="task-header">
-                    <h2>Consistency Tasks</h2>
-                    <button class="btn-secondary btn-sm" onclick="triggerConsistencyCheck()">Run Check</button>
+                    <h2>Projection Tasks</h2>
+                    <button class="btn-secondary btn-sm" onclick="triggerProjectionRebuild()">Rebuild All</button>
                 </div>
                 <div id="tasks-panel"><div class="empty">Loading...</div></div>
             </div>
@@ -240,6 +265,8 @@ function updateDropdowns() {
     document.getElementById('deposit-account').innerHTML = html;
     document.getElementById('transfer-from').innerHTML = html;
     document.getElementById('transfer-to').innerHTML = html;
+    document.getElementById('temporal-account').innerHTML = html;
+    document.getElementById('statement-account').innerHTML = html;
 }
 
 function selectAccount(id) {
@@ -427,14 +454,75 @@ function transfer() {
     });
 }
 
-function triggerConsistencyCheck() {
-    fetch('/api/tasks/consistency-check', { method: 'POST' })
+function triggerProjectionRebuild() {
+    fetch('/api/tasks/projection-rebuild', { method: 'POST' })
     .then(function() {
-        showNotification('Consistency check scheduled', 'success');
+        showNotification('Projection rebuild scheduled', 'success');
         setTimeout(loadTasks, 2000);
     })
     .catch(function() {
-        showNotification('Failed to trigger check', 'error');
+        showNotification('Failed to trigger rebuild', 'error');
+    });
+}
+
+function queryBalanceAsOf() {
+    var id = document.getElementById('temporal-account').value;
+    var dateStr = document.getElementById('temporal-date').value;
+    if (!id || !dateStr) { showNotification('Select account and date', 'error'); return; }
+    var asOf = new Date(dateStr).toISOString();
+    fetch('/api/accounts/' + id + '/balance?asOf=' + encodeURIComponent(asOf))
+    .then(function(r) {
+        if (!r.ok) return r.json().then(function(e) { throw e; });
+        return r.json();
+    })
+    .then(function(account) {
+        document.getElementById('temporal-result').innerHTML =
+            '<div style="margin-top:0.75rem;padding:0.75rem;background:var(--bg-hover);border-radius:0.375rem">' +
+            '<strong>' + account.name + '</strong> balance at ' + formatTime(asOf) +
+            ': <span class="account-balance">' + fmt(account.balance) + '</span></div>';
+    })
+    .catch(function(e) {
+        showNotification(e.detail || 'Query failed', 'error');
+    });
+}
+
+function queryStatement() {
+    var id = document.getElementById('statement-account').value;
+    var fromStr = document.getElementById('statement-from').value;
+    var toStr = document.getElementById('statement-to').value;
+    if (!id || !fromStr || !toStr) { showNotification('Select account and date range', 'error'); return; }
+    var from = new Date(fromStr).toISOString();
+    var to = new Date(toStr).toISOString();
+    fetch('/api/accounts/' + id + '/statement?from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to))
+    .then(function(r) {
+        if (!r.ok) return r.json().then(function(e) { throw e; });
+        return r.json();
+    })
+    .then(function(stmt) {
+        var html = '<div style="margin-top:0.75rem">' +
+            '<div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;font-size:0.85rem">' +
+            '<span>Opening: <strong>' + fmt(stmt.openingBalance) + '</strong></span>' +
+            '<span>Closing: <strong>' + fmt(stmt.closingBalance) + '</strong></span></div>';
+        if (!stmt.entries || stmt.entries.length === 0) {
+            html += '<div class="empty">No transactions in period</div>';
+        } else {
+            html += '<table><thead><tr><th>When</th><th>Description</th><th>Debit</th><th>Credit</th><th>Balance</th></tr></thead><tbody>';
+            for (var i = 0; i < stmt.entries.length; i++) {
+                var e = stmt.entries[i];
+                html += '<tr>' +
+                    '<td>' + formatTime(e.occurredAt) + '</td>' +
+                    '<td>' + e.description + '</td>' +
+                    '<td class="amount-neg">' + (e.debit > 0 ? fmt(e.debit) : '') + '</td>' +
+                    '<td class="amount-pos">' + (e.credit > 0 ? fmt(e.credit) : '') + '</td>' +
+                    '<td>' + fmt(e.runningBalance) + '</td></tr>';
+            }
+            html += '</tbody></table>';
+        }
+        html += '</div>';
+        document.getElementById('statement-result').innerHTML = html;
+    })
+    .catch(function(e) {
+        showNotification(e.detail || 'Statement failed', 'error');
     });
 }
 

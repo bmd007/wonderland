@@ -21,6 +21,7 @@ public class AccountRepository {
                 VALUES (:id, :name, :balance, :version)
                 ON CONFLICT (id) DO UPDATE
                 SET balance = :balance, version = :version
+                WHERE accounts.version < :version
                 """)
             .param("id", snapshot.id())
             .param("name", snapshot.name())
@@ -31,13 +32,6 @@ public class AccountRepository {
 
     public Optional<Account> findById(UUID id) {
         return jdbc.sql("SELECT id, name, balance, version, created_at FROM accounts WHERE id = :id")
-            .param("id", id)
-            .query(Account.class)
-            .optional();
-    }
-
-    public Optional<Account> findByIdForUpdate(UUID id) {
-        return jdbc.sql("SELECT id, name, balance, version, created_at FROM accounts WHERE id = :id FOR UPDATE")
             .param("id", id)
             .query(Account.class)
             .optional();

@@ -1,7 +1,8 @@
 package io.github.bmd007.wonderland.hesab_ketab.listener;
 
+import io.github.bmd007.wonderland.hesab_ketab.domain.AccountAggregate;
+import io.github.bmd007.wonderland.hesab_ketab.repository.AccountRepository;
 import io.github.bmd007.wonderland.hesab_ketab.repository.EventStore;
-import io.github.bmd007.wonderland.hesab_ketab.service.TaskService;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class EventConsumer {
     private final DataSource dataSource;
     private final JdbcClient jdbc;
     private final EventStore eventStore;
-    private final TaskService taskService;
+    private final AccountRepository accountRepository;
     private final TransactionTemplate transactionTemplate;
 
     private final String consumerName = "consumer-" + ManagementFactory.getRuntimeMXBean().getName();
@@ -93,21 +94,25 @@ public class EventConsumer {
         var events = eventStore.loadUnprocessedEvents(lastSequence);
         for (var event : events) {
             transactionTemplate.executeWithoutResult(_ -> {
-                processEvent(event);
+                updateProjection(event);
                 updateOffset(event.sequenceNumber());
             });
         }
         if (!events.isEmpty()) {
-            log.debug("Processed {} events, last sequence: {}", events.size(), events.getLast().sequenceNumber());
+            log.debug("Projected {} events, last sequence: {}", events.size(), events.getLast().sequenceNumber());
         }
     }
 
-    private void processEvent(EventStore.StoredEvent event) {
-        switch (event.eventType()) {
-            case "MoneyDebited", "MoneyCredited" ->
-                taskService.scheduleBalanceCheck(event.aggregateId(), event.sequenceNumber());
-            default -> log.debug("Event: {} seq={}", event.eventType(), event.sequenceNumber());
+    private void updateProjection(EventStore.StoredEvent event) {
+        var events = eventStore.loadEvents(event.aggregateId());
+        if (events.isEmpty()) {
+            log.warn("No events found for aggregate {}", event.aggregateId());
+            return;
         }
+        var aggregate = AccountAggregate.reconstitute(events);
+        accountRepository.save(aggregate.toSnapshot());
+        log.debug("Projection updated for {}: balance={}, version={}",
+            event.aggregateId(), aggregate.balance(), aggregate.version());
     }
 
     private long getLastProcessedSequence() {

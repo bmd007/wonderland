@@ -28,13 +28,6 @@ public class TaskService {
     private final AccountRepository accountRepository;
     private final ObjectMapper objectMapper;
 
-    @Transactional
-    public void scheduleBalanceCheck(UUID accountId, long eventSequence) {
-        var payload = serialize(Map.of("accountId", accountId.toString()));
-        var deterministicId = UUID.nameUUIDFromBytes(("BALANCE_CHECK:" + eventSequence).getBytes());
-        taskRepository.scheduleIdempotent(deterministicId, "BALANCE_CHECK", payload);
-    }
-
     @Scheduled(fixedDelay = 1000)
     public void processNextTask() {
         taskRepository.claimNext()
@@ -50,14 +43,13 @@ public class TaskService {
     }
 
     @Transactional
-    public void triggerFullConsistencyCheck() {
-        var batchKey = UUID.randomUUID().toString();
-        accountRepository.findAll().forEach(account -> {
-            var payload = serialize(Map.of("accountId", account.id().toString()));
-            var deterministicId = UUID.nameUUIDFromBytes(("BALANCE_CHECK:manual:" + batchKey + ":" + account.id()).getBytes());
-            taskRepository.scheduleIdempotent(deterministicId, "BALANCE_CHECK", payload);
+    public void triggerFullProjectionRebuild() {
+        eventStore.findAllAggregateIds().forEach(aggregateId -> {
+            var payload = serialize(Map.of("accountId", aggregateId.toString()));
+            var deterministicId = UUID.nameUUIDFromBytes(("PROJECTION_REBUILD:" + aggregateId).getBytes());
+            taskRepository.scheduleIdempotent(deterministicId, "PROJECTION_REBUILD", payload);
         });
-        log.info("Scheduled balance checks for all accounts");
+        log.info("Scheduled projection rebuild for all aggregates");
     }
 
     public List<ScheduledTask> findAll() {
@@ -70,24 +62,20 @@ public class TaskService {
 
     private void execute(ScheduledTask task) {
         switch (task.taskType()) {
-            case "BALANCE_CHECK" -> executeBalanceCheck(task);
+            case "PROJECTION_REBUILD" -> executeProjectionRebuild(task);
             default -> log.warn("Unknown task type: {}", task.taskType());
         }
     }
 
-    private void executeBalanceCheck(ScheduledTask task) {
+    private void executeProjectionRebuild(ScheduledTask task) {
         var node = deserialize(task.payload());
         var accountId = UUID.fromString(node.get("accountId").asText());
         var events = eventStore.loadEvents(accountId);
-        var reconstituted = AccountAggregate.reconstitute(events);
-        accountRepository.findById(accountId)
-            .ifPresent(snapshot -> {
-                if (snapshot.balance().compareTo(reconstituted.balance()) != 0) {
-                    log.warn("Balance mismatch for {}: snapshot={}, events={}. Repairing.",
-                        accountId, snapshot.balance(), reconstituted.balance());
-                    accountRepository.save(reconstituted.toSnapshot());
-                }
-            });
+        if (!events.isEmpty()) {
+            var aggregate = AccountAggregate.reconstitute(events);
+            accountRepository.save(aggregate.toSnapshot());
+            log.info("Projection rebuilt for {}: balance={}", accountId, aggregate.balance());
+        }
     }
 
     private String serialize(Map<String, String> data) {

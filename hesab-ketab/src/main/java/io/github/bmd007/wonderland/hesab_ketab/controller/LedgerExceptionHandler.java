@@ -14,6 +14,11 @@ public class LedgerExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
+    @ExceptionHandler(LedgerException.ConcurrencyConflict.class)
+    public ProblemDetail handleConcurrencyConflict(LedgerException.ConcurrencyConflict ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
     @ExceptionHandler(LedgerException.InsufficientBalance.class)
     public ProblemDetail handleInsufficientBalance(LedgerException.InsufficientBalance ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());

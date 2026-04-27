@@ -2,13 +2,16 @@ package io.github.bmd007.wonderland.hesab_ketab.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.bmd007.wonderland.hesab_ketab.domain.AccountEvent;
+import io.github.bmd007.wonderland.hesab_ketab.domain.LedgerException;
 import io.github.bmd007.wonderland.hesab_ketab.domain.TransferRecord;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,22 +22,24 @@ public class EventStore {
     private final JdbcClient jdbc;
     private final ObjectMapper objectMapper;
 
-    public record StoredEvent(long sequenceNumber, UUID aggregateId, String eventType) {}
-
     public void append(UUID aggregateId, List<AccountEvent> events, long expectedVersion) {
         long version = expectedVersion;
-        for (var event : events) {
-            version++;
-            jdbc.sql("""
-                    INSERT INTO domain_events (id, aggregate_id, event_type, payload, version)
-                    VALUES (:id, :aggregateId, :eventType, :payload::jsonb, :version)
-                    """)
-                .param("id", UUID.randomUUID())
-                .param("aggregateId", aggregateId)
-                .param("eventType", event.getClass().getSimpleName())
-                .param("payload", serialize(event))
-                .param("version", version)
-                .update();
+        try {
+            for (var event : events) {
+                version++;
+                jdbc.sql("""
+                        INSERT INTO domain_events (id, aggregate_id, event_type, payload, version)
+                        VALUES (:id, :aggregateId, :eventType, :payload::jsonb, :version)
+                        """)
+                    .param("id", UUID.randomUUID())
+                    .param("aggregateId", aggregateId)
+                    .param("eventType", event.getClass().getSimpleName())
+                    .param("payload", serialize(event))
+                    .param("version", version)
+                    .update();
+            }
+        } catch (DuplicateKeyException e) {
+            throw new LedgerException.ConcurrencyConflict(aggregateId);
         }
     }
 
@@ -46,6 +51,37 @@ public class EventStore {
                 """)
             .param("aggregateId", aggregateId)
             .query((rs, _) -> deserialize(rs.getString("event_type"), rs.getString("payload")))
+            .list();
+    }
+
+    public List<AccountEvent> loadEventsUpTo(UUID aggregateId, Instant asOf) {
+        return jdbc.sql("""
+                SELECT event_type, payload::text FROM domain_events
+                WHERE aggregate_id = :aggregateId AND created_at <= :asOf
+                ORDER BY version
+                """)
+            .param("aggregateId", aggregateId)
+            .param("asOf", asOf)
+            .query((rs, _) -> deserialize(rs.getString("event_type"), rs.getString("payload")))
+            .list();
+    }
+
+    public List<AccountEvent> loadEventsBetween(UUID aggregateId, Instant from, Instant to) {
+        return jdbc.sql("""
+                SELECT event_type, payload::text FROM domain_events
+                WHERE aggregate_id = :aggregateId AND created_at > :from AND created_at <= :to
+                ORDER BY version
+                """)
+            .param("aggregateId", aggregateId)
+            .param("from", from)
+            .param("to", to)
+            .query((rs, _) -> deserialize(rs.getString("event_type"), rs.getString("payload")))
+            .list();
+    }
+
+    public List<UUID> findAllAggregateIds() {
+        return jdbc.sql("SELECT DISTINCT aggregate_id FROM domain_events")
+            .query(UUID.class)
             .list();
     }
 
@@ -103,5 +139,8 @@ public class EventStore {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    public record StoredEvent(long sequenceNumber, UUID aggregateId, String eventType) {
     }
 }
