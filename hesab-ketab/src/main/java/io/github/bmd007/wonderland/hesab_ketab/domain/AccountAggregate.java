@@ -13,11 +13,11 @@ import java.util.UUID;
 @Accessors(fluent = true)
 public class AccountAggregate {
 
+    private final List<AccountEvent> uncommittedEvents = new ArrayList<>();
     private UUID id;
     private String name;
     private BigDecimal balance = BigDecimal.ZERO;
     private long version = 0;
-    private final List<AccountEvent> uncommittedEvents = new ArrayList<>();
 
     public static AccountAggregate open(String name) {
         var aggregate = new AccountAggregate();
@@ -28,15 +28,6 @@ public class AccountAggregate {
     public static AccountAggregate reconstitute(List<AccountEvent> events) {
         var aggregate = new AccountAggregate();
         events.forEach(aggregate::apply);
-        return aggregate;
-    }
-
-    public static AccountAggregate fromSnapshot(Account snapshot) {
-        var aggregate = new AccountAggregate();
-        aggregate.id = snapshot.id();
-        aggregate.name = snapshot.name();
-        aggregate.balance = snapshot.balance();
-        aggregate.version = snapshot.version();
         return aggregate;
     }
 

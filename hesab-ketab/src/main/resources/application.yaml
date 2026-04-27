@@ -1,3 +1,6 @@
 spring:
   application:
     name: hesab-ketab
+  docker:
+    compose:
+      file: /Users/mohami/workspacce/personal-repositories/wonderland/hesab-ketab/compose.yaml

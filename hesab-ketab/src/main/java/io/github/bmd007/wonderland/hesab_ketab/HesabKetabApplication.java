@@ -8,8 +8,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 public class HesabKetabApplication {
 
-	static void main(String[] args) {
-		SpringApplication.run(HesabKetabApplication.class, args);
-	}
+    static void main(String[] args) {
+        SpringApplication.run(HesabKetabApplication.class, args);
+    }
 
 }

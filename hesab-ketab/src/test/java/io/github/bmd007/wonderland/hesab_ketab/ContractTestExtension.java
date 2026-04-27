@@ -31,11 +31,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class ContractTestExtension implements AfterAllCallback {
 
-    private static final Logger log = LoggerFactory.getLogger(ContractTestExtension.class);
-
     public static final Boolean GENERATE_TEST_DATA = false;
     public static final String API_CONTRACTS_DIRECTORY_PATH = "src/test/resources/api_contracts/";
-
+    private static final Logger log = LoggerFactory.getLogger(ContractTestExtension.class);
     private final ObjectMapper objectMapper = JsonMapper.builder()
         .findAndAddModules()
         .serializationInclusion(JsonInclude.Include.NON_NULL)
