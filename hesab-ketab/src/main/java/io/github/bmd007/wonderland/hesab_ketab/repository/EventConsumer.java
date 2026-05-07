@@ -88,7 +88,26 @@ public class EventConsumer {
     }
 
     private void catchUp() {
-        //todo implement: fetch unprocessed events, apply to projections, update offset
+        while (running) {
+            var processed = transactionTemplate.execute(_ -> {
+                var fetched = eventStore.loadNextUnprocessedEvent(consumerName);
+                fetched.ifPresent(event -> {
+                    var aggregateId = event.domainEvent().aggregateId();
+                    var account = accountRepository.findById(aggregateId).orElseThrow();
+                    var result = account.apply(event.domainEvent());
+                    if (result.succeed()) {
+                        accountRepository.save(result.finalState());
+                    } else {
+                        log.warn("Event {} failed for account {}: {}", event.sequenceNumber(), aggregateId, result.reason());
+                    }
+                    updateOffset(event.sequenceNumber());
+                });
+                return fetched.isPresent();
+            });
+            if (Boolean.FALSE.equals(processed)) {
+                break;
+            }
+        }
     }
 
     private void updateOffset(long sequence) {

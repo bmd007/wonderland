@@ -13,10 +13,9 @@ import java.io.UncheckedIOException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -72,27 +71,20 @@ public class EventStore {
             .list();
     }
 
-    //todo don't we need select for update skip to next?
-    //todo this should return the actual DomainEvents.
-    public LinkedHashMap<UUID, List<FetchedDomainEvent>> loadUnprocessedEvents(String consumerName) {
+    public Optional<FetchedDomainEvent> loadNextUnprocessedEvent(String consumerName) {
         return jdbcClient.sql("""
                 SELECT event_type, payload::text, sequence_number
                 FROM domain_events
                 WHERE sequence_number > COALESCE((SELECT last_sequence FROM event_consumer_offsets WHERE consumer_name = :name), 0)
-                ORDER BY aggregate_id, sequence_number
+                ORDER BY sequence_number
+                LIMIT 1
                 """)
             .param("name", consumerName)
-            .query((rs, _) -> {
-                var event = deserialize(rs.getString("event_type"), rs.getString("payload"));
-                return new FetchedDomainEvent(event, rs.getLong("sequence_number"));
-            })
-            .list()
-            .stream()
-            .collect(Collectors.groupingBy(
-                fetchedDomainEvent -> fetchedDomainEvent.domainEvent().aggregateId(),
-                LinkedHashMap::new,
-                Collectors.toList()
-            ));
+            .query((rs, _) -> new FetchedDomainEvent(
+                deserialize(rs.getString("event_type"), rs.getString("payload")),
+                rs.getLong("sequence_number")
+            ))
+            .optional();
     }
 
     public List<DomainEvent> loadEvents(UUID aggregateId) {
