@@ -21,27 +21,16 @@
             --accent-border: #2563eb;
             --green: #059669;
             --red: #dc2626;
-            --amber: #d97706;
             --input-border: #d1d5db;
             --input-bg: #fff;
             --btn-secondary-bg: #e2e8f0;
             --btn-secondary-text: #475569;
             --btn-secondary-hover: #cbd5e1;
             --shadow: rgba(0, 0, 0, 0.1);
-            --event-open-bg: #dbeafe;
-            --event-open-text: #1d4ed8;
-            --event-deposit-bg: #d1fae5;
-            --event-deposit-text: #059669;
             --event-debit-bg: #fee2e2;
             --event-debit-text: #dc2626;
-            --status-completed-bg: #d1fae5;
-            --status-completed-text: #059669;
-            --status-pending-bg: #fef3c7;
-            --status-pending-text: #d97706;
-            --status-running-bg: #dbeafe;
-            --status-running-text: #2563eb;
-            --status-failed-bg: #fee2e2;
-            --status-failed-text: #dc2626;
+            --event-credit-bg: #d1fae5;
+            --event-credit-text: #059669;
             --notify-success-bg: #d1fae5;
             --notify-success-text: #065f46;
             --notify-success-border: #a7f3d0;
@@ -75,27 +64,16 @@
                 --accent-border: #3b82f6;
                 --green: #34d399;
                 --red: #f87171;
-                --amber: #fbbf24;
                 --input-border: #475569;
                 --input-bg: #0f172a;
                 --btn-secondary-bg: #334155;
                 --btn-secondary-text: #cbd5e1;
                 --btn-secondary-hover: #475569;
                 --shadow: rgba(0, 0, 0, 0.4);
-                --event-open-bg: #1e3a5f;
-                --event-open-text: #93c5fd;
-                --event-deposit-bg: #064e3b;
-                --event-deposit-text: #6ee7b7;
                 --event-debit-bg: #7f1d1d;
                 --event-debit-text: #fca5a5;
-                --status-completed-bg: #064e3b;
-                --status-completed-text: #6ee7b7;
-                --status-pending-bg: #78350f;
-                --status-pending-text: #fcd34d;
-                --status-running-bg: #1e3a5f;
-                --status-running-text: #93c5fd;
-                --status-failed-bg: #7f1d1d;
-                --status-failed-text: #fca5a5;
+                --event-credit-bg: #064e3b;
+                --event-credit-text: #6ee7b7;
                 --notify-success-bg: #064e3b;
                 --notify-success-text: #6ee7b7;
                 --notify-success-border: #065f46;
@@ -111,409 +89,56 @@
             }
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-        }
-
-        header {
-            background: var(--header-bg);
-            color: var(--header-text);
-            padding: 1rem 2rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        header h1 {
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
-        header span {
-            font-size: 0.85rem;
-            color: var(--header-sub);
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 0.125rem 0.5rem;
-            border-radius: 1rem;
-            font-size: 0.65rem;
-            font-weight: 500;
-            margin-left: 0.5rem;
-            vertical-align: middle;
-        }
-
-        .badge-info {
-            background: var(--status-running-bg);
-            color: var(--status-running-text);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1.5rem;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-        }
-
-        .card {
-            background: var(--bg-card);
-            border-radius: 0.5rem;
-            padding: 1.25rem;
-            box-shadow: 0 1px 3px var(--shadow);
-        }
-
-        .card h2 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--text-secondary);
-        }
-
-        .account-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem;
-            border-radius: 0.375rem;
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-
-        .account-item:hover {
-            background: var(--bg-hover);
-        }
-
-        .account-item.selected {
-            background: var(--bg-selected);
-            border-left: 3px solid var(--accent-border);
-        }
-
-        .account-name {
-            font-weight: 500;
-        }
-
-        .account-balance {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--green);
-        }
-
-        .account-meta {
-            font-size: 0.7rem;
-            color: var(--text-dim);
-            font-family: monospace;
-            display: flex;
-            gap: 0.75rem;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid var(--input-border);
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-            margin-bottom: 0.75rem;
-            background: var(--input-bg);
-            color: var(--text);
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
-        }
-
-        label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: var(--text-muted);
-            margin-bottom: 0.25rem;
-        }
-
-        button {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: white;
-            width: 100%;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            background: var(--accent-hover);
-        }
-
-        .btn-secondary {
-            background: var(--btn-secondary-bg);
-            color: var(--btn-secondary-text);
-        }
-
-        .btn-secondary:hover:not(:disabled) {
-            background: var(--btn-secondary-hover);
-        }
-
-        .btn-sm {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .form-section {
-            margin-bottom: 1.25rem;
-            padding-bottom: 1.25rem;
-            border-bottom: 1px solid var(--border-light);
-        }
-
-        .form-section:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        .form-section h3 {
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            color: var(--text-secondary);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.8rem;
-        }
-
-        th {
-            text-align: left;
-            padding: 0.5rem;
-            color: var(--text-muted);
-            font-weight: 500;
-            border-bottom: 2px solid var(--border);
-        }
-
-        td {
-            padding: 0.5rem;
-            border-bottom: 1px solid var(--border-light);
-        }
-
-        .event-type {
-            display: inline-block;
-            padding: 0.125rem 0.5rem;
-            border-radius: 1rem;
-            font-size: 0.7rem;
-            font-weight: 500;
-        }
-
-        .event-AccountOpened {
-            background: var(--event-open-bg);
-            color: var(--event-open-text);
-        }
-
-        .event-MoneyDeposited {
-            background: var(--event-deposit-bg);
-            color: var(--event-deposit-text);
-        }
-
-        .event-MoneyDebited {
-            background: var(--event-debit-bg);
-            color: var(--event-debit-text);
-        }
-
-        .event-MoneyCredited {
-            background: var(--event-deposit-bg);
-            color: var(--event-deposit-text);
-        }
-
-        .status {
-            display: inline-block;
-            padding: 0.125rem 0.5rem;
-            border-radius: 1rem;
-            font-size: 0.7rem;
-            font-weight: 500;
-        }
-
-        .status-COMPLETED {
-            background: var(--status-completed-bg);
-            color: var(--status-completed-text);
-        }
-
-        .status-PENDING {
-            background: var(--status-pending-bg);
-            color: var(--status-pending-text);
-        }
-
-        .status-RUNNING {
-            background: var(--status-running-bg);
-            color: var(--status-running-text);
-        }
-
-        .status-FAILED {
-            background: var(--status-failed-bg);
-            color: var(--status-failed-text);
-        }
-
-        .detail-section {
-            margin-top: 1.5rem;
-        }
-
-        .notification {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            padding: 0.75rem 1rem;
-            border-radius: 0.375rem;
-            font-size: 0.85rem;
-            z-index: 100;
-            animation: fadeIn 0.2s;
-            max-width: 400px;
-        }
-
-        .notification.success {
-            background: var(--notify-success-bg);
-            color: var(--notify-success-text);
-            border: 1px solid var(--notify-success-border);
-        }
-
-        .notification.error {
-            background: var(--notify-error-bg);
-            color: var(--notify-error-text);
-            border: 1px solid var(--notify-error-border);
-        }
-
-        .notification.warn {
-            background: var(--notify-warn-bg);
-            color: var(--notify-warn-text);
-            border: 1px solid var(--notify-warn-border);
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-0.5rem);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .empty {
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-dim);
-            font-size: 0.85rem;
-        }
-
-        .amount-neg {
-            color: var(--red);
-        }
-
-        .amount-pos {
-            color: var(--green);
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 0;
-            border-bottom: 2px solid var(--border);
-            margin-bottom: 1rem;
-        }
-
-        .tab {
-            padding: 0.5rem 1rem;
-            font-size: 0.8rem;
-            font-weight: 500;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            margin-bottom: -2px;
-            color: var(--tab-inactive);
-            transition: all 0.15s;
-            background: none;
-            border-radius: 0;
-            width: auto;
-        }
-
-        .tab:hover {
-            color: var(--text);
-        }
-
-        .tab.active {
-            color: var(--tab-active);
-            border-bottom-color: var(--tab-active);
-        }
-
-        .result-box {
-            margin-top: 0.75rem;
-            padding: 0.75rem;
-            background: var(--bg-hover);
-            border-radius: 0.375rem;
-        }
-
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-            font-size: 0.85rem;
-        }
-
-        .info-text {
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            margin-top: 0.25rem;
-        }
-
-        .inline-form {
-            display: flex;
-            gap: 0.5rem;
-            align-items: flex-end;
-        }
-
-        .inline-form > div {
-            flex: 1;
-        }
-
-        .inline-form button {
-            margin-bottom: 0.75rem;
-            width: auto;
-            white-space: nowrap;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); }
+        header { background: var(--header-bg); color: var(--header-text); padding: 1rem 2rem; display: flex; align-items: center; gap: 1rem; }
+        header h1 { font-size: 1.25rem; font-weight: 600; }
+        header span { font-size: 0.85rem; color: var(--header-sub); }
+        .badge { display: inline-block; padding: 0.125rem 0.5rem; border-radius: 1rem; font-size: 0.65rem; font-weight: 500; margin-left: 0.5rem; vertical-align: middle; background: #1e3a5f; color: #93c5fd; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .card { background: var(--bg-card); border-radius: 0.5rem; padding: 1.25rem; box-shadow: 0 1px 3px var(--shadow); }
+        .card h2 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-secondary); }
+        .account-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-radius: 0.375rem; cursor: pointer; transition: background 0.15s; }
+        .account-item:hover { background: var(--bg-hover); }
+        .account-item.selected { background: var(--bg-selected); border-left: 3px solid var(--accent-border); }
+        .account-name { font-weight: 500; }
+        .account-balance { font-size: 1.1rem; font-weight: 600; color: var(--green); }
+        .account-meta { font-size: 0.7rem; color: var(--text-dim); font-family: monospace; display: flex; gap: 0.75rem; }
+        input, select { width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--input-border); border-radius: 0.375rem; font-size: 0.875rem; margin-bottom: 0.75rem; background: var(--input-bg); color: var(--text); }
+        input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15); }
+        label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--text-muted); margin-bottom: 0.25rem; }
+        button { padding: 0.5rem 1rem; border: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary { background: var(--accent); color: white; width: 100%; }
+        .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+        .btn-secondary { background: var(--btn-secondary-bg); color: var(--btn-secondary-text); }
+        .btn-secondary:hover:not(:disabled) { background: var(--btn-secondary-hover); }
+        .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
+        .form-section { margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border-light); }
+        .form-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .form-section h3 { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--text-secondary); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        th { text-align: left; padding: 0.5rem; color: var(--text-muted); font-weight: 500; border-bottom: 2px solid var(--border); }
+        td { padding: 0.5rem; border-bottom: 1px solid var(--border-light); }
+        .event-type { display: inline-block; padding: 0.125rem 0.5rem; border-radius: 1rem; font-size: 0.7rem; font-weight: 500; }
+        .event-MoneyDebited { background: var(--event-debit-bg); color: var(--event-debit-text); }
+        .event-MoneyCredited { background: var(--event-credit-bg); color: var(--event-credit-text); }
+        .detail-section { margin-top: 1.5rem; }
+        .notification { position: fixed; top: 1rem; right: 1rem; padding: 0.75rem 1rem; border-radius: 0.375rem; font-size: 0.85rem; z-index: 100; animation: fadeIn 0.2s; max-width: 400px; }
+        .notification.success { background: var(--notify-success-bg); color: var(--notify-success-text); border: 1px solid var(--notify-success-border); }
+        .notification.error { background: var(--notify-error-bg); color: var(--notify-error-text); border: 1px solid var(--notify-error-border); }
+        .notification.warn { background: var(--notify-warn-bg); color: var(--notify-warn-text); border: 1px solid var(--notify-warn-border); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-0.5rem); } to { opacity: 1; transform: translateY(0); } }
+        .empty { text-align: center; padding: 2rem; color: var(--text-dim); font-size: 0.85rem; }
+        .amount-neg { color: var(--red); }
+        .amount-pos { color: var(--green); }
+        .section-header { display: flex; justify-content: space-between; align-items: center; }
+        .result-box { margin-top: 0.75rem; padding: 0.75rem; background: var(--bg-hover); border-radius: 0.375rem; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem; }
+        .info-text { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.25rem; }
+        .inline-form { display: flex; gap: 0.5rem; align-items: flex-end; }
+        .inline-form > div { flex: 1; }
     </style>
 </head>
 <body>
@@ -526,7 +151,7 @@
     <div class="grid">
         <div class="card">
             <div class="section-header">
-                <h2>Accounts <span class="badge badge-info">projection</span></h2>
+                <h2>Accounts <span class="badge">projection</span></h2>
                 <button class="btn-secondary btn-sm" onclick="loadAccounts()">Refresh</button>
             </div>
             <div id="account-list"></div>
@@ -536,18 +161,8 @@
             <div class="form-section">
                 <h3>Open Account</h3>
                 <label for="new-name">Name</label>
-                <input id="new-name" onkeydown="if(event.key==='Enter')createAccount()" placeholder="Account holder name"
-                       type="text">
+                <input id="new-name" onkeydown="if(event.key==='Enter')createAccount()" placeholder="Account holder name" type="text">
                 <button class="btn-primary" onclick="createAccount()">Open Account</button>
-            </div>
-            <div class="form-section">
-                <h3>Deposit</h3>
-                <label for="deposit-account">Account</label>
-                <select id="deposit-account"></select>
-                <label for="deposit-amount">Amount</label>
-                <input id="deposit-amount" min="0" onkeydown="if(event.key==='Enter')deposit()" placeholder="0.00" step="0.01"
-                       type="number">
-                <button class="btn-primary" onclick="deposit()">Deposit</button>
             </div>
             <div class="form-section">
                 <h3>Transfer</h3>
@@ -556,26 +171,17 @@
                 <label for="transfer-to">To</label>
                 <select id="transfer-to"></select>
                 <label for="transfer-amount">Amount</label>
-                <input id="transfer-amount" min="0" onkeydown="if(event.key==='Enter')transfer()" placeholder="0.00" step="0.01"
-                       type="number">
+                <input id="transfer-amount" min="0" onkeydown="if(event.key==='Enter')transfer()" placeholder="0.00" step="0.01" type="number">
                 <button class="btn-primary" onclick="transfer()">Transfer</button>
             </div>
         </div>
     </div>
 
     <div class="detail-section">
-        <div class="grid">
-            <div class="card">
-                <h2 id="events-title">Event History</h2>
-                <div id="events-panel">
-                    <div class="empty">Select an account to view events</div>
-                </div>
-            </div>
-            <div class="card">
-                <h2 id="transfers-title">Transfers</h2>
-                <div id="transfers-panel">
-                    <div class="empty">Select an account to view transfers</div>
-                </div>
+        <div class="card">
+            <h2 id="events-title">Event History</h2>
+            <div id="events-panel">
+                <div class="empty">Select an account to view events</div>
             </div>
         </div>
     </div>
@@ -594,8 +200,7 @@
             </div>
             <div class="card">
                 <h2>Account Statement</h2>
-                <p class="info-text" style="margin-bottom:0.75rem">Generate a statement with running balances from
-                    events</p>
+                <p class="info-text" style="margin-bottom:0.75rem">Generate a statement with running balances from events</p>
                 <label for="statement-account">Account</label>
                 <select id="statement-account"></select>
                 <div class="inline-form">
@@ -613,22 +218,6 @@
             </div>
         </div>
     </div>
-
-    <div class="detail-section">
-        <div class="card">
-            <div class="section-header">
-                <h2>Projection Tasks</h2>
-                <div class="btn-group">
-                    <button class="btn-secondary btn-sm" onclick="loadTasks('all')">All</button>
-                    <button class="btn-secondary btn-sm" onclick="loadTasks('failed')">Failed</button>
-                    <button class="btn-secondary btn-sm" onclick="triggerProjectionRebuild()">Rebuild All</button>
-                </div>
-            </div>
-            <div id="tasks-panel">
-                <div class="empty">Loading...</div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <script>
@@ -638,16 +227,12 @@
 
     function showNotification(msg, type) {
         notificationCount++;
-        var offset = notificationCount;
         var el = document.createElement('div');
         el.className = 'notification ' + type;
         el.textContent = msg;
-        el.style.top = (offset * 0.5 + 0.5) + 'rem';
+        el.style.top = (notificationCount * 0.5 + 0.5) + 'rem';
         document.body.appendChild(el);
-        setTimeout(function () {
-            el.remove();
-            notificationCount--;
-        }, 4000);
+        setTimeout(function () { el.remove(); notificationCount--; }, 4000);
     }
 
     function fmt(n) {
@@ -655,8 +240,7 @@
     }
 
     function shortId(uuid) {
-        if (!uuid) return '';
-        return uuid.substring(0, 8);
+        return uuid ? uuid.substring(0, 8) : '';
     }
 
     function nameFor(id) {
@@ -669,11 +253,7 @@
     function formatTime(iso) {
         if (!iso) return '';
         var d = new Date(iso);
-        return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-        });
+        return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', second: '2-digit'});
     }
 
     function toLocalDatetime(date) {
@@ -683,61 +263,33 @@
     }
 
     function handleApiError(r) {
-        if (r.status === 409) {
-            return r.json().then(function (e) {
-                e._conflict = true;
-                throw e;
-            });
-        }
-        if (!r.ok) return r.json().then(function (e) {
-            throw e;
+        if (!r.ok) return r.text().then(function (t) {
+            try { var e = JSON.parse(t); throw e; } catch (ex) { if (ex.detail || ex.message) throw ex; throw {detail: t || 'Request failed'}; }
         });
         return r.json();
     }
 
     function showApiError(e, fallback) {
-        if (e._conflict) {
-            showNotification('Concurrent modification - please retry', 'warn');
-        } else {
-            showNotification(e.detail || fallback, 'error');
-        }
+        showNotification(e.detail || e.message || fallback, 'error');
     }
 
     function loadAccounts() {
-        fetch('/api/accounts')
-            .then(function (r) {
-                return r.json();
-            })
-            .then(function (data) {
-                accounts = data;
-                renderAccounts();
-                updateDropdowns();
-            })
-            .catch(function (e) {
-                console.error('Failed to load accounts', e);
-            });
+        fetch('/api/accounts').then(function (r) { return r.json(); })
+            .then(function (data) { accounts = data; renderAccounts(); updateDropdowns(); })
+            .catch(function (e) { console.error('Failed to load accounts', e); });
     }
 
     function renderAccounts() {
         var el = document.getElementById('account-list');
-        if (accounts.length === 0) {
-            el.innerHTML = '<div class="empty">No accounts yet</div>';
-            return;
-        }
+        if (accounts.length === 0) { el.innerHTML = '<div class="empty">No accounts yet</div>'; return; }
         var html = '';
         for (var i = 0; i < accounts.length; i++) {
             var a = accounts[i];
             var cls = a.id === selectedAccountId ? 'account-item selected' : 'account-item';
             html += '<div class="' + cls + '" onclick="selectAccount(\'' + a.id + '\')">' +
-                '<div>' +
-                '<div class="account-name">' + a.name + '</div>' +
-                '<div class="account-meta">' +
-                '<span>' + shortId(a.id) + '</span>' +
-                '<span>v' + a.version + '</span>' +
-                '</div>' +
-                '</div>' +
-                '<div class="account-balance">' + fmt(a.balance) + '</div>' +
-                '</div>';
+                '<div><div class="account-name">' + a.name + '</div>' +
+                '<div class="account-meta"><span>' + shortId(a.id) + '</span><span>v' + a.version + '</span></div></div>' +
+                '<div class="account-balance">' + fmt(a.balance) + '</div></div>';
         }
         el.innerHTML = html;
     }
@@ -748,7 +300,6 @@
             var a = accounts[i];
             html += '<option value="' + a.id + '">' + a.name + ' (' + fmt(a.balance) + ')</option>';
         }
-        document.getElementById('deposit-account').innerHTML = html;
         document.getElementById('transfer-from').innerHTML = html;
         document.getElementById('transfer-to').innerHTML = html;
         document.getElementById('temporal-account').innerHTML = html;
@@ -762,10 +313,7 @@
     function setDropdownValue(id, value) {
         var el = document.getElementById(id);
         for (var i = 0; i < el.options.length; i++) {
-            if (el.options[i].value === value) {
-                el.selectedIndex = i;
-                break;
-            }
+            if (el.options[i].value === value) { el.selectedIndex = i; break; }
         }
     }
 
@@ -774,50 +322,24 @@
         renderAccounts();
         setDropdownValue('temporal-account', id);
         setDropdownValue('statement-account', id);
-        var name = nameFor(id);
-        document.getElementById('events-title').textContent = 'Event History - ' + name;
-        document.getElementById('transfers-title').textContent = 'Transfers - ' + name;
+        document.getElementById('events-title').textContent = 'Event History - ' + nameFor(id);
         document.getElementById('events-panel').innerHTML = '<div class="empty">Loading...</div>';
-        document.getElementById('transfers-panel').innerHTML = '<div class="empty">Loading...</div>';
         fetch('/api/accounts/' + id + '/events')
-            .then(function (r) {
-                if (!r.ok) throw new Error('Status ' + r.status);
-                return r.json();
-            })
+            .then(function (r) { if (!r.ok) throw new Error('Status ' + r.status); return r.json(); })
             .then(renderEvents)
-            .catch(function (e) {
-                document.getElementById('events-panel').innerHTML = '<div class="empty">Error: ' + e.message + '</div>';
-            });
-        fetch('/api/transactions/account/' + id)
-            .then(function (r) {
-                if (!r.ok) throw new Error('Status ' + r.status);
-                return r.json();
-            })
-            .then(renderTransfers)
-            .catch(function (e) {
-                document.getElementById('transfers-panel').innerHTML = '<div class="empty">Error: ' + e.message + '</div>';
-            });
+            .catch(function (e) { document.getElementById('events-panel').innerHTML = '<div class="empty">Error: ' + e.message + '</div>'; });
     }
 
     function renderEvents(events) {
         var el = document.getElementById('events-panel');
-        if (!events || events.length === 0) {
-            el.innerHTML = '<div class="empty">No events</div>';
-            return;
-        }
+        if (!events || events.length === 0) { el.innerHTML = '<div class="empty">No events</div>'; return; }
         var rows = '';
         var balance = 0;
         for (var i = 0; i < events.length; i++) {
             var e = events[i];
             var type = e['@type'] || 'Unknown';
             var detail = '';
-            if (type === 'AccountOpened') {
-                balance = 0;
-                detail = '<span class="event-type event-AccountOpened">' + type + '</span> ' + e.name;
-            } else if (type === 'MoneyDeposited') {
-                balance += Number(e.amount);
-                detail = '<span class="event-type event-MoneyDeposited">' + type + '</span> <span class="amount-pos">+' + fmt(e.amount) + '</span>';
-            } else if (type === 'MoneyDebited') {
+            if (type === 'MoneyDebited') {
                 balance -= Number(e.amount);
                 detail = '<span class="event-type event-MoneyDebited">' + type + '</span> <span class="amount-neg">-' + fmt(e.amount) + '</span> <span style="color:var(--text-dim);font-size:0.7rem">txn ' + shortId(e.transactionId) + '</span>';
             } else if (type === 'MoneyCredited') {
@@ -831,70 +353,10 @@
         el.innerHTML = '<table><thead><tr><th>When</th><th>Event</th><th style="text-align:right">Balance</th></tr></thead><tbody>' + rows + '</tbody></table>';
     }
 
-    function renderTransfers(transfers) {
-        var el = document.getElementById('transfers-panel');
-        if (!transfers || transfers.length === 0) {
-            el.innerHTML = '<div class="empty">No transfers</div>';
-            return;
-        }
-        var rows = '';
-        for (var i = 0; i < transfers.length; i++) {
-            var t = transfers[i];
-            var isOutgoing = t.fromAccountId === selectedAccountId;
-            var amtClass = isOutgoing ? 'amount-neg' : 'amount-pos';
-            var sign = isOutgoing ? '-' : '+';
-            rows += '<tr>' +
-                '<td>' + nameFor(t.fromAccountId) + '</td>' +
-                '<td>' + nameFor(t.toAccountId) + '</td>' +
-                '<td class="' + amtClass + '">' + sign + fmt(t.amount) + '</td>' +
-                '<td style="color:var(--text-dim);font-size:0.7rem;font-family:monospace">' + shortId(t.transactionId) + '</td>' +
-                '<td>' + formatTime(t.occurredAt) + '</td>' +
-                '</tr>';
-        }
-        el.innerHTML = '<table><thead><tr><th>From</th><th>To</th><th>Amount</th><th>Txn</th><th>When</th></tr></thead><tbody>' + rows + '</tbody></table>';
-    }
-
-    function loadTasks(filter) {
-        var url = filter === 'failed' ? '/api/tasks/failed' : '/api/tasks';
-        fetch(url)
-            .then(function (r) {
-                return r.json();
-            })
-            .then(function (tasks) {
-                var el = document.getElementById('tasks-panel');
-                if (!tasks || tasks.length === 0) {
-                    el.innerHTML = '<div class="empty">No ' + (filter === 'failed' ? 'failed ' : '') + 'tasks</div>';
-                    return;
-                }
-                var rows = '';
-                var limit = Math.min(tasks.length, 30);
-                for (var i = 0; i < limit; i++) {
-                    var t = tasks[i];
-                    rows += '<tr>' +
-                        '<td><span class="status status-' + t.status + '">' + t.status + '</span></td>' +
-                        '<td>' + t.taskType + '</td>' +
-                        '<td>' + formatTime(t.scheduledAt) + '</td>' +
-                        '<td>' + (t.completedAt ? formatTime(t.completedAt) : '') + '</td>' +
-                        '<td style="color:var(--red);font-size:0.75rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + (t.errorMessage || '').replace(/"/g, '&quot;') + '">' + (t.errorMessage || '') + '</td>' +
-                        '</tr>';
-                }
-                if (tasks.length > limit) {
-                    rows += '<tr><td colspan="5" style="text-align:center;color:var(--text-dim)">...and ' + (tasks.length - limit) + ' more</td></tr>';
-                }
-                el.innerHTML = '<table><thead><tr><th>Status</th><th>Type</th><th>Scheduled</th><th>Completed</th><th>Error</th></tr></thead><tbody>' + rows + '</tbody></table>';
-            })
-            .catch(function (e) {
-                console.error('Failed to load tasks', e);
-            });
-    }
-
     function createAccount() {
         var name = document.getElementById('new-name').value.trim();
-        if (!name) {
-            showNotification('Name is required', 'error');
-            return;
-        }
-        fetch('/api/v2/accounts', {
+        if (!name) { showNotification('Name is required', 'error'); return; }
+        fetch('/api/accounts', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({name: name})
@@ -902,104 +364,45 @@
             .then(handleApiError)
             .then(function (account) {
                 document.getElementById('new-name').value = '';
-                showNotification('Account "' + account.name + '" created (v' + account.version + ')', 'success');
+                showNotification('Account "' + account.name + '" created', 'success');
                 refreshAfterMutation();
             })
-            .catch(function (e) {
-                showApiError(e, 'Failed to create account');
-            });
-    }
-
-    function deposit() {
-        var id = document.getElementById('deposit-account').value;
-        var amount = parseFloat(document.getElementById('deposit-amount').value);
-        if (!id || !amount || amount <= 0) {
-            showNotification('Select account and enter amount', 'error');
-            return;
-        }
-        fetch('/api/accounts/' + id + '/deposit', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(amount)
-        })
-            .then(handleApiError)
-            .then(function (account) {
-                document.getElementById('deposit-amount').value = '';
-                showNotification(account.name + ': deposited ' + fmt(amount) + ' (balance: ' + fmt(account.balance) + ')', 'success');
-                refreshAfterMutation();
-            })
-            .catch(function (e) {
-                showApiError(e, 'Deposit failed');
-            });
+            .catch(function (e) { showApiError(e, 'Failed to create account'); });
     }
 
     function transfer() {
         var from = document.getElementById('transfer-from').value;
         var to = document.getElementById('transfer-to').value;
         var amount = parseFloat(document.getElementById('transfer-amount').value);
-        if (!from || !to || from === to) {
-            showNotification('Select different accounts', 'error');
-            return;
-        }
-        if (!amount || amount <= 0) {
-            showNotification('Enter a valid amount', 'error');
-            return;
-        }
+        if (!from || !to || from === to) { showNotification('Select different accounts', 'error'); return; }
+        if (!amount || amount <= 0) { showNotification('Enter a valid amount', 'error'); return; }
         fetch('/api/transactions', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({fromAccountId: from, toAccountId: to, amount: amount})
         })
             .then(handleApiError)
-            .then(function (account) {
+            .then(function () {
                 document.getElementById('transfer-amount').value = '';
                 showNotification('Transferred ' + fmt(amount) + ': ' + nameFor(from) + ' -> ' + nameFor(to), 'success');
                 refreshAfterMutation();
             })
-            .catch(function (e) {
-                showApiError(e, 'Transfer failed');
-            });
+            .catch(function (e) { showApiError(e, 'Transfer failed'); });
     }
 
     function refreshAfterMutation() {
-        setTimeout(loadAccounts, 300);
-        setTimeout(loadAccounts, 1500);
+        setTimeout(loadAccounts, 500);
+        setTimeout(loadAccounts, 2000);
         if (selectedAccountId) {
-            setTimeout(function () {
-                selectAccount(selectedAccountId);
-            }, 300);
+            setTimeout(function () { selectAccount(selectedAccountId); }, 500);
         }
-    }
-
-    function triggerProjectionRebuild() {
-        fetch('/api/tasks/projection-rebuild', {method: 'POST'})
-            .then(function (r) {
-                if (!r.ok) throw new Error('Status ' + r.status);
-                showNotification('Projection rebuild scheduled for all aggregates', 'success');
-                setTimeout(function () {
-                    loadTasks('all');
-                }, 2000);
-                setTimeout(function () {
-                    loadTasks('all');
-                    loadAccounts();
-                }, 5000);
-            })
-            .catch(function () {
-                showNotification('Failed to trigger rebuild', 'error');
-            });
     }
 
     function queryBalanceAsOf() {
         var id = document.getElementById('temporal-account').value;
         var dateStr = document.getElementById('temporal-date').value;
-        if (!id) {
-            showNotification('Select an account', 'error');
-            return;
-        }
-        if (!dateStr) {
-            showNotification('Select a date/time', 'error');
-            return;
-        }
+        if (!id) { showNotification('Select an account', 'error'); return; }
+        if (!dateStr) { showNotification('Select a date/time', 'error'); return; }
         var asOf = new Date(dateStr).toISOString();
         var resultEl = document.getElementById('temporal-result');
         resultEl.innerHTML = '<div class="result-box" style="color:var(--text-dim)">Replaying events...</div>';
@@ -1009,27 +412,17 @@
                 resultEl.innerHTML =
                     '<div class="result-box">' +
                     '<div class="summary-row"><span>' + account.name + '</span><span class="account-balance">' + fmt(account.balance) + '</span></div>' +
-                    '<div class="info-text">Balance as of ' + formatTime(asOf) + ' (replayed ' + account.version + ' events)</div>' +
-                    '</div>';
+                    '<div class="info-text">Balance as of ' + formatTime(asOf) + ' (replayed ' + account.version + ' events)</div></div>';
             })
-            .catch(function (e) {
-                resultEl.innerHTML = '';
-                showApiError(e, 'Time travel query failed');
-            });
+            .catch(function (e) { resultEl.innerHTML = ''; showApiError(e, 'Time travel query failed'); });
     }
 
     function queryStatement() {
         var id = document.getElementById('statement-account').value;
         var fromStr = document.getElementById('statement-from').value;
         var toStr = document.getElementById('statement-to').value;
-        if (!id) {
-            showNotification('Select an account', 'error');
-            return;
-        }
-        if (!fromStr || !toStr) {
-            showNotification('Select a date range', 'error');
-            return;
-        }
+        if (!id) { showNotification('Select an account', 'error'); return; }
+        if (!fromStr || !toStr) { showNotification('Select a date range', 'error'); return; }
         var from = new Date(fromStr).toISOString();
         var to = new Date(toStr).toISOString();
         var resultEl = document.getElementById('statement-result');
@@ -1050,9 +443,7 @@
                     html += '<table style="border:1px solid var(--border);border-top:none"><thead><tr><th>When</th><th>Description</th><th style="text-align:right">Debit</th><th style="text-align:right">Credit</th><th style="text-align:right">Balance</th></tr></thead><tbody>';
                     for (var i = 0; i < stmt.entries.length; i++) {
                         var e = stmt.entries[i];
-                        html += '<tr>' +
-                            '<td>' + formatTime(e.occurredAt) + '</td>' +
-                            '<td>' + e.description + '</td>' +
+                        html += '<tr><td>' + formatTime(e.occurredAt) + '</td><td>' + e.description + '</td>' +
                             '<td style="text-align:right" class="amount-neg">' + (e.debit > 0 ? fmt(e.debit) : '') + '</td>' +
                             '<td style="text-align:right" class="amount-pos">' + (e.credit > 0 ? fmt(e.credit) : '') + '</td>' +
                             '<td style="text-align:right;font-family:monospace">' + fmt(e.runningBalance) + '</td></tr>';
@@ -1063,10 +454,7 @@
                 html += '</div>';
                 resultEl.innerHTML = html;
             })
-            .catch(function (e) {
-                resultEl.innerHTML = '';
-                showApiError(e, 'Statement generation failed');
-            });
+            .catch(function (e) { resultEl.innerHTML = ''; showApiError(e, 'Statement generation failed'); });
     }
 
     function initDateDefaults() {
@@ -1078,7 +466,6 @@
     }
 
     loadAccounts();
-    loadTasks('all');
     initDateDefaults();
 </script>
 </body>
