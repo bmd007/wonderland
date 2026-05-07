@@ -29,7 +29,7 @@ public class EventStore {
             .sorted()
             .toList();
         jdbcClient.sql("""
-                INSERT INTO domain_events (id, aggregate_id, event_type, aggregate_version, payload)
+                INSERT INTO domain_events (id, aggregate_id, event_type, at_aggregate_version, payload)
                 SELECT * FROM unnest(
                     :ids::uuid[],
                     :aggregateIds::uuid[],
@@ -50,7 +50,7 @@ public class EventStore {
         return jdbcClient.sql("""
                 SELECT event_type, payload::text FROM domain_events
                 WHERE aggregate_id = :aggregateId AND created_at <= :asOf
-                ORDER BY aggregate_version
+                ORDER BY at_aggregate_version
                 """)
             .param("aggregateId", aggregateId)
             .param("asOf", Timestamp.from(asOf))
@@ -62,7 +62,7 @@ public class EventStore {
         return jdbcClient.sql("""
                 SELECT event_type, payload::text FROM domain_events
                 WHERE aggregate_id = :aggregateId AND created_at > :from AND created_at <= :to
-                ORDER BY aggregate_version
+                ORDER BY at_aggregate_version
                 """)
             .param("aggregateId", aggregateId)
             .param("from", Timestamp.from(from))
@@ -91,7 +91,7 @@ public class EventStore {
         return jdbcClient.sql("""
                 SELECT event_type, payload::text FROM domain_events
                 WHERE aggregate_id = :aggregateId
-                ORDER BY version
+                ORDER BY at_aggregate_version
                 """)
             .param("aggregateId", aggregateId)
             .query((rs, _) -> deserialize(rs.getString("event_type"), rs.getString("payload")))

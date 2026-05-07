@@ -15,15 +15,17 @@ public record Account(UUID id, String name, BigDecimal balance, long version, In
     public SuccessOrFailure apply(DomainEvent accountEvent) {
         return switch (accountEvent) {
             case AccountEvent.MoneyCredited credited -> {
-                var account = withBalance(balance.add(credited.amount()));
-                yield SuccessOrFailure.done(account, credited);
+                var updated = withBalance(balance.add(credited.amount()))
+                    .withVersion(credited.atAccountVersion() + 1);
+                yield SuccessOrFailure.done(updated, credited);
             }
             case AccountEvent.MoneyDebited debited -> {
                 if (balance.compareTo(debited.amount()) < 0) {
                     yield SuccessOrFailure.notEnoughMoney(this, debited);
                 }
-                var account = withBalance(balance.subtract(debited.amount()));
-                yield SuccessOrFailure.done(account, debited);
+                var updated = withBalance(balance.subtract(debited.amount()))
+                    .withVersion(debited.atAccountVersion() + 1);
+                yield SuccessOrFailure.done(updated, debited);
             }
             default -> throw new IllegalStateException("Unexpected value: " + accountEvent);
         };

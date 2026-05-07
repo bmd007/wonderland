@@ -36,7 +36,7 @@ public class EventConsumer {
         EventStore eventStore,
         AccountRepository accountRepository,
         TransactionTemplate transactionTemplate,
-        @Value("${POD_ID:default}") String podId
+        @Value("${POD_ID:pod1}") String podId
     ) {
         this.jdbc = jdbc;
         this.dataSource = dataSource;

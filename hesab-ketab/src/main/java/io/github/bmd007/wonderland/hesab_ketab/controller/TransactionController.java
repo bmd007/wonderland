@@ -6,6 +6,7 @@ import io.github.bmd007.wonderland.hesab_ketab.repository.AccountRepository;
 import io.github.bmd007.wonderland.hesab_ketab.repository.EventStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,10 +21,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TransactionController {
 
-    EventStore eventStore;
-    AccountRepository accountRepository;
+    private final EventStore eventStore;
+    private final AccountRepository accountRepository;
 
-    //todo transaction?!
+    @Transactional
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UUID transfer(@RequestBody TransferRequest request) {
@@ -33,10 +34,11 @@ public class TransactionController {
         }
         var to = accountRepository.findById(request.toAccountId()).orElseThrow();
         var transactionId = UUID.randomUUID();
+        var now = Instant.now();
         var withdrawEvent = AccountEvent.MoneyDebited.builder()
             .atAccountVersion(from.version())
             .transactionId(transactionId)
-            .occurredAt(Instant.now())
+            .occurredAt(now)
             .amount(request.amount())
             .accountId(from.id())
             .id(UUID.randomUUID())
@@ -44,7 +46,7 @@ public class TransactionController {
         var depositEvent = AccountEvent.MoneyCredited.builder()
             .atAccountVersion(to.version())
             .transactionId(transactionId)
-            .occurredAt(Instant.now())
+            .occurredAt(now)
             .amount(request.amount())
             .id(UUID.randomUUID())
             .accountId(to.id())

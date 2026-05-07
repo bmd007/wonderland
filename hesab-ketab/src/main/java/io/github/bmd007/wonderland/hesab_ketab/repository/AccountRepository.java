@@ -21,7 +21,7 @@ public class AccountRepository {
                 VALUES (:id, :name, :balance, :version)
                 ON CONFLICT (id) DO UPDATE
                 SET balance = :balance, version = :version
-                WHERE accounts.version < :version
+                WHERE accounts.version = :version - 1
                 """)
             .param("id", snapshot.id())
             .param("name", snapshot.name())
