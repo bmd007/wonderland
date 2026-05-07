@@ -179,7 +179,13 @@
 
     <div class="detail-section">
         <div class="card">
-            <h2 id="events-title">Event History</h2>
+            <div class="section-header">
+                <h2 id="events-title">Event History</h2>
+            </div>
+            <label for="events-account">Account</label>
+            <select id="events-account" onchange="selectAccount(this.value)">
+                <option value="">Select an account</option>
+            </select>
             <div id="events-panel">
                 <div class="empty">Select an account to view events</div>
             </div>
@@ -304,6 +310,7 @@
         document.getElementById('transfer-to').innerHTML = html;
         document.getElementById('temporal-account').innerHTML = html;
         document.getElementById('statement-account').innerHTML = html;
+        document.getElementById('events-account').innerHTML = '<option value="">Select an account</option>' + html;
         if (selectedAccountId) {
             setDropdownValue('temporal-account', selectedAccountId);
             setDropdownValue('statement-account', selectedAccountId);
@@ -318,10 +325,12 @@
     }
 
     function selectAccount(id) {
+        if (!id) return;
         selectedAccountId = id;
         renderAccounts();
         setDropdownValue('temporal-account', id);
         setDropdownValue('statement-account', id);
+        setDropdownValue('events-account', id);
         document.getElementById('events-title').textContent = 'Event History - ' + nameFor(id);
         document.getElementById('events-panel').innerHTML = '<div class="empty">Loading...</div>';
         fetch('/api/accounts/' + id + '/events')

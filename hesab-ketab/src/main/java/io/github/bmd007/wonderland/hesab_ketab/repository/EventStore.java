@@ -25,25 +25,18 @@ public class EventStore {
     private final ObjectMapper objectMapper;
 
     public void append(DomainEvent... events) {
-        var sorted = Arrays.stream(events)
+        Arrays.stream(events)
             .sorted()
-            .toList();
-        jdbcClient.sql("""
-                INSERT INTO domain_events (id, aggregate_id, event_type, at_aggregate_version, payload)
-                SELECT * FROM unnest(
-                    :ids::uuid[],
-                    :aggregateIds::uuid[],
-                    :eventTypes::text[],
-                    :aggregateVersions::int[],
-                    :payloads::jsonb
-                )
-                """)
-            .param("ids", sorted.stream().map(DomainEvent::id).toArray(UUID[]::new))
-            .param("aggregateIds", sorted.stream().map(DomainEvent::aggregateId).toArray(UUID[]::new))
-            .param("aggregateVersions", sorted.stream().mapToLong(DomainEvent::atAggregateVersion).toArray())
-            .param("eventTypes", sorted.stream().map(DomainEvent::type).toArray(String[]::new))
-            .param("payloads", sorted.stream().map(this::serialize).toArray(String[]::new))
-            .update();
+            .forEach(event -> jdbcClient.sql("""
+                    INSERT INTO domain_events (id, aggregate_id, event_type, at_aggregate_version, payload)
+                    VALUES (:id, :aggregateId, :eventType, :atAggregateVersion, :payload::jsonb)
+                    """)
+                .param("id", event.id())
+                .param("aggregateId", event.aggregateId())
+                .param("eventType", event.type())
+                .param("atAggregateVersion", event.atAggregateVersion())
+                .param("payload", serialize(event))
+                .update());
     }
 
     public List<DomainEvent> loadEventsUpTo(UUID aggregateId, Instant asOf) {
