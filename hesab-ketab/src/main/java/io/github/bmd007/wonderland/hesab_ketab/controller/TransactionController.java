@@ -1,37 +1,55 @@
 package io.github.bmd007.wonderland.hesab_ketab.controller;
 
-import io.github.bmd007.wonderland.hesab_ketab.domain.Account;
-import io.github.bmd007.wonderland.hesab_ketab.domain.CreateTransactionRequest;
-import io.github.bmd007.wonderland.hesab_ketab.domain.TransferRecord;
-import io.github.bmd007.wonderland.hesab_ketab.service.LedgerService;
+import io.github.bmd007.wonderland.hesab_ketab.domain.AccountEvent;
+import io.github.bmd007.wonderland.hesab_ketab.dto.TransferRequest;
+import io.github.bmd007.wonderland.hesab_ketab.repository.AccountRepository;
+import io.github.bmd007.wonderland.hesab_ketab.repository.EventStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.time.Instant;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/transactions")
+@RequestMapping("/api/v2/transactions")
 @RequiredArgsConstructor
 public class TransactionController {
 
-    private final LedgerService ledgerService;
+    EventStore eventStore;
+    AccountRepository accountRepository;
 
+    //todo transaction?!
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Account transfer(@RequestBody CreateTransactionRequest request) {
-        return ledgerService.transfer(request);
-    }
-
-    @GetMapping("/account/{accountId}")
-    public List<TransferRecord> findByAccountId(@PathVariable UUID accountId) {
-        return ledgerService.findTransfersForAccount(accountId);
+    public UUID transfer(@RequestBody TransferRequest request) {
+        var from = accountRepository.findById(request.fromAccountId()).orElseThrow();
+        if (from.balance().compareTo(request.amount()) < 0) {
+            throw new IllegalArgumentException("not enough money");
+        }
+        var to = accountRepository.findById(request.toAccountId()).orElseThrow();
+        var transactionId = UUID.randomUUID();
+        var withdrawEvent = AccountEvent.MoneyDebited.builder()
+            .atAccountVersion(from.version())
+            .transactionId(transactionId)
+            .occurredAt(Instant.now())
+            .amount(request.amount())
+            .accountId(from.id())
+            .id(UUID.randomUUID())
+            .build();
+        var depositEvent = AccountEvent.MoneyCredited.builder()
+            .atAccountVersion(to.version())
+            .transactionId(transactionId)
+            .occurredAt(Instant.now())
+            .amount(request.amount())
+            .id(UUID.randomUUID())
+            .accountId(to.id())
+            .build();
+        eventStore.append(withdrawEvent, depositEvent);
+        return transactionId;
     }
 }

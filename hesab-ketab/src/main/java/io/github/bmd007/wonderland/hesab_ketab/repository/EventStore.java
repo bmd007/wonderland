@@ -2,10 +2,9 @@ package io.github.bmd007.wonderland.hesab_ketab.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.bmd007.wonderland.hesab_ketab.domain.AccountEvent;
-import io.github.bmd007.wonderland.hesab_ketab.domain.LedgerException;
-import io.github.bmd007.wonderland.hesab_ketab.domain.TransferRecord;
+import io.github.bmd007.wonderland.hesab_ketab.domain.DomainEvent;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DuplicateKeyException;
+import lombok.SneakyThrows;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
@@ -13,42 +12,91 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
 public class EventStore {
 
-    private final JdbcClient jdbc;
+    private final JdbcClient jdbcClient;
     private final ObjectMapper objectMapper;
 
-    //todo do we need to sort events by time before going through them and insert?
-    //todo what happens when two different threads/nodes call this on the same aggregateId with different events?
-    //  can that happen at all?
-    public void append(UUID aggregateId, List<AccountEvent> events, long expectedVersion) {
-        long version = expectedVersion;
-        try {
-            for (var event : events) {
-                version++;
-                jdbc.sql("""
-                        INSERT INTO domain_events (id, aggregate_id, event_type, payload, version)
-                        VALUES (:id, :aggregateId, :eventType, :payload::jsonb, :version)
-                        """)
-                    .param("id", UUID.randomUUID())//todo why don't we have this inside the domainEvents? factory methods
-                    .param("aggregateId", aggregateId)
-                    .param("eventType", event.getClass().getSimpleName())
-                    .param("payload", serialize(event))
-                    .param("version", version)
-                    .update();
-            }
-        } catch (DuplicateKeyException e) {
-            throw new LedgerException.ConcurrencyConflict(aggregateId);
-        }
+    public void append(DomainEvent... events) {
+        var sorted = Arrays.stream(events)
+            .sorted()
+            .toList();
+        jdbcClient.sql("""
+                INSERT INTO domain_events (id, aggregate_id, event_type, aggregate_version, payload)
+                SELECT * FROM unnest(
+                    :ids::uuid[],
+                    :aggregateIds::uuid[],
+                    :eventTypes::text[],
+                    :aggregateVersions::int[],
+                    :payloads::jsonb
+                )
+                """)
+            .param("ids", sorted.stream().map(DomainEvent::id).toArray(UUID[]::new))
+            .param("aggregateIds", sorted.stream().map(DomainEvent::aggregateId).toArray(UUID[]::new))
+            .param("aggregateVersions", sorted.stream().mapToLong(DomainEvent::atAggregateVersion).toArray())
+            .param("eventTypes", sorted.stream().map(DomainEvent::type).toArray(String[]::new))
+            .param("payloads", sorted.stream().map(this::serialize).toArray(String[]::new))
+            .update();
     }
 
-    public List<AccountEvent> loadEvents(UUID aggregateId) {
-        return jdbc.sql("""
+    public List<DomainEvent> loadEventsUpTo(UUID aggregateId, Instant asOf) {
+        return jdbcClient.sql("""
+                SELECT event_type, payload::text FROM domain_events
+                WHERE aggregate_id = :aggregateId AND created_at <= :asOf
+                ORDER BY aggregate_version
+                """)
+            .param("aggregateId", aggregateId)
+            .param("asOf", Timestamp.from(asOf))
+            .query((rs, _) -> deserialize(rs.getString("event_type"), rs.getString("payload")))
+            .list();
+    }
+
+    public List<DomainEvent> loadEventsBetween(UUID aggregateId, Instant from, Instant to) {
+        return jdbcClient.sql("""
+                SELECT event_type, payload::text FROM domain_events
+                WHERE aggregate_id = :aggregateId AND created_at > :from AND created_at <= :to
+                ORDER BY aggregate_version
+                """)
+            .param("aggregateId", aggregateId)
+            .param("from", Timestamp.from(from))
+            .param("to", Timestamp.from(to))
+            .query((rs, _) -> deserialize(rs.getString("event_type"), rs.getString("payload")))
+            .list();
+    }
+
+    //todo don't we need select for update skip to next?
+    //todo this should return the actual DomainEvents.
+    public LinkedHashMap<UUID, List<FetchedDomainEvent>> loadUnprocessedEvents(String consumerName) {
+        return jdbcClient.sql("""
+                SELECT event_type, payload::text, sequence_number
+                FROM domain_events
+                WHERE sequence_number > COALESCE((SELECT last_sequence FROM event_consumer_offsets WHERE consumer_name = :name), 0)
+                ORDER BY aggregate_id, sequence_number
+                """)
+            .param("name", consumerName)
+            .query((rs, _) -> {
+                var event = deserialize(rs.getString("event_type"), rs.getString("payload"));
+                return new FetchedDomainEvent(event, rs.getLong("sequence_number"));
+            })
+            .list()
+            .stream()
+            .collect(Collectors.groupingBy(
+                fetchedDomainEvent -> fetchedDomainEvent.domainEvent().aggregateId(),
+                LinkedHashMap::new,
+                Collectors.toList()
+            ));
+    }
+
+    public List<DomainEvent> loadEvents(UUID aggregateId) {
+        return jdbcClient.sql("""
                 SELECT event_type, payload::text FROM domain_events
                 WHERE aggregate_id = :aggregateId
                 ORDER BY version
@@ -58,83 +106,14 @@ public class EventStore {
             .list();
     }
 
-    public List<AccountEvent> loadEventsUpTo(UUID aggregateId, Instant asOf) {
-        return jdbc.sql("""
-                SELECT event_type, payload::text FROM domain_events
-                WHERE aggregate_id = :aggregateId AND created_at <= :asOf
-                ORDER BY version
-                """)
-            .param("aggregateId", aggregateId)
-            .param("asOf", Timestamp.from(asOf))
-            .query((rs, _) -> deserialize(rs.getString("event_type"), rs.getString("payload")))
-            .list();
+    @SneakyThrows
+    private String serialize(DomainEvent event) {
+        return objectMapper.writeValueAsString(event);
     }
 
-    public List<AccountEvent> loadEventsBetween(UUID aggregateId, Instant from, Instant to) {
-        return jdbc.sql("""
-                SELECT event_type, payload::text FROM domain_events
-                WHERE aggregate_id = :aggregateId AND created_at > :from AND created_at <= :to
-                ORDER BY version
-                """)
-            .param("aggregateId", aggregateId)
-            .param("from", Timestamp.from(from))
-            .param("to", Timestamp.from(to))
-            .query((rs, _) -> deserialize(rs.getString("event_type"), rs.getString("payload")))
-            .list();
-    }
-
-    public List<UUID> findAllAggregateIds() {
-        return jdbc.sql("SELECT DISTINCT aggregate_id FROM domain_events")
-            .query(UUID.class)
-            .list();
-    }
-
-    public List<StoredEvent> loadUnprocessedEvents(long afterSequence) {
-        return jdbc.sql("""
-                SELECT sequence_number, aggregate_id, event_type
-                FROM domain_events
-                WHERE sequence_number > :afterSequence
-                ORDER BY sequence_number
-                """)
-            .param("afterSequence", afterSequence)
-            .query(StoredEvent.class)
-            .list();
-    }
-
-    public List<TransferRecord> findTransfersForAccount(UUID accountId) {
-        return jdbc.sql("""
-                SELECT
-                    (debit.payload->>'transactionId')::uuid as transaction_id,
-                    debit.aggregate_id as from_account_id,
-                    credit.aggregate_id as to_account_id,
-                    (debit.payload->>'amount')::numeric as amount,
-                    debit.created_at as occurred_at
-                FROM domain_events debit
-                JOIN domain_events credit
-                    ON debit.payload->>'transactionId' = credit.payload->>'transactionId'
-                    AND credit.event_type = 'MoneyCredited'
-                WHERE debit.event_type = 'MoneyDebited'
-                    AND (debit.aggregate_id = :accountId OR credit.aggregate_id = :accountId)
-                ORDER BY debit.created_at DESC
-                """)
-            .param("accountId", accountId)
-            .query(TransferRecord.class)
-            .list();
-    }
-
-    private String serialize(AccountEvent event) {
-        try {
-            return objectMapper.writeValueAsString(event);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
-    private AccountEvent deserialize(String eventType, String payload) {
+    private DomainEvent deserialize(String eventType, String payload) {
         try {
             Class<? extends AccountEvent> clazz = switch (eventType) {
-                case "AccountOpened" -> AccountEvent.AccountOpened.class;
-                case "MoneyDeposited" -> AccountEvent.MoneyDeposited.class;
                 case "MoneyDebited" -> AccountEvent.MoneyDebited.class;
                 case "MoneyCredited" -> AccountEvent.MoneyCredited.class;
                 default -> throw new IllegalArgumentException("Unknown event type: " + eventType);
@@ -145,6 +124,6 @@ public class EventStore {
         }
     }
 
-    public record StoredEvent(long sequenceNumber, UUID aggregateId, String eventType) {
+    public record FetchedDomainEvent(DomainEvent domainEvent, long sequenceNumber) {
     }
 }

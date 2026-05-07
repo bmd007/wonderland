@@ -7,7 +7,39 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
-@Builder
 @With
+@Builder
 public record Account(UUID id, String name, BigDecimal balance, long version, Instant createdAt) {
+
+    //check expectedVersion
+    public SuccessOrFailure apply(DomainEvent accountEvent) {
+        return switch (accountEvent) {
+            case AccountEvent.MoneyCredited credited -> {
+                var account = withBalance(balance.add(credited.amount()));
+                yield SuccessOrFailure.done(account, credited);
+            }
+            case AccountEvent.MoneyDebited debited -> {
+                if (balance.compareTo(debited.amount()) < 0) {
+                    yield SuccessOrFailure.notEnoughMoney(this, debited);
+                }
+                var account = withBalance(balance.subtract(debited.amount()));
+                yield SuccessOrFailure.done(account, debited);
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + accountEvent);
+        };
+    }
+
+    public record SuccessOrFailure(Account finalState, boolean succeed, AccountEvent event, String reason) {
+        public static SuccessOrFailure notEnoughMoney(Account finalState, AccountEvent event) {
+            return new SuccessOrFailure(finalState, false, event, "Not Enough Money");
+        }
+
+        public static SuccessOrFailure done(Account finalState, AccountEvent event) {
+            return new SuccessOrFailure(finalState, true, event, null);
+        }
+
+        public static SuccessOrFailure empty(Account account) {
+            return new SuccessOrFailure(account, true, null, null);
+        }
+    }
 }

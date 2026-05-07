@@ -1,35 +1,54 @@
 package io.github.bmd007.wonderland.hesab_ketab.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
+import lombok.With;
+import lombok.extern.jackson.Jacksonized;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
-public sealed interface AccountEvent {
+public sealed interface AccountEvent
+    extends DomainEvent
+    permits AccountEvent.MoneyCredited, AccountEvent.MoneyDebited {
 
-    UUID accountId();
+    @With
+    @Builder
+    @Jacksonized
+    record MoneyDebited(UUID accountId,
+                        BigDecimal amount,
+                        UUID transactionId,
+                        Instant occurredAt,
+                        long atAccountVersion,
+                        UUID id) implements AccountEvent {
+        @Override
+        public UUID aggregateId() {
+            return accountId;
+        }
 
-    Instant occurredAt();
-
-    @JsonProperty("@type")
-    default String eventType() {
-        return getClass().getSimpleName();
+        @Override
+        public long atAggregateVersion() {
+            return atAccountVersion;
+        }
     }
 
-    record AccountOpened(UUID accountId, String name, Instant occurredAt)
-        implements AccountEvent {
-    }
+    @With
+    @Builder
+    @Jacksonized
+    record MoneyCredited(UUID accountId,
+                         BigDecimal amount,
+                         UUID transactionId,
+                         Instant occurredAt,
+                         long atAccountVersion,
+                         UUID id) implements AccountEvent {
+        @Override
+        public UUID aggregateId() {
+            return accountId;
+        }
 
-    record MoneyDeposited(UUID accountId, BigDecimal amount, Instant occurredAt)
-        implements AccountEvent {
-    }
-
-    record MoneyDebited(UUID accountId, BigDecimal amount, UUID transactionId, Instant occurredAt)
-        implements AccountEvent {
-    }
-
-    record MoneyCredited(UUID accountId, BigDecimal amount, UUID transactionId, Instant occurredAt)
-        implements AccountEvent {
+        @Override
+        public long atAggregateVersion() {
+            return atAccountVersion;
+        }
     }
 }
