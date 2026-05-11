@@ -199,6 +199,22 @@ Offsets can be specified as either a numeric sequence or a timestamp.
 
 Consumer offsets are updated on every event — high write frequency, low durability requirement (you can always replay from the event store). Redis handles this write pattern more efficiently than Postgres. The event store itself provides durability; the offset is just a cursor.
 
+#### What If Redis Loses All Offset Data?
+
+The answer is surprisingly benign: **no event data is lost**. Events remain intact in PostgreSQL's durable, append-only event store. The consumer simply doesn't know where it left off — it must re-process events from the beginning or from a known timestamp.
+
+This is a **liveness/efficiency** problem, not a **correctness/durability** problem, because:
+
+1. Events are the source of truth (in durable Postgres, replicated, backed up).
+2. Consumers are idempotent — reprocessing the same event produces the same result.
+3. Consumers can resume from a timestamp rather than replaying everything (e.g., `WHERE created_at >= :last_known_healthy_time - :safety_margin`).
+
+This is why Revolut explicitly treats offsets as low-durability data. The offset is a **bookmark** — losing a bookmark in a book you still own is an inconvenience, not a catastrophe.
+
+Redis persistence (RDB snapshots or AOF) can mitigate this further — after a crash, you'd replay at most a few minutes of events rather than the entire history. But even without persistence, the system recovers by replaying.
+
+**Kafka comparison** *(not Revolut-specific)*: Kafka stores consumer offsets in the `__consumer_offsets` internal topic, replicated across brokers (default replication factor 3). If that topic is lost (catastrophic multi-broker failure), recovery depends on `auto.offset.reset`: set to `earliest`, consumers replay from the beginning (same as Revolut); set to `latest`, consumers skip to the current head, **losing all unprocessed events** — the dangerous option. The recovery model is fundamentally the same: replay from a known position. Revolut trades replication-based durability for replay-based durability, which is a valid trade-off when events are already in a durable store.
+
 ### Consumer Types
 
 - **SingleEventConsumer**: Filters by model type + event type + optional payload attributes
@@ -285,16 +301,78 @@ A **fencing token** (lease version or monotonic counter) prevents zombie consume
 | Coordination | Built into broker (Group Coordinator) | External (Redis) |
 | Assignment | Centralized algorithm (Range/Sticky) | Decentralized (each consumer grabs partitions) |
 | Failure detection | Heartbeat + session timeout | Lease TTL expiration |
-| Rebalancing | Global — all partitions reassigned | Granular — only the failed consumer's partitions |
+| Rebalancing | See below | Granular — only the failed consumer's partitions |
 | Fencing | Group generation ID (epoch-based) | Fencing token / lease version |
 
-The Redis approach avoids Kafka's "stop-the-world" rebalancing — only the failed consumer's partitions are redistributed, not all partitions.
+Revolut's Redis lease model has an inherent advantage: when a consumer fails, only that consumer's partitions become available — other consumers continue uninterrupted. There is no coordination protocol, no group-wide event, no rebalance storm risk.
+
+#### Kafka's Rebalancing: A Moving Target *(not Revolut-specific)*
+
+Kafka's rebalancing has evolved significantly. Whether it's "stop-the-world" depends on which protocol you're using:
+
+**Eager rebalancing (pre-Kafka 2.4, still the default in many deployments):** Genuinely stop-the-world. When any consumer joins or leaves, **all consumers revoke all partitions**, rejoin the group, and receive new assignments. The entire consumer group is idle during this process. From the [Confluent blog](https://www.confluent.io/blog/cooperative-rebalancing-in-kafka-streams-consumer-ksqldb/): "No member of the group can do any work for the duration of the rebalance."
+
+**Cooperative incremental rebalancing ([KIP-429](https://cwiki.apache.org/confluence/display/KAFKA/KIP-429%3A+Kafka+Consumer+Incremental+Rebalance+Protocol), Kafka 2.4+, January 2020):** Only partitions that actually need to migrate are revoked. Partitions that stay with the same consumer **continue processing without interruption**. The Confluent benchmark showed eager protocol pause time of **37,138ms** vs. cooperative's **3,522ms** during a 10-instance rolling bounce. Requires opting in to `CooperativeStickyAssignor`.
+
+**New consumer group protocol ([KIP-848](https://cwiki.apache.org/confluence/display/KAFKA/KIP-848%3A+The+Next+Generation+of+the+Consumer+Rebalance+Protocol), Kafka 3.7+, 2024):** Fundamentally redesigned. The broker performs assignment (no more "leader consumer"), consumers reconcile independently via heartbeats, no global synchronization barrier. Incremental by design — there is no eager mode. Still early access as of 2024.
+
+| Era | Protocol | Stop-the-world? |
+|---|---|---|
+| Pre-2.4 (before 2020) | Eager (Range/RoundRobin) | **Yes** — all partitions revoked from all consumers |
+| 2.4–3.6 (2020–2024) | Cooperative (CooperativeStickyAssignor) | **No** — only migrating partitions pause; requires opt-in |
+| 3.7+ (2024+) | KIP-848 (server-side) | **No** — incremental by design |
+
+Even with cooperative rebalancing, some pain points remain: rebalance storms during rolling deploys (mitigated by `group.initial.rebalance.delay.ms`), state store migration latency in Kafka Streams, and `max.poll.interval.ms` kicking out slow consumers. Revolut's Redis lease model sidesteps all of this — a lease expires, another consumer grabs it, done.
 
 #### Ordering Guarantee Strength: Kafka vs Revolut
 
 **Kafka's ordering is strictly stronger**: no visibility gaps, single writer eliminates ambiguity, offset = physical position. A consumer reading a partition sees records in the exact order they were appended, always.
 
-**Revolut's ordering is weaker but more flexible**: sequence order can differ from commit order, visibility gaps require mitigation. But logical partitioning means you can redefine partition keys, change partition counts, and apply different strategies per consumer — all without data migration or downtime.
+**Revolut's ordering is weaker but more flexible**: sequence order can differ from commit order, and visibility gaps must be mitigated (see below). But logical partitioning means you can redefine partition keys, change partition counts, and apply different strategies per consumer — all without data migration or downtime.
+
+#### How Visibility Gaps Are Mitigated in Practice
+
+The core problem: PostgreSQL sequences are assigned at `INSERT` time (outside transaction isolation), but rows only become visible at `COMMIT` time. Two concurrent transactions can commit out of sequence order, making a later sequence visible before an earlier one.
+
+**Approach 1: Delay buffer (simplest, most common — *not Revolut-specific, general practice*)**
+
+The consumer intentionally reads events with a time delay, allowing concurrent transactions to commit before processing:
+
+```sql
+SELECT * FROM events
+WHERE sequence_id > :last_processed_offset
+  AND created_at < now() - interval '5 seconds'
+ORDER BY sequence_id
+LIMIT :batch_size;
+```
+
+Typical delay: 1–5 seconds for OLTP workloads, 10–30 seconds for systems with longer transactions. The delay must exceed the maximum expected transaction duration. Simple, robust, and handles permanent gaps from rollbacks naturally (rolled-back transactions consume sequence values that are never inserted — after the delay, if no row exists, it's a permanent gap and safely skipped).
+
+**Approach 2: Transaction-boundary watermark using `xmin` (*not Revolut-specific, PostgreSQL technique*)**
+
+Use PostgreSQL's `xmin` system column (the transaction ID that inserted the row) to only process rows whose transactions are definitely committed:
+
+```sql
+-- PostgreSQL 13+ syntax
+SELECT e.* FROM events e
+WHERE e.sequence_id > :last_processed_offset
+  AND e.xmin::text::bigint < pg_snapshot_xmin(pg_current_snapshot())
+ORDER BY e.sequence_id
+LIMIT :batch_size;
+```
+
+`pg_snapshot_xmin(pg_current_snapshot())` returns the oldest still-active transaction ID. Any row with `xmin` below this is guaranteed committed (or aborted and invisible). No artificial delay needed, but the `xmin::text::bigint` cast is somewhat fragile and transaction ID wraparound must be considered.
+
+**Approach 3: WAL-based CDC / Debezium (*not Revolut-specific — alternative architecture*)**
+
+Avoids the problem entirely by reading the [Write-Ahead Log via logical replication](https://debezium.io/documentation/reference/stable/connectors/postgresql.html) instead of polling the table. The WAL streams changes **in commit order** — a transaction's changes only appear after it commits. No visibility gaps possible. Revolut doesn't use this because it would reintroduce Kafka as a dependency (Debezium outputs to Kafka topics).
+
+**What Revolut likely uses:** Based on their published architecture, a combination of:
+1. **Delay buffer** — a short polling lag to let concurrent transactions commit
+2. **Transactional co-location** — because they write the business state and the event in the same transaction (dual-write pattern), events for the same entity are serialized by business logic, avoiding inter-transaction ordering issues within a partition
+3. **Idempotent consumers** — even if a gap causes occasional reprocessing, idempotency makes it safe
+
+Their emphasis on idempotency suggests they treat gaps as a "handle duplicates" problem rather than a "prevent gaps" problem — architecturally simpler and more robust.
 
 The trade-off: Kafka gives you **ordering guarantees baked into the infrastructure** at the cost of operational complexity and partition rigidity. Revolut's approach gives you **flexibility** (one less system to run, dynamic repartitioning) at the cost of solving ordering edge cases at the application level.
 
@@ -477,3 +555,9 @@ Archive Cluster (4+ years, cold storage)
 - [Apache Kafka — Introduction and Design](https://kafka.apache.org/intro)
 - [Martin Kleppmann — How to do distributed locking](https://martin-kleppmann.com/2016/02/08/how-to-do-distributed-locking.html)
 - [PostgreSQL — MVCC and Transaction Isolation](https://www.postgresql.org/docs/current/mvcc.html)
+- [Confluent — Cooperative Rebalancing in Kafka Streams, Consumer, and ksqlDB](https://www.confluent.io/blog/cooperative-rebalancing-in-kafka-streams-consumer-ksqldb/)
+- [KIP-429 — Kafka Consumer Incremental Rebalance Protocol](https://cwiki.apache.org/confluence/display/KAFKA/KIP-429%3A+Kafka+Consumer+Incremental+Rebalance+Protocol)
+- [KIP-848 — The Next Generation of the Consumer Rebalance Protocol](https://cwiki.apache.org/confluence/display/KAFKA/KIP-848%3A+The+Next+Generation+of+the+Consumer+Rebalance+Protocol)
+- [Debezium — PostgreSQL Connector (WAL-based CDC)](https://debezium.io/documentation/reference/stable/connectors/postgresql.html)
+- [Redis — Persistence (RDB and AOF)](https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/)
+- [Kafka — Consumer Configuration (auto.offset.reset)](https://kafka.apache.org/documentation/#consumerconfigs_auto.offset.reset)
